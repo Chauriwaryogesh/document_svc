@@ -1,0 +1,26 @@
+package com.example.service;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+
+import com.example.dto.EmpRequestforUpdate;
+import com.example.dto.EmployeeDTO;
+import com.example.dto.SecurityDTO;
+
+public interface IEmployeeService{
+
+	public List<EmployeeDTO> fetchEmpList(String id, String userId);
+
+	public EmployeeDTO updateEmployee(EmpRequestforUpdate employeeRequest, String userId);
+
+	public List<EmployeeDTO> fetchAllEmployee(String userId);
+
+	public byte[] fetchEmployeeDBforPDF(String id, String userId) throws IOException;
+
+	public List<SecurityDTO> fetchAllSecurity(String userId);
+
+	public SecurityDTO updateSecurity(SecurityDTO securityDTO, String userId);
+
+}
