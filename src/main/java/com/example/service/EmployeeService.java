@@ -14,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
+import com.example.CommonConstants.CommonConstant;
 import com.example.dto.EmpRequestforUpdate;
 import com.example.dto.EmployeeDTO;
 import com.example.dto.SecurityDTO;
+import com.example.dto.WorkItemDTO;
 import com.example.entity.Employees;
 import com.example.entity.Security;
 import com.example.exception.BadRequestException;
@@ -32,6 +34,7 @@ import com.itextpdf.layout.element.Paragraph;
 @Service
 public class EmployeeService implements IEmployeeService {
 
+
 	@Autowired
 	private IEmployeeRepo employeeRepo;
 
@@ -43,6 +46,9 @@ public class EmployeeService implements IEmployeeService {
 	
 	@Autowired
 	private SecurityMapper securityMapper;
+	
+	@Autowired
+	private IWorkItemService workItemService;
 
 	@Override
 	public List<EmployeeDTO> fetchEmpList(String id, String userId) {
@@ -100,11 +106,25 @@ public class EmployeeService implements IEmployeeService {
 				Employees employee = employeeMapper.mapEmployeeRequest(employeeRequest);
 				Employees empSave = employeeRepo.save(employee);
 				employeeDTO = employeeMapper.convertToDTO(empSave);
+				// Create WorkItem whenever added new Employee or update.
+				WorkItemDTO workItemRequest= new WorkItemDTO();
+				workItemRequest.setComment("WorkItem getting created for Update Employee Details");
+				workItemRequest.setCreatedBy(userId);
+				workItemRequest.setWorkType(CommonConstant.ADD_NEW_EMPLOYEE);
+				WorkItemDTO  workItem =workItemService.createWorkItem( workItemRequest, userId);
+				
 			}
 		} else {
 			Employees employee = employeeMapper.mapEmployeeRequest(employeeRequest);
 			Employees empSave = employeeRepo.save(employee);
 			employeeDTO = employeeMapper.convertToDTO(empSave);
+			// Create WorkItem whenever added new Employee or update.
+			WorkItemDTO workItemRequest= new WorkItemDTO();
+			workItemRequest.setComment("WorkItem getting created for new employee");
+			workItemRequest.setCreatedBy(userId);
+			workItemRequest.setWorkType(CommonConstant.ADD_NEW_EMPLOYEE);
+			WorkItemDTO  workItem =workItemService.createWorkItem( workItemRequest, userId);
+			
 		}
 
 		return employeeDTO;
