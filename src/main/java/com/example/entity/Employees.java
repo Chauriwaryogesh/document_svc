@@ -15,9 +15,8 @@ public class Employees implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private Long id;
+    private String id;
     
     @Column(name="first_name")
     private String firstName;
@@ -55,7 +54,7 @@ public class Employees implements Serializable {
     // Getters and setters for all fields
     
     
-    public Long getId() {
+    public String getId() {
         return id;
     }
     public String getUpdateBy() {
@@ -64,7 +63,7 @@ public class Employees implements Serializable {
 	public void setUpdateBy(String updateBy) {
 		this.updateBy = updateBy;
 	}
-	public void setId(Long id) {
+	public void setId(String id) {
         this.id = id;
     }
     public String getFirstName() {

@@ -7,7 +7,7 @@ import com.example.dto.EmployeeDTO;
 import com.example.entity.Employees;
 
 public interface IEmployeeMapper {
-	public Employees mapEmployeeRequest(EmpRequestforUpdate employeeRequest);
+	public Employees mapEmployeeRequest(EmpRequestforUpdate employeeRequest, String id);
 
 	public List<EmployeeDTO> mapAllEmployee(List<Employees> employee);
 

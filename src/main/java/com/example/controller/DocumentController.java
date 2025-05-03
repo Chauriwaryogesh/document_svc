@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.dto.AddDocument;
-import com.example.dto.DocumentDTO;
 import com.example.entity.Document;
 import com.example.service.IDocumentService;
 

@@ -20,12 +20,14 @@ import com.example.dto.EmployeeDTO;
 import com.example.dto.SecurityDTO;
 import com.example.dto.WorkItemDTO;
 import com.example.entity.Employees;
+import com.example.entity.PersonSequence;
 import com.example.entity.Security;
 import com.example.exception.BadRequestException;
 import com.example.mapper.IEmployeeMapper;
 import com.example.mapper.SecurityMapper;
 import com.example.repo.IEmployeeRepo;
 import com.example.repo.ISecurityRepo;
+import com.example.repo.PersonSequenceRepository;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -49,6 +51,12 @@ public class EmployeeService implements IEmployeeService {
 	
 	@Autowired
 	private IWorkItemService workItemService;
+	
+	@Autowired
+	private PersonSequenceRepository personSequenceRepository;
+	
+	@Autowired
+	private OtpService otpService;
 
 	@Override
 	public List<EmployeeDTO> fetchEmpList(String id, String userId) {
@@ -56,7 +64,7 @@ public class EmployeeService implements IEmployeeService {
 		List<EmployeeDTO> employeeList = new ArrayList<>();
 		EmployeeDTO employeeDTO = new EmployeeDTO();
 		
-		Long employeeId = Long.parseLong(id);
+		//Long employeeId = Long.parseLong(id);
 		try {
 		//for Security
 		List<Security> security= securityRepo.findAll();
@@ -71,7 +79,7 @@ public class EmployeeService implements IEmployeeService {
 			e.getMessage();
 		}
 		try {
-			Optional<Employees> optionalEmployee = employeeRepo.findById(employeeId);
+			Optional<Employees> optionalEmployee = employeeRepo.findById(id);
 			if (optionalEmployee.isPresent()) {
 				Employees employee = optionalEmployee.get();
 				employeeDTO = employeeMapper.convertToDTO(employee);
@@ -100,10 +108,12 @@ public class EmployeeService implements IEmployeeService {
 				e.getMessage();
 			}
 		if (employeeRequest.getId() != null) {
-			Optional<Employees> isExisting = employeeRepo.findById(Long.valueOf(employeeRequest.getId()));
+			Optional<Employees> isExisting = employeeRepo.findById(employeeRequest.getId());
 			// toUpdateExisting
 			if (isExisting.isPresent()) {
-				Employees employee = employeeMapper.mapEmployeeRequest(employeeRequest);
+				Employees emplo =isExisting.get();
+				
+				Employees employee = employeeMapper.mapEmployeeRequest(employeeRequest,String.valueOf(emplo.getId()));
 				Employees empSave = employeeRepo.save(employee);
 				employeeDTO = employeeMapper.convertToDTO(empSave);
 				// Create WorkItem whenever added new Employee or update.
@@ -113,9 +123,16 @@ public class EmployeeService implements IEmployeeService {
 				workItemRequest.setWorkType(CommonConstant.ADD_NEW_EMPLOYEE);
 				WorkItemDTO  workItem =workItemService.createWorkItem( workItemRequest, userId);
 				
+				//Implement Email API. to Share Info.
+				if(employeeRequest.getEmail() != null) {
+					String response= otpService.sendDetailEmail( employeeRequest.getEmail(), emplo.getId(),workItem,  userId) ;
+				}
+				
+				
 			}
 		} else {
-			Employees employee = employeeMapper.mapEmployeeRequest(employeeRequest);
+			String id= generateCustomerNumber();
+			Employees employee = employeeMapper.mapEmployeeRequest(employeeRequest, id);
 			Employees empSave = employeeRepo.save(employee);
 			employeeDTO = employeeMapper.convertToDTO(empSave);
 			// Create WorkItem whenever added new Employee or update.
@@ -125,6 +142,10 @@ public class EmployeeService implements IEmployeeService {
 			workItemRequest.setWorkType(CommonConstant.ADD_NEW_EMPLOYEE);
 			WorkItemDTO  workItem =workItemService.createWorkItem( workItemRequest, userId);
 			
+			//Implement Email API. to Share Info.
+			if(employeeRequest.getEmail() != null) {
+				String response= otpService.sendDetailEmail( employeeRequest.getEmail(), id,workItem, userId) ;
+			}
 		}
 
 		return employeeDTO;
@@ -180,7 +201,7 @@ public class EmployeeService implements IEmployeeService {
 		}
 
 		else {
-			Optional<Employees> empFound = employeeRepo.findById(Long.valueOf(id));
+			Optional<Employees> empFound = employeeRepo.findById(id);
 			if (empFound.isEmpty()) {
 				throw new RuntimeException("Employee not found for ID: " + id);
 			}
@@ -272,5 +293,14 @@ public class EmployeeService implements IEmployeeService {
 		
 		
 	}
+	
+	
+
+	public String generateCustomerNumber() {
+	    PersonSequence seq = personSequenceRepository.save(new PersonSequence());
+	    Long nextVal = seq.getId();
+	    return "T" + String.format("%09d", nextVal);
+	}
+
 
 }

@@ -69,7 +69,7 @@ public class EmployeeController {
 		return serviceResponce;
 	}
 
-	@PostMapping(value = "/UpdateEmployee_Info", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/create-Update_Employee", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeDTO> updateEmployee(@RequestBody EmpRequestforUpdate employeeRequest,
 			@RequestHeader(value = "userID", required = false) String userId,
 			@RequestHeader(value = "AUthorizationHeader", required = false) String authorizationHeader) {

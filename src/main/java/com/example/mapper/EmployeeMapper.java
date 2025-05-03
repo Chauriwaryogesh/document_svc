@@ -12,12 +12,13 @@ import com.example.entity.Employees;
 @Component
 public class EmployeeMapper implements IEmployeeMapper {
 
-	public Employees mapEmployeeRequest(EmpRequestforUpdate employeeRequest) {
+	public Employees mapEmployeeRequest(EmpRequestforUpdate employeeRequest, String id) {
 
 		Employees emp = new Employees();
 		if (employeeRequest.getId() != null) {
-			emp.setId(Long.valueOf(employeeRequest.getId()));
-
+			emp.setId(employeeRequest.getId());
+		}else {
+			emp.setId(id);
 		}
 		emp.setFirstName(employeeRequest.getFirstName());
 		emp.setLastName(employeeRequest.getLastName());
@@ -82,5 +83,4 @@ public class EmployeeMapper implements IEmployeeMapper {
 		return emp;
 
 	}
-
 }

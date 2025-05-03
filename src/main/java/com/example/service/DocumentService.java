@@ -1,7 +1,6 @@
 package com.example.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.dto.AddDocument;
-import com.example.dto.DocumentDTO;
 import com.example.entity.Document;
 import com.example.mapper.DocumentMapper;
 import com.example.repo.IDocumentRepo;
