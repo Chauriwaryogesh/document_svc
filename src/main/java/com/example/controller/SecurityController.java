@@ -49,9 +49,9 @@ public class SecurityController {
 		return serviceResponse;
 	}
 	
-	@PostMapping(value ="/accessSecurity" , consumes=MediaType.APPLICATION_JSON_VALUE, produces =MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value ="/add-user" , consumes=MediaType.APPLICATION_JSON_VALUE, produces =MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SecurityDTO> accessSecurity(@RequestBody SecurityDTO securityDTO,
-    		@RequestHeader(value="userID") String userId){
+    		@RequestHeader(value="userId") String userId){
 		
 		ResponseEntity<SecurityDTO> securityResponce= new ResponseEntity<>();
 		SecurityDTO security= empService.updateSecurity(securityDTO, userId);

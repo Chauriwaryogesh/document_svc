@@ -26,22 +26,30 @@ public class EmailController {
 	@Autowired
 	private OtpService otpService;
 
-	@Cacheable(value = "otpCache", key = "#email")
+	//@Cacheable(value = "otpCache", key = "#email")
 	@RequestMapping(value = "/generateOtpService", method = RequestMethod.POST)
-	public ResponseEntity<String> sendOtp(/* @RequestBody EmailRequest request */
+	public com.example.service.ResponseEntity<String> sendOtp(
 			@RequestParam(value = "Email id", required = true) String email,
 			@RequestParam(value = "user id", required = true) String userId) {
-		String ok = otpService.sendOtp(email, userId);
-		return ResponseEntity.ok(ok);
+		com.example.service.ResponseEntity<String> ok = otpService.sendOtp(email, userId);
+
+		return ok;
 	}
 
 	@PostMapping("/verify-otp")
-	public ResponseEntity<String> verifyOtp(/* @RequestBody OtpRequest request */
+	public com.example.service.ResponseEntity<String> verifyOtp(
 			@RequestParam(value = "Email id") String email, @RequestParam(value = "Otp") String otp,
-			@RequestHeader(value = "user id", required = true) String userId) {
+			@RequestHeader(value = "user-id", required = true) String userId) {
 		boolean isValid = otpService.verifyOtp(email, otp, userId);
-		return isValid ? ResponseEntity.ok("OTP verified")
-				: ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid OTP");
+		com.example.service.ResponseEntity<String> data= new com.example.service.ResponseEntity<>();
+		if(isValid) {
+			data.setData("Otp Verified Successfully");
+		}else {
+			data.setErrorMessage("Invalid otp , please enter correct OTP or click on generate otp button");
+		}
+//		return isValid ? ResponseEntity.ok("OTP verified")
+//				: ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid OTP");
+		return data;
 	}
 
 	@PostMapping(value = "/add-email", consumes = MediaType.APPLICATION_JSON_VALUE)

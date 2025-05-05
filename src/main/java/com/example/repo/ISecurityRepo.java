@@ -1,11 +1,17 @@
 package com.example.repo;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.entity.Security;
 
 @Repository
 public interface ISecurityRepo  extends JpaRepository<Security, Long>{
+
+	@Query(value="Select * from security s where s.email=?1 and s.deletedFlag=?2",nativeQuery = true)
+	  Security findByEmail(String email, String deletedFlag);
 
 }

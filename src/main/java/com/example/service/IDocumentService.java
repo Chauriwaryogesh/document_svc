@@ -16,4 +16,6 @@ public interface IDocumentService {
 
 	public Document uploadDocument(MultipartFile file, String userId) throws IOException;
 
+	public List<DocumentDTO> getAllDocuments(String userId);
+
 }

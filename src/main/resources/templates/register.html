@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Registration</title>
+    <style>
+        body {
+            background-color: #e3f2fd; /* light blue */
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #0d47a1;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+		input[type="userId"] {
+		            width: 100%;
+		            padding: 12px;
+		            margin-top: 10px;
+		            border: 1px solid #ccc;
+		            border-radius: 6px;
+		        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0d47a1;
+        }
+
+        .footer-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .footer-buttons button {
+            width: 48%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Register Email</h2>
+        <input type="email" id="emailInput" placeholder=" email">
+		<input type="userId" id="userId" placeholder="userId">
+        <button onclick="registerEmail()">Register Here</button>
+
+        <div class="footer-buttons">
+            <button onclick="contactUs()">Contact Us</button>
+            <button onclick="callUs()">Call Us</button>
+        </div>
+    </div>
+
+    <script>
+        async function registerEmail() {
+            const email = document.getElementById("emailInput").value;
+            const userId = document.getElementById("userId").value; // Ensure it's already stored
+
+            if (!email || !userId) {
+                alert("Email or User ID is missing.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:8081/Security/add-user", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "userId": userId
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const result = await response.text();
+                alert(result);
+            } catch (error) {
+                console.error("Error registering email:", error);
+                alert("Registration failed.");
+            }
+        }
+
+        function contactUs() {
+            window.location.href = "mailto:support@example.com";
+        }
+
+        function callUs() {
+            window.location.href = "tel:+8208247944";
+        }
+    </script>
+
+</body>
+</html>

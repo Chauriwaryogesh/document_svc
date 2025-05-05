@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.dto.AddDocument;
+import com.example.dto.DocumentDTO;
 import com.example.entity.Document;
 import com.example.service.IDocumentService;
 
@@ -27,10 +28,11 @@ public class DocumentController {
 	@Autowired
 	private IDocumentService docmentSrvice;
 
-	@RequestMapping(value = "getDocumentDtls", method = RequestMethod.GET,produces = {"image/png", "image/jpeg", "application/pdf"})
-	public ResponseEntity<byte[]> getDocument(@RequestParam(value = "id", required = true) String id,
-			@RequestParam(value = "docName", required = true) String docName,
-			@RequestHeader(value = "userId", required = true) String userId) {
+	@RequestMapping(value = "getDocument", method = RequestMethod.GET,produces = {"image/png", "image/jpeg", "application/pdf"})
+	public ResponseEntity<byte[]> getDocument(@RequestParam(value = "id", required = false) String id,
+			@RequestParam(value = "docName", required = false) String docName,
+			@RequestHeader(value = "userId", required = false) String userId) {
+		
 		Document document = docmentSrvice.getDocumentdtls(id, docName, userId);
 		if(document != null) {
 		return ResponseEntity.ok()
@@ -64,5 +66,20 @@ public class DocumentController {
                     .body("Failed to upload document: " + e.getMessage());
         }
     }
+	
+	@RequestMapping(value = "getAllDocuments", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	public com.example.service.ResponseEntity<List<DocumentDTO>> getDocument(
+			@RequestHeader(value = "userId", required = false) String userId) {
+		
+		com.example.service.ResponseEntity<List<DocumentDTO>> docslist= new com.example.service.ResponseEntity<>();
+		List<DocumentDTO> document = docmentSrvice.getAllDocuments( userId);
+		if(document != null) {
+			docslist.setData(document);
+    } else {
+    	docslist.setErrorMessage("documentListisEmpty");
+       
+    }
+		return docslist;
+	}
 
 }

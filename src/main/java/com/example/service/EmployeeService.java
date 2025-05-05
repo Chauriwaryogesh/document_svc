@@ -36,25 +36,24 @@ import com.itextpdf.layout.element.Paragraph;
 @Service
 public class EmployeeService implements IEmployeeService {
 
-
 	@Autowired
 	private IEmployeeRepo employeeRepo;
 
 	@Autowired
 	private IEmployeeMapper employeeMapper;
-	
+
 	@Autowired
 	private ISecurityRepo securityRepo;
-	
+
 	@Autowired
 	private SecurityMapper securityMapper;
-	
+
 	@Autowired
 	private IWorkItemService workItemService;
-	
+
 	@Autowired
 	private PersonSequenceRepository personSequenceRepository;
-	
+
 	@Autowired
 	private OtpService otpService;
 
@@ -63,19 +62,18 @@ public class EmployeeService implements IEmployeeService {
 		// Convert the String id to Long (assuming id is a numeric string)
 		List<EmployeeDTO> employeeList = new ArrayList<>();
 		EmployeeDTO employeeDTO = new EmployeeDTO();
-		
-		//Long employeeId = Long.parseLong(id);
-		try {
-		//for Security
-		List<Security> security= securityRepo.findAll();
-		boolean Notfound=security.stream().anyMatch(userCode ->
-		userCode.getUserCode().equalsIgnoreCase(userId));
-		
-		if(!Notfound) {
-			throw new BadRequestException("Invalid User"+ userId);
-		}
 
-		}catch(BadRequest e) {
+		// Long employeeId = Long.parseLong(id);
+		try {
+			// for Security
+			List<Security> security = securityRepo.findAll();
+			boolean Notfound = security.stream().anyMatch(userCode -> userCode.getUserCode().equalsIgnoreCase(userId));
+
+			if (!Notfound) {
+				throw new BadRequestException("Invalid User" + userId);
+			}
+
+		} catch (BadRequest e) {
 			e.getMessage();
 		}
 		try {
@@ -95,56 +93,55 @@ public class EmployeeService implements IEmployeeService {
 	public EmployeeDTO updateEmployee(EmpRequestforUpdate employeeRequest, String userId) {
 		EmployeeDTO employeeDTO = new EmployeeDTO();
 		try {
-			//for Security
-			List<Security> security= securityRepo.findAll();
-			boolean Notfound=security.stream().anyMatch(userCode ->
-			userCode.getUserCode().equalsIgnoreCase(userId));
-			
-			if(!Notfound) {
-				throw new BadRequestException("Invalid User"+ userId);
+			// for Security
+			List<Security> security = securityRepo.findAll();
+			boolean Notfound = security.stream().anyMatch(userCode -> userCode.getUserCode().equalsIgnoreCase(userId));
+
+			if (!Notfound) {
+				throw new BadRequestException("Invalid User" + userId);
 			}
 
-			}catch(BadRequest e) {
-				e.getMessage();
-			}
+		} catch (BadRequest e) {
+			e.getMessage();
+		}
 		if (employeeRequest.getId() != null) {
 			Optional<Employees> isExisting = employeeRepo.findById(employeeRequest.getId());
 			// toUpdateExisting
 			if (isExisting.isPresent()) {
-				Employees emplo =isExisting.get();
-				
-				Employees employee = employeeMapper.mapEmployeeRequest(employeeRequest,String.valueOf(emplo.getId()));
+				Employees emplo = isExisting.get();
+
+				Employees employee = employeeMapper.mapEmployeeRequest(employeeRequest, String.valueOf(emplo.getId()));
 				Employees empSave = employeeRepo.save(employee);
 				employeeDTO = employeeMapper.convertToDTO(empSave);
 				// Create WorkItem whenever added new Employee or update.
-				WorkItemDTO workItemRequest= new WorkItemDTO();
+				WorkItemDTO workItemRequest = new WorkItemDTO();
 				workItemRequest.setComment("WorkItem getting created for Update Employee Details");
 				workItemRequest.setCreatedBy(userId);
 				workItemRequest.setWorkType(CommonConstant.ADD_NEW_EMPLOYEE);
-				WorkItemDTO  workItem =workItemService.createWorkItem( workItemRequest, userId);
-				
-				//Implement Email API. to Share Info.
-				if(employeeRequest.getEmail() != null) {
-					String response= otpService.sendDetailEmail( employeeRequest.getEmail(), emplo.getId(),workItem,  userId) ;
+				WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userId);
+
+				// Implement Email API. to Share Info.
+				if (employeeRequest.getEmail() != null) {
+					String response = otpService.sendDetailEmail(employeeRequest.getEmail(), emplo.getId(), workItem,
+							userId);
 				}
-				
-				
+
 			}
 		} else {
-			String id= generateCustomerNumber();
+			String id = generateCustomerNumber();
 			Employees employee = employeeMapper.mapEmployeeRequest(employeeRequest, id);
 			Employees empSave = employeeRepo.save(employee);
 			employeeDTO = employeeMapper.convertToDTO(empSave);
 			// Create WorkItem whenever added new Employee or update.
-			WorkItemDTO workItemRequest= new WorkItemDTO();
+			WorkItemDTO workItemRequest = new WorkItemDTO();
 			workItemRequest.setComment("WorkItem getting created for new employee");
 			workItemRequest.setCreatedBy(userId);
 			workItemRequest.setWorkType(CommonConstant.ADD_NEW_EMPLOYEE);
-			WorkItemDTO  workItem =workItemService.createWorkItem( workItemRequest, userId);
-			
-			//Implement Email API. to Share Info.
-			if(employeeRequest.getEmail() != null) {
-				String response= otpService.sendDetailEmail( employeeRequest.getEmail(), id,workItem, userId) ;
+			WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userId);
+
+			// Implement Email API. to Share Info.
+			if (employeeRequest.getEmail() != null) {
+				String response = otpService.sendDetailEmail(employeeRequest.getEmail(), id, workItem, userId);
 			}
 		}
 
@@ -154,18 +151,17 @@ public class EmployeeService implements IEmployeeService {
 	@Override
 	public List<EmployeeDTO> fetchAllEmployee(String userId) {
 		try {
-			//for Security
-			List<Security> security= securityRepo.findAll();
-			boolean Notfound=security.stream().anyMatch(userCode ->
-			userCode.getUserCode().equalsIgnoreCase(userId));
-			
-			if(!Notfound) {
-				throw new BadRequestException("Invalid User"+ userId);
+			// for Security
+			List<Security> security = securityRepo.findAll();
+			boolean Notfound = security.stream().anyMatch(userCode -> userCode.getUserCode().equalsIgnoreCase(userId));
+
+			if (!Notfound) {
+				throw new BadRequestException("Invalid User" + userId);
 			}
-			
-			}catch(BadRequest e) {
-				e.getMessage();
-			}
+
+		} catch (BadRequest e) {
+			e.getMessage();
+		}
 		List<Employees> employee = employeeRepo.findAll();
 		List<EmployeeDTO> employDTO = employeeMapper.mapAllEmployee(employee);
 		return employDTO;
@@ -178,20 +174,19 @@ public class EmployeeService implements IEmployeeService {
 		List<Employees> employeesList = new ArrayList<>();
 		// Ensure directory exists
 		Files.createDirectories(Paths.get(DIRECTORY));
-		
+
 		try {
-			//for Security
-			List<Security> security= securityRepo.findAll();
-			boolean Notfound=security.stream().anyMatch(userCode ->
-			userCode.getUserCode().equalsIgnoreCase(userId));
-			
-			if(!Notfound) {
-				throw new BadRequestException("Invalid User"+ userId);
+			// for Security
+			List<Security> security = securityRepo.findAll();
+			boolean Notfound = security.stream().anyMatch(userCode -> userCode.getUserCode().equalsIgnoreCase(userId));
+
+			if (!Notfound) {
+				throw new BadRequestException("Invalid User" + userId);
 			}
 
-			}catch(BadRequest e) {
-				e.getMessage();
-			}
+		} catch (BadRequest e) {
+			e.getMessage();
+		}
 
 		// Fetch employee details from DB
 		if (id == null) {
@@ -258,12 +253,12 @@ public class EmployeeService implements IEmployeeService {
 
 	@Override
 	public List<SecurityDTO> fetchAllSecurity(String userId) {
-		List<SecurityDTO> allSecurity=List.of();
+		List<SecurityDTO> allSecurity = List.of();
 		try {
-		List<Security> security= securityRepo.findAll();
-		
-		allSecurity= securityMapper.mapSecurity(security);
-		}catch(Exception e) {
+			List<Security> security = securityRepo.findAll();
+
+			allSecurity = securityMapper.mapSecurity(security);
+		} catch (Exception e) {
 			e.getCause();
 		}
 		return allSecurity;
@@ -271,36 +266,89 @@ public class EmployeeService implements IEmployeeService {
 
 	@Override
 	public SecurityDTO updateSecurity(SecurityDTO securityDTO, String userId) {
+
+		Security security = securityRepo.findByEmail(securityDTO.getEmail(),"N");
+		 if(security != null) {
+			 
+			 security.setDeletedFlag("Y");
+				 securityRepo.save(security);
+				 Security securityEntity = new Security();
+					securityEntity.setEmail(securityDTO.getEmail());
+					if (securityDTO.getIsEmailVerified() == null) {
+						securityEntity.setIsEmailVerified("N");
+					} else {
+						securityEntity.setIsEmailVerified(securityDTO.getIsEmailVerified());
+					}
+					if (securityDTO.getIsUserCodeVerified() == null) {
+						securityEntity.setIsUserCodeVerified("N");
+
+					} else {
+						securityEntity.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
+
+					}
+					securityEntity.setDeletedFlag("N");
+					securityEntity.setUserCode(securityDTO.getUserCode());
+					securityEntity.setUserName(securityDTO.getUserName());
+					securityEntity.setUpdateBy(securityDTO.getUserCode());
+					securityEntity.setUpdateTime(String.valueOf(LocalDate.now()));
+					if (securityDTO.getRemainingTime() != null) {
+						securityEntity.setEndTime(securityDTO.getRemainingTime());
+					} else {
+						LocalDate updateTime = LocalDate.now();
+						// Subtract 5 days from updateTime
+						LocalDate newDate = updateTime.plusDays(5);
+						securityEntity.setEndTime(newDate.toString());
+						securityRepo.save(securityEntity);
+					}
+	 
+			 
+					securityRepo.save(securityEntity);
+			 
+			 
+			 
+		 }else {
+			 Security securityEntity = new Security();
+				securityEntity.setEmail(securityDTO.getEmail());
+				if (securityDTO.getIsEmailVerified() == null) {
+					securityEntity.setIsEmailVerified("N");
+				} else {
+					securityEntity.setIsEmailVerified(securityDTO.getIsEmailVerified());
+				}
+				if (securityDTO.getIsUserCodeVerified() == null) {
+					securityEntity.setIsUserCodeVerified("N");
+
+				} else {
+					securityEntity.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
+
+				}
+				securityEntity.setDeletedFlag("N");
+				securityEntity.setUserCode(securityDTO.getUserCode());
+				securityEntity.setUserName(securityDTO.getUserName());
+				securityEntity.setUpdateBy(securityDTO.getUserCode());
+				securityEntity.setUpdateTime(String.valueOf(LocalDate.now()));
+				if (securityDTO.getRemainingTime() != null) {
+					securityEntity.setEndTime(securityDTO.getRemainingTime());
+				} else {
+					LocalDate updateTime = LocalDate.now();
+					// Subtract 5 days from updateTime
+					LocalDate newDate = updateTime.plusDays(5);
+					securityEntity.setEndTime(newDate.toString());
+					securityRepo.save(securityEntity);
+				}
+ 
+		 }
 		
-		Security securityEntity= new Security();
-		securityEntity.setUserCode(securityDTO.getUserCode());
-		securityEntity.setUserName(securityDTO.getUserName());
-		securityEntity.setUpdateBy(securityDTO.getUserCode());
-		securityEntity.setUpdateTime( String.valueOf(LocalDate.now()));
 		
-//		LocalDate updateTime = LocalDate.now(); // updateTime as a LocalDate
-//		LocalDate currentDate = LocalDate.now(); // current date, or another LocalDate value
-//		long daysBetween = ChronoUnit.DAYS.between(updateTime, currentDate);
-//		securityEntity.setEndTime(String.valueOf(daysBetween)); // days difference as a String
-		LocalDate updateTime = LocalDate.now();
-		// Subtract 5 days from updateTime
-		LocalDate newDate = updateTime.plusDays(5);
-		securityEntity.setEndTime(newDate.toString());
-		
-		securityRepo.save(securityEntity);
-		
+	//	securityRepo.save(securityEntity);
+
 		return securityDTO;
-		
-		
+
 	}
-	
-	
 
 	public String generateCustomerNumber() {
-	    PersonSequence seq = personSequenceRepository.save(new PersonSequence());
-	    Long nextVal = seq.getId();
-	    return "T" + String.format("%09d", nextVal);
+		PersonSequence seq = personSequenceRepository.save(new PersonSequence());
+		Long nextVal = seq.getId();
+		return "T" + String.format("%09d", nextVal);
 	}
-
 
 }

@@ -15,10 +15,14 @@ public class Security {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="id")
 	long id;
-	
+	@Column
+	private String email;
+	@Column
+	private String isEmailVerified;
 	@Column(name="userName")
 	String userName;
-	
+	@Column
+	private String isUserCodeVerified;
 	@Column (name="userCode")
 	String userCode;
 	
@@ -31,9 +35,43 @@ public class Security {
 
 	
 	@Column(name="endTime")
-    private String endTime
-    
-    ;
+    private String endTime;
+	
+	@Column
+    private String deletedFlag;
+	
+	
+	public String getDeletedFlag() {
+		return deletedFlag;
+	}
+
+	public void setDeletedFlag(String deletedFlag) {
+		this.deletedFlag = deletedFlag;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getIsEmailVerified() {
+		return isEmailVerified;
+	}
+
+	public void setIsEmailVerified(String isEmailVerified) {
+		this.isEmailVerified = isEmailVerified;
+	}
+	
+	public String getIsUserCodeVerified() {
+		return isUserCodeVerified;
+	}
+
+	public void setIsUserCodeVerified(String isUserCodeVerified) {
+		this.isUserCodeVerified = isUserCodeVerified;
+	}
 
 
 	public String getUpdateBy() {

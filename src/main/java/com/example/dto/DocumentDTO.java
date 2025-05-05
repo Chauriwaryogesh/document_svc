@@ -6,6 +6,14 @@ public class DocumentDTO {
 	private String docType;
 	private String createdBy;
 	private String updatedBy;
+	private byte[] data;
+	
+	public byte[] getData() {
+		return data;
+	}
+	public void setData(byte[] data) {
+		this.data = data;
+	}
 	public String getId() {
 		return id;
 	}

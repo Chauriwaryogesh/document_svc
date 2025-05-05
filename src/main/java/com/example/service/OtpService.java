@@ -15,6 +15,7 @@ import javax.management.RuntimeErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,10 @@ import com.example.dto.EmailDTO;
 import com.example.dto.WorkItemDTO;
 import com.example.entity.Email;
 import com.example.entity.OtpStore;
+import com.example.entity.Security;
 import com.example.repo.IEmailRepo;
 import com.example.repo.IOtpServiceDB;
+import com.example.repo.ISecurityRepo;
 
 import jakarta.mail.internet.InternetAddress;
 
@@ -38,6 +41,9 @@ public class OtpService {
 	
 	@Autowired
 	private IWorkItemService workItemService;
+	
+	@Autowired
+	private ISecurityRepo securityRepo;
 
 	private final IOtpServiceDB IOtpServiceDB;
 	private final JavaMailSender mailSender;
@@ -50,43 +56,60 @@ public class OtpService {
 		this.IOtpServiceDB = IOtpServiceDB;
 	}
 
-	public String sendOtp(String email, String userId) {
+	public com.example.service.ResponseEntity<String> sendOtp(String email, String userId) {
+		com.example.service.ResponseEntity<String> response= new com.example.service.ResponseEntity<>();
 		String otp = generateOtp();
 		otpStore.put(email, otp);
 
 		email = verifyEmail(email);
 
 		try {
-			jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");
-			helper.setFrom(new InternetAddress("KIoSK_Bank_Helpline@gmail.com", "IneternetBanking_OTP"));
-			helper.setTo(email);
-			helper.setSubject("Your one time password for Secure Login ");
-			helper.setText("Your otp is " + otp + " Expire after 1 hrs.");
+			//check email Status is Verified Y 
+			
+			Security security = securityRepo.findByEmail(email,"N");
+			if(security != null) {
+				if (security.getEmail().equalsIgnoreCase(email) && security.getUserCode().equalsIgnoreCase(userId)
+						&& security.getIsEmailVerified().equals("Y") && security.getIsUserCodeVerified().equals("Y")) {
 
-			// call repo to store Otp in DB
+					jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+					MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");
+					helper.setFrom(new InternetAddress("KIoSK_Bank_Helpline@gmail.com", "IneternetBanking_OTP"));
+					helper.setTo(email);
+					helper.setSubject("Your one time password for Secure Login ");
+					helper.setText("Your otp is " + otp + " Expire after 1 hrs.");
 
-			OtpStore otpStore = new OtpStore();
-			otpStore.setId(nextcount());
-			otpStore.setOtp(otp);
-			otpStore.setEmail(email);
+					// call repo to store Otp in DB
 
-			LocalDateTime dateTime = LocalDateTime.now();
-			long epochMillis = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-			otpStore.setCreatedTime(epochMillis);
-			otpStore.setCreatedBy(userId);
+					OtpStore otpStore = new OtpStore();
+					otpStore.setId(nextcount());
+					otpStore.setOtp(otp);
+					otpStore.setEmail(email);
 
-			LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(30);
-			long exp = expiryTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-			otpStore.setExpiryTime(exp);
-			IOtpServiceDB.save(otpStore);
+					LocalDateTime dateTime = LocalDateTime.now();
+					long epochMillis = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+					otpStore.setCreatedTime(epochMillis);
+					otpStore.setCreatedBy(userId);
 
-			mailSender.send(message);
-			return "Otp send SuccessFully";
-		} catch (Exception e) {
+					LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(30);
+					long exp = expiryTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+					otpStore.setExpiryTime(exp);
+					IOtpServiceDB.save(otpStore);
+
+					mailSender.send(message);
+					response.setData("Otp send SuccessFully");		
+					
+				}else {
+					response.setErrorMessage("Email is NOT verified please connect with admin");
+				}
+				
+				
+			}
+			
+					} catch (Exception e) {
 			e.printStackTrace();
-			return "Otp send faild";
+			response.setErrorMessage("Otp send faild");
 		}
+		return response;
 
 	}
 
@@ -108,12 +131,12 @@ public class OtpService {
 	public boolean verifyOtp(String email, String otp, String userId) {
 		// call Repo
 		Optional<OtpStore> emailData = IOtpServiceDB.findById(email);
-		OtpStore otpStore = emailData.get();
+		//OtpStore otpStore = emailData.get();
 		LocalDateTime dateTime = LocalDateTime.now();
 		Long epochMillis = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
-		boolean found = emailData.stream().filter(data -> data.getEmail().equalsIgnoreCase(email)
-				&& data.getOtp().equalsIgnoreCase(otp) && epochMillis <= data.getExpiryTime()).findAny().isPresent();
+		boolean found = emailData.stream().filter(data -> data!= null && data.getEmail().equalsIgnoreCase(email) &&
+				data.getOtp() != null && data.getOtp().equalsIgnoreCase(otp) && epochMillis <= data.getExpiryTime()).findAny().isPresent();
 
 		return found;
 	}

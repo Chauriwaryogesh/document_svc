@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Access Secure login Poral</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header, footer {
+      background-color: #ffffffcc;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      color: #0072ff;
+      font-weight: bold;
+    }
+
+    .header-actions i {
+      margin: 0 10px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #0072ff;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 400px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+      
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .login-card h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #0072ff;
+    }
+
+    .login-card input, .login-card button {
+      display: block;
+      width: 100%;
+      margin: 0.6rem 0;
+      padding: 0.7rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      transition: 0.3s;
+    }
+
+    .login-card input:focus {
+      border-color: #0072ff;
+      outline: none;
+      box-shadow: 0 0 5px #0072ff88;
+    }
+
+    .login-card button {
+      background-color: #0072ff;
+      color: white;
+      cursor: pointer;
+    }
+
+    .login-card button:hover {
+      background-color: #0056cc;
+    }
+
+    .row-btns {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .row-btns button {
+      width: 48%;
+    }
+
+    .social-login {
+      display: flex;
+      justify-content: space-between;
+      margin: 1rem 0;
+    }
+
+    .social-login button {
+      width: 48%;
+      background: #4267B2;
+    }
+
+    .social-login .google {
+      background: #db4437;
+    }
+
+    .chatbot-hint {
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      color: gray;
+    }
+
+    footer {
+      justify-content: center;
+      font-size: 0.9rem;
+      color: #555;
+    }
+	.input-group {
+		position: relative;
+		margin-top: 1rem;
+	}
+
+	.input-group input {
+		width: 90%;
+		padding: 0.5rem 2.5rem 0.6rem 0.8rem;
+		border-radius: 8px;
+		border: 1px solid #ccc;
+		font-size: 1rem;
+		transition: border-color 0.3s;
+	}
+
+	.input-group input:focus {
+		border-color: #007bff;
+		outline: none;
+	}
+
+	.toggle-visibility {
+		position: absolute;
+		right: 10px;
+		top: 50%;
+		transform: translateY(-50%);
+		cursor: pointer;
+		font-size: 1rem;
+		user-select: none;
+	}
+
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Secure Access Portal</h1>
+    <div class="header-actions">
+      <i class="fas fa-bell" title="Notifications"></i>
+      <i class="fas fa-question-circle" title="Help"></i>
+      <i class="fas fa-phone" title="Contact Us"></i>
+    </div>
+  </header>
+
+  <main>
+    <div class="login-card">
+      <h2>Login to Continue</h2>
+	  <div class="input-group">
+	  	  	<input type="password" id="email" placeholder="Enter Email" required />
+	  	  	<span class="toggle-visibility" onclick="toggleVisibility('email', this)">👁️</span>
+	  	  </div>
+
+	  	  <!-- User ID Input -->
+	  	  <div class="input-group">
+	  	  	<input type="text" id="userId" placeholder="User ID" required />
+			<span class="toggle-visibility" onclick="toggleVisibility('userId', this)">👁️</span>
+	  	  </div>
+      <button onclick="sendOtp()">Send OTP</button>
+	  <!-- OTP Input -->
+	  	  <div class="input-group">
+	  	  	<input type="password" id="otp" placeholder="Enter OTP" required />
+	  	  	<span class="toggle-visibility" onclick="toggleVisibility('otp', this)">👁️</span>
+	  	  </div>
+      <button onclick="verifyOtp()">Verify OTP</button>
+	  
+      <div class="row-btns">
+        <button onclick="resendOtp()">Resend OTP</button>
+        <button onclick="redirectToRegister()">Register</button>
+      </div>
+
+      <div class="social-login">
+        <button><i class="fab fa-facebook-f"></i> Facebook</button>
+        <button class="google"><i class="fab fa-google"></i> Google</button>
+      </div>
+
+      <div class="chatbot-hint">
+        💬 Need help? Ask our chatbot!
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy;  Secure Access Portal 2025 | Designed with ❤️
+  </footer>
+
+  <script>
+    function sendOtp() {
+      const email = document.getElementById("email").value;
+      const userId = document.getElementById("userId").value;
+
+      const params = new URLSearchParams();
+      params.append("Email id", email);
+      params.append("user id", userId);
+
+      fetch('http://localhost:8081/EmailService/generateOtpService?' + params.toString(), { method: 'POST' })
+        .then(res => res.text()).then(alert);
+    }
+
+    function verifyOtp() {
+      const email = document.getElementById("email").value;
+      const otp = document.getElementById("otp").value;
+      const userId = document.getElementById("userId").value;
+
+      const params = new URLSearchParams();
+      params.append("Email id", email);
+      params.append("Otp", otp);
+
+      fetch('http://localhost:8081/EmailService/verify-otp?' + params.toString(), {
+        method: 'POST',
+        headers: { 'user-id': userId }
+      })
+        .then(response => response.text())
+        .then(result => {
+          if (result.includes("Otp Verified Successfully")) {
+            alert("OTP Verified");
+            window.location.href = "/dashboard";
+          } else {
+            alert(result);
+          }
+        });
+    }
+
+    function resendOtp() {
+      sendOtp();
+    }
+
+    function redirectToRegister() {
+      window.location.href = "register";
+    }
+	function toggleVisibility(id, icon) {
+		const field = document.getElementById(id);
+		if (field.type === "password") {
+			field.type = "text";
+			icon.textContent = "🙈";
+		} 
+		else {
+			field.type = "password";
+			icon.textContent = "👁️";
+		}
+	}
+
+  </script>
+</body>
+
+</html>
