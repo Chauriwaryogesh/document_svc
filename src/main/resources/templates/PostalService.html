@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Postal Dashboard</title>
+	<style>
+		body {
+			margin: 0;
+			font-family: 'Segoe UI', sans-serif;
+			background: linear-gradient(120deg, #fcd440, #ffffff, #ffd400);
+			background-size: 400% 400%;
+			animation: gradientShift 15s ease infinite;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			padding-bottom: 60px;
+			color: #333;
+		}
+
+		@keyframes gradientShift {
+			0% {
+				background-position: 0% 50%;
+			}
+
+			50% {
+				background-position: 100% 50%;
+			}
+
+			100% {
+				background-position: 0% 50%;
+			}
+		}
+
+		.main-header {
+			width: 80%;
+			padding: 20px 0;
+			background: linear-gradient(to right, #007bff, #66a3ff);
+			color: white;
+			text-align: center;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			border-radius: 8px 8px 0 0;
+			margin-top: 20px;
+			font-size: 2em;
+			font-weight: bold;
+			animation: fadeInDown 0.5s ease-out;
+		}
+
+		@keyframes fadeInDown {
+			from {
+				opacity: 0;
+				transform: translateY(-20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.postal-service-section {
+			width: 80%;
+			background: #f9f9f9;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			margin-top: 20px;
+			animation: fadeInUp 0.5s ease-out;
+		}
+
+		@keyframes fadeInUp {
+			from {
+				opacity: 0;
+				transform: translateY(20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.tabs {
+			display: flex;
+			justify-content: center;
+			margin-bottom: 20px;
+			border-bottom: 2px solid #ddd;
+		}
+
+		.tab-button {
+			background: #007bff;
+			color: white;
+			border: none;
+			padding: 12px 25px;
+			margin: 0 10px;
+			border-radius: 8px 8px 0 0;
+			cursor: pointer;
+			font-size: 1em;
+			transition: background-color 0.3s ease, transform 0.2s ease;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
+
+		.tab-button.active {
+			background: #0056b3;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+		}
+
+		.tab-button:hover {
+			background: #0056b3;
+			transform: scale(1.05);
+		}
+
+		.search-bar {
+			display: flex;
+			gap: 10px;
+			margin-bottom: 20px;
+			animation: slideInLeft 0.5s ease-out;
+		}
+
+		@keyframes slideInLeft {
+			from {
+				opacity: 0;
+				transform: translateX(-20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateX(0);
+			}
+		}
+
+		.search-bar input {
+			flex-grow: 1;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 8px;
+			font-size: 1em;
+		}
+
+		.search-bar button {
+			background: #28a745;
+			color: white;
+			border: none;
+			padding: 10px 15px;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 1em;
+			transition: background-color 0.3s ease, transform 0.2s ease;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
+
+		.search-bar button:hover {
+			background: #1e7e34;
+			transform: scale(1.05);
+		}
+
+		.tab-content {
+			background: white;
+			border-radius: 8px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+			overflow: hidden;
+			animation: fadeIn 0.3s ease-out;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+			}
+
+			to {
+				opacity: 1;
+			}
+		}
+
+		.tab-content ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			max-height: 300px;
+			overflow-y: auto;
+		}
+
+		.tab-content li {
+			padding: 12px 20px;
+			border-bottom: 1px solid #eee;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.tab-content li:last-child {
+			border-bottom: none;
+		}
+
+		.tab-content li:hover {
+			background-color: #f0f8ff;
+		}
+
+		.tab-content li span {
+			color: #777;
+			font-size: 0.9em;
+		}
+
+		.main-footer {
+			width: 100%;
+			padding: 15px 0;
+			background: linear-gradient(to right, #66a3ff, #ffffff);
+			color: #333;
+			text-align: center;
+			font-size: 1em;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+		}
+
+		#detailsModal {
+			display: none;
+			/* Hidden by default */
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			z-index: 1000;
+
+			/* Flexbox center */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		#detailsModal .modal-content {
+			background: white;
+			padding: 20px;
+			border-radius: 8px;
+			max-width: 600px;
+			width: 90%;
+			max-height: 80vh;
+			overflow-y: auto;
+			position: relative;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+		}
+
+		#detailsModal .close {
+			position: absolute;
+			top: 10px;
+			right: 15px;
+			font-size: 24px;
+			cursor: pointer;
+			font-weight: bold;
+		}
+		
+		#openModal {
+					display: none;
+					/* Hidden by default */
+					position: fixed;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					background-color: rgba(0, 0, 0, 0.5);
+					z-index: 1000;
+
+					/* Flexbox center */
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+
+				#openModal .modal-content {
+					background: white;
+					padding: 20px;
+					border-radius: 8px;
+					max-width: 600px;
+					width: 90%;
+					max-height: 80vh;
+					overflow-y: auto;
+					position: relative;
+					box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+				}
+
+				#openModal .close {
+					position: absolute;
+					top: 10px;
+					right: 15px;
+					font-size: 24px;
+					cursor: pointer;
+					font-weight: bold;
+				}
+
+	</style>
+</head>
+
+<body>
+	<button onclick="openModal()">Open Modal</button>
+
+	<div id="detailsModal">
+		<div class="modal-content">
+			<span class="close" onclick="closeModal()">×</span>
+			<div id="postOfficeDetails">
+				<h2>Post Office Details</h2>
+				<p>Branch Name: ABC</p>
+				<p>District: XYZ</p>
+				<p>Pincode: 123456</p>
+			</div>
+		</div>
+	</div>
+	<header class="main-header">
+		<h1>Postal Dashboard</h1>
+	</header>
+
+	<div class="postal-service-section">
+		<div class="search-bar">
+			<input type="text" id="postalSearchInput" placeholder="Search by branch name or pincode..."
+				oninput="filterPostalList()" />
+			<button onclick="searchPostal()">Search</button>
+		</div>
+
+		<div id="citiesTab" class="tab-content">
+			<ul id="cityList"></ul>
+		</div>
+
+		<div id="pincodesTab" class="tab-content" style="display: none;">
+			<ul id="pincodeList"></ul>
+		</div>
+
+		<div class="tabs">
+			<button class="tab-button active" onclick="showTab('cities')">
+				Branch Names (<span id="branchCount">0</span>)
+			</button>
+			<button class="tab-button" onclick="showTab('pincodes')">
+				Pincodes (<span id="pinCount">0</span>)
+			</button>
+		</div>
+	</div>
+
+	<footer class="main-footer">
+		Secure Access Limited - WOW
+	</footer>
+
+	<script>
+		let pinBranchData = [];
+		let filteredData = [];
+		let currentTab = 'cities';
+		let detailsModal;
+		let postOfficeDetailsDiv; // Declare outside
+		const userId = 'SYSTEM';
+		async function fetchPincodeOrBranchData() {
+
+			const url = "http://localhost:8081/Post-office/PincodeOrBranch";
+
+			try {
+				const response = await fetch(url, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"userId": userId
+					}
+				});
+
+				if (!response.ok) {
+					console.error(`HTTP error! status: ${response.status}`);
+					return;
+				}
+
+				const json = await response.json();
+
+				if (json && json.data && json.data.length > 0 && json.data[0].pinCodeOrBranchDTO) {
+					const data = json.data[0];
+					pinBranchData = data.pinCodeOrBranchDTO;
+					filteredData = [...pinBranchData]; // Initialize filtered data
+
+					document.getElementById("pinCount").textContent = data.pinCount || 0;
+					document.getElementById("branchCount").textContent = data.branchCount || 0;
+
+					populateList(currentTab);
+					console.log("Fetched pin/branch data:", pinBranchData);
+				} else {
+					console.error("Invalid data structure received from API:", json);
+				}
+
+			} catch (error) {
+				console.error("Error fetching pin/branch data:", error);
+			}
+		}
+
+		function populateList(type) {
+			const list = document.getElementById(type === 'pincodes' ? "pincodeList" : "cityList");
+			list.innerHTML = "";
+
+			filteredData.forEach(item => {
+				const li = document.createElement("li");
+				const mainText = type === 'pincodes' ? item.pincCode : item.branchName;
+				const secondaryText = type === 'pincodes' ? item.branchName : item.pincCode;
+
+				li.innerHTML = `<span>${mainText}</span><span>${secondaryText}</span>`;
+				li.dataset.id = item.id;
+				li.onclick = () => handleItemClick(type, item);
+				list.appendChild(li);
+			});
+		}
+
+		function showTab(tabId) {
+			document.getElementById('citiesTab').style.display = tabId === 'cities' ? 'block' : 'none';
+			document.getElementById('pincodesTab').style.display = tabId === 'pincodes' ? 'block' : 'none';
+			document.querySelector('.tab-button.active').classList.remove('active');
+			document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
+			currentTab = tabId;
+			populateList(currentTab);
+		}
+
+		function filterPostalList() {
+			const searchTerm = document.getElementById("postalSearchInput").value.toLowerCase();
+			filteredData = pinBranchData.filter(item => {
+				const branchName = item.branchName ? item.branchName.toLowerCase() : '';
+				const pincode = item.pincCode ? item.pincCode.toLowerCase() : '';
+				return branchName.includes(searchTerm) || pincode.includes(searchTerm);
+			});
+			populateList(currentTab);
+		}
+
+		function searchPostal() {
+			filterPostalList(); // For now, the search button does the same as the input change
+		}
+
+		async function handleItemClick(type, item) {
+			console.log("342", item);
+			console.log("343", type);
+			// You can implement further actions here, like displaying details
+			//alert(`You selected ${type === 'pincodes' ? 'Pincode' : 'Branch'}:
+			//${type === 'pincodes' ? item.pincCode : item.branchName} 
+			//(${type === 'pincodes' ? item.branchName : item.pincCode})`);
+			const userId = 'SYSTEM'; // Replace with actual user ID logic
+			const searchUrl = new URL("http://localhost:8081/Post-office/serch-postCd/Name");
+			searchUrl.searchParams.append('userId', userId);
+			let pincode = null;
+			let branchName = null;
+			if (type === 'pincodes') {
+				console.log("entering for 354", type);
+				pincode = item.pincCode;
+				console.log("pincode for 356", pincode);
+				if (pincode) {
+					console.log("pincode for 358", pincode);
+					searchUrl.searchParams.append('pincode', pincode);
+				}
+			} else if (type === 'cities') {
+				console.log("entering for 360", type);
+				branchName = item.branchName;
+				if (branchName) {
+					searchUrl.searchParams.append('branchName', branchName);
+				}
+			}
+			try {
+				const response = await fetch(searchUrl.toString(), { // Use searchUrl.toString()
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				});
+
+				if (!response.ok) {
+					console.error(`Error fetching post office details: ${response.status}`);
+					postOfficeDetailsDiv.innerHTML = `<p class="error">Failed to load details.</p>`;
+					openModal();
+					return;
+				}
+
+				const data = await response.json();
+				console.log("Post office details:", data);
+				displayPostOfficeDetails(data);
+				console.log("Post office displayPostOfficeDetails:", displayPostOfficeDetails);
+
+				openModal();
+				console.log("Post office openModal:", openModal);
+
+			} catch (error) {
+				console.error('Error fetching post office details:', error);
+				postOfficeDetailsDiv.innerHTML = `<p class="error">Error loading details.</p>`;
+				openModal();
+			}
+		}
+		function displayPostOfficeDetails(data) {
+			if (!postOfficeDetailsDiv) {
+				console.error("Error: postOfficeDetailsDiv is null in displayPostOfficeDetails.  This function should not have been called.");
+				return; // Important: Stop execution if postOfficeDetailsDiv is not defined.
+			}
+			postOfficeDetailsDiv.innerHTML = ''; // Clear previous details
+			if (data && data.PostOffice && data.PostOffice.length > 0) {
+				data.PostOffice.forEach(office => {
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Name:</strong> ${office.Name}</p>`;
+					if (office.Description) {
+						postOfficeDetailsDiv.innerHTML += `<p><strong>Description:</strong> ${office.Description}</p>`;
+					}
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Branch Type:</strong> ${office.BranchType}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Delivery Status:</strong> ${office.DeliveryStatus}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Circle:</strong> ${office.Circle}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>District:</strong> ${office.District}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Division:</strong> ${office.Division}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Region:</strong> ${office.Region}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Block:</strong> ${office.Block}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>State:</strong> ${office.State}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Country:</strong> ${office.Country}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Pincode:</strong> ${office.Pincode}</p><hr>`;
+				});
+			} else if (data && data.Message) {
+				postOfficeDetailsDiv.innerHTML = `<p>${data.Message}</p>`;
+			} else {
+				postOfficeDetailsDiv.innerHTML = `<p>No details found.</p>`;
+			}
+		}
+
+		function openModal() {
+		  document.getElementById("detailsModal").style.display = "flex";
+		}
+
+
+		function closeModal() {
+			if (detailsModal) {
+				detailsModal.style.display = "none";
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			detailsModal = document.getElementById('detailsModal');
+			postOfficeDetailsDiv = document.getElementById('postOfficeDetails'); // Initialize here
+			window.onclick = function (event) {
+				if (event.target == detailsModal) {
+					closeModal();
+				}
+			};
+		});
+
+		window.onload = fetchPincodeOrBranchData;
+	</script>
+
+
+
+
+
+
+
+</body>
+
+</html>

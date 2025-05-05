@@ -17,4 +17,9 @@ public class DashboardController {
     public String uploadDoc(String userId) {
         return "DocumentService"; 
     }
+    
+    @GetMapping("/PostalService")
+    public String postalService(String userId) {
+        return "PostalService"; 
+    }
 }

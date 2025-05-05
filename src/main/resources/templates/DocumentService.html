@@ -120,7 +120,7 @@
 				<option value="DOCX">DOCX</option>
 				<option value="XLSX">XLSX</option>
 			</select>
-			<input type="file" id="docFile" />
+			<input type="file" id="file" />
 			<button onclick="uploadDocument()">Upload</button>
 		</div>
 
@@ -155,41 +155,37 @@
 	<!-- Inside your <script> tag -->
 	<script>
 		async function uploadDocument() {
-			const name = document.getElementById('docName').value;
-			const type = document.getElementById('docType').value;
-			const fileInput = document.getElementById('docFile');
+		  const fileInput = document.getElementById('file');
+		  const docName = document.getElementById('docName').value;
+		  const file = fileInput.files[0];
+		  
 
-			if (!name || !fileInput.files.length) {
-				alert("Please enter name and select a file.");
-				return;
-			}
 
-			const reader = new FileReader();
-			reader.onloadend = async function () {
-				const base64String = reader.result.split(',')[1]; // remove data:...base64,
+		  if (!docName || !file) {
+		    alert("Please enter document name and select a file.");
+		    return;
+		  }
 
-				const documentData = {
-					docName: fileInput.files[0].name,
-					docType: fileInput.files[0].type,
-					createdBy: "SYSTEM",
-					data: base64String
-				};
+		  const formData = new FormData();
+		  formData.append("file", file);
+		  formData.append("Doc Name", docName); // note the exact match with backend param name
 
-				const response = await fetch("http://localhost:8081/DocumentService/uploadDoc", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						"userId": "SYSTEM"
-					},
-					body: JSON.stringify([documentData])
-				});
+		  try {
+		    const response = await fetch("http://localhost:8081/DocumentService/upload", {
+		      method: "POST",
+		      headers: {
+		        "userId": "SYSTEM" // send userId as header (not in formData)
+		      },
+		      body: formData
+		    });
 
-				const result = await response.text();
-				alert(result);
-				fetchDocuments(); // refresh table
-			};
-
-			reader.readAsDataURL(fileInput.files[0]);
+		    const result = await response.text();
+		    alert(result);
+		    fetchDocuments(); // refresh table after successful upload
+		  } catch (error) {
+		    console.error("Upload failed:", error);
+		    alert("An error occurred while uploading the document.");
+		  }
 		}
 
 		
@@ -263,8 +259,6 @@
 		    window.open(url, '_blank');
 		  }
 		}
-
-		
 
 		  window.onload = fetchDocuments;
 		</script>

@@ -49,10 +49,10 @@ public class DocumentService implements IDocumentService {
 		return str;
 	}
 
-	public Document uploadDocument(MultipartFile file, String userId) throws IOException {
+	public Document uploadDocument(MultipartFile file,String docName, String userId) throws IOException {
 		Document document = new Document();
 		document.setDocId(String.valueOf(UUID.randomUUID()));
-		document.setDocName(file.getOriginalFilename());
+		document.setDocName(docName);
 		document.setDocType(file.getContentType());
 		document.setCreatedBy(userId);
 		document.setUpdatedBy(userId);

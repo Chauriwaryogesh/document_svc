@@ -57,9 +57,10 @@ public class DocumentController {
 	
 	@PostMapping(value ="/upload",consumes = "multipart/form-data")
     public ResponseEntity<String> uploadDocument(@RequestParam("file") MultipartFile file,
+    		@RequestParam("Doc Name") String docName,
     		@RequestHeader String userId) {
         try {
-            Document document = docmentSrvice.uploadDocument(file,userId);
+            Document document = docmentSrvice.uploadDocument(file,docName,userId);
             return ResponseEntity.ok("Document uploaded successfully. ID: " + document.getId());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

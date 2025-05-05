@@ -1,15 +1,28 @@
 package com.example.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.dto.PinCodeCount;
+import com.example.dto.PinCodeOrBranchDTO;
 import com.example.dto.PostalResponse;
+import com.example.entity.PinCodeOrBranch;
+import com.example.repo.PostOffice;
 
 @Service
 public class PostOfficeService {
+
+	@Autowired
+	private PostOffice postOffice;
 
 	private static final Logger log = LoggerFactory.getLogger(PostOfficeService.class);
 
@@ -52,6 +65,47 @@ public class PostOfficeService {
 			}
 		}
 		return mainResponse;
+	}
+
+	public List<PinCodeCount> getPinCodeInfo(String pinCode, String brnchName, String userId) {
+		List<PinCodeOrBranch> pinArray = new ArrayList<>();
+		pinArray = postOffice.findAll();
+
+		List<PinCodeCount> pinCodeDTO = new ArrayList<>();
+		PinCodeCount pinCodeCount = new PinCodeCount();
+
+		long branch = pinArray.stream().filter(code -> code.getBranchName() != null && !code.getBranchName().isEmpty()).map(code -> code.getBranchName()).count();
+		long pinc = pinArray.stream().filter(code -> code.getPinCode() != null && !code.getPinCode().isEmpty()).map(code -> code.getPinCode()).count();
+		pinCodeCount.setPinCount(String.valueOf(pinc));
+		pinCodeCount.setBranchCount(String.valueOf(branch));
+
+		if (pinCode != null) {
+			pinCodeCount.setPinCodeOrBranchDTO(pinArray.stream().map(pincode -> {
+				PinCodeOrBranchDTO dto = new PinCodeOrBranchDTO();
+				dto.setId(String.valueOf(pincode.getId()));
+				dto.setPincCode(pincode.getPinCode());
+				return dto;
+			}).collect(Collectors.toList()));
+		} else if (brnchName != null) {
+			pinCodeCount.setPinCodeOrBranchDTO(pinArray.stream().map(pincode -> {
+				PinCodeOrBranchDTO dto = new PinCodeOrBranchDTO();
+				dto.setId(String.valueOf(pincode.getId()));
+				dto.setBranchName(pincode.getBranchName());
+				return dto;
+			}).collect(Collectors.toList()));
+		} else {
+			pinCodeCount.setPinCodeOrBranchDTO(pinArray.stream().map(pincode -> {
+				PinCodeOrBranchDTO dto = new PinCodeOrBranchDTO();
+				dto.setId(String.valueOf(pincode.getId()));
+				dto.setBranchName(pincode.getBranchName());
+				dto.setPincCode(pincode.getPinCode());
+				return dto;
+			}).collect(Collectors.toList()));
+
+		}
+		pinCodeDTO.add(pinCodeCount);
+
+		return pinCodeDTO;
 	}
 
 }
