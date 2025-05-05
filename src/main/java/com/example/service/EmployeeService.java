@@ -257,7 +257,7 @@ public class EmployeeService implements IEmployeeService {
 		try {
 			List<Security> security = securityRepo.findAll();
 
-			allSecurity = securityMapper.mapSecurity(security);
+			allSecurity = securityMapper.mapSecurity(security,userId);
 		} catch (Exception e) {
 			e.getCause();
 		}

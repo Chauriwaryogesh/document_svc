@@ -71,7 +71,7 @@ public class EmployeeController {
 
 	@PostMapping(value = "/create-Update_Employee", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeDTO> updateEmployee(@RequestBody EmpRequestforUpdate employeeRequest,
-			@RequestHeader(value = "userID", required = false) String userId,
+			@RequestHeader(value = "userId", required = false) String userId,
 			@RequestHeader(value = "AUthorizationHeader", required = false) String authorizationHeader) {
 
 		ResponseEntity<EmployeeDTO> serviceResponce = new ResponseEntity<>();
@@ -101,7 +101,7 @@ public class EmployeeController {
 	 @GetMapping(value = "/generatePDF", produces = MediaType.APPLICATION_PDF_VALUE)
 	    public  org.springframework.http.  ResponseEntity<byte[]> generatePdf(
 	    		@RequestParam (value="id", required=false)String id,
-	    		@RequestHeader (value="userCode", required = true) String userId) throws IOException {
+	    		@RequestHeader (value="userId", required = true) String userId) throws IOException {
 	        System.out.println("Generating PDF for Employee ID: " + id);
 
 	        byte[] pdfBytes = empService.fetchEmployeeDBforPDF(id,userId);

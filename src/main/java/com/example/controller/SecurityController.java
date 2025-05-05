@@ -34,7 +34,8 @@ public class SecurityController {
 	private IEmployeeService empService;
 	
 	@GetMapping("/securityDB")
-	public ResponseEntity<List<SecurityDTO>> fetchSecurityRole(@RequestHeader String userId) {
+	public ResponseEntity<List<SecurityDTO>> fetchSecurityRole(
+			@RequestHeader(required =false) String userId) {
 
 		ResponseEntity<List<SecurityDTO>> serviceResponse = new ResponseEntity<>();
 		List<SecurityDTO> response = new ArrayList<>();
