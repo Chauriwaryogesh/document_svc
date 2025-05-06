@@ -22,4 +22,8 @@ public class DashboardController {
     public String postalService(String userId) {
         return "PostalService"; 
     }
+    @GetMapping("/AdminPanel")
+    public String adminService(String userId) {
+        return "AdminPanel"; 
+    }
 }

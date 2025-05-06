@@ -15,9 +15,8 @@
 		body {
 			margin: 0;
 			font-family: 'Segoe UI', sans-serif;
-			background: linear-gradient(120deg, #fcd440, #ffffff, #ffd400);
-			background-size: 200% 400%;
-			animation: gradientShift 15s ease infinite;
+			background: #f4f6f8;
+			/* Light gray background */
 			height: auto;
 			display: flex;
 			flex-direction: column;
@@ -25,99 +24,160 @@
 			padding-bottom: 60px;
 		}
 
-		.floating-button {
-			position: fixed;
-			/* To make it float above other content */
-			bottom: 30px;
-			/* Adjust vertical position */
-			right: 30px;
-			/* Adjust horizontal position */
-			background-color: #f44336;
-			/* Example red color */
+		.main-header {
+			width: 100%;
+			padding: 20px 30px;
+			background-color: #007bff;
+			/* Primary blue color */
 			color: white;
+			text-align: left;
+			/* Align header text to the left */
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			font-size: 20px;
+			font-weight: bold;
+			margin-bottom: 30px;
+		}
+
+		.dashboard-options {
+		    background-color: #e9ecef;
+		    padding: 15px 30px;
+		    display: flex;
+		    gap: 15px;
+		    border-bottom: 1px solid #ddd;
+		    width: 95%;
+		    /* To center the content, we need to control the parent's alignment */
+		    justify-content: center; /* Centers the buttons horizontally */
+		    /* If you want them on the right, use: */
+		    /* justify-content: flex-end; */
+		}
+
+		.dashboard-options button {
+		    background-color: white;
+		    border: 1px solid #ddd;
+		    padding: 10px 18px;
+		    border-radius: 6px;
+		    cursor: pointer;
+		    font-size: 15px;
+		    transition: background-color 0.3s ease;
+		}
+
+		.dashboard-options button:hover {
+		    background-color: #007bff;
+		    color: white;
+		    border-color: #007bff;
+		}
+		.postal-button-container,
+		.upload-button-container {
+			position: fixed;
+			top: 80px;
+			right: 30px;
+			z-index: 1000;
+		}
+
+		.postal-button-container {
+			top: 140px;
+			/* Adjust position for multiple fixed buttons */
+		}
+
+		.postal-button-container button,
+		.upload-button-container button {
+			background-color: #28a745;
+			/* Green for file actions */
+			color: white;
+			padding: 12px 24px;
 			border: none;
-			padding: 10px 20px;
-			border-radius: 50%;
-			/* Make it circular */
+			border-radius: 8px;
 			cursor: pointer;
-			font-size: 1em;
-			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-			z-index: 500;
-			/* Ensure it's on top of other elements */
-			transition: transform 0.2s ease-in-out, font-size 0.2s ease-in-out;
-			/* Smooth transition for hover effect */
-			transform: scale(0.8);
-			/* Start with a smaller size */
+			font-size: 15px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+			transition: background-color 0.3s ease;
+			margin-top: 10px;
+			/* Space between floating buttons */
 		}
 
-		.floating-button:hover {
-			transform: scale(1.1);
-			/* Grow slightly on hover */
-			font-size: 1.1em;
-			/* Increase font size on hover */
-			box-shadow: 1px 3px 7px rgba(0, 0, 0, 0.5);
-		}
-
-		.floating-button i {
-			margin-right: 8px;
-		}
-
-		@keyframes gradientShift {
-			0% {
-				background-position: 0% 50%;
-			}
-
-			50% {
-				background-position: 100% 50%;
-			}
-
-			100% {
-				background-position: 0% 50%;
-			}
+		.postal-button-container button:hover,
+		.upload-button-container button:hover {
+			background-color: #218838;
 		}
 
 		.dashboard-container {
 			width: 95%;
-			/* Further increase width */
-			margin-top: 30px;
+			margin-top: 20px;
+		}
+
+		.workitem-summary {
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+			margin-bottom: 20px;
+			gap: 15px;
+			flex-wrap: wrap;
+		}
+
+		.summary-box {
+			flex: 1;
+			text-align: center;
+			padding: 15px;
+			font-weight: bold;
+			color: white;
+			border-radius: 8px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			font-size: 16px;
+		}
+
+		.summary-box.total {
+			background-color: #007bff;
+		}
+
+		.summary-box.open {
+			background-color: #ffc107;
+			color: #333;
+		}
+
+		.summary-box.closed {
+			background-color: #28a745;
+		}
+
+		.summary-box.correspondence {
+			background-color: #dc3545;
 		}
 
 		.sla-container {
 			display: flex;
 			flex-wrap: wrap;
-			justify-content: center;
-			/* Changed from space-around */
-			gap: 20px;
-			/* Add spacing between items */
+			justify-content: flex-start;
+			/* Align SLA items to the left */
+			gap: 25px;
 			margin-bottom: 30px;
 		}
-
 
 		.sla-item {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			margin: 10px;
-			/* Add some margin between items */
+			margin: 15px;
 		}
 
 		.sla {
 			background: #fff;
-			width: 120px;
-			/* Reduce circle size */
-			height: 120px;
+			width: 140px;
+			height: 140px;
 			border-radius: 50%;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			border: 2px solid #ddd;
-			box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+			box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
 			position: relative;
+			transition: transform 0.3s ease;
+		}
+
+		.sla:hover {
+			transform: scale(1.08);
 		}
 
 		.sla p {
-			font-size: 16px;
-			/* Adjust font size */
+			font-size: 20px;
 			text-align: center;
 			margin: 0;
 			position: absolute;
@@ -150,14 +210,10 @@
 
 		circle {
 			fill: none;
-			stroke-width: 8;
-			/* Adjust stroke width */
-			r: 48;
-			/* Reduce radius */
-			cx: 60;
-			/* Adjust center X */
-			cy: 60;
-			/* Adjust center Y */
+			stroke-width: 10;
+			r: 60;
+			cx: 70;
+			cy: 70;
 		}
 
 		.circle-background {
@@ -166,75 +222,10 @@
 
 		.circle-progress {
 			stroke-linecap: round;
-			stroke-dasharray: 301.59;
-			/* Circumference (2 * pi * 48) */
-			stroke-dashoffset: 301.59;
+			stroke-dasharray: 376.99;
+			/* Circumference (2 * pi * 60) */
+			stroke-dashoffset: 376.99;
 			transition: stroke-dashoffset 1s ease-out;
-		}
-
-		.sla-label {
-			margin-top: 5px;
-			/* Add space between circle and label */
-			font-size: 14px;
-			font-weight: 500;
-			color: #333;
-			text-align: center;
-		}
-
-		.filter-container {
-			margin-top: 20px;
-			width: 80%;
-			display: flex;
-			justify-content: flex-end;
-			margin-bottom: 20px;
-		}
-
-		.filter-container select,
-		.filter-container button {
-			padding: 10px;
-			margin-left: 10px;
-			font-size: 14px;
-			border-radius: 5px;
-			border: 1px solid #ccc;
-		}
-
-		.work-item-list-container {
-			width: 80%;
-			/* Adjust the width of the container */
-			margin: 0 auto;
-			/* Centers the container horizontally */
-			overflow-x: auto;
-			/* Allows horizontal scrolling if needed */
-		}
-
-		.work-item-list {
-			width: 100%;
-			/* Ensure the table takes up the full width of its container */
-			border-collapse: collapse;
-			margin-top: 20px;
-		}
-
-		.work-item-list th,
-		.work-item-list td {
-			padding: 10px;
-			text-align: left;
-			border: 1px solid #ddd;
-		}
-
-		.work-item-list th {
-			background-color: #f2f2f2;
-		}
-
-		.work-item-list tr:nth-child(even) {
-			background-color: #f9f9f9;
-		}
-
-		.sla {
-			transition: transform 0.3s ease;
-		}
-
-		.sla:hover {
-			transform: scale(1.05);
 		}
 
 		#emailSentCircle {
@@ -257,171 +248,323 @@
 			stroke: #dc3545;
 		}
 
-		.main-header {
-			width: 100%;
-			/* Adjust header width */
-			padding: 10px 0;
-			background: linear-gradient(to right, #ffffff, #007bff);
-			color: #333;
+		.sla-label {
+			margin-top: 10px;
+			font-size: 15px;
+			font-weight: 500;
+			color: #555;
 			text-align: center;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-			font-size: 18px;
-			font-weight: bold;
+		}
+
+		.filter-container {
+			margin-top: 30px;
+			width: 95%;
+			display: flex;
+			justify-content: flex-end;
 			margin-bottom: 20px;
+		}
+
+		.filter-container select,
+		.filter-container button {
+			padding: 12px 15px;
+			margin-left: 15px;
+			font-size: 15px;
+			border-radius: 6px;
+			border: 1px solid #ccc;
+			transition: border-color 0.3s ease;
+		}
+
+		.filter-container select:focus,
+		.filter-container button:focus {
+			outline: none;
+			border-color: #007bff;
+			box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+		}
+
+		.filter-container button {
+			background-color: #007bff;
+			color: white;
+			cursor: pointer;
+		}
+
+		.filter-container button:hover {
+			background-color: #0056b3;
+		}
+
+		.work-item-list-container {
+			width: 95%;
+			margin: 0 auto;
+			overflow-x: auto;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+			border-radius: 8px;
+			overflow: hidden;
+			/* Clip rounded corners */
+		}
+
+		.work-item-list {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 0;
+			background-color: #fff;
+		}
+
+		.work-item-list th,
+		.work-item-list td {
+			padding: 12px 15px;
+			text-align: left;
+			border-bottom: 1px solid #eee;
+		}
+
+		.work-item-list th {
+			background-color: #f8f9fa;
+			font-weight: bold;
+			color: #333;
+		}
+
+		.work-item-list tbody tr:nth-child(even) {
+			background-color: #f9f9f9;
+		}
+
+		.work-item-list tbody tr:hover {
+			background-color: #e6f7ff;
+			/* Subtle hover highlight */
+		}
+
+		.work-item-list th:first-child,
+		.work-item-list td:first-child {
+			padding-left: 20px;
+		}
+
+		.work-item-list th:last-child,
+		.work-item-list td:last-child {
+			padding-right: 20px;
+		}
+
+		#getSelectedBtn {
+			background-color: #28a745;
+			/* Green action button */
+			color: white;
+			padding: 12px 24px;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 16px;
+			margin-top: 20px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+			transition: background-color 0.3s ease;
+		}
+
+		#getSelectedBtn:hover {
+			background-color: #218838;
+		}
+
+		#selectedItems {
+			margin-top: 10px;
+			font-size: 14px;
+			color: #555;
+		}
+
+		.floating-button {
+			position: fixed;
+			bottom: 40px;
+			right: 40px;
+			background-color: #007bff;
+			/* Primary blue */
+			color: white;
+			border: none;
+			padding: 15px;
+			border-radius: 50%;
+			cursor: pointer;
+			font-size: 1.2em;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			z-index: 500;
+			transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+			transform: scale(1);
+			/* Start with normal size */
+		}
+
+		.floating-button:hover {
+			transform: scale(1.1);
+			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+		}
+
+		.floating-button i {
+			margin-right: 0;
+			/* Center icon if no text */
 		}
 
 		.main-footer {
 			width: 100%;
-			padding: 10px 0;
-			background: linear-gradient(to right, #007bff, #ffffff);
-			color: #333;
+			padding: 15px 30px;
+			background-color: #f8f9fa;
+			color: #555;
 			text-align: center;
-			font-size: 18px;
+			font-size: 14px;
 			position: fixed;
 			bottom: 0;
 			left: 0;
+			border-top: 1px solid #ddd;
 		}
 
-		.upload-button-container {
-			position: fixed;
-			top: 70px;
-			right: 20px;
-			z-index: 1000;
-		}
-
-		.postal-button-container {
-			position: fixed;
-			top: 80;
-			right: 30px;
-			z-index: 1000;
-		}
-
-		.upload-button-container button {
-			background-color: #007bff;
-			color: white;
-			padding: 10px 16px;
-			border: none;
-			border-radius: 8px;
-			cursor: pointer;
-			font-size: 14px;
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-			transition: background-color 0.3s ease;
-		}
-
-		.upload-button-container button:hover {
-			background-color: rgb(255, 0, 0);
-		}
-
-		.postal-button-container button {
-			background-color: #007bff;
-			color: white;
-			padding: 11px 22px;
-			border: none;
-			border-radius: 12px;
-			cursor: pointer;
-			font-size: 14px;
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-			transition: background-color 0.3s ease;
-		}
-
-		.postal-button-container button:hover {
-			background-color: rgb(255, 0, 128);
-		}
-
+		/* Responsive adjustments */
 		@media (max-width: 768px) {
+			.dashboard-options {
+				padding: 10px 15px;
+				gap: 10px;
+			}
+
+			.dashboard-options button {
+				padding: 8px 12px;
+				font-size: 14px;
+			}
+
+			.sla-container {
+				justify-content: center;
+				gap: 20px;
+			}
+
 			.sla {
-				width: 100px;
-				height: 100px;
+				width: 120px;
+				height: 120px;
 			}
 
 			svg {
-				width: 100px;
-				height: 100px;
+				width: 120px;
+				height: 120px;
 			}
 
 			circle {
-				r: 40;
-				cx: 50;
-				cy: 50;
-				stroke-width: 6;
+				r: 50;
+				cx: 60;
+				cy: 60;
+				stroke-width: 8;
+			}
+
+			.sla p {
+				font-size: 18px;
+			}
+
+			.workitem-summary {
+				justify-content: space-around;
+				gap: 10px;
+			}
+
+			.summary-box {
+				font-size: 14px;
+				padding: 10px;
+			}
+
+			.floating-button {
+				bottom: 20px;
+				right: 20px;
+				padding: 12px;
+				font-size: 1em;
 			}
 		}
 
-		.workitem-summary {
-			display: flex;
-			justify-content: space-between;
-			width: 80%;
-			margin: 20px auto 10px;
-			gap: 10px;
-			flex-wrap: wrap;
-		}
-
-		.summary-box {
-			flex: 1;
-			text-align: center;
-			padding: 12px;
-			font-weight: bold;
-			color: white;
-			border-radius: 6px;
-			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-		}
-
-		.summary-box.total {
+		.modern-button {
 			background-color: #007bff;
+			/* Primary blue */
+			color: white;
+			padding: 10px 15px;
+			border: none;
+			border-radius: 6px;
+			cursor: pointer;
+			font-size: 16px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			transition: background-color 0.3s ease;
 		}
 
-		.summary-box.open {
+		.modern-button:hover {
+			background-color: #0056b3;
+		}
+
+		.modern-button.primary {
+			background-color: #28a745;
+			/* Green for primary actions */
+		}
+
+		.modern-button.primary:hover {
+			background-color: #218838;
+		}
+
+		.modern-button.secondary {
 			background-color: #ffc107;
+			/* Yellow for secondary actions */
 			color: #333;
 		}
 
-		.summary-box.closed {
-			background-color: #dc3545;
+		.modern-button.secondary:hover {
+			background-color: #e0a800;
 		}
 
-		.summary-box.correspondence {
-			background-color: #28a745;
+		.modern-button.small {
+			padding: 8px 12px;
+			font-size: 14px;
 		}
 
-		/* Dashboard Options below header */
-		.dashboard-options {
-			background-color: #f5f5f5;
-			padding: 10px 30px;
-			display: flex;
-			gap: 15px;
-			border-bottom: 1px solid #ccc;
-		}
-
-		.dashboard-options button {
-			background-color: white;
-			border: 1px solid #ddd;
-			padding: 8px 15px;
-			border-radius: 4px;
+		.modern-icon-button {
+			background: none;
+			border: none;
+			color: #555;
 			cursor: pointer;
+			font-size: 1.2em;
+			transition: color 0.3s ease;
 		}
 
-		.dashboard-options button:hover {
-			background-color: rgb(255, 0, 0);
+		.modern-icon-button:hover {
+			color: #007bff;
+		}
+
+		.notification-button {
+			position: relative;
+		}
+
+		.notification-badge {
+			position: absolute;
+			top: -5px;
+			right: -5px;
+			background-color: #dc3545;
+			/* Red for notifications */
+			color: white;
+			border-radius: 50%;
+			padding: 5px 8px;
+			font-size: 0.8em;
+		}
+
+		.modern-dropdown {
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 6px;
+			font-size: 16px;
 		}
 	</style>
 </head>
 
 <body>
-	<!-- Dashboard Options / Secondary Menu -->
 	<div class="dashboard-options">
 		<button>Overview</button>
 		<button>Analytics</button>
 		<button>Reports</button>
 		<button>Uploads</button>
 	</div>
-	<div class="postal-button-container">
-		<input type="file" id="fileInput" style="display: none;" />
-		<button onclick="redirectToPostalService()">📁 PostalService</button>
+
+	<div class="service-actions">
+		<button onclick="redirectToPostalService()" class="modern-button">
+			<i class="fas fa-envelope"></i> Postal Service
+		</button>
+		<button onclick="redirectToDocumentService()" class="modern-button">
+			<i class="fas fa-file-alt"></i> Document Service
+		</button>
+		<button class="modern-button"><i class="fas fa-plus-circle"></i> Add Chart</button>
+		<button class="modern-button"><i class="fas fa-chart-bar"></i> Share Chart</button>
+		<button class="modern-button"><i class="fas fa-share-alt"></i> Share Dashboard</button>
+		<button class="modern-button"><i class="fas fa-file-csv"></i> Export CSV</button>
+		<button class="modern-button"><i class="fas fa-file-excel"></i> Export Excel</button>
+
+
 	</div>
-	<div class="upload-button-container">
-		<input type="file" id="fileInput" style="display: none;" />
-		<button onclick="redirectToDocumentService()">📁 DocumentService</button>
-	</div>
+
 
 	<div class="dashboard-container">
 		<div class="sla-container">
@@ -482,13 +625,13 @@
 		</div>
 
 		<div class="filter-container">
-			<select>
+			<select class="modern-dropdown">
 				<option value="">Filter by Status</option>
 				<option value="completed">Completed</option>
 				<option value="in-progress">In Progress</option>
 				<option value="on-going">On Going</option>
 			</select>
-			<button>Apply Filter</button>
+			<button class="modern-button">Apply Filter</button>
 		</div>
 
 		<div class="workitem-summary">
@@ -498,32 +641,50 @@
 			<div class="summary-box correspondence">Correspondence: <span id="correspondenceWorkItems">0</span></div>
 		</div>
 
-		<table class="work-item-list">
-			<thead>
-				<tr>
-					<th><input type="checkbox" id="selectAll"></th>
-					<th>ID</th>
-					<th>Email</th>
-					<th>User ID</th>
-					<th>Email Verification</th>
-					<th>User ID Verification</th>
-					<th>Access Given Time</th>
-					<th>Expiry Time</th>
-				</tr>
-			</thead>
-			<tbody id="workItemsBody">
+		<div class="work-item-list-container">
+			<table class="work-item-list">
+				<thead>
+					<tr>
+						<th><input type="checkbox" id="selectAll"></th>
+						<th>ID</th>
+						<th>Email</th>
+						<th>User ID</th>
+						<th>Email Verification</th>
+						<th>User ID Verification</th>
+						<th>Access Given Time</th>
+						<th>Expiry Time</th>
+					</tr>
+				</thead>
+				<tbody id="workItemsBody">
 
-			</tbody>
-		</table>
-		<button id="getSelectedBtn">Take Action For User </button>
-		<div id="selectedItems"></div>
+				</tbody>
+			</table>
+			<div class="bulk-actions" style="display:none; margin-top: 10px;">
+				<button class="modern-button primary"><i class="fas fa-user-tag"></i> Assign Selected</button>
+				<button class="modern-button secondary"><i class="fas fa-tasks"></i> Change Status</button>
+			</div>
+			<button id="getSelectedBtn" class="modern-button primary" style="margin-top: 20px;">Take Action For User
+			</button>
+			<div id="selectedItems"></div>
+		</div>
+		</div>
+
+		<div style="display: none;">
+			<td><button class="modern-icon-button"><i class="fas fa-comment-dots"></i></button></td>
+			<td><button class="modern-button small"><i class="fas fa-ticket-alt"></i> Create Ticket</button></td>
+			<td><button class="modern-button small"><i class="fas fa-arrow-up"></i> Escalate</button></td>
+		</div>
+
+		<button id="generatePdfBtn" class="floating-button">
+			<i class="fas fa-file-pdf"></i> Generate PDF
+		</button>
 	</div>
 
 	<footer class="main-footer">
 		MailSync Dashboard - Powered by Your Company
 	</footer>
-
 	<script>
+		
 		function redirectToPostalService() {
 			window.location.href = "PostalService";
 		}
@@ -531,6 +692,9 @@
 		function redirectToDocumentService() {
 			window.location.href = "DocumentService";
 		}
+		function redirectToAdminPanel() {
+				    window.location.href = 'AdminPanel'; // Simple redirection to the AdminPanel.html page
+				}
 
 		function animateCircle(circleId, percentage, percentageTextId) {
 			const circle = document.getElementById(circleId);
@@ -672,13 +836,24 @@
 			// before redirecting, depending on your workflow.
 			console.log('Selected User IDs for Action:', selectedIds);
 		}
-		document.addEventListener('DOMContentLoaded', function() {
-		            const takeActionBtn = document.getElementById('getSelectedBtn');
-		            if (takeActionBtn) {
-		                takeActionBtn.addEventListener('click', takeActionForSelectedUsers);
-		            }
-		            fetchWorkItems(); // Fetch data on page load
-		        });
+		document.addEventListener('DOMContentLoaded', function () {
+			const takeActionBtn = document.getElementById('getSelectedBtn');
+			if (takeActionBtn) {
+				takeActionBtn.addEventListener('click', takeActionForSelectedUsers);
+			}
+			fetchWorkItems(); // Fetch data on page load
+		});
+		
+		document.addEventListener('DOMContentLoaded', function () {
+		    const takeActionBtn = document.getElementById('getSelectedBtn');
+		    if (takeActionBtn) {
+		        takeActionBtn.addEventListener('click', redirectToAdminPanel); // Changed the event listener function
+		    }
+		    fetchWorkItems(); // Fetch data on page load
+		    loadDashboardStats(); // Load dashboard statistics
+		});
+
+		
 		document.addEventListener('DOMContentLoaded', function () {
 			const generatePdfBtn = document.getElementById('generatePdfBtn');
 
@@ -691,9 +866,9 @@
 						method: 'GET', // Or 'GET' depending on your API
 						headers: {
 							'Content-Type': 'APPLICATION_PDF_VALUE', // Adjust if needed
-							'userId':"YCHOURI"
+							'userId': "YCHOURI"
 						},
-						
+
 					})
 						.then(response => {
 							if (!response.ok) {

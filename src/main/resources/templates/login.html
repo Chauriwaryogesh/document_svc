@@ -2,417 +2,564 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8">
-	<title>Access Secure Login Portal</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-	<style>
-		body {
-			margin: 0;
-						font-family: 'Segoe UI', sans-serif;
-						background: linear-gradient(120deg, #fcd440, #ffffff, #ffd400);
-						background-size: 400% 400%;
-						animation: gradientShift 15s ease infinite;
-						height: auto;
-						display: flex;
-						flex-direction: column;
-						align-items: center;
-						padding-bottom: 60px;
+    <meta charset="UTF-8">
+    <title>Access Secure Login Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(120deg, #e0f7fa, #ffffff, #b2ebf2); /* Light Blue to White */
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh; /* Ensure full viewport height */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 100px; /* Space for floating elements */
+        }
+
+        @keyframes gradientShift {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+
+        header,
+        footer {
+            background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white */
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-around; /* Distribute items horizontally */
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: #007bff; /* Light blue text */
+            width: 100%; /* Make header and footer full width */
+        }
+
+        header h1 {
+            color: #007bff;
+            font-weight: bold;
+            animation: fadeInDown 1s ease-out;
+            margin: 0; /* Remove default margin */
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-actions i {
+            margin: 0 15px;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: #007bff;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .header-actions i:hover {
+            opacity: 1;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%; /* Ensure main takes full width for centering */
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+            padding: 2rem;
+            border-radius: 16px;
+            width: 400px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 123, 255, 0.2); /* Light blue border */
+            animation: fadeInUp 1s ease-out, pulse 2s infinite alternate;
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #007bff;
+            opacity: 0.9;
+        }
+
+        .login-card input,
+        .login-card button {
+            display: block;
+            width: 100%;
+            margin: 0.6rem 0;
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #333;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .login-card input::placeholder {
+            color: #999;
+        }
+
+        .login-card input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .login-card button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .login-card button:hover {
+            background-color: #0056b3;
+        }
+
+        .row-btns {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .row-btns button {
+            width: 48%;
+            background-color: #6dd5ed;
+            color: #333;
+        }
+
+        .row-btns button:hover {
+            background-color: #39add1;
+        }
+
+        .social-login {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+        }
+
+        .social-login button {
+            width: 48%;
+            background: #4267B2;
+            /* Facebook */
+            color: white;
+            font-weight: bold;
+        }
+
+        .social-login .google {
+            background: #db4437;
+            /* Google */
+        }
+
+        .social-login button:hover {
+            opacity: 0.9;
+        }
+
+        .chatbot-hint {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: #555;
+            animation: fadeIn 1s ease-out;
+        }
+
+        footer {
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #007bff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: center; /* Center footer content */
+            align-items: center;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .input-group input {
+            width: 90%;
+            padding: 0.5rem 2.5rem 0.6rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            color: #333;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .toggle-visibility {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1rem;
+            color: #555;
+            user-select: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .toggle-visibility:hover {
+            opacity: 1;
+        }
+
+        /* Animated Background Bubbles */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(173, 216, 230, 0.3); /* Light blue bubbles */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            animation: floatBubble linear infinite;
+        }
+
+        @keyframes floatBubble {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(-120vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+		/* Loading animation styles */
+		.loading-overlay {
+		    position: fixed;
+		    top: 0;
+		    left: 0;
+		    width: 100%;
+		    height: 100%;
+		    background-color: rgba(255, 255, 255, 0.8);
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    z-index: 9999; /* Ensure it's on top */
+		    opacity: 0;
+		    visibility: hidden;
+		    transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
 		}
 
-		header,
-		footer {
-			background-color: rgba(255, 255, 255, 0.3);
-			/* Transparent white */
-			padding: 1rem 2rem;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-			color: white;
-			/* Header and footer text color */
+		.loading-overlay.active {
+		    opacity: 1;
+		    visibility: visible;
+		    transition: opacity 0.3s ease-in-out, visibility 0s linear 0s;
 		}
 
-		header h1 {
-			color: white;
-			font-weight: bold;
-			animation: fadeInDown 1s ease-out;
+		.loader {
+		    border: 8px solid #f3f3f3; /* Light grey border */
+		    border-top: 8px solid #007bff; /* Blue top border */
+		    border-radius: 50%;
+		    width: 60px;
+		    height: 60px;
+		    animation: spin 2s linear infinite;
 		}
 
-		.header-actions i {
-			margin: 0 10px;
-			font-size: 1.4rem;
-			cursor: pointer;
-			color: white;
-			opacity: 0.8;
-			transition: opacity 0.3s ease;
+		@keyframes spin {
+		    0% { transform: rotate(0deg); }
+		    100% { transform: rotate(360deg); }
+		}
+		/* Custom Alert Styles */
+		.custom-alert-overlay {
+		    position: fixed;
+		    top: 0;
+		    left: 0;
+		    width: 100%;
+		    height: 100%;
+		    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+		    display: none; /* Initially hidden */
+		    justify-content: center;
+		    align-items: center;
+		    z-index: 10000; /* Higher than loading overlay */
 		}
 
-		.header-actions i:hover {
-			opacity: 1;
+		.custom-alert-overlay.active {
+		    display: flex;
 		}
 
-		main {
-			flex: 1;
-			display: flex;
-			justify-content: center;
-			align-items: center;
+		.custom-alert-box {
+		    background-color: #fff;
+		    border-radius: 8px;
+		    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		    padding: 20px;
+		    text-align: center;
+		    min-width: 300px;
+		    max-width: 80%;
 		}
 
-		.login-card {
-			background: rgba(255, 255, 255, 0.15);
-			/* Transparent white */
-			padding: 2rem;
-			border-radius: 16px;
-			width: 400px;
-			box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
-			backdrop-filter: blur(10px);
-			/* Apply blur to the background */
-			border: 1px solid rgba(255, 255, 255, 0.2);
-			/* Subtle border */
-			animation: fadeInUp 1s ease-out, pulse 2s infinite alternate;
+		.custom-alert-header {
+		    font-size: 1.2em;
+		    font-weight: bold;
+		    margin-bottom: 10px;
+		    color: #333;
 		}
 
-		@keyframes float {
-
-			0%,
-			100% {
-				transform: translateY(0);
-			}
-
-			50% {
-				transform: translateY(-10px);
-			}
+		.custom-alert-header.error {
+		    color: #f44336; /* Red for error */
 		}
 
-		@keyframes fadeInUp {
-			from {
-				opacity: 0;
-				transform: translateY(20px);
-			}
-
-			to {
-				opacity: 1;
-				transform: translateY(0);
-			}
+		.custom-alert-message {
+		    color: #555;
+		    margin-bottom: 15px;
 		}
 
-		@keyframes fadeInDown {
-			from {
-				opacity: 0;
-				transform: translateY(-20px);
-			}
-
-			to {
-				opacity: 1;
-				transform: translateY(0);
-			}
+		.custom-alert-message.error {
+		    color: #f44336;
 		}
 
-		@keyframes pulse {
-			0% {
-				transform: scale(1);
-			}
-
-			100% {
-				transform: scale(1.02);
-			}
+		.custom-alert-buttons button {
+		    background-color: #007bff;
+		    color: white;
+		    border: none;
+		    padding: 10px 20px;
+		    border-radius: 5px;
+		    cursor: pointer;
+		    font-size: 1em;
+		    transition: background-color 0.3s ease;
 		}
 
-		.login-card h2 {
-			text-align: center;
-			margin-bottom: 1rem;
-			color: white;
-			opacity: 0.9;
+		.custom-alert-buttons button:hover {
+		    background-color: #0056b3;
 		}
-
-		.login-card input,
-		.login-card button {
-			display: block;
-			width: 100%;
-			margin: 0.6rem 0;
-			padding: 0.7rem;
-			border-radius: 8px;
-			font-size: 1rem;
-			border: 1px solid rgba(255, 255, 255, 0.3);
-			background-color: rgba(255, 255, 255, 0.1);
-			color: white;
-			transition: border-color 0.3s, box-shadow 0.3s;
-		}
-
-		.login-card input::placeholder {
-			color: rgba(255, 255, 255, 0.7);
-		}
-
-		.login-card input:focus {
-			border-color: rgba(0, 114, 255, 0.7);
-			outline: none;
-			box-shadow: 0 0 5px rgba(0, 114, 255, 0.5);
-		}
-
-		.login-card button {
-			background-color: rgba(0, 114, 255, 0.7);
-			color: white;
-			cursor: pointer;
-			font-weight: bold;
-		}
-
-		.login-card button:hover {
-			background-color: rgba(0, 86, 204, 0.8);
-		}
-
-		.row-btns {
-			display: flex;
-			justify-content: space-between;
-		}
-
-		.row-btns button {
-			width: 48%;
-			background-color: rgba(0, 114, 255, 0.5);
-		}
-
-		.row-btns button:hover {
-			background-color: rgba(0, 86, 204, 0.6);
-		}
-
-		.social-login {
-			display: flex;
-			justify-content: space-between;
-			margin: 1rem 0;
-		}
-
-		.social-login button {
-			width: 48%;
-			background: rgba(66, 103, 178, 0.7);
-			/* Facebook */
-			color: white;
-			font-weight: bold;
-		}
-
-		.social-login .google {
-			background: rgba(219, 68, 55, 0.7);
-			/* Google */
-		}
-
-		.social-login button:hover {
-			opacity: 0.9;
-		}
-
-		.chatbot-hint {
-			text-align: center;
-			font-size: 0.9rem;
-			margin-top: 1rem;
-			color: rgba(255, 255, 255, 0.8);
-			animation: fadeIn 1s ease-out;
-		}
-
-		footer {
-			justify-content: center;
-			font-size: 0.9rem;
-			color: rgba(255, 255, 255, 0.7);
-			animation: fadeInUp 1s ease-out;
-		}
-
-		.input-group {
-			position: relative;
-			margin-top: 1rem;
-		}
-
-		.input-group input {
-			width: 90%;
-			padding: 0.5rem 2.5rem 0.6rem 0.8rem;
-			border-radius: 8px;
-			border: 1px solid rgba(255, 255, 255, 0.3);
-			background-color: rgba(255, 255, 255, 0.1);
-			font-size: 1rem;
-			color: white;
-			transition: border-color 0.3s, box-shadow 0.3s;
-		}
-
-		.input-group input:focus {
-			border-color: rgba(0, 114, 255, 0.7);
-			outline: none;
-			box-shadow: 0 0 5px rgba(0, 114, 255, 0.5);
-		}
-
-		.toggle-visibility {
-			position: absolute;
-			right: 10px;
-			top: 50%;
-			transform: translateY(-50%);
-			cursor: pointer;
-			font-size: 1rem;
-			color: rgba(255, 255, 255, 0.7);
-			user-select: none;
-			opacity: 0.8;
-			transition: opacity 0.3s ease;
-		}
-
-		.toggle-visibility:hover {
-			opacity: 1;
-		}
-
-		/* Animated Background Bubbles */
-		.bubble {
-			position: absolute;
-			border-radius: 50%;
-			background-color: rgba(255, 255, 255, 0.1);
-			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-			animation: floatBubble linear infinite;
-		}
-
-		@keyframes floatBubble {
-			0% {
-				transform: translateY(0) scale(1);
-				opacity: 0;
-			}
-
-			50% {
-				opacity: 0.8;
-			}
-
-			100% {
-				transform: translateY(-120vh) scale(1.5);
-				opacity: 0;
-			}
-		}
-
-		@keyframes fadeIn {
-			from {
-				opacity: 0;
-			}
-
-			to {
-				opacity: 1;
-			}
-		}
-	</style>
+    </style>
 </head>
 
 <body>
+	<div id="customAlertOverlay" class="custom-alert-overlay">
+	    <div id="customAlertBox" class="custom-alert-box">
+	        <div id="customAlertHeader" class="custom-alert-header"></div>
+	        <div id="customAlertMessage" class="custom-alert-message"></div>
+	        <div class="custom-alert-buttons">
+	            <button id="customAlertOkBtn">OK</button>
+	        </div>
+	    </div>
+	</div>
 
-	<header>
-		<h1>Secure Access Portal</h1>
-		<div class="header-actions">
-			<i class="fas fa-bell" title="Notifications"></i>
-			<i class="fas fa-question-circle" title="Help"></i>
-			<i class="fas fa-phone" title="Contact Us"></i>
-		</div>
-	</header>
+	<div id="customErrorOverlay" class="custom-alert-overlay error">
+	    <div id="customErrorBox" class="custom-alert-box">
+	        <div id="customErrorHeader" class="custom-alert-header error">Error</div>
+	        <div id="customErrorMessage" class="custom-alert-message error"></div>
+	        <div class="custom-alert-buttons">
+	            <button id="customErrorOkBtn">OK</button>
+	        </div>
+	    </div>
+	</div>
 
-	<main>
-		<div class="login-card">
-			<h2>Login to Continue</h2>
-			<div class="input-group">
-				<input type="password" id="email" placeholder="Enter Email" required />
-				<span class="toggle-visibility" onclick="toggleVisibility('email', this)">👁️</span>
-			</div>
+    <header>
+        <h1>Secure Access Portal</h1>
+        <div class="header-actions">
+            <i class="fas fa-exclamation-triangle" title="SOS"></i>
+            <i class="fas fa-bell" title="Notifications"></i>
+            <i class="fas fa-phone" title="Contact Us"></i>
+            <i class="fas fa-question-circle" title="Help"></i>
+        </div>
+    </header>
 
-			<div class="input-group">
-				<input type="text" id="userId" placeholder="User ID" required />
-				<span class="toggle-visibility" onclick="toggleVisibility('userId', this)">👁️</span>
-			</div>
-			<button onclick="sendOtp()">Send OTP</button>
-			<div class="input-group">
-				<input type="password" id="otp" placeholder="Enter OTP" required />
-				<span class="toggle-visibility" onclick="toggleVisibility('otp', this)">👁️</span>
-			</div>
-			<button onclick="verifyOtp()">Verify OTP</button>
+    <main>
+        <div class="login-card">
+            <h2>Login to Continue</h2>
+            <div class="input-group">
+                <input type="password" id="email" placeholder="Enter Email" required />
+                <span class="toggle-visibility" onclick="toggleVisibility('email', this)">👁️</span>
+            </div>
 
-			<div class="row-btns">
-				<button onclick="resendOtp()">Resend OTP</button>
-				<button onclick="redirectToRegister()">Register</button>
-			</div>
+            <div class="input-group">
+                <input type="text" id="userId" placeholder="User ID" required />
+                <span class="toggle-visibility" onclick="toggleVisibility('userId', this)">👁️</span>
+            </div>
+            <button onclick="sendOtp()">Send OTP</button>
+            <div class="input-group">
+                <input type="password" id="otp" placeholder="Enter OTP" required />
+                <span class="toggle-visibility" onclick="toggleVisibility('otp', this)">👁️</span>
+            </div>
+            <button onclick="verifyOtp()">Verify OTP</button>
 
-			<div class="social-login">
-				<button><i class="fab fa-facebook-f"></i> Facebook</button>
-				<button class="google"><i class="fab fa-google"></i> Google</button>
-			</div>
+            <div class="row-btns">
+                <button onclick="resendOtp()">Resend OTP</button>
+                <button onclick="redirectToRegister()">Register</button>
+            </div>
 
-			<div class="chatbot-hint">
-				💬 Need help? Ask our chatbot!
-			</div>
-		</div>
-	</main>
+            <div class="social-login">
+                <button><i class="fab fa-facebook-f"></i> Facebook</button>
+                <button class="google"><i class="fab fa-google"></i> Google</button>
+            </div>
+			<div id="loadingOverlay" class="loading-overlay">
+			        <div class="loader"></div>
+			    </div>
 
-	<footer>
-		&copy; Secure Access Portal 2025 | Designed with ❤️
-	</footer>
+            <div class="chatbot-hint">
+                💬 Need help? Ask our chatbot!
+            </div>
+        </div>
+    </main>
 
-	<script>
-		function sendOtp() {
-			const email = document.getElementById("email").value;
-			const userId = document.getElementById("userId").value;
+    <footer>
+        &copy; Secure Access Portal 2025 | Designed with ❤️
+    </footer>
 
-			const params = new URLSearchParams();
-			params.append("Email id", email);
-			params.append("user id", userId);
+    <script>
 
-			fetch('http://localhost:8081/EmailService/generateOtpService?' + params.toString(), {method: 'POST'})
-				.then(res => res.text()).then(alert);
-		}
+		const loadingOverlay = document.getElementById('loadingOverlay');
+		const customAlertOverlay = document.getElementById('customAlertOverlay');
+		const customAlertHeader = document.getElementById('customAlertHeader');
+		const customAlertMessage = document.getElementById('customAlertMessage');
+		const customAlertOkBtn = document.getElementById('customAlertOkBtn');
+
+		const customErrorOverlay = document.getElementById('customErrorOverlay');
+		const customErrorMessage = document.getElementById('customErrorMessage');
+		const customErrorOkBtn = document.getElementById('customErrorOkBtn');
+		
+		        function showLoading() {
+		            loadingOverlay.classList.add('active');
+		        }
+
+		        function hideLoading() {
+		            loadingOverlay.classList.remove('active');
+		        }
+				function showCustomAlert(header, message, callback) {
+				    customAlertHeader.textContent = header;
+				    customAlertMessage.textContent = message;
+				    customAlertOverlay.classList.add('active');
+
+				    customAlertOkBtn.onclick = () => {
+				        customAlertOverlay.classList.remove('active');
+				        if (callback) {
+				            callback();
+				        }
+				    };
+				}
+
+				function showErrorAlert(message) {
+				    customErrorMessage.textContent = message;
+				    customErrorOverlay.classList.add('active');
+
+				    customErrorOkBtn.onclick = () => {
+				        customErrorOverlay.classList.remove('active');
+				    };
+				}
+        function sendOtp() {
+            const email = document.getElementById("email").value;
+            const userId = document.getElementById("userId").value;
+
+            const params = new URLSearchParams();
+            params.append("Email id", email);
+            params.append("user id", userId);
+
+            fetch('http://localhost:8081/EmailService/generateOtpService?' + params.toString(), { method: 'POST' })
+                .then(res => res.text()).then(alert);
+        }
 
 		function verifyOtp() {
-			const email = document.getElementById("email").value;
-			const otp = document.getElementById("otp").value;
-			const userId = document.getElementById("userId").value;
+		    const email = document.getElementById("email").value;
+		    const otp = document.getElementById("otp").value;
+		    const userId = document.getElementById("userId").value;
 
-			const params = new URLSearchParams();
-			params.append("Email id", email);
-			params.append("Otp", otp);
+		    const params = new URLSearchParams();
+		    params.append("Email id", email);
+		    params.append("Otp", otp);
 
-			fetch('http://localhost:8081/EmailService/verify-otp?' + params.toString(), {
-				method: 'POST',
-				headers: {'user-id': userId}
-			})
-				.then(response => response.text())
-				.then(result => {
-					if (result.includes("Otp Verified Successfully")) {
-						alert("OTP Verified");
-						window.location.href = "/dashboard";
-					} else {
-						alert(result);
-					}
-				});
+		    showLoading();
+
+		    fetch('http://localhost:8081/EmailService/verify-otp?' + params.toString(), {
+		        method: 'POST',
+		        headers: { 'user-id': userId }
+		    })
+		    .then(response => {
+		        if (!response.ok) {
+		            throw new Error(`HTTP error! status: ${response.status}`);
+		        }
+		        return response.json(); // Parse the JSON response
+		    })
+		    .then(data => {
+		        hideLoading();
+		        if (data && data.errorMessage) {
+		            // Display the error message from the JSON response
+		            showErrorAlert(data.errorMessage);
+		        } else if (data && /* Check for a success indicator in your JSON */ !data.errorMessage) {
+		            // Assuming a successful verification might not have an errorMessage
+		            showCustomAlert("Success", "OTP Verified Successfully", () => {
+		                window.location.href = "/dashboard";
+		            });
+		        } else {
+		            // Handle cases where the JSON structure is unexpected
+		            showErrorAlert("Invalid response from the server.");
+		            console.error("Unexpected response:", data);
+		        }
+		    })
+		    .catch(error => {
+		        hideLoading();
+		        console.error("Error verifying OTP:", error);
+		        showErrorAlert("Error verifying OTP. Please try again.");
+		    });
 		}
+        function resendOtp() {
+            sendOtp();
+        }
 
-		function resendOtp() {
-			sendOtp();
-		}
+        function redirectToRegister() {
+            window.location.href = "register";
+        }
 
-		function redirectToRegister() {
-			window.location.href = "register";
-		}
+        function toggleVisibility(id, icon) {
+            const field = document.getElementById(id);
+            if (field.type === "password") {
+                field.type = "text";
+                icon.textContent = "🙈";
+            } else {
+                field.type = "password";
+                icon.textContent = "👁️";
+            }
+        }
 
-		function toggleVisibility(id, icon) {
-			const field = document.getElementById(id);
-			if (field.type === "password") {
-				field.type = "text";
-				icon.textContent = "🙈";
-			} else {
-				field.type = "password";
-				icon.textContent = "👁️";
-			}
-		}
+        // Function to create and append animated bubbles
+        function createBubbles() {
+            const body = document.body;
+            const bubble = document.createElement('span');
+            const size = Math.random() * 30 + 10; // Random size between 10px and 40px
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${Math.random() * 100}%`;
+            bubble.style.top = `${Math.random() * 100}%`;
+            bubble.style.animationDelay = `${Math.random() * 2}s`;
+            body.appendChild(bubble);
+            bubble.classList.add('bubble');
+        }
 
-		// Function to create and append animated bubbles
-		function createBubbles() {
-			const body = document.body;
-			const bubble = document.createElement('span');
-			const size = Math.random() * 30 + 10; // Random size between 10px and 40px
-			bubble.style.width = `${size}px`;
-			bubble.style.height = `${size}px`;
-			bubble.style.left = `${Math.random() * 100}%`;
-			bubble.style.top = `${Math.random() * 100}%`;
-			bubble.style.animationDelay = `${Math.random() * 2}s`;
-			body.appendChild(bubble);
-			bubble.classList.add('bubble');
-		}
-
-		// Create multiple bubbles
-		for (let i = 0; i < 50; i++) {
-			createBubbles();
-		}
-	</script>
+        // Create multiple bubbles
+        for (let i = 0; i < 50; i++) {
+            createBubbles();
+        }
+    </script>
 </body>
 
 </html>
