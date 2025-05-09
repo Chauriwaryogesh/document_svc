@@ -56,8 +56,8 @@ public class OtpService {
 		this.IOtpServiceDB = IOtpServiceDB;
 	}
 
-	public com.example.service.ResponseEntity<String> sendOtp(String email, String userId) {
-		com.example.service.ResponseEntity<String> response= new com.example.service.ResponseEntity<>();
+	public String sendOtp(String email, String userId) {
+		String response= "";
 		String otp = generateOtp();
 		otpStore.put(email, otp);
 
@@ -94,20 +94,17 @@ public class OtpService {
 					long exp = expiryTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					otpStore.setExpiryTime(exp);
 					IOtpServiceDB.save(otpStore);
-
 					mailSender.send(message);
-					response.setData("Otp send SuccessFully");		
-					
+					response="Success,Otp send SuccessFully";		
 				}else {
-					response.setErrorMessage("Email is NOT verified please connect with admin");
+					response="Email is Not verified please connect with admin";
 				}
-				
-				
+			}else {
+				response="Email is Not Registered in System please connect with admin";
 			}
-			
-					} catch (Exception e) {
+			} catch (Exception e) {
 			e.printStackTrace();
-			response.setErrorMessage("Otp send faild");
+			response="Otp send faild";
 		}
 		return response;
 

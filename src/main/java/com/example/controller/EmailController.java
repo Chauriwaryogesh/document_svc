@@ -31,9 +31,17 @@ public class EmailController {
 	public com.example.service.ResponseEntity<String> sendOtp(
 			@RequestParam(value = "Email id", required = true) String email,
 			@RequestParam(value = "user id", required = true) String userId) {
-		com.example.service.ResponseEntity<String> ok = otpService.sendOtp(email, userId);
-
-		return ok;
+		
+		com.example.service.ResponseEntity<String> data= new com.example.service.ResponseEntity<>();
+		
+		
+		String ok = otpService.sendOtp(email, userId);
+		if(ok.contains("Success")) {
+			data.setData(ok);
+		}else {
+			data.setErrorMessage(ok);
+		}
+		return data;
 	}
 
 	@PostMapping("/verify-otp")

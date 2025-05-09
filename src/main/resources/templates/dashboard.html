@@ -2,17 +2,19 @@
 <html lang="en">
 
 <head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <div class="main-header">
 	<div class="header-title">Dashboard Overview</div>
+	 <!-- Notification Icon -->
+    <div id="notification-icon" style="position: fixed; top: 10px; right: 10px; cursor: pointer;" onclick="toggleBanner()">
+        <img src="https://img.icons8.com/ios/50/000000/appointment-reminders.png" alt="Notifications" style="width: 24px; height: 24px;">
+        <div id="notification-badge" style="position: absolute; top: -4px; right: -4px; background-color: red; color: white; font-size: 12px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">1</div>
+    </div>
 	<button onclick="redirectToAdminPanel()" class="admin-panel-button">Admin
 		Panel</button>
 </div>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
-<button id="generatePdfBtn" class="floating-button">
-	<i class="fas fa-file-pdf"></i> Generate PDF
-</button>
 <style>
 body {
 	margin: 0;
@@ -44,7 +46,7 @@ body {
 .admin-panel-button {
 	position: absolute;
 	right: 30px;
-	top: 50%;
+	top: 80%;
 	transform: translateY(-50%);
 	background-color: white;
 	color: #007bff;
@@ -370,7 +372,6 @@ circle {
 	font-size: 14px;
 	color: #555;
 }
-
 .floating-button {
 	position: fixed;
 	bottom: 40px;
@@ -396,7 +397,6 @@ circle {
 .floating-button i {
 	margin-right: 0;
 }
-
 .main-footer {
 	width: 100%;
 	padding: 15px 30px;
@@ -554,48 +554,66 @@ circle {
   width: 100%;
   height: 40px;
   background-color: red;
-  overflow: hidden;
-  white-space: nowrap;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 15px;
   box-sizing: border-box;
   margin-bottom: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.scrolling-wrapper {
+  flex-grow: 1;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
 }
 
 .scrolling-text {
+  position: absolute;
+  white-space: nowrap;
   color: white;
   font-weight: bold;
   font-size: 16px;
-  animation: scroll-left 12s linear infinite;
+  animation: scroll-left 15s linear infinite;
+  will-change: transform;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 .banner-toggle {
   background: white;
   color: red;
   border: none;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   cursor: pointer;
   border-radius: 4px;
-  width: 32px;
-  height: 32px;
-  line-height: 32px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
   text-align: center;
 }
+
+/* Minimized banner */
 .announcement-banner.minimized {
   height: 10px;
-  padding: 0 15px;
-  background-color: transparent; /* or a subtle line */
+  background-color: transparent;
   justify-content: flex-end;
   margin-bottom: 0;
 }
 
-
-@keyframes scroll-left {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-100%); }
+.announcement-banner.minimized .scrolling-text {
+  visibility: hidden;
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -608,13 +626,11 @@ circle {
 		<button>Reports</button>
 		<button>Uploads</button>
 	</div>
-	<div class="announcement-banner" id="banner">
-  <span class="scrolling-text" id="bannerText">The server data will be updated every 7 days</span>
-  <button class="banner-toggle" onclick="toggleBanner()">–</button>
-</div>
-
-	
-
+	  <div id="banner" class="announcement-banner minimized">
+        <div class="scrolling-wrapper">
+            <div id="bannerText" class="scrolling-text">Data refresh Every 7 days!</div>
+        </div>
+    </div>
 	<div class="service-actions">
 		<button onclick="redirectToPostalService()" class="modern-button">
 			<i class="fas fa-envelope"></i> Postal Service
@@ -776,19 +792,7 @@ circle {
 			<div id="selectedItems"></div>
 		</div>
 	</div>
-
-	<div style="display: none;">
-		<td><button class="modern-icon-button">
-				<i class="fas fa-comment-dots"></i>
-			</button></td>
-		<td><button class="modern-button small">
-				<i class="fas fa-ticket-alt"></i> Create Ticket
-			</button></td>
-		<td><button class="modern-button small">
-				<i class="fas fa-arrow-up"></i> Escalate
-			</button></td>
-	</div>
-
+<div>
 	<button id="generatePdfBtn" class="floating-button">
 		<i class="fas fa-file-pdf"></i> Generate PDF
 	</button>
@@ -804,12 +808,20 @@ circle {
 		function redirectToDocumentService() {
 			window.location.href = "DocumentService";
 		}
-		 function redirectToAdminPanel() {
-	            window.location.href = 'AdminPanel';
-	        }
 		 function redirectToEmployeeService() {
 	            window.location.href = 'EmployeeService';
 	     }
+		 function redirectToAdminPanel() {
+			    // Extract the 'id' query parameter from the current URL
+			    const urlParams = new URLSearchParams(window.location.search);
+			    const id = urlParams.get('id'); // Get the 'id' from the URL query string		    
+			    let redirectUrl = 'AdminPanel';  // Default to the admin.html page
+			    if (workItemId) {		       
+			        redirectUrl += `?id=${id}`;
+			    }
+			    window.location.href = redirectUrl;
+			}
+
 		
 
 		function animateCircle(circleId, percentage, percentageTextId) {
@@ -962,6 +974,7 @@ circle {
 		    fetchWorkItems();
 		    loadDashboardStats();
 		});
+
 		document.addEventListener('DOMContentLoaded', function () {
 		    const takeActionBtn = document.getElementById('AdminPanel');
 		    if (takeActionBtn) {
@@ -1050,25 +1063,16 @@ circle {
 		  function closeShareModal() {
 		    shareModal.style.display = "none";
 		  }
-		//code for banner to hide and show
-		  let isMinimized = false;
-
+		 //notofication icon code
 		  function toggleBanner() {
-			  const banner = document.getElementById("banner");
-			  const text = document.getElementById("bannerText");
-			  const btn = document.querySelector(".banner-toggle");
-
-			  if (banner.classList.contains("minimized")) {
-			    banner.classList.remove("minimized");
-			    text.style.display = "inline-block";
-			    btn.textContent = "–";
-			  } else {
-			    banner.classList.add("minimized");
-			    text.style.display = "none";
-			    btn.textContent = "+";
-			  }
-			}
-		
+	            const banner = document.getElementById("banner");
+	         
+	            if (banner.classList.contains("minimized")) {
+	                banner.classList.remove("minimized");
+	               } else {
+	                banner.classList.add("minimized");	              
+	            }
+	        }
 		window.addEventListener('load', fetchWorkItems);
 		window.onload = loadDashboardStats;
 	</script>

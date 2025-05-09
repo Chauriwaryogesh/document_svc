@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Service</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        header {
+            background-color: #4c51bf;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        header nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            margin: 0;
+        }
+        header nav ul li {
+            margin: 0 1rem;
+        }
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: 600;
+        }
+        header nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+
+        footer {
+            background-color: #4c51bf;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        footer p {
+            margin: 0;
+        }
+        h2 {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+        }
+        #add-employee {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease-in-out;
+            border: 1px solid #e0e0e0;
+            display: none;
+            form {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+            .form-group {
+                width: 48%;
+                margin-bottom: 1rem;
+            }
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                color: #555;
+                font-weight: 600;
+            }
+            input[type="text"] {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid #e0e0e0;
+                border-radius: 5px;
+                transition: border-color 0.3s ease;
+                font-family: 'Inter', sans-serif;
+            }
+            input[type="text"]:focus {
+                outline: none;
+                border-color: #4c51bf;
+                box-shadow: 0 0 5px rgba(76, 81, 191, 0.3);
+            }
+            button {
+                padding: 10px 20px;
+                background-color: #4c51bf;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+                font-family: 'Inter', sans-serif;
+                font-weight: 600;
+                width: 100%;
+                margin-top: 1rem;
+            }
+            button:hover {
+                background-color: #3840a3;
+                transform: translateY(-2px);
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #employee-list {
+            margin-top: 2rem;
+        }
+        #employee-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .employee-list-item {
+            background-color: white;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: 1px solid #e0e0e0;
+            animation: slideIn 0.3s ease-in-out;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .employee-list-item:hover {
+            background-color: #f7fafc;
+            transform: translateY(-2px);
+            border-color: #4c51bf;
+        }
+        .employee-list-item span {
+            font-weight: 600;
+            color: #4c51bf;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 90%;
+            max-width: 500px;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .popup.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        .popup-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            font-size: 24px;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+        .popup-close:hover {
+            color: #4c51bf;
+        }
+        .popup-content {
+            text-align: left;
+        }
+        .popup-content img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            object-fit: cover;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        .popup-content img:hover {
+            transform: scale(1.1);
+        }
+        .popup-content h3 {
+            color: #4c51bf;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .popup-content h3:hover {
+            color: #3840a3;
+        }
+        .popup-content p {
+            margin-bottom: 0.75rem;
+            color: #555;
+            transition: color 0.3s ease;
+        }
+        .popup-content p:hover {
+            color: #333;
+        }
+
+        .popup-content .edit-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .popup-content .edit-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        .employee-list-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #4c51bf, #6b7280);
+            transition: width 0.3s ease;
+        }
+        .employee-list-item:hover::after {
+            width: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Employee Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="#add-employee" id="add-employee-link">Add Employee</a></li>
+                <li><a href="#employee-list" id="view-employees-link">View Employees</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <section id="add-employee">
+            <h2>Add New Employee</h2>
+            <form id="add-employee-form">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" placeholder="First Name">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" placeholder="Last Name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" id="phone" name="phone" placeholder="Phone">
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" placeholder="Address">
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" name="city" placeholder="City">
+                </div>
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" id="state" name="state" placeholder="State">
+                </div>
+                <div class="form-group">
+                    <label for="zipCode">ZIP Code</label>
+                    <input type="text" id="zipCode" name="zipCode" placeholder="ZIP Code">
+                </div>
+                 <div class="form-group">
+                    <label for="country">Country</label>
+                    <input type="text" id="country" name="country" placeholder="Country">
+                </div>
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" name="department" placeholder="Department">
+                </div>
+                <button type="submit">Add Employee</button>
+            </form>
+        </section>
+        <section id="employee-list">
+            <h2>Employee List</h2>
+            <ul id="employees">
+            </ul>
+        </section>
+        <div id="employee-details-popup" class="popup">
+            <span class="popup-close">&times;</span>
+            <div class="popup-content">
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 Employee Management System</p>
+    </footer>
+    <script>
+        const employeesData = [
+            { id: 'EMP001', firstName: 'Alice', lastName: 'Smith', email: 'alice.smith@example.com', address: '123 Main St', city: 'Anytown', country: 'USA', department: 'Engineering', phone: '123-456-7890', state: 'CA', zipCode: '12345', image: 'https://randomuser.me/api/portraits/women/1.jpg', details: 'Some extra info about Alice.' },
+            { id: 'EMP002', firstName: 'Bob', lastName: 'Johnson', email: 'bob.johnson@example.com', address: '456 Oak Ave', city: 'Sometown', country: 'USA', department: 'Marketing', phone: '987-654-3210', state: 'NY', zipCode: '54321', image: 'https://randomuser.me/api/portraits/men/1.jpg', details: 'More details about Bob.' },
+            { id: 'EMP003', firstName: 'Charlie', lastName: 'Brown', email: 'charlie.brown@example.com', address: '789 Pine Ln', city: 'Springfield', country: 'USA', department: 'Sales', phone: '555-123-4567', state: 'IL', zipCode: '67890', image: 'https://randomuser.me/api/portraits/men/2.jpg', details: 'Enjoys playing baseball.' },
+            { id: 'EMP004', firstName: 'Diana', lastName: 'Miller', email: 'diana.miller@example.com', address: '246 Maple Dr', city: 'Hilldale', country: 'USA', department: 'HR', phone: '555-987-6543', state: 'OH', zipCode: '98765', image: 'https://randomuser.me/api/portraits/women/2.jpg', details: 'Loves to read and travel.' }
+        ];
+        const employeeList = document.getElementById('employees');
+        const detailsPopup = document.getElementById('employee-details-popup');
+        const popupContent = detailsPopup.querySelector('.popup-content');
+        const popupCloseButton = detailsPopup.querySelector('.popup-close');
+        const addEmployeeForm = document.getElementById('add-employee-form');
+        const addEmployeeLink = document.getElementById('add-employee-link');
+        const viewEmployeesLink = document.getElementById('view-employees-link');
+        const addEmployeeSection = document.getElementById('add-employee');
+
+
+        function displayEmployees() {
+            employeeList.innerHTML = '';
+            employeesData.forEach(employee => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('employee-list-item');
+                listItem.innerHTML = `<span>ID: ${employee.id}</span> -  ${employee.firstName} ${employee.lastName}`;
+                listItem.addEventListener('click', () => showEmployeeDetails(employee.id));
+                employeeList.appendChild(listItem);
+            });
+        }
+
+        function showEmployeeDetails(employeeId) {
+            const employee = employeesData.find(emp => emp.id === employeeId);
+            if (employee) {
+                popupContent.innerHTML = `
+                    <div>
+                        <img src="${employee.image}" alt="${employee.firstName} ${employee.lastName}">
+                    </div>
+                    <h3>${employee.firstName} ${employee.lastName}</h3>
+                    <p><strong>ID:</strong> ${employee.id}</p>
+                    <p><strong>Email:</strong> ${employee.email}</p>
+                    <p><strong>Phone:</strong> ${employee.phone}</p>
+                    <p><strong>Address:</strong> ${employee.address}, ${employee.city}, ${employee.state}, ${employee.zipCode}, ${employee.country}</p>
+                    <p><strong>Department:</strong> ${employee.department}</p>
+
+                    <button class="edit-button" onclick="editEmployee('${employee.id}')">Edit</button>
+                `;
+                detailsPopup.classList.add('show');
+            }
+        }
+
+        function editEmployee(employeeId) {
+            alert(`Editing employee with ID: ${employeeId}`);
+        }
+
+        popupCloseButton.addEventListener('click', () => {
+            detailsPopup.classList.remove('show');
+        });
+
+        addEmployeeForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const newEmployee = {
+                id: 'EMP' + Math.floor(Math.random() * 10000),
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                country: document.getElementById('country').value.trim(),
+                department: document.getElementById('department').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                state: document.getElementById('state').value.trim(),
+                zipCode: document.getElementById('zipCode').value.trim(),
+                image: 'https://randomuser.me/api/portraits/lego/1.jpg',
+                details: 'No details provided.'
+            };
+
+            employeesData.push(newEmployee);
+            displayEmployees();
+            addEmployeeForm.reset();
+            alert(`Employee ${newEmployee.firstName} ${newEmployee.lastName} added successfully!`);
+        });
+
+        addEmployeeLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            addEmployeeSection.style.display = 'block';
+            detailsPopup.style.display = 'none';
+            employeeList.style.display = 'none';
+        });
+
+        viewEmployeesLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            addEmployeeSection.style.display = 'none';
+            detailsPopup.style.display = 'none';
+            employeeList.style.display = 'block';
+            displayEmployees();
+        });
+
+        displayEmployees();
+    </script>
+</body>
+</html>
