@@ -252,97 +252,78 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	@Override
-	public List<SecurityDTO> fetchAllSecurity(String userId) {
-		List<SecurityDTO> allSecurity = List.of();
-		try {
-			List<Security> security = securityRepo.findAll();
-
-			allSecurity = securityMapper.mapSecurity(security,userId);
+	public List<SecurityDTO> fetchListOfUsers(String id, String userId){
+		List<SecurityDTO> allUsers = List.of();
+		List<Security> securityList =new ArrayList<>();
+		try { 
+			if(id != null) {
+				Security security = securityRepo.findById(id, "N");
+				securityList.add(security);
+			}else {
+				 securityList = securityRepo.findAll("N");
+			}
+			allUsers = securityMapper.mapSecurity(securityList,userId);
 		} catch (Exception e) {
 			e.getCause();
 		}
-		return allSecurity;
+		return allUsers;
 	}
 
 	@Override
 	public SecurityDTO updateSecurity(SecurityDTO securityDTO, String userId) {
-
-		Security security = securityRepo.findByEmail(securityDTO.getEmail(),"N");
-		 if(security != null) {
-			 
-			 security.setDeletedFlag("Y");
-				 securityRepo.save(security);
-				 Security securityEntity = new Security();
-					securityEntity.setEmail(securityDTO.getEmail());
-					if (securityDTO.getIsEmailVerified() == null) {
-						securityEntity.setIsEmailVerified("N");
-					} else {
-						securityEntity.setIsEmailVerified(securityDTO.getIsEmailVerified());
-					}
-					if (securityDTO.getIsUserCodeVerified() == null) {
-						securityEntity.setIsUserCodeVerified("N");
-
-					} else {
-						securityEntity.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
-
-					}
-					securityEntity.setDeletedFlag("N");
-					securityEntity.setUserCode(securityDTO.getUserCode());
-					securityEntity.setUserName(securityDTO.getUserName());
-					securityEntity.setUpdateBy(securityDTO.getUserCode());
-					securityEntity.setUpdateTime(String.valueOf(LocalDate.now()));
-					if (securityDTO.getRemainingTime() != null) {
-						securityEntity.setEndTime(securityDTO.getRemainingTime());
-					} else {
-						LocalDate updateTime = LocalDate.now();
-						// Subtract 5 days from updateTime
-						LocalDate newDate = updateTime.plusDays(5);
-						securityEntity.setEndTime(newDate.toString());
-						securityRepo.save(securityEntity);
-					}
-	 
-			 
-					securityRepo.save(securityEntity);
-			 
-			 
-			 
-		 }else {
-			 Security securityEntity = new Security();
-				securityEntity.setEmail(securityDTO.getEmail());
-				if (securityDTO.getIsEmailVerified() == null) {
-					securityEntity.setIsEmailVerified("N");
-				} else {
-					securityEntity.setIsEmailVerified(securityDTO.getIsEmailVerified());
-				}
-				if (securityDTO.getIsUserCodeVerified() == null) {
-					securityEntity.setIsUserCodeVerified("N");
-
-				} else {
-					securityEntity.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
-
-				}
-				securityEntity.setDeletedFlag("N");
-				securityEntity.setUserCode(securityDTO.getUserCode());
-				securityEntity.setUserName(securityDTO.getUserName());
-				securityEntity.setUpdateBy(securityDTO.getUserCode());
-				securityEntity.setUpdateTime(String.valueOf(LocalDate.now()));
+		Security security = securityRepo.findByEmail(securityDTO.getEmail(), "N");
+		if (security != null) {
+			if (securityDTO.getEmail().equalsIgnoreCase(security.getEmail())) {
+				//security.setId(Long.valueOf( securityDTO.getId()));
+				security.setUserCode(securityDTO.getUserCode());
+				security.setUserName(securityDTO.getUserName());
+				security.setUpdateBy(securityDTO.getUserCode());
+				security.setUpdateTime(String.valueOf(LocalDate.now()));
 				if (securityDTO.getRemainingTime() != null) {
-					securityEntity.setEndTime(securityDTO.getRemainingTime());
+					security.setEndTime(securityDTO.getRemainingTime());
 				} else {
 					LocalDate updateTime = LocalDate.now();
 					// Subtract 5 days from updateTime
 					LocalDate newDate = updateTime.plusDays(5);
-					securityEntity.setEndTime(newDate.toString());
-					securityRepo.save(securityEntity);
+					security.setEndTime(newDate.toString());
+					
 				}
- 
-		 }
-		
-		
-	//	securityRepo.save(securityEntity);
+				securityRepo.save(security);
 
+			}
+		} else {
+			Security securityEntity = new Security();
+			securityEntity.setEmail(securityDTO.getEmail());
+			if (securityDTO.getIsEmailVerified() == null) {
+				securityEntity.setIsEmailVerified("N");
+			} else {
+				securityEntity.setIsEmailVerified(securityDTO.getIsEmailVerified());
+			}
+			if (securityDTO.getIsUserCodeVerified() == null) {
+				securityEntity.setIsUserCodeVerified("N");
+
+			} else {
+				securityEntity.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
+
+			}
+			securityEntity.setDeletedFlag("N");
+			securityEntity.setUserCode(securityDTO.getUserCode());
+			securityEntity.setUserName(securityDTO.getUserName());
+			securityEntity.setUpdateBy(securityDTO.getUserCode());
+			securityEntity.setUpdateTime(String.valueOf(LocalDate.now()));
+			if (securityDTO.getRemainingTime() != null) {
+				securityEntity.setEndTime(securityDTO.getRemainingTime());
+			} else {
+				LocalDate updateTime = LocalDate.now();
+				// Subtract 5 days from updateTime
+				LocalDate newDate = updateTime.plusDays(5);
+				securityEntity.setEndTime(newDate.toString());
+
+			}
+
+			securityRepo.save(securityEntity);
+		}
 		return securityDTO;
-
 	}
 
 	public String generateCustomerNumber() {

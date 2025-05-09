@@ -1,7 +1,7 @@
 package com.example.dto;
 
 public class SecurityDTO {
-	private long id;
+	private String id;
 	private String email;
 	private String userName;
 	private String userCode;
@@ -34,10 +34,11 @@ public class SecurityDTO {
 		this.isEmailVerified = isEmailVerified;
 	}
 	
-	public long getId() {
+	
+	public String getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getUserName() {

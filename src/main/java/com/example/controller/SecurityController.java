@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dto.SecurityDTO;
@@ -33,14 +34,15 @@ public class SecurityController {
 	@Autowired
 	private IEmployeeService empService;
 	
-	@GetMapping("/securityDB")
+	@GetMapping("/user-list")
 	public ResponseEntity<List<SecurityDTO>> fetchSecurityRole(
+			@RequestParam(value ="id",required =false) String id,
 			@RequestHeader(required =false) String userId) {
 
 		ResponseEntity<List<SecurityDTO>> serviceResponse = new ResponseEntity<>();
 		List<SecurityDTO> response = new ArrayList<>();
 		try {
-			response = empService.fetchAllSecurity(userId);
+			response = empService.fetchListOfUsers(id,userId);
 
 			serviceResponse.setData(response);
 		} catch (Exception e) {

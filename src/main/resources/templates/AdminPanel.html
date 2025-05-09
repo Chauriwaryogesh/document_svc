@@ -532,7 +532,7 @@
 			document.getElementById('modalOverlay').style.display = 'block';
 		}
 		async function fetchWorkItems() {
-			const apiUrl = 'http://localhost:8081/Security/securityDB';
+			const apiUrl = 'http://localhost:8081/Security/user-list';
 			const userId = "ychouri";
 			const userListContainer = document.getElementById('userListContainer');
 			userListContainer.innerHTML = '<div class="loading-message">Loading users... <i class="fas fa-spinner fa-spin"></i></div>';
