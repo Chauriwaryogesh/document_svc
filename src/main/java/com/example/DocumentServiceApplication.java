@@ -16,14 +16,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(value="com.example.entity")
 @EnableJpaRepositories(basePackages ="com.example.repo")
 @EnableAutoConfiguration
-public class InterviewProjectApplication  extends SpringBootServletInitializer{
+public class DocumentServiceApplication  extends SpringBootServletInitializer{
 	
 	public SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return  application.sources(InterviewProjectApplication.class);
+		return  application.sources(DocumentServiceApplication.class);
 	}
 	
 	
     public static void main(String[] args) {
-        SpringApplication.run(InterviewProjectApplication.class, args);
+        SpringApplication.run(DocumentServiceApplication.class, args);
     }
 }
