@@ -16,7 +16,10 @@
 		Panel</button>
 		<div id="dashboardHeaderClock">--:--:--</div>
 </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 <style>
+
 body {
 	margin: 0;
 	font-family: 'Segoe UI', sans-serif;
@@ -27,22 +30,34 @@ body {
 	align-items: center;
 	padding-bottom: 60px;
 }
+ /* Dashboard clock code */
 #dashboardHeaderClock {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 24px;
-    font-weight: bold;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #0033cc;  /* Blue background */
-    color: #ffffff;             /* White text */
-    padding: 10px 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); /* Red glow */
-    z-index: 9999;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 18px;  /* Adjust the font size here */
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #4e73df;  /* Lighter blue for modern look */
+  color: #ffffff;  /* White text */
+  padding: 10px 20px;
+  border-radius: 30px;  /* More rounded edges */
+  box-shadow: 0 4px 10px rgba(0, 51, 204, 0.6), 0 0 15px rgba(0, 0, 0, 0.15); /* Soft blue and subtle shadow */
+  z-index: 9999;
+  transition: all 0.3s ease;  /* Smooth transition for hover effect */
 }
-
-
+#dashboardHeaderClock:hover {
+  transform: scale(1.1);  /* Zoom in on hover for the pop effect */
+  box-shadow: 0 6px 20px rgba(0, 51, 204, 0.8), 0 0 25px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+#dashboardHeaderClock::before {
+  content: '⏰';  /* Clock icon before the text */
+  margin-right: 10px;
+  font-size: 28px;  /* Adjust icon size as needed */
+}
+#dashboardHeaderClock:hover {
+  cursor: pointer;  /* Cursor pointer when hovering */
+}
 .main-header {
 	width: 100%;
 	padding: 25px 30px;
@@ -80,59 +95,26 @@ body {
 	background-color: #f0f0f0;
 }
 
-.dashboard-options {
-	background-color: #e9ecef;
-	padding: 15px 30px;
-	display: flex;
-	gap: 15px;
-	border-bottom: 1px solid #ddd;
-	width: 95%;
-	justify-content: center;
-}
-
 .dashboard-options button {
-	background-color: white;
-	border: 1px solid #ddd;
-	padding: 10px 18px;
-	border-radius: 6px;
-	cursor: pointer;
-	font-size: 15px;
-	transition: background-color 0.3s ease;
+  background-color: white;
+  border: 1px solid #007bff;
+  color: #007bff;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .dashboard-options button:hover {
-	background-color: #007bff;
-	color: white;
-	border-color: #007bff;
-}
-
-.postal-button-container, .upload-button-container {
-	position: fixed;
-	top: 80px;
-	right: 30px;
-	z-index: 1000;
-}
-
-.postal-button-container {
-	top: 140px;
-}
-
-.postal-button-container button, .upload-button-container button {
-	background-color: #28a745;
-	color: white;
-	padding: 12px 24px;
-	border: none;
-	border-radius: 8px;
-	cursor: pointer;
-	font-size: 15px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-	transition: background-color 0.3s ease;
-	margin-top: 10px;
-}
-
-.postal-button-container button:hover, .upload-button-container button:hover
-	{
-	background-color: #218838;
+  background-color: #007bff;
+  color: white;
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
 }
 
 .dashboard-container {
@@ -389,30 +371,35 @@ circle {
 	color: #555;
 }
 .floating-button {
-	position: fixed;
-	bottom: 40px;
-	right: 40px;
-	background-color: #007bff;
-	color: white;
-	border: none;
-	padding: 15px;
-	border-radius: 50%;
-	cursor: pointer;
-	font-size: 1.2em;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	z-index: 500;
-	transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-	transform: scale(1);
-}
-
-.floating-button:hover {
-	transform: scale(1.1);
-	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background-color: #ff5733;  /* Color change for a more noticeable button */
+  color: white;
+  border: none;
+  padding: 10px;  /* Reduced padding for smaller button */
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5em;  /* Font size for icon */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 500;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;  /* Fixed width to make button smaller */
+  height: 50px;  /* Fixed height to make button smaller */
 }
 
 .floating-button i {
-	margin-right: 0;
+  font-size: 1.5em;  /* Size of the PDF icon */
 }
+
+.floating-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
 .main-footer {
 	width: 100%;
 	padding: 15px 30px;
@@ -468,21 +455,28 @@ circle {
 }
 
 .modern-button {
-	background-color: #007bff;
-	color: white;
-	padding: 10px 15px;
-	border: none;
-	border-radius: 6px;
-	cursor: pointer;
-	font-size: 16px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	transition: background-color 0.3s ease;
-	margin-left: 5px;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .modern-button:hover {
-	background-color: #0056b3;
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  background-color: #0056b3; /* slightly darker blue */
 }
+
 
 .modern-button.primary {
 	background-color: #28a745;
@@ -720,12 +714,14 @@ circle {
   to   { transform: translateY(0); opacity: 1; }
 }    
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+</script>
 </head>
 <body>
+
 	<div class="dashboard-options">
-		<button>Overview</button>
-		<button>Analytics</button>
+		<button onclick="showOverview()">Overview</button>
+        <button onclick="showAnalytics()">Analytics</button>
 		<button onclick="openNotesModal()">Notes</button>
        <button onclick="openFeedbackModal()">Feedback</button>
 	</div>
@@ -734,7 +730,26 @@ circle {
             <div id="bannerText" class="scrolling-text">Data refresh Every 7 days!</div>
         </div>
     </div>
-    <!-- Notes Modal -->
+    <!-- Overview Modal -->
+<div id="overviewModal" class="modal-overlay">
+  <div class="modal-box">
+    <h2>📊 Overview</h2>
+    <p id="overviewContent"></p>
+    <button onclick="closeModal('overviewModal')" class="modern-button">Close</button>
+  </div>
+</div>
+
+
+  <!-- Analytics Modal -->
+<div id="analyticsModal" class="modal-overlay">
+  <div class="modal-box">
+    <h2>📈 Analytics</h2>
+    <p id="analyticsContent"></p>
+    <button onclick="closeModal('analyticsModal')" class="modern-button">Close</button>
+  </div>
+</div>
+
+    
     <!-- Notes List Modal (Main modal opened by Reports button) -->
 <div id="notesModal" class="modal-overlay">
   <div class="modal-box">
@@ -785,10 +800,6 @@ circle {
     <button onclick="closeFeedbackSuccessModal()" class="modern-button">Close</button>
   </div>
 </div>
-
-
-
-    
 	<div class="service-actions">
 		<button onclick="redirectToPostalService()" class="modern-button"><i class="fas fa-envelope"></i> Postal Service</button>
 		<button onclick="redirectToDocumentService()" class="modern-button"><i class="fas fa-file-alt"></i> Document Service</button>
@@ -796,14 +807,11 @@ circle {
 		<button  onclick="redirectToCloudService()" class="modern-button"><i class="fas fa-plus-circle"></i> Cloud Service</button>
         <button onclick="redirectToMailService()" class="modern-button"><i class="fas fa-file-csv"></i> Mail Service</button>
         <button id="shareChartBtn" class="modern-button"><i class="fas fa-chart-bar"></i> ScreenShot</button>
-        <button onclick="redirectToWhatsappServices()" class="modern-button"><i class="fas fa-file-csv"></i> WhatsApp</button>
-        
-        
+        <button onclick="whatsappService()" class="modern-button"><i class="fas fa-file-csv"></i> WhatsApp</button>
 		<div id="shareModal" class="modal-overlay">
 			<div class="modal-box">
 				<h3>Preview ready to share!</h3>
-				<button id="shareNowBtn" class="modern-button primary">Share
-					Now</button>
+				<button id="shareNowBtn" class="modern-button primary">ShareNow</button>
 				<button onclick="closeShareModal()" class="modern-button secondary">Cancel</button>
 			</div>
 		</div>
@@ -935,9 +943,9 @@ circle {
 </div>
 	</div>
 <div>
-	<button id="generatePdfBtn" class="floating-button">
-		<i class="fas fa-file-pdf"></i> Generate PDF
-	</button>
+	<button id="generatePdfBtn" class="floating-button" onclick="generatePdf()">
+  <i class="fas fa-file-pdf"></i> <!-- Font Awesome PDF Icon -->
+</button>
 	</div>
 	<div id="customErrorOverlay" class="custom-alert-overlay error">
         <div id="customErrorBox" class="custom-alert-box">
@@ -972,6 +980,9 @@ circle {
 		 function redirectToMailService() {		    
 			    window.location.href = 'MailServices';
 		}
+		 function whatsappService() {
+	            window.location.href = "tel:+8208247944";
+	        }
 		function animateCircle(circleId, percentage, percentageTextId) {
 			const circle = document.getElementById(circleId);
 			const radius = circle.r.baseVal.value;
@@ -1161,51 +1172,7 @@ circle {
 		    }
 		    loadDashboardStats();
 		});
-
 		
-		document.addEventListener('DOMContentLoaded', function () {
-			const generatePdfBtn = document.getElementById('generatePdfBtn');
-
-			if (generatePdfBtn) {
-				generatePdfBtn.addEventListener('click', function () {
-					const apiUrl = 'http://localhost:8081/Employee/generatePDF'; // Example relative URL
-
-					fetch(apiUrl, {
-						method: 'GET', // Or 'GET' depending on your API
-						headers: {
-							'Content-Type': 'APPLICATION_PDF_VALUE', // Adjust if needed
-							'userId': "Ychouri"
-						},
-
-					})
-						.then(response => {
-							if (!response.ok) {
-								throw new Error(`HTTP error! status: ${response.status}`);
-							}
-							return response.blob(); // Assuming the API returns the PDF as a blob
-						})
-						.then(blob => {
-							// Create a temporary URL for the blob
-							const url = window.URL.createObjectURL(blob);
-							const a = document.createElement('a');
-							a.href = url;
-							a.download = 'dashboard_report.pdf'; // Set the desired filename
-							document.body.appendChild(a);
-							a.click();
-							document.body.removeChild(a);
-							window.URL.revokeObjectURL(url); // Clean up the URL
-							console.log('PDF generated and downloaded successfully!');
-						})
-						.catch(error => {
-							console.error('Error generating PDF:', error);
-							// Optionally display an error message to the user
-							alert('Failed to generate PDF. Please try again later.');
-						});
-				});
-			} else {
-				console.error('Generate PDF button element not found.');
-			}
-		});
 		  const shareBtn = document.getElementById("shareChartBtn");
 		  const shareNowBtn = document.getElementById("shareNowBtn");
 		  const shareModal = document.getElementById("shareModal");
@@ -1260,6 +1227,50 @@ circle {
 	                customErrorOverlay.classList.remove('active');
 	            };
 	        }
+		  //Code for generate Pdf
+		  		document.addEventListener('DOMContentLoaded', function () {
+			const generatePdfBtn = document.getElementById('generatePdfBtn');
+
+			if (generatePdfBtn) {
+				generatePdfBtn.addEventListener('click', function () {
+					const apiUrl = 'http://localhost:8081/Employee/generatePDF'; // Example relative URL
+
+					fetch(apiUrl, {
+						method: 'GET', 
+						headers: {
+							'Content-Type': 'APPLICATION_PDF_VALUE', // Adjust if needed
+							'userId': "gaychour"
+						},
+
+					})
+						.then(response => {
+							if (!response.ok) {
+								throw new Error(`HTTP error! status: ${response.status}`);
+							}
+							return response.blob(); // Assuming the API returns the PDF as a blob
+						})
+						.then(blob => {
+							// Create a temporary URL for the blob
+							const url = window.URL.createObjectURL(blob);
+							const a = document.createElement('a');
+							a.href = url;
+							a.download = 'dashboard_report.pdf'; // Set the desired filename
+							document.body.appendChild(a);
+							a.click();
+							document.body.removeChild(a);
+							window.URL.revokeObjectURL(url); // Clean up the URL
+							console.log('PDF generated and downloaded successfully!');
+						})
+						.catch(error => {
+							console.error('Error generating PDF:', error);
+							// Optionally display an error message to the user
+							alert('Failed to generate PDF. Please try again later.');
+						});
+				});
+			} else {
+				console.error('Generate PDF button element not found.');
+			}
+		});
 		  
 		  //Code for NOtes Reports 
   async function openNotesModal() {
@@ -1377,19 +1388,63 @@ function openFeedbackModal() {
 		}
 		function closeFeedbackSuccessModal() {
 		  document.getElementById('feedbackSuccessModal').style.display = 'none';
-		}
+		}	
+		// Dummy data for Overview and Analytics
+		const notes = [
+		  { id: 1, title: "Note 1", date: "2025-05-01" },
+		  { id: 2, title: "Note 2", date: "2025-05-02" },
+		  { id: 3, title: "Note 3", date: "2025-05-03" },
+		];
+
+		const feedbacks = [
+		  { id: 1, sentiment: "positive", date: "2025-05-01" },
+		  { id: 2, sentiment: "positive", date: "2025-05-02" },
+		  { id: 3, sentiment: "negative", date: "2025-05-03" },
+		];
+
+		function showOverview() {
+			  document.getElementById('overviewContent').innerHTML = `
+			    <p><strong>Total Notes:</strong> 3</p>
+			    <p><strong>Total Feedback:</strong> 2</p>
+			    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+			  `;
+			  const modal = document.getElementById('overviewModal');
+			  modal.style.display = 'flex'; // Important: use 'flex' instead of 'block'
+			}
+
+			function showAnalytics() {
+			  document.getElementById('analyticsContent').innerHTML = `
+			    <p><strong>Notes Created This Week:</strong> 40</p>
+			    <p><strong>Positive Feedback:</strong> 80%</p>
+			    <p><strong>Negative Feedback:</strong> 20%</p>
+			  `;
+			  const modal = document.getElementById('analyticsModal');
+			  modal.style.display = 'flex'; // Important: use 'flex' instead of 'block'
+			}
+
+			function closeModal(modalId) {
+			  document.getElementById(modalId).style.display = 'none';
+			}
 
 		  //code for clock
-		  function updateClock() {
-			    const clockElement = document.getElementById('dashboardHeaderClock');
-			    const now = new Date();
-			    const hours = now.getHours().toString().padStart(2, '0');
-			    const minutes = now.getMinutes().toString().padStart(2, '0');
-			    const seconds = now.getSeconds().toString().padStart(2, '0');
-			    clockElement.textContent = `${hours}:${minutes}:${seconds}`;
-			}
-			setInterval(updateClock, 1000);
-			updateClock();
+		 function updateClock() {
+    const clockElement = document.getElementById('dashboardHeaderClock');
+    const now = new Date();
+    // Get hours in 12-hour format
+    let hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    // Determine AM or PM
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+    // Convert to 12-hour format
+    hours = hours % 12 || 12;  // 0 becomes 12 for midnight
+    // Set clock content
+    clockElement.textContent = `${hours}:${minutes} ${amPm}`;
+}
+// Update clock every second
+setInterval(updateClock, 1000);
+updateClock();  // Initialize clock immediately
+
 		window.addEventListener('load', fetchWorkItems);
 		window.onload = loadDashboardStats;
 	</script>
