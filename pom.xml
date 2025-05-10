@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example.PostalCode</groupId>
-	<artifactId>InterviewProject</artifactId>
+	<artifactId>DOCUMENT_SVC</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>InterviewProject</name>
+	<name>DOCUMENT_SVC</name>
 	<description>Demo project for Spring Boot</description>
 	<url />
 	<licenses>
@@ -33,10 +33,20 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.32</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
