@@ -15,7 +15,6 @@
 	<button onclick="redirectToAdminPanel()" class="admin-panel-button">Admin
 		Panel</button>
 		<div id="dashboardHeaderClock">--:--:--</div>
-		
 </div>
 <style>
 body {
@@ -448,12 +447,7 @@ circle {
 		width: 120px;
 		height: 120px;
 	}
-	circle {
-		r: 50;
-		cx: 60;
-		cy: 60;
-		stroke-width: 8;
-	}
+	
 	.sla p {
 		font-size: 18px;
 	}
@@ -697,7 +691,6 @@ circle {
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
-
 <body>
 	<div class="dashboard-options">
 		<button>Overview</button>
@@ -705,49 +698,30 @@ circle {
 		<button>Reports</button>
 		<button>Uploads</button>
 	</div>
-	
 	  <div id="banner" class="announcement-banner minimized">
         <div class="scrolling-wrapper">
             <div id="bannerText" class="scrolling-text">Data refresh Every 7 days!</div>
         </div>
     </div>
 	<div class="service-actions">
-		<button onclick="redirectToPostalService()" class="modern-button">
-			<i class="fas fa-envelope"></i> Postal Service
-		</button>
-		<button onclick="redirectToDocumentService()" class="modern-button">
-			<i class="fas fa-file-alt"></i> Document Service
-		</button>
-		<button onclick="redirectToEmployeeService()" class="modern-button">
-			<i class="fas fa-file-alt"></i> Employee Service
-		</button>
-		<button class="modern-button">
-			<i class="fas fa-plus-circle"></i> Add Chart
-		</button>
-		<!-- Trigger -->
-<button id="shareChartBtn" class="modern-button">
-  <i class="fas fa-chart-bar"></i> Share Chart
-</button>
-
-<!-- Modal -->
-<div id="shareModal" class="modal-overlay">
-  <div class="modal-box">
-    <h3>Preview ready to share!</h3>
-    <button id="shareNowBtn" class="modern-button primary">Share Now</button>
-    <button onclick="closeShareModal()" class="modern-button secondary">Cancel</button>
-  </div>
-</div>
-		<button class="modern-button">
-			<i class="fas fa-file-csv"></i> Export CSV
-		</button>
-		<button class="modern-button">
-			<i class="fas fa-file-excel"></i> Export Excel
-		</button>
-
-
+		<button onclick="redirectToPostalService()" class="modern-button"><i class="fas fa-envelope"></i> Postal Service</button>
+		<button onclick="redirectToDocumentService()" class="modern-button"><i class="fas fa-file-alt"></i> Document Service</button>
+		<button onclick="redirectToEmployeeService()" class="modern-button"><i class="fas fa-file-alt"></i> Employee Service</button>
+		<button  onclick="redirectToCloudService()" class="modern-button"><i class="fas fa-plus-circle"></i> Cloud Service</button>
+        <button onclick="redirectToMailService()" class="modern-button"><i class="fas fa-file-csv"></i> Mail Service</button>
+        <button id="shareChartBtn" class="modern-button"><i class="fas fa-chart-bar"></i> ScreenShot</button>
+        <button onclick="redirectToWhatsappServices()" class="modern-button"><i class="fas fa-file-csv"></i> WhatsApp</button>
+        
+        
+		<div id="shareModal" class="modal-overlay">
+			<div class="modal-box">
+				<h3>Preview ready to share!</h3>
+				<button id="shareNowBtn" class="modern-button primary">Share
+					Now</button>
+				<button onclick="closeShareModal()" class="modern-button secondary">Cancel</button>
+			</div>
+		</div>
 	</div>
-
-
 	<div class="dashboard-container">
 		<div class="sla-container">
 			<div class="sla-item">
@@ -758,8 +732,7 @@ circle {
 					</svg>
 					<p id="emailSentPercentage">0%</p>
 				</div>
-				<div class="sla-label">
-					Emails Sent: <span id="emailsSent"></span>
+				<div class="sla-label">Emails Sent: <span id="emailsSent"></span>
 				</div>
 			</div>
 
@@ -771,11 +744,9 @@ circle {
 					</svg>
 					<p id="emailsInDbPercentage">0%</p>
 				</div>
-				<div class="sla-label">
-					Emails in DB: <span id="emailsInDb"></span>
+				<div class="sla-label">Emails in DB: <span id="emailsInDb"></span>
 				</div>
 			</div>
-
 			<div class="sla-item">
 				<div class="sla">
 					<svg width="120" height="120">
@@ -784,8 +755,7 @@ circle {
 					</svg>
 					<p id="slaProgressPercentage">0%</p>
 				</div>
-				<div class="sla-label">
-					Total Emails: <span id="totalEmails"></span>
+				<div class="sla-label">Total Emails: <span id="totalEmails"></span>
 				</div>
 			</div>
 
@@ -797,8 +767,7 @@ circle {
 					</svg>
 					<p id="documentUploadPercentage">0%</p>
 				</div>
-				<div class="sla-label">
-					Document uploaded: <span id="documentUpload"></span>
+				<div class="sla-label">Document uploaded: <span id="documentUpload"></span>
 				</div>
 			</div>
 
@@ -841,7 +810,7 @@ circle {
 			</div>
 		</div>
 
-<div class="work-item-list-container">
+     <div class="work-item-list-container">
     <table class="work-item-list">
         <thead>
             <tr>
@@ -852,11 +821,10 @@ circle {
                 <th>Email Verification</th>
                 <th>User ID Verification</th>
                 <th>Access Given Time</th>
-                <th>Expiry Time</th>
+                <th>Expire Time</th>
             </tr>
         </thead>
         <tbody id="workItemsBody">
-            <!-- Dynamic rows will be populated here -->
         </tbody>
     </table>
 
@@ -879,9 +847,6 @@ circle {
     <div id="paginationControls" class="pagination-controls" style="margin-top: 20px;"></div>
     
 </div>
-
-<!-- Checkbox example for static use (remove if dynamically generated) -->
-<!-- <input type="checkbox" class="user-checkbox" value="16" /> -->
 	</div>
 <div>
 	<button id="generatePdfBtn" class="floating-button">
@@ -897,13 +862,12 @@ circle {
             </div>
         </div>
     </div>
-
 	<footer class="main-footer"> MailSync Dashboard - Powered by❤️ Company </footer>
 	<script>
 	 const customErrorOverlay = document.getElementById('customErrorOverlay');
      const customErrorMessage = document.getElementById('customErrorMessage');
      const customErrorOkBtn = document.getElementById('customErrorOkBtn');
-		
+		//click on buttion Action for mail emailPostal
 		function redirectToPostalService() {
 			window.location.href = "PostalService";
 		}
@@ -915,7 +879,13 @@ circle {
 	     }
 		 function redirectToAdminPanel() {		    
 			    window.location.href = 'AdminPanel';
-			}
+		}
+		 function redirectToCloudService() {		    
+			    window.location.href = 'CloudServices';
+		}
+		 function redirectToMailService() {		    
+			    window.location.href = 'MailServices';
+		}
 		function animateCircle(circleId, percentage, percentageTextId) {
 			const circle = document.getElementById(circleId);
 			const radius = circle.r.baseVal.value;
@@ -967,8 +937,6 @@ circle {
 				console.error('Error fetching work items:', error);
 			}
 		}
-
-
 		function populateTable(workItems) {
 			const tbody = document.getElementById('workItemsBody');
 			tbody.innerHTML = ''; // Clear existing rows
@@ -1222,18 +1190,13 @@ circle {
 		  function updateClock() {
 			    const clockElement = document.getElementById('dashboardHeaderClock');
 			    const now = new Date();
-
 			    const hours = now.getHours().toString().padStart(2, '0');
 			    const minutes = now.getMinutes().toString().padStart(2, '0');
 			    const seconds = now.getSeconds().toString().padStart(2, '0');
-
 			    clockElement.textContent = `${hours}:${minutes}:${seconds}`;
 			}
-
 			setInterval(updateClock, 1000);
-			updateClock(); // Call once on load
-
-
+			updateClock();
 		window.addEventListener('load', fetchWorkItems);
 		window.onload = loadDashboardStats;
 	</script>
