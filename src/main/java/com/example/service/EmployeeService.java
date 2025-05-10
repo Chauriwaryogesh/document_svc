@@ -278,6 +278,8 @@ public class EmployeeService implements IEmployeeService {
 				security.setUserCode(securityDTO.getUserCode());
 				security.setUserName(securityDTO.getUserName());
 				security.setUpdateBy(securityDTO.getUserCode());
+				security.setIsEmailVerified(securityDTO.getIsEmailVerified());
+				security.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
 				security.setUpdateTime(String.valueOf(LocalDate.now()));
 				if (securityDTO.getRemainingTime() != null) {
 					security.setEndTime(securityDTO.getRemainingTime());
@@ -330,6 +332,52 @@ public class EmployeeService implements IEmployeeService {
 		PersonSequence seq = personSequenceRepository.save(new PersonSequence());
 		Long nextVal = seq.getId();
 		return "T" + String.format("%09d", nextVal);
+	}
+
+	@Override
+	public String registerUser(SecurityDTO securityDTO, String userId) {
+		String message = "";
+		Security security = securityRepo.findByEmail(securityDTO.getEmail(), "N");
+		if ( security != null && security.getEmail().equalsIgnoreCase(securityDTO.getEmail()) && security.getUserCode().equalsIgnoreCase(securityDTO.getUserCode())
+				&& security.getIsEmailVerified().equals("Y") && security.getIsUserCodeVerified().equals("Y")) {
+			message = "User already Exist in System and Verified Please to go login Page";
+		}else if ( security != null && security.getEmail().equalsIgnoreCase(securityDTO.getEmail()) && security.getUserCode().equalsIgnoreCase(securityDTO.getUserCode())
+				&& security.getIsEmailVerified().equals("N") && security.getIsUserCodeVerified().equals("N")) {
+			message = "User already Exist in System and Pending for Verification";
+		}
+		else {
+			Security securityEntity = new Security();
+			securityEntity.setEmail(securityDTO.getEmail());
+			if (securityDTO.getIsEmailVerified() == null) {
+				securityEntity.setIsEmailVerified("N");
+			} else {
+				securityEntity.setIsEmailVerified(securityDTO.getIsEmailVerified());
+			}
+			if (securityDTO.getIsUserCodeVerified() == null) {
+				securityEntity.setIsUserCodeVerified("N");
+
+			} else {
+				securityEntity.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
+
+			}
+			securityEntity.setDeletedFlag("N");
+			securityEntity.setUserCode(securityDTO.getUserCode());
+			securityEntity.setUserName(securityDTO.getUserName());
+			securityEntity.setUpdateBy(securityDTO.getUserCode());
+			securityEntity.setUpdateTime(String.valueOf(LocalDate.now()));
+			if (securityDTO.getRemainingTime() != null) {
+				securityEntity.setEndTime(securityDTO.getRemainingTime());
+			} else {
+				LocalDate updateTime = LocalDate.now();
+				// Subtract 5 days from updateTime
+				LocalDate newDate = updateTime.plusDays(5);
+				securityEntity.setEndTime(newDate.toString());
+
+			}
+			securityRepo.save(securityEntity);
+			message = "Successfully Register, Pending for Verification";
+		}
+		return message;
 	}
 
 }

@@ -14,30 +14,24 @@ public class Security {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="id")
-	long id;
-	@Column
+	private long id;
+	@Column(name="email")
 	private String email;
-	@Column
+	@Column(name="isEmailVerified")
 	private String isEmailVerified;
 	@Column(name="userName")
 	String userName;
-	@Column
-	private String isUserCodeVerified;
 	@Column (name="userCode")
 	String userCode;
-	
+	@Column (name="isUserCodeVerified")
+	private String isUserCodeVerified;
 	@Column(name="updateBy")
     private String updateBy;
-
-	
 	@Column(name="updateTime")
     private String updateTime;
-
-	
 	@Column(name="endTime")
     private String endTime;
-	
-	@Column
+	@Column(name="deletedFlag")
     private String deletedFlag;
 	
 	

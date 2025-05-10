@@ -64,6 +64,21 @@ public class SecurityController {
 		return securityResponce;
 	}
 	
+	
+	@PostMapping(value ="/register-user" , consumes=MediaType.APPLICATION_JSON_VALUE, produces =MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> registerUser(@RequestBody SecurityDTO securityDTO,
+			@RequestHeader(value = "userId") String userId) {
+
+		com.example.service.ResponseEntity<String> data = new com.example.service.ResponseEntity<>();
+		String ok = empService.registerUser(securityDTO, userId);
+		if (ok.contains("Successfully")) {
+			data.setData(ok);
+		} else {
+			data.setErrorMessage(ok);
+		}
+		return data;
+	}
+	
 	@GetMapping("/generateCaptcha")
 	public void generateCaptcha(HttpServletResponse response) throws IOException {
 		int width = 150, height = 50;

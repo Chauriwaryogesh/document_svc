@@ -930,12 +930,12 @@ circle {
 		async function fetchWorkItems() {
 			const apiUrl = 'http://localhost:8081/Security/user-list';
 			const userId = "ychouri"; 
-			console.log("apiUrl", apiUrl);
+
 			try {
 				const response = await fetch(apiUrl, {
 					method: 'GET',
 					headers: {
-						'userId': userId // Mandatory header
+						'userId': userId
 					}
 				});
 
@@ -946,7 +946,22 @@ circle {
 
 				const data = await response.json();
 				console.log('API Data:', data);
-				populateTable(data.data);
+
+				const workItems = data.data;
+
+				if (!workItems || workItems.length === 0) {
+					const tbody = document.getElementById('workItemsBody');
+					tbody.innerHTML = `
+						<tr>
+							<td colspan="8" style="text-align: center; color: gray;">
+								No available users.
+							</td>
+						</tr>
+					`;
+					return;
+				}
+
+				populateTable(workItems);
 
 			} catch (error) {
 				console.error('Error fetching work items:', error);
@@ -979,10 +994,10 @@ circle {
 				userIdCell.textContent = item.userCode === null ? 'N/A' : item.userCode; // Map null to "name" as per your requirement
 
 				const emailVerifiedCell = row.insertCell();
-				emailVerifiedCell.textContent = item.isEmailVerified === null ? 'N/A' : (item.isEmailVerified ? 'Yes' : 'No');
+				emailVerifiedCell.textContent = item.isEmailVerified === 'N' ? 'No' : (item.isEmailVerified ? 'Yes' : 'No');
 
 				const userIdVerifiedCell = row.insertCell();
-				userIdVerifiedCell.textContent = item.isUserCodeVerified === null ? 'N/A' : (item.isUserCodeVerified ? 'Yes' : 'No');
+				userIdVerifiedCell.textContent = item.isUserCodeVerified === 'N' ? 'No' : (item.isUserCodeVerified ? 'Yes' : 'No');
 
 				const accessTimeCell = row.insertCell();
 				accessTimeCell.textContent = item.createdTime === null ? 'N/A' :item.createdTime; 

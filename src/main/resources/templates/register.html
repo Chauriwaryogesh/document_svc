@@ -66,9 +66,91 @@
         .footer-buttons button {
             width: 48%;
         }
+         /* Custom Alert Styles */
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .custom-alert-overlay.active {
+            display: flex;
+        }
+
+        .custom-alert-box {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            min-width: 300px;
+            max-width: 80%;
+        }
+
+        .custom-alert-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .custom-alert-header.error {
+            color: #f44336;
+        }
+
+        .custom-alert-message {
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .custom-alert-message.error {
+            color: #f44336;
+        }
+
+        .custom-alert-buttons button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-alert-buttons button:hover {
+            background-color: #0056b3;
+        }
+        
     </style>
 </head>
 <body>
+<div id="customAlertOverlay" class="custom-alert-overlay">
+        <div id="customAlertBox" class="custom-alert-box">
+            <div id="customAlertHeader" class="custom-alert-header"></div>
+            <div id="customAlertMessage" class="custom-alert-message"></div>
+            <div class="custom-alert-buttons">
+                <button id="customAlertOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customErrorOverlay" class="custom-alert-overlay error">
+        <div id="customErrorBox" class="custom-alert-box">
+            <div id="customErrorHeader" class="custom-alert-header error">Error</div>
+            <div id="customErrorMessage" class="custom-alert-message error"></div>
+            <div class="custom-alert-buttons">
+                <button id="customErrorOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <h2>Register Email</h2>
@@ -83,31 +165,84 @@
     </div>
 
     <script>
-        async function registerEmail() {
-            const email = document.getElementById("emailInput").value;
-            const userId = document.getElementById("userId").value; // Ensure it's already stored
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const customAlertOverlay = document.getElementById('customAlertOverlay');
+    const customAlertHeader = document.getElementById('customAlertHeader');
+    const customAlertMessage = document.getElementById('customAlertMessage');
+    const customAlertOkBtn = document.getElementById('customAlertOkBtn');
 
-            if (!email || !userId) {
-                alert("Email or User ID is missing.");
+    const customErrorOverlay = document.getElementById('customErrorOverlay');
+    const customErrorMessage = document.getElementById('customErrorMessage');
+    const customErrorOkBtn = document.getElementById('customErrorOkBtn');
+    async function registerEmail() {
+        const email = document.getElementById("emailInput").value;
+        const userCode = document.getElementById("userId").value;
+
+        if (!email || !userCode) {
+            alert("Email or User ID is missing.");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:8081/Security/register-user", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "userId": userCode
+                },
+                body: JSON.stringify({ email, userCode })
+            });
+            const resultText = await response.text();
+            let result;
+            try {
+                result = JSON.parse(resultText);
+            } catch (e) {
+                console.error("Invalid JSON response:", resultText);
+                showErrorAlert("Server error. Please try again.");
                 return;
             }
-
-            try {
-                const response = await fetch("http://localhost:8081/Security/add-user", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "userId": userId
-                    },
-                    body: JSON.stringify({ email })
+            const message = result.errorMessage || result.message || resultText;
+            if (message.includes("Successfully Register, Pending")) {
+               // showErrorAlert("Successfully Registered. Pending for Verification.");
+                showCustomAlert("Success", "Successfully Register, Pending for Verification", () => {
+                    window.location.href = "/login";
                 });
-
-                const result = await response.text();
-                alert(result);
-            } catch (error) {
-                console.error("Error registering email:", error);
-                alert("Registration failed.");
+            }else if (message.includes("User already Exist in")) {
+                showErrorAlert("User already Exist in System and Pending for Verification.");
             }
+            else if (message.includes("Verified Please to go login Page")) {
+                showCustomAlert("Success", message, () => {
+                    window.location.href = "/login";
+                });
+            } else {
+                showErrorAlert(message);
+            }
+
+        } catch (error) {
+            console.error("Error registering email:", error);
+            alert("Registration failed.");
+        }
+    }
+
+        function showCustomAlert(header, message, callback) {
+            customAlertHeader.textContent = header;
+            customAlertMessage.textContent = message;
+            customAlertOverlay.classList.add('active');
+
+            customAlertOkBtn.onclick = () => {
+                customAlertOverlay.classList.remove('active');
+                if (callback) {
+                    callback();
+                }
+            };
+        }
+        function showErrorAlert(message) {
+            customErrorMessage.textContent = message;
+            customErrorOverlay.classList.add('active');
+
+            customErrorOkBtn.onclick = () => {
+                customErrorOverlay.classList.remove('active');
+            };
         }
 
         function contactUs() {

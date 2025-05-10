@@ -22,6 +22,8 @@ public interface IEmployeeService{
 	public List<SecurityDTO> fetchListOfUsers(String id, String userId);
 	public SecurityDTO updateSecurity(SecurityDTO securityDTO, String userId);
 
+	public String registerUser(SecurityDTO securityDTO, String userId);
+
 	
 
 }
