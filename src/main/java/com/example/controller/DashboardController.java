@@ -40,4 +40,8 @@ public class DashboardController {
     public String employeeService(String userId) {
         return "EmployeeService"; 
     }
+    @GetMapping("/MailServices")
+    public String mailService(String userId) {
+        return "MailServices"; 
+    }
 }

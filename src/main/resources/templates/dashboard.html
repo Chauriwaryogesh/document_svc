@@ -688,6 +688,37 @@ circle {
         .custom-alert-buttons button:hover {
             background-color: #0056b3;
         }
+        .modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-box {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 95%;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}    
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -695,14 +726,69 @@ circle {
 	<div class="dashboard-options">
 		<button>Overview</button>
 		<button>Analytics</button>
-		<button>Reports</button>
-		<button>Uploads</button>
+		<button onclick="openNotesModal()">Notes</button>
+       <button onclick="openFeedbackModal()">Feedback</button>
 	</div>
 	  <div id="banner" class="announcement-banner minimized">
         <div class="scrolling-wrapper">
             <div id="bannerText" class="scrolling-text">Data refresh Every 7 days!</div>
         </div>
     </div>
+    <!-- Notes Modal -->
+    <!-- Notes List Modal (Main modal opened by Reports button) -->
+<div id="notesModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Notes</h3>
+    <button onclick="openNotePrompt()" class="modern-button secondary">+ Create Note</button>
+    <ol id="notesList" class="notes-list"></ol>
+    <button onclick="closeNotesModal()" class="modern-button">Close</button>
+  </div>
+</div>
+    
+<!-- Create Note Modal -->
+<div id="createNoteModal" class="modal-overlay">
+  <div class="modal-box">
+    <h4>Add Note</h4>
+    <textarea id="noteInput" rows="4" style="width:100%; padding:10px;" placeholder="Write your note here..."></textarea>
+    <div style="margin-top:15px; text-align:right;">
+      <button onclick="saveNote()" class="modern-button primary">Save</button>
+      <button onclick="closeCreateNoteModal()" class="modern-button">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div id="deleteConfirmModal" class="modal-overlay">
+  <div class="modal-box">
+    <p>Are you sure you want to delete this note?</p>
+    <div style="text-align:right; margin-top: 15px;">
+      <button onclick="confirmDelete()" class="modern-button secondary">Yes, Delete</button>
+      <button onclick="closeDeleteModal()" class="modern-button">Cancel</button>
+    </div>
+  </div>
+</div>
+<div id="feedbackModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Submit Feedback</h3>
+    <textarea id="feedbackInput" rows="4" style="width:100%; padding:10px;" placeholder="Your feedback..."></textarea>
+    <div style="text-align:right; margin-top: 15px;">
+      <button onclick="saveFeedback()" class="modern-button primary">Send</button>
+      <button onclick="closeFeedbackModal()" class="modern-button">Cancel</button>
+    </div>
+  </div>
+</div>
+<div id="feedbackSuccessModal" class="modal-overlay">
+  <div class="modal-box" style="text-align: center;">
+    <div style="font-size: 40px; color: green;">✅</div>
+    <h4 style="margin-top: 10px;">Thank you!</h4>
+    <p>Your feedback was submitted successfully.</p>
+    <button onclick="closeFeedbackSuccessModal()" class="modern-button">Close</button>
+  </div>
+</div>
+
+
+
+    
 	<div class="service-actions">
 		<button onclick="redirectToPostalService()" class="modern-button"><i class="fas fa-envelope"></i> Postal Service</button>
 		<button onclick="redirectToDocumentService()" class="modern-button"><i class="fas fa-file-alt"></i> Document Service</button>
@@ -943,7 +1029,6 @@ circle {
 			console.log('API Data:', workItems);
 			workItems.forEach(item => {
 				const row = tbody.insertRow();
-
 				// Checkbox cell
 				const checkboxCell = row.insertCell();
 				const checkbox = document.createElement('input');
@@ -951,25 +1036,18 @@ circle {
 				checkbox.className = 'user-checkbox'; // ✅ Add this line
 				checkbox.value = item.id; // You can use a unique identifier here
 				checkboxCell.appendChild(checkbox);
-
 				const idCell = row.insertCell();
 				idCell.textContent = item.id;
-
 				const emailCell = row.insertCell();
 				emailCell.textContent = item.email === null ? 'N/A' : item.email; // Map null to "N/A" or your desired text
-
 				const userIdCell = row.insertCell();
 				userIdCell.textContent = item.userCode === null ? 'N/A' : item.userCode; // Map null to "name" as per your requirement
-
 				const emailVerifiedCell = row.insertCell();
 				emailVerifiedCell.textContent = item.isEmailVerified === 'N' ? 'No' : (item.isEmailVerified ? 'Yes' : 'No');
-
 				const userIdVerifiedCell = row.insertCell();
 				userIdVerifiedCell.textContent = item.isUserCodeVerified === 'N' ? 'No' : (item.isUserCodeVerified ? 'Yes' : 'No');
-
 				const accessTimeCell = row.insertCell();
 				accessTimeCell.textContent = item.createdTime === null ? 'N/A' :item.createdTime; 
-
 				const expiryTimeCell = row.insertCell();
 				expiryTimeCell.textContent = item.remainingTime === null ? 'N/A' : item.remainingTime;
 			});
@@ -980,7 +1058,6 @@ circle {
 					checkboxes.forEach(cb => cb.checked = this.checked);
 				});
 			}
-
 		}
 		async function loadDashboardStats() {
 			const userId = 'SYSTEM';
@@ -998,15 +1075,12 @@ circle {
 			}
 
 			const data = await response.json();
-
 			document.getElementById("totalEmails").innerText = data.totalEmails;
 			document.getElementById("emailsSent").innerText = data.emailsSent;
 			document.getElementById("emailsInDb").innerText = data.emailsInDb;
 			document.getElementById("slaCrossed").innerText = data.slaCrossed;
 			document.getElementById("documentUpload").innerText = data.documentUpload;
-
 			const total = data.totalEmails || 1; // Avoid divide-by-zero
-
 			animateCircle('emailSentCircle', (data.emailsSent / total) * 100, 'emailSentPercentage');
 			animateCircle('emailsInDbCircle', (data.emailsInDb / total) * 100, 'emailsInDbPercentage');
 			animateCircle('slaProgressCircle', 100, 'slaProgressPercentage'); // Always full since it's the total
@@ -1186,6 +1260,125 @@ circle {
 	                customErrorOverlay.classList.remove('active');
 	            };
 	        }
+		  
+		  //Code for NOtes Reports 
+  async function openNotesModal() {
+    document.getElementById('notesModal').style.display = 'flex';
+    await fetchNotes();
+  }
+  function closeNotesModal() {
+    document.getElementById('notesModal').style.display = 'none';
+  }
+  async function fetchNotes() {
+	  try {
+	    const res = await fetch('/DocumentService/notes/List');
+	    const result = await res.json();
+	    const notes = result.data || [];
+	    renderNotes(notes);
+	  } catch (err) {
+	    console.error('Failed to fetch notes:', err);
+	  }
+	}
+  function renderNotes(notes) {
+	  const list = document.getElementById('notesList');
+	  list.innerHTML = '';
+	  if (!notes || notes.length === 0) {
+	    const emptyMessage = document.createElement('li');
+	    emptyMessage.textContent = "📝 No notes yet. Click '+ Create Note' to add one.";
+	    emptyMessage.style.fontStyle = "italic";
+	    emptyMessage.style.color = "#888";
+	    list.appendChild(emptyMessage);
+	    return;
+	  }
+	  notes.forEach(note => {
+	    const li = document.createElement('li');
+	    li.innerHTML = `
+	      ${note.text}
+	      <button onclick="deleteNote(${note.id})" style="margin-left: 10px; color: red;">🗑</button>
+	    `;
+	    list.appendChild(li);
+	  });
+	}
+  let noteToDelete = null;
+
+//open create modal
+function openNotePrompt() {
+ document.getElementById('noteInput').value = '';
+ document.getElementById('createNoteModal').style.display = 'flex';
+}
+
+function closeCreateNoteModal() {
+ document.getElementById('createNoteModal').style.display = 'none';
+}
+
+//save note
+async function saveNote() {
+ const noteText = document.getElementById('noteInput').value.trim();
+ if (!noteText) return alert("Note can't be empty");
+ 
+ try {
+   await fetch('/DocumentService/notes', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({ text: noteText })
+   });
+   closeCreateNoteModal();
+   await fetchNotes();
+ } catch (err) {
+   console.error('Save error:', err);
+ }
+}
+
+//open delete confirm
+function deleteNote(id) {
+ noteToDelete = id;
+ document.getElementById('deleteConfirmModal').style.display = 'flex';
+}
+
+function closeDeleteModal() {
+ document.getElementById('deleteConfirmModal').style.display = 'none';
+}
+async function confirmDelete() {
+ if (!noteToDelete) return;
+ try {
+   await fetch(`/DocumentService/notes/delete/${noteToDelete}`, { method: 'DELETE' });
+   closeDeleteModal();
+   await fetchNotes();
+ } catch (err) {
+   console.error('Delete failed:', err);
+ }
+}
+function openFeedbackModal() {
+	  document.getElementById('feedbackInput').value = '';
+	  document.getElementById('feedbackModal').style.display = 'flex';
+	}
+
+	function closeFeedbackModal() {
+	  document.getElementById('feedbackModal').style.display = 'none';
+	}
+
+	function saveFeedback() {
+	  const text = document.getElementById('feedbackInput').value.trim();
+	  if (!text) return alert("Please enter some feedback.");
+
+	  console.log("Feedback submitted:", text);
+	  // You can push to an array, store in localStorage, or send to backend later
+	  closeFeedbackModal();
+	}
+	function saveFeedback() {
+		  const text = document.getElementById('feedbackInput').value.trim();
+		  if (!text) return alert("Please enter some feedback.");
+		  console.log("Feedback submitted:", text);
+		  // Optional: store in memory or localStorage
+		  // feedbacks.push(text);
+		  closeFeedbackModal();
+		  // Show thank-you message
+		  document.getElementById('feedbackSuccessModal').style.display = 'flex';
+		}
+		function closeFeedbackSuccessModal() {
+		  document.getElementById('feedbackSuccessModal').style.display = 'none';
+		}
+
 		  //code for clock
 		  function updateClock() {
 			    const clockElement = document.getElementById('dashboardHeaderClock');

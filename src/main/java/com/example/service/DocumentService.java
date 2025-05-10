@@ -1,6 +1,7 @@
 package com.example.service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,9 +13,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.dto.AddDocument;
 import com.example.dto.DocumentDTO;
+import com.example.dto.NotesDTO;
 import com.example.entity.Document;
+import com.example.entity.Note;
 import com.example.mapper.DocumentMapper;
 import com.example.repo.IDocumentRepo;
+import com.example.repo.NotesRepo;
 
 @Service
 public class DocumentService implements IDocumentService {
@@ -24,6 +28,10 @@ public class DocumentService implements IDocumentService {
 
 	@Autowired
 	private DocumentMapper documentMapper;
+	
+	@Autowired
+	private NotesRepo noteRepo;
+
 
 	@Override
 	public Document getDocumentdtls(String id, String docName, String userId) {
@@ -75,5 +83,39 @@ public class DocumentService implements IDocumentService {
 			return document;	
 		}).collect(Collectors.toList());
 	}
+
+	@Override
+	public String save(NotesDTO note) {
+		Note notes= new Note();
+		String message="";
+		notes.setText(note.getText());
+		notes.setCreatedAt(LocalDateTime.now());
+		notes.setUpdatedAt(LocalDateTime.now());
+		noteRepo.save(notes);
+		message="Notes saved Successfully";
+		return message;
+	}
+
+	@Override
+	public List<NotesDTO> getList(String userId) {
+		List<Note> notes = noteRepo.findAll();
+		return notes.stream().map(note -> {
+			NotesDTO notesDTO = new NotesDTO();
+			notesDTO.setId(note.getId());
+			notesDTO.setText(note.getText());
+			notesDTO.setCreatedAt(note.getCreatedAt());
+			notesDTO.setUpdatedAt(note.getUpdatedAt());
+			return notesDTO;
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	 public boolean deleteNoteById(Long id) {
+        if (noteRepo.existsById(id)) {
+            noteRepo.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 
 }

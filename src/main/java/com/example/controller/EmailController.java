@@ -3,10 +3,10 @@ package com.example.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.ws.mime.MimeMessage;
 
 import com.example.dto.EmailDTO;
 import com.example.service.OtpService;
@@ -90,6 +92,29 @@ public class EmailController {
 			emailResp.setErrorMessage("Error while fetching email ");
 		}
 		return emailResp;
+	}
+	
+	
+	
+	@PostMapping("/send-email")
+    public com.example.service.ResponseEntity<String> sendEmail(
+            @RequestParam("to") String to,
+            @RequestParam(value = "subject", required = false, defaultValue = "") String subject,
+            @RequestParam(value = "body", required = false, defaultValue = "") String body,
+			@RequestParam(value = "attachment", required = false) MultipartFile attachment) {
+		com.example.service.ResponseEntity<String> response = new com.example.service.ResponseEntity<>();
+		try {
+			String resp = otpService.sendEmailtoUser(to, subject, body, attachment);
+			if (resp.contains("successfully")) {
+				response.setData(resp);
+			} else {
+				response.setData(resp);
+			}
+
+		} catch (Exception e) {
+			e.getStackTrace();
+		}
+		return response;
 	}
 
 }

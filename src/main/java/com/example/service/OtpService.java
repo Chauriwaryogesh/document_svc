@@ -15,10 +15,13 @@ import javax.management.RuntimeErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.ws.mime.MimeMessage;
 
 import com.example.CommonConstants.CommonConstant;
 import com.example.dto.EmailDTO;
@@ -77,9 +80,7 @@ public class OtpService {
 					helper.setTo(email);
 					helper.setSubject("Your one time password for Secure Login ");
 					helper.setText("Your otp is " + otp + " Expire after 1 hrs.");
-
 					// call repo to store Otp in DB
-
 					OtpStore otpStore = new OtpStore();
 					otpStore.setId(nextcount());
 					otpStore.setOtp(otp);
@@ -296,6 +297,33 @@ public class OtpService {
 				return emailDTO;
 			}).collect(Collectors.toList());
 		}
+	}
+
+	public String sendEmailtoUser(String to, String subject, String body, MultipartFile attachment) {
+		// TODO Auto-generated method stub
+		String messageResp="";
+		try {
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);  
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(body);
+            helper.setFrom("your-gmail@gmail.com"); // Must match spring.mail.username
+            if (attachment != null && !attachment.isEmpty()) {
+                helper.addAttachment(
+                        attachment.getOriginalFilename(),
+                        new ByteArrayResource(attachment.getBytes())
+                );
+            }   
+            mailSender.send(message);   
+            messageResp ="Email sent successfully!";
+        } catch (Exception e) {
+            e.printStackTrace();
+            messageResp="Failed to send email: ";
+        }
+		return messageResp;
+
+	
 	}
 	
 

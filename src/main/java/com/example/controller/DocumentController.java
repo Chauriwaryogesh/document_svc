@@ -7,6 +7,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -18,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.dto.AddDocument;
 import com.example.dto.DocumentDTO;
+import com.example.dto.NotesDTO;
 import com.example.entity.Document;
 import com.example.service.IDocumentService;
 
@@ -82,5 +86,28 @@ public class DocumentController {
     }
 		return docslist;
 	}
+	
+	@PostMapping("/notes")
+	public com.example.service.ResponseEntity<String> createNote(@RequestBody NotesDTO note) {
+		com.example.service.ResponseEntity<String> responce= new com.example.service.ResponseEntity<>();
+	    String saved = docmentSrvice.save(note);
+	    responce.setData(saved);
+	    return responce;
+	}
+	
+	@GetMapping("/notes/List")
+	public com.example.service.ResponseEntity<List<NotesDTO>> fetchNotes(@RequestHeader(value = "userId", required = false) String userId) {
+		com.example.service.ResponseEntity<List<NotesDTO>> responce= new com.example.service.ResponseEntity<>();
+		List<NotesDTO> saved = docmentSrvice.getList(userId);
+	    responce.setData(saved);
+	    return responce;
+	}
+	
+
+	    @DeleteMapping("notes/delete/{id}")
+	    public ResponseEntity<Void> deleteNote(@PathVariable Long id) {
+	        boolean deleted = docmentSrvice.deleteNoteById(id);
+	        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+	    }
 
 }
