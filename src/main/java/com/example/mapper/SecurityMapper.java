@@ -21,6 +21,7 @@ public class SecurityMapper {
 			securityDT.setIsEmailVerified(securityMap.getIsEmailVerified());
 			securityDT.setIsUserCodeVerified(securityMap.getIsUserCodeVerified());
 			securityDT.setRemainingTime(securityMap.getEndTime());
+			securityDT.setCreatedTime(securityMap.getUpdateTime());
 			return securityDT;
 		}).collect(Collectors.toList());
 	}

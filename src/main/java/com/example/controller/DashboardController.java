@@ -26,14 +26,15 @@ public class DashboardController {
     }
     @GetMapping("/AdminPanel")
     public String adminService(@RequestParam(value = "id", required = false) String id,
-                               @RequestHeader(required = false) String userId) {
-        // Use the id to retrieve data or pass it to the model
+                               @RequestHeader(required = false) String userId, Model model) {     
         System.out.println("Received ID: " + id);
-        
-        // Here you can pass the data to the view using a model
-        // If you need to return data to the frontend, you can add the data to the model:
-        return "AdminPanel"; // You can use the 'id' to filter data for the page
+        System.out.println("Received UserID: " + userId);              
+        if (id != null) {
+            model.addAttribute("id", id);        
+        }       
+        return "AdminPanel"; 
     }
+
 
     @GetMapping("/EmployeeService")
     public String employeeService(String userId) {

@@ -7,8 +7,16 @@ public class SecurityDTO {
 	private String userCode;
 	private String isEmailVerified;
 	private String isUserCodeVerified;
+	private String createdTime;
 	private String remainingTime;
 	
+	
+	public String getCreatedTime() {
+		return createdTime;
+	}
+	public void setCreatedTime(String createdTime) {
+		this.createdTime = createdTime;
+	}
 	public String getRemainingTime() {
 		return remainingTime;
 	}
