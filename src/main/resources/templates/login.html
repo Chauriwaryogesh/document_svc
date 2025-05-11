@@ -480,7 +480,7 @@
             margin-bottom: 15px;
         }
 
-        .qr-popup-box button, .security-tips-popup-box button, .forgot-credentials-popup-box button {
+        .qr-popup-box button {
             display: block;
             width: 100%;
             margin: 0.6rem 0;
@@ -735,6 +735,8 @@
         const securityTipsPopup = document.getElementById('securityTipsPopup');
         const forgotCredentialsPopup = document.getElementById('forgotCredentialsPopup');
         const actionMenu = document.getElementById('actionMenu');
+        let ws = null;
+        let sessionId = null;
 
         function showLoading() {
             loadingOverlay.classList.add('active');
@@ -758,6 +760,7 @@
             customErrorMessage.textContent = message;
             customErrorOverlay.classList.add('active');
             otpPopup.classList.remove('active');
+            qrPopup.classList.remove('active');
             customErrorOkBtn.onclick = () => {
                 customErrorOverlay.classList.remove('active');
                 document.getElementById('email').value = '';
@@ -777,12 +780,16 @@
         function showQrPopup() {
             qrPopup.classList.add('active');
             actionMenu.classList.remove('active');
-            generateQrCode();
+            setupWebSocket();
         }
 
         function closeQrPopup() {
             qrPopup.classList.remove('active');
             document.getElementById('qrCode').innerHTML = '';
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
         }
 
         function showSecurityTipsPopup() {
@@ -808,29 +815,88 @@
             actionMenu.classList.toggle('active');
         }
 
+        function setupWebSocket() {
+            ws = new WebSocket('ws://localhost:8081/ws/qr-login');
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+            };
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'session') {
+                    sessionId = data.sessionId;
+                    generateQrCode();
+                } else if (data.type === 'auth') {
+                    if (data.status === 'success') {
+                        closeQrPopup();
+                        showCustomAlert('Success', `Logged in as ${data.userId}`, () => {
+                            window.location.href = '/dashboard';
+                        });
+                    } else {
+                        showErrorAlert('QR code authentication failed.');
+                    }
+                }
+            };
+            ws.onclose = () => {
+                console.log('WebSocket closed');
+            };
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                showErrorAlert('Failed to connect to server. Please try again.');
+                closeQrPopup();
+            };
+        }
+
         function generateQrCode() {
             const qrCodeDiv = document.getElementById('qrCode');
             qrCodeDiv.innerHTML = '';
-            try {
-                const qrToken = 'qr_' + Math.random().toString(36).substr(2) + '_' + Date.now();
-                const qrData = JSON.stringify({ token: qrToken, action: 'login' });
-                console.log('Generating QR code with data:', qrData);
-                if (typeof QRCode === 'undefined') {
-                    throw new Error('QRCode library not loaded');
-                }
-                new QRCode(qrCodeDiv, {
-                    text: qrData,
-                    width: 200,
-                    height: 200,
-                    colorDark: '#000000',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            } catch (error) {
-                console.error('Error generating QR code:', error);
-                showErrorAlert('Failed to generate QR code. Please try again.');
-                qrPopup.classList.remove('active');
+            if (!sessionId) {
+                showErrorAlert('Session not initialized. Please try again.');
+                closeQrPopup();
+                return;
             }
+            showLoading();
+            fetch('http://localhost:8081/Security/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: sessionId })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                hideLoading();
+                if (data.error) {
+                    showErrorAlert(data.error);
+                    closeQrPopup();
+                    return;
+                }
+                try {
+                    if (typeof QRCode === 'undefined') {
+                        throw new Error('QRCode library not loaded');
+                    }
+                    const qrData = JSON.stringify({ token: data.token, action: 'login' });
+                    console.log('Generating QR code with data:', qrData);
+                    new QRCode(qrCodeDiv, {
+                        text: qrData,
+                        width: 200,
+                        height: 200,
+                        colorDark: '#000000',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                } catch (error) {
+                    console.error('Error generating QR code:', error);
+                    showErrorAlert('Failed to generate QR code. Please try again.');
+                    closeQrPopup();
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error('Error fetching QR token:', error);
+                showErrorAlert('Failed to generate QR code. Please try again.');
+                closeQrPopup();
+            });
         }
 
         function submitForgotCredentials() {
@@ -877,7 +943,7 @@
             params.append("Email id", email);
             params.append("user id", userId);
             showLoading();
-            fetch('http://localhost:8081/EmailService/generateOtpService?' + params.toString(), {
+            fetch('http://localhost:8081/Security/generateOtpService?' + params.toString(), {
                 method: 'POST'
             })
             .then(response => {
@@ -916,7 +982,7 @@
             params.append("Email id", email);
             params.append("Otp", otp);
             showLoading();
-            fetch('http://localhost:8081/EmailService/verify-otp?' + params.toString(), {
+            fetch('http://localhost:8081/Security/verify-otp?' + params.toString(), {
                 method: 'POST',
                 headers: { 'user-id': userId }
             })
