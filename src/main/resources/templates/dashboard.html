@@ -657,14 +657,14 @@
         </div>
 
         <div class="filter-container">
-            <select class="modern-dropdown">
-                <option value="">Filter by Status</option>
-                <option value="completed">Completed</option>
-                <option value="in-progress">In Progress</option>
-                <option value="on-going">On Going</option>
-            </select>
-            <button class="modern-button">Apply Filter</button>
-        </div>
+    <select id="statusFilter" class="modern-dropdown">
+        <option value="">Filter by Status</option>
+        <option value="completed">Completed</option>
+        <option value="in-progress">In Progress</option>
+        <option value="on-going">On Going</option>
+    </select>
+    <button id="applyFilterBtn" class="modern-button">Apply Filter</button>
+</div>
 
         <div class="workitem-summary">
             <div class="summary-box total">Total: <span id="totalWorkItems"></span></div>
@@ -716,9 +716,11 @@
     <footer class="main-footer">MailSync Dashboard - Powered by ❤️ Company</footer>
 
     <script>
-        const itemsPerPage = 10;
-        let currentPage = 1;
-        let workItems = [];
+    const itemsPerPage = 10;
+    let currentPage = 1;
+    let workItems = [];
+    let filteredWorkItems = []; // Store filtered items
+    let originalWorkItems = [];
 
         function redirectToPostalService() { window.location.href = "PostalService"; }
         function redirectToDocumentService() { window.location.href = "DocumentService"; }
@@ -745,7 +747,9 @@
                 });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
-                workItems = data.data || [];
+                originalWorkItems = data.data || []; // Store original data
+                workItems = [...originalWorkItems]; // Initialize workItems
+                filteredWorkItems = [...workItems]; // Initialize filteredWorkItems
                 if (!workItems.length) {
                     document.getElementById('workItemsBody').innerHTML = `
                         <tr><td colspan="8" style="text-align: center; color: gray;">No available users.</td></tr>`;
@@ -758,13 +762,41 @@
                 showErrorAlert('Failed to fetch work items.');
             }
         }
+        //filter logic
+        function filterWorkItems(status) {
+console.log("Status",status);
+        if (status === '') {
+            filteredWorkItems = [...originalWorkItems]; // Reset to all items
+        } else if (status === 'completed') {
+            filteredWorkItems = originalWorkItems.filter(item =>
+                (item.isEmailVerified === 'Y' || item.isEmailVerified === true) &&
+                (item.isUserCodeVerified === 'Y' || item.isUserCodeVerified === true)
+            );
+        } else if (status === 'in-progress') {
+            filteredWorkItems = originalWorkItems.filter(item =>
+                (item.isEmailVerified === 'N' || item.isEmailVerified === false) ||
+                (item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false)
+            );
+        } else if (status === 'on-going') {
+            filteredWorkItems = [...originalWorkItems]; // Treat as reset for now
+        }
+        currentPage = 1; // Reset to first page
+        populateTable();
+        renderPagination();
+    }
 
         function populateTable() {
             const tbody = document.getElementById('workItemsBody');
             tbody.innerHTML = '';
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
-            const paginatedItems = workItems.slice(start, end);
+            const paginatedItems = filteredWorkItems.slice(start, end);
+
+            if (!paginatedItems.length) {
+                tbody.innerHTML = `
+                    <tr><td colspan="8" style="text-align: center; color: gray;">No items match the selected filter.</td></tr>`;
+                return;
+            }
 
             paginatedItems.forEach(item => {
                 const row = tbody.insertRow();
@@ -773,8 +805,8 @@
                     <td>${item.id}</td>
                     <td>${item.email || 'N/A'}</td>
                     <td>${item.userCode || 'N/A'}</td>
-                    <td>${item.isEmailVerified === 'N' ? 'No' : (item.isEmailVerified ? 'Yes' : 'No')}</td>
-                    <td>${item.isUserCodeVerified === 'N' ? 'No' : (item.isUserCodeVerified ? 'Yes' : 'No')}</td>
+                    <td>${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</td>
+                    <td>${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</td>
                     <td>${item.createdTime || 'N/A'}</td>
                     <td>${item.remainingTime || 'N/A'}</td>
                 `;
@@ -782,7 +814,7 @@
         }
 
         function renderPagination() {
-            const totalPages = Math.ceil(workItems.length / itemsPerPage);
+            const totalPages = Math.ceil(filteredWorkItems.length / itemsPerPage);
             const paginationControls = document.getElementById('paginationControls');
             paginationControls.innerHTML = `
                 <button class="pagination-button" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">Previous</button>
@@ -829,7 +861,7 @@
                 document.getElementById('emailsInDb').innerText = data.emailsInDb;
                 document.getElementById('slaCrossed').innerText = data.slaCrossed;
                 document.getElementById('documentUpload').innerText = data.documentUpload;
-                const total = data.totalEmails || 1;
+                const total = 200;
                 animateCircle('emailSentCircle', (data.emailsSent / total) * 100, 'emailSentPercentage');
                 animateCircle('emailsInDbCircle', (data.emailsInDb / total) * 100, 'emailsInDbPercentage');
                 animateCircle('slaProgressCircle', (data.totalEmails / total) * 100, 'slaProgressPercentage');
@@ -1052,30 +1084,36 @@
 
         // Update DOMContentLoaded to show badge on load and attach notification listener
         document.addEventListener('DOMContentLoaded', () => {
-            setInterval(updateClock, 1000);
-            updateClock();
-            fetchWorkItems();
-            loadEmailCounts();
-            loadDashboardStats();
+        setInterval(updateClock, 1000);
+        updateClock();
+        fetchWorkItems();
+        loadEmailCounts();
+        loadDashboardStats();
 
-            // Show notification badge on page load to indicate a new notification
-            document.getElementById('notificationBadge').style.display = 'flex';
+        // Show notification badge on page load
+        document.getElementById('notificationBadge').style.display = 'flex';
 
-            document.getElementById('selectAll').addEventListener('change', function () {
-                document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = this.checked);
-                toggleBulkActions();
-            });
-
-            document.getElementById('getSelectedBtn').addEventListener('click', handleTakeAction);
-            document.getElementById('shareChartBtn').addEventListener('click', shareChart);
-            document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);
-            document.getElementById('notificationIcon').addEventListener('click', showNotification);
-            document.getElementById('shareNowBtn').addEventListener('click', shareNow);
-
-            function toggleBulkActions() {
-                document.querySelector('.bulk-actions').style.display = document.querySelectorAll('.user-checkbox:checked').length ? 'block' : 'none';
-            }
+        // Filter event listener
+        document.getElementById('applyFilterBtn').addEventListener('click', () => {
+            const status = document.getElementById('statusFilter').value;
+            filterWorkItems(status);
         });
+
+        document.getElementById('selectAll').addEventListener('change', function () {
+            document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = this.checked);
+            toggleBulkActions();
+        });
+
+        document.getElementById('getSelectedBtn').addEventListener('click', handleTakeAction);
+        document.getElementById('shareChartBtn').addEventListener('click', shareChart);
+        document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);
+        document.getElementById('notificationIcon').addEventListener('click', showNotification);
+        document.getElementById('shareNowBtn').addEventListener('click', shareNow);
+
+        function toggleBulkActions() {
+            document.querySelector('.bulk-actions').style.display = document.querySelectorAll('.user-checkbox:checked').length ? 'block' : 'none';
+        }
+    });
     </script>
 </body>
 </html>
