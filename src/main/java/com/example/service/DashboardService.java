@@ -45,13 +45,14 @@ import com.example.repo.ISecurityRepo;
 	                     }
 	                 })
 	                 .count();
+	    	 long totalEmails = security.stream().map(mail -> mail.getEmail()).count();
 	        DashboardStats stats = new DashboardStats();
 	        // Example data
-	        stats.setTotalEmails(100);
+	        stats.setTotalEmails((int)totalEmails);
 	        stats.setSlaCrossed((int)expiryDaysCount);
 	        stats.setDocumentUpload((int) docsCount);
-	        stats.setEmailsInDb(20);
-	        stats.setEmailsSent(20);
+	        stats.setEmailsInDb(38);
+	        stats.setEmailsSent(44);
 	        
 	        return stats;
 	    }

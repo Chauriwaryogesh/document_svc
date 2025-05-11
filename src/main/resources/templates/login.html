@@ -17,8 +17,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-bottom: 60px; /* Increased padding to prevent overlap with fixed footer */
-            position: relative; /* Add relative positioning to body */
+            padding-bottom: 60px;
+            position: relative;
         }
 
         .main-header {
@@ -189,14 +189,12 @@
         .social-login button {
             width: 48%;
             background: #4267B2;
-            /* Facebook */
             color: white;
             font-weight: bold;
         }
 
         .social-login .google {
             background: #db4437;
-            /* Google */
         }
 
         .social-login button:hover {
@@ -220,8 +218,8 @@
             align-items: center;
             width: 100%;
             font-size: 0.9rem;
-            position: fixed; /* Make footer fixed */
-            bottom: 0; /* Position at the bottom */
+            position: fixed;
+            bottom: 0;
             left: 0;
         }
 
@@ -264,12 +262,10 @@
             opacity: 1;
         }
 
-        /* Animated Background Bubbles */
         .bubble {
             position: absolute;
             border-radius: 50%;
             background-color: rgba(173, 216, 230, 0.3);
-            /* Light blue bubbles */
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             animation: floatBubble linear infinite;
         }
@@ -300,7 +296,6 @@
             }
         }
 
-        /* Loading animation styles */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -342,7 +337,6 @@
             }
         }
 
-        /* Custom Alert Styles */
         .custom-alert-overlay {
             position: fixed;
             top: 0;
@@ -353,7 +347,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 10000;
+            z-index: 10002; /* Increased z-index to appear above OTP popup */
         }
 
         .custom-alert-overlay.active {
@@ -387,7 +381,9 @@
         }
 
         .custom-alert-message.error {
-            color: #f44336;
+            color:ন্�
+
+System: #f44336;
         }
 
         .custom-alert-buttons button {
@@ -402,6 +398,61 @@
         }
 
         .custom-alert-buttons button:hover {
+            background-color: #0056b3;
+        }
+
+        .otp-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .otp-popup.active {
+            display: flex;
+        }
+
+        .otp-popup-box {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            min-width: 300px;
+            max-width: 80%;
+        }
+
+        .otp-popup-box h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .otp-popup-box .input-group {
+            margin-bottom: 15px;
+        }
+
+        .otp-popup-box button {
+            display: block;
+            width: 100%;
+            margin: 0.6rem 0;
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .otp-popup-box button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -427,6 +478,18 @@
             </div>
         </div>
     </div>
+
+    <div id="otpPopup" class="otp-popup">
+        <div class="otp-popup-box">
+            <h3>Enter OTP</h3>
+            <div class="input-group">
+                <input type="password" id="otp" placeholder="Enter OTP" required />
+                <span class="toggle-visibility" onclick="toggleVisibility('otp', this)">🙈</span>
+            </div>
+            <button onclick="verifyOtp()">Verify OTP</button>
+        </div>
+    </div>
+
     <header class="main-header">
         <div class="header-title">Secure Access Portal</div>
         <div class="header-actions">
@@ -449,11 +512,6 @@
                 <span class="toggle-visibility" onclick="toggleVisibility('userId', this)">🙈</span>
             </div>
             <button onclick="sendOtp()">Send OTP</button>
-            <div class="input-group">
-                <input type="password" id="otp" placeholder="Enter OTP" required />
-                <span class="toggle-visibility" onclick="toggleVisibility('otp', this)">🙈</span>
-            </div>
-            <button onclick="verifyOtp()">Verify OTP</button>
 
             <div class="row-btns">
                 <button onclick="resendOtp()">Resend OTP</button>
@@ -475,7 +533,7 @@
     </main>
 
     <footer>
-        &copy; Secure Access Portal 2025 | Designed with ❤️
+        © Secure Access Portal 2025 | Designed with ❤️
     </footer>
 
     <script>
@@ -484,10 +542,10 @@
         const customAlertHeader = document.getElementById('customAlertHeader');
         const customAlertMessage = document.getElementById('customAlertMessage');
         const customAlertOkBtn = document.getElementById('customAlertOkBtn');
-
         const customErrorOverlay = document.getElementById('customErrorOverlay');
         const customErrorMessage = document.getElementById('customErrorMessage');
         const customErrorOkBtn = document.getElementById('customErrorOkBtn');
+        const otpPopup = document.getElementById('otpPopup');
 
         function showLoading() {
             loadingOverlay.classList.add('active');
@@ -496,6 +554,7 @@
         function hideLoading() {
             loadingOverlay.classList.remove('active');
         }
+
         function showCustomAlert(header, message, callback) {
             customAlertHeader.textContent = header;
             customAlertMessage.textContent = message;
@@ -512,12 +571,23 @@
         function showErrorAlert(message) {
             customErrorMessage.textContent = message;
             customErrorOverlay.classList.add('active');
+            otpPopup.classList.remove('active'); // Hide OTP popup when showing error
 
             customErrorOkBtn.onclick = () => {
                 customErrorOverlay.classList.remove('active');
+                showOtpPopup(); // Reopen OTP popup after closing error
             };
         }
-        
+
+        function showOtpPopup() {
+            otpPopup.classList.add('active');
+        }
+
+        function hideOtpPopup() {
+            otpPopup.classList.remove('active');
+            document.getElementById('otp').value = '';
+        }
+
         function sendOtp() {
             const email = document.getElementById("email").value;
             const userId = document.getElementById("userId").value;
@@ -535,7 +605,7 @@
             params.append("Email id", email);
             params.append("user id", userId);
 
-            showLoading(); // Show loading animation
+            showLoading();
 
             fetch('http://localhost:8081/EmailService/generateOtpService?' + params.toString(), {
                 method: 'POST'
@@ -547,12 +617,12 @@
                 return response.json();
             })
             .then(data => {
-                hideLoading(); // Hide loading animation
+                hideLoading();
                 if (data && data.errorMessage) {
                     showErrorAlert(data.errorMessage);
                 } else if (data && !data.errorMessage) {
                     showCustomAlert("Success", "OTP Sent Successfully", () => {
-                        // Optional: Add any action after OTP is sent, e.g., clear inputs
+                        showOtpPopup();
                     });
                 } else {
                     showErrorAlert("Invalid response from the server.");
@@ -560,17 +630,21 @@
                 }
             })
             .catch(error => {
-                hideLoading(); // Hide loading animation on error
+                hideLoading();
                 console.error("Error while sending OTP:", error);
                 showErrorAlert("Error sending OTP. Please try again.");
             });
         }
-       
 
         function verifyOtp() {
             const email = document.getElementById("email").value;
             const otp = document.getElementById("otp").value;
             const userId = document.getElementById("userId").value;
+
+            if (!otp) {
+                showErrorAlert("OTP is required.");
+                return;
+            }
 
             const params = new URLSearchParams();
             params.append("Email id", email);
@@ -595,6 +669,7 @@
                     if (data && data.errorMessage) {
                         showErrorAlert(data.errorMessage);
                     } else if (data && !data.errorMessage) {
+                        hideOtpPopup();
                         showCustomAlert("Success", "OTP Verified Successfully", () => {
                             window.location.href = "/dashboard";
                         });
@@ -609,6 +684,7 @@
                     showErrorAlert("Error verifying OTP. Please try again.");
                 });
         }
+
         function resendOtp() {
             sendOtp();
         }
