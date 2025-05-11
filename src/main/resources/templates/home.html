@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Service - Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #ffffff, #ffca28);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 80px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .main-header {
+            width: 100%;
+            padding: 20px 40px;
+            background: linear-gradient(90deg, #0288d1, #7b1fa2);
+            color: #ffffff;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+            font-size: 28px;
+            font-weight: 700;
+            border-bottom: 4px solid #ffca28;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-title {
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-button {
+            background: linear-gradient(45deg, #ffca28, #ffb300);
+            color: #1a237e;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #ffb300, #ffca28);
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            padding: 3rem 1rem;
+        }
+
+        .hero-section {
+            background: url('https://images.unsplash.com/photo-1516321310764-9fabe133b7d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center;
+            background-size: cover;
+            background-color: rgba(255, 255, 255, 0.9);
+            background-blend-mode: overlay;
+            padding: 4rem 2rem;
+            border-radius: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        .hero-section h1 {
+            color: #1a237e;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-section p {
+            color: #333;
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #0288d1, #7b1fa2);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #7b1fa2, #0288d1);
+        }
+
+        .features-section {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: bounceIn 1s ease-out;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-card img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .feature-card h3 {
+            color: #0288d1;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #555;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-button {
+            background: linear-gradient(45deg, #ffca28, #ffb300);
+            color: #1a237e;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .feature-button:hover {
+            background: linear-gradient(45deg, #ffb300, #ffca28);
+            transform: scale(1.1);
+        }
+
+        footer {
+            background: linear-gradient(90deg, #0288d1, #7b1fa2);
+            color: #ffffff;
+            padding: 1.5rem 2rem;
+            width: 100%;
+            text-align: center;
+            font-size: 1rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 202, 40, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            animation: floatBubble 10s linear infinite;
+        }
+
+        @keyframes floatBubble {
+            0% { transform: translateY(0) scale(1); opacity: 0.2; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-150vh) scale(1.8); opacity: 0; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                padding: 15px;
+                font-size: 22px;
+            }
+
+            .header-actions {
+                margin-top: 10px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .hero-section {
+                padding: 2rem;
+            }
+
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+
+            .hero-section p {
+                font-size: 1.1rem;
+            }
+
+            .features-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="main-header animate__animated animate__fadeInDown">
+        <div class="header-title">Document Service</div>
+        <div class="header-actions">
+            <a href="login" class="header-button animate__animated animate__pulse animate__infinite">Login</a>
+            <a href="#signup" class="header-button">Sign Up</a>
+            <a href="#features" class="header-button">Features</a>
+        </div>
+    </header>
+    <main>
+        <section class="hero-section">
+            <h1 class="animate__animated animate__bounceIn">Welcome to Document Service</h1>
+            <p class="animate__animated animate__fadeInUp animate__delay-1s">Securely manage and access your documents with our cutting-edge platform. Explore QR code authentication, seamless document management, and more.</p>
+            <div class="hero-buttons">
+                <a href="login" class="cta-button animate__animated animate__zoomIn">Get Started</a>
+                <a href="#features" class="cta-button animate__animated animate__zoomIn animate__delay-1s">Explore Features</a>
+                <a href="#contact" class="cta-button animate__animated animate__zoomIn animate__delay-2s">Contact Us</a>
+            </div>
+        </section>
+        <section class="features-section">
+            <div class="feature-card">
+                <img src="https://img.icons8.com/ios-filled/50/0288d1/qr-code.png" alt="QR Code">
+                <h3>QR Code Login</h3>
+                <p>Securely log in using QR code authentication for a fast and safe experience.</p>
+                <a href="#qr-login" class="feature-button">Learn More</a>
+            </div>
+            <div class="feature-card">
+                <img src="https://img.icons8.com/ios-filled/50/0288d1/document.png" alt="Document Management">
+                <h3>Document Management</h3>
+                <p>Organize, store, and access your documents with ease and security.</p>
+                <a href="#doc-management" class="feature-button">Try Now</a>
+            </div>
+            <div class="feature-card">
+                <img src="https://img.icons8.com/ios-filled/50/0288d1/shield.png" alt="Security">
+                <h3>Enhanced Security</h3>
+                <p>Protect your data with advanced encryption and secure protocols.</p>
+                <a href="#security" class="feature-button">Discover More</a>
+            </div>
+        </section>
+    </main>
+    <footer class="animate__animated animate__fadeInUp">
+        © Document Service 2025 | Designed with <i class="fas fa-heart"></i> | <a href="#contact" style="color: #ffca28;">Contact Us</a>
+    </footer>
+
+    <script>
+        function createBubbles() {
+            const body = document.body;
+            for (let i = 0; i < 60; i++) {
+                const bubble = document.createElement('span');
+                const size = Math.random() * 40 + 15;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.top = `${Math.random() * 100}%`;
+                bubble.style.animationDelay = `${Math.random() * 5}s`;
+                bubble.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                bubble.classList.add('bubble');
+                body.appendChild(bubble);
+            }
+        }
+
+        createBubbles();
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

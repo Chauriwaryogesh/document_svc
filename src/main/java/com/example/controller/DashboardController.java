@@ -8,6 +8,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class DashboardController {
+<<<<<<< HEAD
+	
+	@GetMapping("/home")
+    public String home(String userId) {
+        return "home"; 
+    }
+=======
+>>>>>>> remotes/origin/document_svc_v2
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
