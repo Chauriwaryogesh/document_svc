@@ -380,4 +380,13 @@ public class EmployeeService implements IEmployeeService {
 		return message;
 	}
 
+	@Override
+	public boolean deleteNoteById(Long id) {
+		if (id != null) {
+			securityRepo.deleteById(id);
+			return true;
+		}
+		return false;
+	}
+
 }

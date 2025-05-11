@@ -91,7 +91,7 @@ public class EmployeeController {
 
 	}
 
-	@Cacheable("employees")
+	//@Cacheable("employees")
 	@GetMapping(value = "/findAllEmployee", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmployeeDTO>> getAllEmployee(String userId) {
 		ResponseEntity<List<EmployeeDTO>> serviceResp = new ResponseEntity<List<EmployeeDTO>>();

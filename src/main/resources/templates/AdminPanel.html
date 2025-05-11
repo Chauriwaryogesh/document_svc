@@ -228,43 +228,51 @@ header nav ul li a:hover {
 		}
 
 		/* Updated button container */
-		.button-container {
-			margin-top: 30px;
-			animation: pulse 1.5s ease-in-out infinite alternate;
-			display: flex;
-			justify-content: flex-end;
-			/* Align items to the right */
-			gap: 15px;
-			/* Space between buttons */
-			width: 80%;
-			/* Match user list width */
-			max-width: 900px;
-		}
+.button-container {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    width: 80%;
+    max-width: 900px;
+}
 
-		.button-container button {
-			padding: 12px 25px;
-			border-radius: 8px;
-			cursor: pointer;
-			font-size: 1em;
-			transition: background-color 0.3s ease, box-shadow 0.2s ease;
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-		}
+.button-container button {
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+}
 
-		.button-container button:hover {
-			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-		}
+.button-container button:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05); /* Slightly enlarge button on hover */
+}
 
-		.button-container button:first-child {
-			/* Style for the "Create New User" button */
-			background-color: #007bff;
-			/* Blue color */
-			color: white;
-			border: none;
-		}
+/* Delete User button (red) */
+.button-container button:first-child {
+    background-color: #dc3545;
+    color: white;
+}
 
-		.button-container button:first-child:hover {
-			background-color: #0056b3;
-		}
+.button-container button:first-child:hover {
+    background-color: #c82333;
+}
+
+/* Create New User and Save Changes buttons (blue with white font) */
+.button-container button:nth-child(2),
+.button-container button:nth-child(3) {
+    background-color: #007bff;
+    color: white;
+}
+
+.button-container button:nth-child(2):hover,
+.button-container button:nth-child(3):hover {
+    background-color: #0056b3;
+}
 
 		/* New User Modal Styles */
 		.new-user-modal {
@@ -358,12 +366,7 @@ header nav ul li a:hover {
 
 		#popup-message {
 			display: none;
-			/* position: fixed; Remove this */
-			/* top: 20px; Remove this */
-			/* left: 50%; Remove this */
-			/* transform: translateX(-50%); Remove this */
 			background-color: #4CAF50;
-			/* Success green */
 			color: white;
 			padding: 15px 25px;
 			border-radius: 8px;
@@ -532,6 +535,10 @@ footer {
 footer p {
     margin: 0;
 }
+
+.user-checkbox {
+    margin-right: 10px;
+}
 		
 		
 	</style>
@@ -617,16 +624,14 @@ footer p {
 	<div class="overlay" id="contactOverlay"
 		style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1002;">
 	</div>
-
-
 	<div class="user-list-container" id="userListContainer">
 		<div class="loading-message">Loading users... <i class="fas fa-spinner fa-spin"></i></div>
 	</div>
 	<div id="popup-message">Changes saved successfully!</div>
 	<div class="button-container">
-		<button onclick="openNewUserModal()" class="create-user-button"><i class="fas fa-plus"></i> Create New
-			User</button>
-		<button onclick="saveChanges()"><i class="fas fa-save"></i> Save Changes</button>
+	<button onclick="deleteUserModel()" ><i class="delete-user"></i> Delete User</button>
+	<button onclick="openNewUserModal()" class="create-user-button"><i class="fas fa-plus"></i> Create NewUser</button>
+	<button onclick="saveChanges()"><i class="fas fa-save"></i> Save Changes</button>
 	</div>
 	<div class="new-user-modal" id="newUserModal">
 		<h2>Create New User</h2>
@@ -672,6 +677,19 @@ footer p {
 	</footer>
 
 	<script>
+	
+	let selectedUserIds = [];
+
+	function toggleUserSelection(userId) {
+	    if (selectedUserIds.includes(userId)) {
+	        selectedUserIds = selectedUserIds.filter(id => id !== userId);
+	    } else {
+	        selectedUserIds.push(userId);
+	    }
+	    console.log('Selected User IDs:', selectedUserIds);
+	}
+	
+	
 	 const customAlertOverlay = document.getElementById('customAlertOverlay');
      const customAlertHeader = document.getElementById('customAlertHeader');
      const customAlertMessage = document.getElementById('customAlertMessage');
@@ -694,7 +712,42 @@ footer p {
 			document.getElementById('newUserModal').style.display = 'block';
 			document.getElementById('modalOverlay').style.display = 'block';
 		}
-		async function fetchWorkItems(id) {
+		//code for delete user
+		 let selectedUserId = null;
+
+function onUserRowClick(id) {
+    selectedUserId = id;
+}
+
+function deleteUserModel() {
+    if (selectedUserIds.length === 0) {
+        showErrorAlert("Please select at least one user to delete.");
+        return;
+    }
+
+    Promise.all(selectedUserIds.map(id => 
+        fetch(`http://localhost:8081/Security/user-list/delete/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'userId': 'SYSTEM'
+            }
+        })
+    )).then(responses => {
+        const allSuccessful = responses.every(response => response.ok);
+        if (allSuccessful) {
+            showCustomAlert("Success", "Selected users deleted successfully", () => {
+                fetchWorkItems();
+                selectedUserIds = [];
+            });
+        } else {
+            showErrorAlert("Failed to delete some users.");
+        }
+    }).catch(error => {
+        console.error("Error:", error);
+        showErrorAlert("Error deleting users.");
+    });
+}
+async function fetchWorkItems(id) {
 		    // Construct the API URL, conditionally including 'id' if provided
 		    let apiUrl = 'http://localhost:8081/Security/user-list';
 		    console.log("urldwew",id);
@@ -714,12 +767,15 @@ footer p {
 
 		        if (!response.ok) {
 		            console.error(`HTTP error! status: ${response.status}`);
-		            userListContainer.innerHTML = '<div class="error-message">Error loading users.</div>';
+		            userListContainer.innerHTML = '<div class="error-message">No available users</div>';
 		            return;
 		        }
-
 		        const data = await response.json();
 		        console.log('API Data:', data);
+		        if (data.errorMessage != null && data.errorMessage.includes("No available users")) {
+		            userListContainer.innerHTML = '<div class="error-message">No available users</div>';
+		            return;
+		        }
 		        populateUserList(data.data);
 
 		    } catch (error) {
@@ -731,15 +787,16 @@ footer p {
 		function populateUserList(workItems) {
 			const userListContainer = document.getElementById('userListContainer');
 			userListContainer.innerHTML = '';
-
+			selectedUserIds = [];
 			workItems.forEach((item, index) => {
 				const userSummary = document.createElement('div');
 				userSummary.classList.add('user-summary');
 				userSummary.style.animationDelay = `${index * 0.1}s`;
 				userSummary.innerHTML = `
-                    <strong>User ID: ${item.id}</strong>
-                    <span class="arrow"><i class="fas fa-chevron-right"></i></span>
-                `;
+				    <input type="checkbox" class="user-checkbox" data-user-id="${item.id}" onchange="toggleUserSelection(${item.id})">
+				    <strong>User ID: ${item.id}</strong>
+				    <span class="arrow"><i class="fas fa-chevron-right"></i></span>
+				`;
 				userSummary.addEventListener('click', () => toggleUserDetails(item.id));
 				userListContainer.appendChild(userSummary);
 

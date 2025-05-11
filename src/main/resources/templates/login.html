@@ -517,6 +517,7 @@
                 customErrorOverlay.classList.remove('active');
             };
         }
+        
         function sendOtp() {
             const email = document.getElementById("email").value;
             const userId = document.getElementById("userId").value;
@@ -534,37 +535,37 @@
             params.append("Email id", email);
             params.append("user id", userId);
 
+            showLoading(); // Show loading animation
 
             fetch('http://localhost:8081/EmailService/generateOtpService?' + params.toString(), {
                 method: 'POST'
             })
-             .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    hideLoading();
-                    if (data && data.errorMessage) {
-                        showErrorAlert(data.errorMessage);
-                    } else if (data && !data.errorMessage) {
-                        showCustomAlert("Success", "OTP Resend  Successfully", () => {
-                            window.location.href = "/login";
-                        });
-                    } else {
-                        showErrorAlert("Invalid response from the server.");
-                        console.error("Unexpected response:", data);
-                    }
-                })
-                .catch(error => {
-                    hideLoading();
-                    console.error("Error while sending OTP:", error);
-                    showErrorAlert("Error sending OTP. Please try again.");
-                });
-               // .then(res => res.text()).then(alert);
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                hideLoading(); // Hide loading animation
+                if (data && data.errorMessage) {
+                    showErrorAlert(data.errorMessage);
+                } else if (data && !data.errorMessage) {
+                    showCustomAlert("Success", "OTP Sent Successfully", () => {
+                        // Optional: Add any action after OTP is sent, e.g., clear inputs
+                    });
+                } else {
+                    showErrorAlert("Invalid response from the server.");
+                    console.error("Unexpected response:", data);
+                }
+            })
+            .catch(error => {
+                hideLoading(); // Hide loading animation on error
+                console.error("Error while sending OTP:", error);
+                showErrorAlert("Error sending OTP. Please try again.");
+            });
         }
-
+       
 
         function verifyOtp() {
             const email = document.getElementById("email").value;

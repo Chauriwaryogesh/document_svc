@@ -54,6 +54,39 @@ import com.example.repo.ISecurityRepo;
 	        
 	        return stats;
 	    }
+
+		public DashboardStats getEmailCountStats(String userId) {
+			DashboardStats stats = new DashboardStats();
+			List<Security> security = securityRepo.findAll();
+
+			long expiryDaysCount = security.stream()
+				    .filter(sec -> sec.getEndTime() != null)
+				    .filter(sec -> {
+				        try {
+				            LocalDate endTimeDate = LocalDate.parse(sec.getEndTime());
+				            LocalDate thresholdDate = LocalDate.now().plusDays(10);
+				            return endTimeDate.isAfter(thresholdDate); // strictly more than 10 days
+				        } catch (Exception e) {
+				            System.err.println("Error parsing date: " + sec.getEndTime() + " - " + e.getMessage());
+				            return false;
+				        }
+				    })
+				    .count();
+
+
+			long totalEmails = security.stream().map(mail -> mail.getEmail()).count();
+			long totalClosed = security.stream().filter(sec -> sec.getIsEmailVerified().equalsIgnoreCase("Y")
+					&& sec.getIsUserCodeVerified().equalsIgnoreCase("Y")).count();
+			long verPending = security.stream().filter(sec -> !sec.getIsEmailVerified().equalsIgnoreCase("Y")
+					|| !sec.getIsUserCodeVerified().equalsIgnoreCase("Y")).count();
+		
+			stats.setTotalEmails((int) totalEmails);
+			stats.setCorrospodnace((int) expiryDaysCount);
+			stats.setTotalClosed((int) totalClosed);
+			stats.setVerPending((int) verPending);
+			return stats;
+
+		}
 	}
 
 

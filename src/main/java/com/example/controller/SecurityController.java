@@ -13,7 +13,9 @@ import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -37,14 +39,17 @@ public class SecurityController {
 	@GetMapping("/user-list")
 	public ResponseEntity<List<SecurityDTO>> fetchSecurityRole(
 			@RequestParam(value ="id",required =false) String id,
-			@RequestHeader(required =false) String userId) {
+			@RequestHeader(required = false) String userId) {
 
 		ResponseEntity<List<SecurityDTO>> serviceResponse = new ResponseEntity<>();
 		List<SecurityDTO> response = new ArrayList<>();
 		try {
-			response = empService.fetchListOfUsers(id,userId);
-
-			serviceResponse.setData(response);
+			response = empService.fetchListOfUsers(id, userId);
+			if (response != null && !response.isEmpty()) {
+				serviceResponse.setData(response);
+			} else {
+				serviceResponse.setErrorMessage("No available users");
+			}
 		} catch (Exception e) {
 			e.getMessage();
 		}
@@ -124,5 +129,11 @@ public class SecurityController {
 			return sb.toString();
 
 		}
+		
+		@DeleteMapping("user-list/delete/{id}")
+	    public org.springframework.http.ResponseEntity<Void> deleteNote(@PathVariable Long id) {
+	        boolean deleted = empService.deleteNoteById(id);
+	        return deleted ? org.springframework.http.ResponseEntity.noContent().build() : org.springframework.http.ResponseEntity.notFound().build();
+	    }
 
 }

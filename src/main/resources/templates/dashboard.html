@@ -891,16 +891,16 @@ circle {
 
 		<div class="workitem-summary">
 			<div class="summary-box total">
-				Total: <span id="totalWorkItems">6</span>
+				Total: <span id="totalWorkItems"></span>
 			</div>
 			<div class="summary-box open">
-				Open: <span id="openWorkItems">0</span>
+				Open: <span id="openWorkItems"></span>
 			</div>
 			<div class="summary-box closed">
-				Closed: <span id="closedWorkItems">0</span>
+				Closed: <span id="closedWorkItems"></span>
 			</div>
 			<div class="summary-box correspondence">
-				Correspondence: <span id="correspondenceWorkItems">0</span>
+				Correspondence: <span id="correspondenceWorkItems"></span>
 			</div>
 		</div>
 
@@ -1034,6 +1034,31 @@ circle {
 				console.error('Error fetching work items:', error);
 			}
 		}
+		
+		async function loadEmailCounts() {
+			  const apiUrl = 'http://localhost:8081/api/dashboard/email-counts';
+			  const userId = "ychouri";
+			  try {
+			    const response = await fetch(apiUrl, {
+			      method: 'GET',
+			      headers: {
+			        'Content-Type': 'application/json',
+			        'userId': userId
+			      }
+			    });
+			    if (!response.ok) {
+			      throw new Error("Failed to fetch email counts");
+			    }
+			    const data = await response.json();
+			    document.getElementById("totalWorkItems").textContent = data.totalEmails ?? 0;
+			    document.getElementById("openWorkItems").textContent = data.verPending ?? 0;
+			    document.getElementById("closedWorkItems").textContent = data.totalClosed ?? 0;
+			    document.getElementById("correspondenceWorkItems").textContent = data.corrospodnace ?? 0;
+			  } catch (error) {
+			    console.error("Error fetching email counts:", error);
+			  }
+			}
+
 		function populateTable(workItems) {
 			const tbody = document.getElementById('workItemsBody');
 			tbody.innerHTML = ''; // Clear existing rows
@@ -1097,13 +1122,6 @@ circle {
 			animateCircle('slaProgressCircle', 100, 'slaProgressPercentage'); // Always full since it's the total
 			animateCircle('documentUploadCircle', (data.documentUpload / total) * 100, 'documentUploadPercentage');
 			animateCircle('slaCrossedCircle', (data.slaCrossed / total) * 100, 'slaCrossedPercentage');
-
-			document.getElementById("totalWorkItems").innerText = data.totalWorkItems || 0;
-			document.getElementById("openWorkItems").innerText = data.openWorkItems || 0;
-			document.getElementById("closedWorkItems").innerText = data.closedWorkItems || 0;
-			document.getElementById("correspondenceWorkItems").innerText = data.correspondenceWorkItems || 0;
-
-
 		}
 		document.addEventListener('DOMContentLoaded', function () {
 		    const selectAllCheckbox = document.getElementById('selectAll');
@@ -1444,9 +1462,10 @@ function openFeedbackModal() {
 // Update clock every second
 setInterval(updateClock, 1000);
 updateClock();  // Initialize clock immediately
-
+        window.addEventListener('load', loadEmailCounts);
 		window.addEventListener('load', fetchWorkItems);
-		window.onload = loadDashboardStats;
+		window.addEventListener('load', loadDashboardStats);
+	//	window.onload = loadDashboardStats;
 	</script>
 </body>
 </html>

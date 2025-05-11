@@ -303,6 +303,48 @@
             font-weight: bold;
             font-size: 0.9em; /* Reduced font size */
         }
+         /* Loading animation styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease-in-out, visibility 0s linear 0s;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #007bff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        
     </style>
 </head>
 
@@ -311,7 +353,9 @@
         <h1 class="header-title"><i class="fas fa-envelope"></i> Postal Dashboard</h1>
         <button class="contact-us-button"><i class="fas fa-envelope"></i> Contact Us</button>
     </header>
-
+ <div id="loadingOverlay" class="loading-overlay">
+                <div class="loader"></div>
+            </div>
     <div class="postal-service-section">
         <div class="search-bar">
             <input type="text" id="postalSearchInput" placeholder="<i class='fas fa-search'></i> Search branch or pincode..."
@@ -352,6 +396,14 @@
     </footer>
 
 	<script>
+	 const loadingOverlay = document.getElementById('loadingOverlay');
+	function showLoading() {
+        loadingOverlay.classList.add('active');
+    }
+	function hideLoading() {
+        loadingOverlay.classList.remove('active');
+    }
+	
 		let pinBranchData = [];
 		let filteredData = [];
 		let currentTab = 'cities';
@@ -436,62 +488,74 @@
 			filterPostalList(); // For now, the search button does the same as the input change
 		}
 
-		async function handleItemClick(type, item) {
-			console.log("342", item);
-			console.log("343", type);
-			// You can implement further actions here, like displaying details
-			//alert(`You selected ${type === 'pincodes' ? 'Pincode' : 'Branch'}:
-			//${type === 'pincodes' ? item.pincCode : item.branchName} 
-			//(${type === 'pincodes' ? item.branchName : item.pincCode})`);
-			const userId = 'SYSTEM'; // Replace with actual user ID logic
-			const searchUrl = new URL("http://localhost:8081/Post-office/serch-postCd/Name");
-			searchUrl.searchParams.append('userId', userId);
-			let pincode = null;
-			let branchName = null;
-			if (type === 'pincodes') {
-				console.log("entering for 354", type);
-				pincode = item.pincCode;
-				console.log("pincode for 356", pincode);
-				if (pincode) {
-					console.log("pincode for 358", pincode);
-					searchUrl.searchParams.append('pincode', pincode);
-				}
-			} else if (type === 'cities') {
-				console.log("entering for 360", type);
-				branchName = item.branchName;
-				if (branchName) {
-					searchUrl.searchParams.append('branchName', branchName);
-				}
-			}
-			try {
-				const response = await fetch(searchUrl.toString(), { // Use searchUrl.toString()
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				});
-
-				if (!response.ok) {
-					console.error(`Error fetching post office details: ${response.status}`);
-					postOfficeDetailsDiv.innerHTML = `<p class="error">Failed to load details.</p>`;
-					openModal();
-					return;
-				}
-
-				const data = await response.json();
-				console.log("Post office details:", data);
-				displayPostOfficeDetails(data);
-				console.log("Post office displayPostOfficeDetails:", displayPostOfficeDetails);
-
-				openModal();
-				console.log("Post office openModal:", openModal);
-
-			} catch (error) {
-				console.error('Error fetching post office details:', error);
-				postOfficeDetailsDiv.innerHTML = `<p class="error">Error loading details.</p>`;
-				openModal();
-			}
+		// Add loading functions (already included from previous request)
+		function showLoading() {
+		    document.getElementById('loadingOverlay').classList.add('active');
 		}
+
+		function hideLoading() {
+		    document.getElementById('loadingOverlay').classList.remove('active');
+		}
+
+		// Updated handleItemClick function with branchName encoding fix
+		async function handleItemClick(type, item) {
+    const userId = 'SYSTEM'; // Replace with actual user ID logic
+    const baseUrl = "http://localhost:8081/Post-office/serch-postCd/Name";
+    let queryParams = `userId=${encodeURIComponent(userId)}`;
+    
+    if (type === 'pincodes') {
+        console.log("Processing pincode:", type);
+        const pincode = item.pincCode;
+        if (pincode) {
+            queryParams += `&pincode=${encodeURIComponent(pincode)}`;
+            console.log("Pincode:", pincode);
+        }
+    } else if (type === 'cities') {
+        console.log("Processing branch:", type);
+        let branchName = item.branchName ? item.branchName.trim() : null;
+        if (branchName) {
+            // Decode if already encoded to prevent double-encoding
+            branchName = decodeURIComponent(branchName).replace(/%20/g, ' ');
+            queryParams += `&branchName=${encodeURIComponent(branchName)}`;
+            console.log("Raw Branch Name:", item.branchName);
+            console.log("Processed Branch Name:", branchName);
+        }
+    }
+
+    const fullUrl = `${baseUrl}?${queryParams}`;
+    console.log("Constructed URL:", fullUrl);
+
+    showLoading(); // Show loading animation
+
+    try {
+        const response = await fetch(fullUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        hideLoading(); // Hide loading animation
+
+        if (!response.ok) {
+            console.error(`Error fetching post office details: ${response.status}`);
+            postOfficeDetailsDiv.innerHTML = `<p class="error">Failed to load details: ${response.statusText}</p>`;
+            openModal();
+            return;
+        }
+
+        const data = await response.json();
+        console.log("Post office details:", data);
+        displayPostOfficeDetails(data);
+        openModal();
+
+    } catch (error) {
+        hideLoading(); // Hide loading animation on error
+        console.error('Error fetching post office details:', error);
+        postOfficeDetailsDiv.innerHTML = `<p class="error">Error loading details: ${error.message}</p>`;
+        openModal();
+    }
+}
 		function displayPostOfficeDetails(data) {
 			if (!postOfficeDetailsDiv) {
 				console.error("Error: postOfficeDetailsDiv is null in displayPostOfficeDetails.  This function should not have been called.");

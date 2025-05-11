@@ -76,10 +76,44 @@ public class OtpService {
 
 					jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
 					MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");
-					helper.setFrom(new InternetAddress("KIoSK_Bank_Helpline@gmail.com", "IneternetBanking_OTP"));
-					helper.setTo(email);
-					helper.setSubject("Your one time password for Secure Login ");
-					helper.setText("Your otp is " + otp + " Expire after 1 hrs.");
+					helper.setFrom(new InternetAddress("SecureAccessPortal@myCompany.com"));
+				    helper.setTo(email);
+				    helper.setSubject("🔒 Your One-Time Password (OTP) for Secure Login");
+
+				    // Plain text email template
+				    String emailContent = 
+				        "============================================================\n" +
+				        "          🏦 Internet Banking - Secure OTP Login           \n" +
+				        "============================================================\n" +
+				        "\n" +
+				        "Dear Customer,\n" +
+				        "\n" +
+				        "Your One-Time Password (OTP) for secure login is:\n" +
+				        "\n" +
+				        "           🔑  " + otp + "  🔑\n" +
+				        "\n" +
+				        "⏰ This OTP is valid for 30 minutes.\n" +
+				        "   Keep it confidential and do not share it with anyone.\n" +
+				        "\n" +
+				        "   [⌚ Time is ticking! Expires in 30 minutes]\n" +
+				        "\n" +
+				        "------------------------------------------------------------\n" +
+				        "📞 Contact Us\n" +
+				        "------------------------------------------------------------\n" +
+				        "Email: support@yourbank.com\n" +
+				        "Phone: +91-820-824-7944 (Available 24/7, Mon-Fri)\n" +
+				        "\n" +
+				        "------------------------------------------------------------\n" +
+				        "🔗 Unsubscribe\n" +
+				        "------------------------------------------------------------\n" +
+				        "To stop receiving these emails, please reply with 'UNSUBSCRIBE'\n" +
+				        "or contact our support team at support@yourbank.com.\n" +
+				        "\n" +
+				        "============================================================\n" +
+				        "       Your Security, Our Priority - Your Partner 🏦         \n" +
+				        "============================================================\n";
+
+				    helper.setText(emailContent);
 					// call repo to store Otp in DB
 					OtpStore otpStore = new OtpStore();
 					otpStore.setId(nextcount());

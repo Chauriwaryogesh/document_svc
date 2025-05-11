@@ -24,6 +24,8 @@ public interface IEmployeeService{
 
 	public String registerUser(SecurityDTO securityDTO, String userId);
 
+	public boolean deleteNoteById(Long id);
+
 	
 
 }

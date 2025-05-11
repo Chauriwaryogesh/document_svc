@@ -28,5 +28,15 @@ public class DashboardStatsController {
         }
     }
     
+    @GetMapping("/email-counts")
+    public ResponseEntity<DashboardStats> getEmailCountStats(@RequestHeader("userId") String userId) {
+        try {
+            DashboardStats stats = dashboardService.getEmailCountStats(userId);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Handle errors here
+        }
+    }
+    
     
 }
