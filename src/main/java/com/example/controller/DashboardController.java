@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class DashboardController {
+	
+	@GetMapping("/home")
+    public String home(String userId) {
+        return "home"; 
+    }
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         // Optionally, you can pass some data to the dashboard page here
