@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Access Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(120deg, #e0f7fa, #ffffff, #b2ebf2);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 60px;
+            position: relative;
+        }
+
+        .main-header {
+            width: 100%;
+            padding: 25px 30px;
+            background: linear-gradient(90deg, #00c4ff, #007bff);
+            color: #ffffff;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 10px rgba(0, 196, 255, 0.3);
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #00aaff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-header .header-title {
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+
+        .main-header .header-actions {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 30px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header, footer {
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: #007bff;
+            width: 100%;
+        }
+
+        header h1 {
+            color: #007bff;
+            font-weight: bold;
+            animation: fadeInDown 1s ease-out;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-actions i {
+            margin: 0 15px;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: #007bff;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .header-actions i:hover {
+            opacity: 1;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2rem;
+            border-radius: 16px;
+            width: 400px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            animation: fadeInUp 1s ease-out;
+            position: relative;
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #007bff;
+            opacity: 0.9;
+        }
+
+        .login-card input,
+        .login-card button {
+            display: block;
+            width: 100%;
+            margin: 0.6rem 0;
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #333;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .login-card input::placeholder {
+            color: #999;
+        }
+
+        .login-card input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .login-card button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .login-card button:hover {
+            background-color: #0056b3;
+        }
+
+        .social-login {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+        }
+
+        .social-login button {
+            width: 45%;
+            background: #4267B2;
+            color: white;
+            font-weight: bold;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-login .google {
+            background: #db4437;
+        }
+
+        .social-login button i {
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+
+        .social-login button:hover {
+            opacity: 0.9;
+        }
+
+        .chatbot-hint {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: #555;
+            animation: fadeIn 1s ease-out;
+        }
+
+        footer {
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #007bff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            font-size: 0.9rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .input-group {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .input-group input {
+            width: 90%;
+            padding: 0.5rem 2.5rem 0.6rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            color: #333;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .toggle-visibility {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1rem;
+            color: #555;
+            user-select: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .toggle-visibility:hover {
+            opacity: 1;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(173, 216, 230, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            animation: floatBubble linear infinite;
+        }
+
+        @keyframes floatBubble {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease-in-out, visibility 0s linear 0s;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #007bff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10002;
+        }
+
+        .custom-alert-overlay.active {
+            display: flex;
+        }
+
+        .custom-alert-box {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            min-width: 300px;
+            max-width: 80%;
+        }
+
+        .custom-alert-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .custom-alert-header.error {
+            color: #f44336;
+        }
+
+        .custom-alert-message {
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .custom-alert-message.error {
+            color: #f44336;
+        }
+
+        .custom-alert-buttons button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-alert-buttons button:hover {
+            background-color: #0056b3;
+        }
+
+        .otp-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .otp-popup.active {
+            display: flex;
+        }
+
+        .otp-popup-box {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            min-width: 300px;
+            max-width: 80%;
+        }
+
+        .otp-popup-box h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .otp-popup-box .input-group {
+            margin-bottom: 15px;
+        }
+
+        .otp-popup-box button {
+            display: block;
+            width: 100%;
+            margin: 0.6rem 0;
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .otp-popup-box button:hover {
+            background-color: #0056b3;
+        }
+
+        .qr-popup, .security-tips-popup, .forgot-credentials-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .qr-popup.active, .security-tips-popup.active, .forgot-credentials-popup.active {
+            display: flex;
+        }
+
+        .qr-popup-box, .security-tips-popup-box, .forgot-credentials-popup-box {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            min-width: 300px;
+            max-width: 80%;
+        }
+
+        .qr-popup-box h3, .security-tips-popup-box h3, .forgot-credentials-popup-box h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .qr-popup-box p, .security-tips-popup-box p, .forgot-credentials-popup-box p {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .qr-popup-box #qrCode {
+            margin: 15px auto;
+        }
+
+        .security-tips-popup-box ul {
+            text-align: left;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .forgot-credentials-popup-box .input-group {
+            margin-bottom: 15px;
+        }
+
+        .qr-popup-box button {
+            display: block;
+            width: 100%;
+            margin: 0.6rem 0;
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .qr-popup-box button:hover, .security-tips-popup-box button:hover, .forgot-credentials-popup-box button:hover {
+            background-color: #0056b3;
+        }
+
+        .fab-container {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            z-index: 2;
+        }
+
+        .fab {
+            background-color: #007bff;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .fab:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        .action-menu {
+            position: fixed;
+            bottom: 120px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            width: 200px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 2;
+        }
+
+        .action-menu.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .action-menu button {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            color: #007bff;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-menu button i {
+            margin-right: 10px;
+            font-size: 1rem;
+        }
+
+        .action-menu button:hover {
+            background-color: #e0f7fa;
+        }
+
+        @media (max-width: 600px) {
+            .fab-container {
+                bottom: 60px;
+                right: 15px;
+            }
+            .action-menu {
+                bottom: 110px;
+                right: 15px;
+                width: 180px;
+            }
+            .login-card {
+                width: 90%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="customAlertOverlay" class="custom-alert-overlay">
+        <div id="customAlertBox" class="custom-alert-box">
+            <div id="customAlertHeader" class="custom-alert-header"></div>
+            <div id="customAlertMessage" class="custom-alert-message"></div>
+            <div class="custom-alert-buttons">
+                <button id="customAlertOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customErrorOverlay" class="custom-alert-overlay error">
+        <div id="customErrorBox" class="custom-alert-box">
+            <div id="customErrorHeader" class="custom-alert-header error">Error</div>
+            <div id="customErrorMessage" class="custom-alert-message error"></div>
+            <div class="custom-alert-buttons">
+                <button id="customErrorOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="otpPopup" class="otp-popup">
+        <div class="otp-popup-box">
+            <h3>Enter OTP</h3>
+            <div class="input-group">
+                <input type="password" id="otp" placeholder="Enter OTP" required />
+                <span class="toggle-visibility" onclick="toggleVisibility('otp', this)">🙈</span>
+            </div>
+            <button onclick="verifyOtp()">Verify OTP</button>
+        </div>
+    </div>
+
+    <div id="qrPopup" class="qr-popup">
+        <div class="qr-popup-box">
+            <h3>Login with QR Code</h3>
+            <p>Scan this QR code with your mobile app to log in.</p>
+            <div id="qrCode"></div>
+            <button onclick="closeQrPopup()">Close</button>
+        </div>
+    </div>
+
+    <div id="securityTipsPopup" class="security-tips-popup">
+        <div class="security-tips-popup-box">
+            <h3>Security Tips</h3>
+            <ul>
+                <li>Use a strong, unique password for your account.</li>
+                <li>Enable two-factor authentication where available.</li>
+                <li>Beware of phishing emails or suspicious links.</li>
+                <li>Regularly update your software and devices.</li>
+                <li>Contact support if you suspect unauthorized access.</li>
+            </ul>
+            <button onclick="closeSecurityTipsPopup()">Close</button>
+        </div>
+    </div>
+
+    <div id="forgotCredentialsPopup" class="forgot-credentials-popup">
+        <div class="forgot-credentials-popup-box">
+            <h3>Forgot User ID/Email</h3>
+            <p>Enter your email to receive recovery instructions.</p>
+            <div class="input-group">
+                <input type="email" id="recoveryEmail" placeholder="Enter Email" required />
+            </div>
+            <button onclick="submitForgotCredentials()">Submit</button>
+            <button onclick="closeForgotCredentialsPopup()">Cancel</button>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="header-title">Secure Access Portal</div>
+        <div class="header-actions">
+            <i class="fas fa-exclamation-triangle" title="SOS"></i>
+            <i class="fas fa-bell" title="Notifications"></i>
+            <i class="fas fa-phone" title="Contact Us"></i>
+            <i class="fas fa-question-circle" title="Help"></i>
+        </div>
+    </header>
+    <main>
+        <div class="login-card">
+            <h2>Login to Continue</h2>
+            <div class="input-group">
+                <input type="password" id="email" placeholder="Enter Email" required />
+                <span class="toggle-visibility" onclick="toggleVisibility('email', this)">🙈</span>
+            </div>
+            <div class="input-group">
+                <input type="text" id="userId" placeholder="User ID" required />
+                <span class="toggle-visibility" onclick="toggleVisibility('userId', this)">🙈</span>
+            </div>
+            <button onclick="sendOtp()">Send OTP</button>
+            <div class="social-login">
+                <button><i class="fab fa-facebook-f"></i> Facebook</button>
+                <button class="google"><i class="fab fa-google"></i> Google</button>
+            </div>
+            <div id="loadingOverlay" class="loading-overlay">
+                <div class="loader"></div>
+            </div>
+            <div class="chatbot-hint">
+                💬 Need help? Ask our chatbot!
+            </div>
+        </div>
+        <div class="fab-container">
+            <div class="fab" onclick="toggleActionMenu()">
+                <i class="fas fa-plus"></i>
+            </div>
+            <div id="actionMenu" class="action-menu">
+                <button onclick="showQrPopup()">
+                    <i class="fas fa-qrcode"></i> Login with QR Code
+                </button>
+                <button onclick="showSecurityTipsPopup()">
+                    <i class="fas fa-shield-alt"></i> Security Tips
+                </button>
+                <button onclick="redirectToHome()">
+                    <i class="fas fa-home"></i> Back to Home
+                </button>
+                <button onclick="redirectToGuest()">
+                    <i class="fas fa-user"></i> Guest Access
+                </button>
+                <button onclick="contactSupport()">
+                    <i class="fas fa-headset"></i> Contact Support
+                </button>
+                <button onclick="showForgotCredentialsPopup()">
+                    <i class="fas fa-key"></i> Forgot User ID/Email
+                </button>
+                <button onclick="redirectToRegister()">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+            </div>
+        </div>
+    </main>
+    <footer>
+        © Secure Access Portal 2025 | Designed with ❤️
+    </footer>
+
+    <script>
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const customAlertOverlay = document.getElementById('customAlertOverlay');
+        const customAlertHeader = document.getElementById('customAlertHeader');
+        const customAlertMessage = document.getElementById('customAlertMessage');
+        const customAlertOkBtn = document.getElementById('customAlertOkBtn');
+        const customErrorOverlay = document.getElementById('customErrorOverlay');
+        const customErrorMessage = document.getElementById('customErrorMessage');
+        const customErrorOkBtn = document.getElementById('customErrorOkBtn');
+        const otpPopup = document.getElementById('otpPopup');
+        const qrPopup = document.getElementById('qrPopup');
+        const securityTipsPopup = document.getElementById('securityTipsPopup');
+        const forgotCredentialsPopup = document.getElementById('forgotCredentialsPopup');
+        const actionMenu = document.getElementById('actionMenu');
+        let ws = null;
+        let sessionId = null;
+
+        function showLoading() {
+            loadingOverlay.classList.add('active');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.remove('active');
+        }
+
+        function showCustomAlert(header, message, callback) {
+            customAlertHeader.textContent = header;
+            customAlertMessage.textContent = message;
+            customAlertOverlay.classList.add('active');
+            customAlertOkBtn.onclick = () => {
+                customAlertOverlay.classList.remove('active');
+                if (callback) callback();
+            };
+        }
+
+        function showErrorAlert(message) {
+            customErrorMessage.textContent = message;
+            customErrorOverlay.classList.add('active');
+            otpPopup.classList.remove('active');
+            qrPopup.classList.remove('active');
+            customErrorOkBtn.onclick = () => {
+                customErrorOverlay.classList.remove('active');
+                document.getElementById('email').value = '';
+                document.getElementById('userId').value = '';
+            };
+        }
+
+        function showOtpPopup() {
+            otpPopup.classList.add('active');
+        }
+
+        function hideOtpPopup() {
+            otpPopup.classList.remove('active');
+            document.getElementById('otp').value = '';
+        }
+
+        function showQrPopup() {
+            qrPopup.classList.add('active');
+            actionMenu.classList.remove('active');
+            setupWebSocket();
+        }
+
+        function closeQrPopup() {
+            qrPopup.classList.remove('active');
+            document.getElementById('qrCode').innerHTML = '';
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+
+        function showSecurityTipsPopup() {
+            securityTipsPopup.classList.add('active');
+            actionMenu.classList.remove('active');
+        }
+
+        function closeSecurityTipsPopup() {
+            securityTipsPopup.classList.remove('active');
+        }
+
+        function showForgotCredentialsPopup() {
+            forgotCredentialsPopup.classList.add('active');
+            actionMenu.classList.remove('active');
+            document.getElementById('recoveryEmail').value = '';
+        }
+
+        function closeForgotCredentialsPopup() {
+            forgotCredentialsPopup.classList.remove('active');
+        }
+
+        function toggleActionMenu() {
+            actionMenu.classList.toggle('active');
+        }
+
+        function setupWebSocket() {
+            ws = new WebSocket('ws://localhost:8081/ws/qr-login');
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+            };
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'session') {
+                    sessionId = data.sessionId;
+                    generateQrCode();
+                } else if (data.type === 'auth') {
+                    if (data.status === 'success') {
+                        closeQrPopup();
+                        showCustomAlert('Success', `Logged in as ${data.userId}`, () => {
+                            window.location.href = '/dashboard';
+                        });
+                    } else {
+                        showErrorAlert('QR code authentication failed.');
+                    }
+                }
+            };
+            ws.onclose = () => {
+                console.log('WebSocket closed');
+            };
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                showErrorAlert('Failed to connect to server. Please try again.');
+                closeQrPopup();
+            };
+        }
+
+        function generateQrCode() {
+            const qrCodeDiv = document.getElementById('qrCode');
+            qrCodeDiv.innerHTML = '';
+            if (!sessionId) {
+                showErrorAlert('Session not initialized. Please try again.');
+                closeQrPopup();
+                return;
+            }
+            showLoading();
+            fetch('http://localhost:8081/Security/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: sessionId })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                hideLoading();
+                if (data.error) {
+                    showErrorAlert(data.error);
+                    closeQrPopup();
+                    return;
+                }
+                try {
+                    if (typeof QRCode === 'undefined') {
+                        throw new Error('QRCode library not loaded');
+                    }
+                    const qrData = JSON.stringify({ token: data.token, action: 'login' });
+                    console.log('Generating QR code with data:', qrData);
+                    new QRCode(qrCodeDiv, {
+                        text: qrData,
+                        width: 200,
+                        height: 200,
+                        colorDark: '#000000',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                } catch (error) {
+                    console.error('Error generating QR code:', error);
+                    showErrorAlert('Failed to generate QR code. Please try again.');
+                    closeQrPopup();
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error('Error fetching QR token:', error);
+                showErrorAlert('Failed to generate QR code. Please try again.');
+                closeQrPopup();
+            });
+        }
+
+        function submitForgotCredentials() {
+            const email = document.getElementById('recoveryEmail').value;
+            if (!email) {
+                showErrorAlert('Please enter your email.');
+                return;
+            }
+            showLoading();
+            hideLoading();
+            closeForgotCredentialsPopup();
+            showCustomAlert('Success', 'Redirecting to recovery page...', () => {
+                window.location.href = '/forgot-credentials';
+            });
+        }
+
+        function redirectToHome() {
+            actionMenu.classList.remove('active');
+            window.location.href = '/';
+        }
+
+        function redirectToGuest() {
+            actionMenu.classList.remove('active');
+            window.location.href = '/guest';
+        }
+
+        function contactSupport() {
+            actionMenu.classList.remove('active');
+            window.location.href = 'mailto:support@secureportal.com?subject=Login%20Assistance';
+        }
+
+        function sendOtp() {
+            const email = document.getElementById("email").value;
+            const userId = document.getElementById("userId").value;
+            if (!email) {
+                showErrorAlert("Email is required.");
+                return;
+            }
+            if (!userId) {
+                showErrorAlert("User ID is required.");
+                return;
+            }
+            const params = new URLSearchParams();
+            params.append("Email id", email);
+            params.append("user id", userId);
+            showLoading();
+            fetch('http://localhost:8081/Security/generateOtpService?' + params.toString(), {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                hideLoading();
+                if (data && data.errorMessage) {
+                    showErrorAlert(data.errorMessage);
+                } else if (data && !data.errorMessage) {
+                    showCustomAlert("Success", "OTP Sent Successfully", () => {
+                        showOtpPopup();
+                    });
+                } else {
+                    showErrorAlert("Invalid response from the server.");
+                    console.error("Unexpected response:", data);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error("Error while sending OTP:", error);
+                showErrorAlert("Error sending OTP. Please try again.");
+            });
+        }
+
+        function verifyOtp() {
+            const email = document.getElementById("email").value;
+            const otp = document.getElementById("otp").value;
+            const userId = document.getElementById("userId").value;
+            if (!otp) {
+                showErrorAlert("OTP is required.");
+                return;
+            }
+            const params = new URLSearchParams();
+            params.append("Email id", email);
+            params.append("Otp", otp);
+            showLoading();
+            fetch('http://localhost:8081/Security/verify-otp?' + params.toString(), {
+                method: 'POST',
+                headers: { 'user-id': userId }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                hideLoading();
+                if (data && data.errorMessage) {
+                    showErrorAlert(data.errorMessage);
+                } else if (data && !data.errorMessage) {
+                    hideOtpPopup();
+                    showCustomAlert("Success", "OTP Verified Successfully", () => {
+                        window.location.href = "/dashboard";
+                    });
+                } else {
+                    showErrorAlert("Invalid response from the server.");
+                    console.error("Unexpected response:", data);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error("Error verifying OTP:", error);
+                showErrorAlert("Error verifying OTP. Please try again.");
+            });
+        }
+
+        function redirectToRegister() {
+            actionMenu.classList.remove('active');
+            window.location.href = "register";
+        }
+
+        function toggleVisibility(id, icon) {
+            const field = document.getElementById(id);
+            if (field.type === "password") {
+                field.type = "text";
+                icon.textContent = "🙈";
+            } else {
+                field.type = "password";
+                icon.textContent = "👁️";
+            }
+        }
+
+        function createBubbles() {
+            const body = document.body;
+            const bubble = document.createElement('span');
+            const size = Math.random() * 30 + 10;
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${Math.random() * 100}%`;
+            bubble.style.top = `${Math.random() * 100}%`;
+            bubble.style.animationDelay = `${Math.random() * 2}s`;
+            body.appendChild(bubble);
+            bubble.classList.add('bubble');
+        }
+
+        for (let i = 0; i < 50; i++) {
+            createBubbles();
+        }
+
+        // Check if QRCode.js loaded
+        window.onload = function() {
+            if (typeof QRCode === 'undefined') {
+                console.error('QRCode.js failed to load');
+                showErrorAlert('QR code functionality is unavailable. Please check your network and try again.');
+            }
+        };
+    </script>
+</body>
+</html>

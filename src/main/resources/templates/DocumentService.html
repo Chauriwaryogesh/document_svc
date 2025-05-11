@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Document Service - Secure Access</title>
+	<style>
+		body {
+			font-family: 'Segoe UI', sans-serif;
+			margin: 0;
+			background: linear-gradient(135deg, #fcd440, #ffffff);
+			animation: gradientShift 10s ease infinite;
+		}
+
+		header {
+			background-color: #007bff;
+			color: white;
+			padding: 1rem 2rem;
+			text-align: center;
+		}
+
+		.container {
+			display: flex;
+			justify-content: space-around;
+			padding: 2rem;
+			flex-wrap: wrap;
+		}
+
+		.card {
+			background: #fff;
+			padding: 2rem;
+			margin: 1rem;
+			border-radius: 10px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			flex: 1 1 45%;
+			min-width: 300px;
+		}
+
+		.card h2 {
+			margin-bottom: 1rem;
+			color: #333;
+		}
+
+		.card input,
+		.card select,
+		.card button {
+			width: 100%;
+			padding: 0.7rem;
+			margin-bottom: 1rem;
+			border-radius: 5px;
+			border: 1px solid #ccc;
+			font-size: 1rem;
+		}
+
+		.card button {
+			background-color: #28a745;
+			color: white;
+			border: none;
+			cursor: pointer;
+		}
+
+		.card button:hover {
+			background-color: #218838;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 1rem;
+		}
+
+		th,
+		td {
+			padding: 10px;
+			border: 1px solid #ccc;
+		}
+
+		th {
+			background-color: #f2f2f2;
+		}
+
+		footer {
+			text-align: center;
+			background-color: #007bff;
+			color: white;
+			padding: 1rem;
+			margin-top: 2rem;
+		}
+
+		@keyframes gradientShift {
+			0% {
+				background-position: 0% 50%;
+			}
+
+			50% {
+				background-position: 100% 50%;
+			}
+
+			100% {
+				background-position: 0% 50%;
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+	<header>
+		<h1>MailSync - Upload Documents</h1>
+	</header>
+
+	<div class="container">
+		<!-- Upload Document Section -->
+		<div class="card">
+			<h2>Upload New Document</h2>
+			<input type="text" id="docName" placeholder="Document Name" required />
+			<select id="docType">
+				<option value="PDF">PDF</option>
+				<option value="DOCX">DOCX</option>
+				<option value="XLSX">XLSX</option>
+			</select>
+			<input type="file" id="file" />
+			<button onclick="uploadDocument()">Upload</button>
+		</div>
+
+		<!-- Document List Section -->
+		<div class="card">
+			<h2> List of Available Documents</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>id</th>
+						<th>document Name</th>
+						<th>Document Type</th>
+						<th>Created By</th>
+						<th>Uploaded By</th>
+						<th>View Document</th>
+
+					</tr>
+				</thead>
+				<tbody id="documentTable">
+					<tr>
+						<td colspan="3">Loading documents...</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<footer>
+		<p>&copy; 2025 MailSync. All rights reserved.</p>
+	</footer>
+
+	<!-- Inside your <script> tag -->
+	<script>
+		async function uploadDocument() {
+		  const fileInput = document.getElementById('file');
+		  const docName = document.getElementById('docName').value;
+		  const file = fileInput.files[0];
+		  
+
+
+		  if (!docName || !file) {
+		    alert("Please enter document name and select a file.");
+		    return;
+		  }
+
+		  const formData = new FormData();
+		  formData.append("file", file);
+		  formData.append("Doc Name", docName); // note the exact match with backend param name
+
+		  try {
+		    const response = await fetch("http://localhost:8081/DocumentService/upload", {
+		      method: "POST",
+		      headers: {
+		        "userId": "SYSTEM" // send userId as header (not in formData)
+		      },
+		      body: formData
+		    });
+
+		    const result = await response.text();
+		    alert(result);
+		    fetchDocuments(); // refresh table after successful upload
+		  } catch (error) {
+		    console.error("Upload failed:", error);
+		    alert("An error occurred while uploading the document.");
+		  }
+		}
+
+		
+		async function fetchDocuments() {
+		  const response = await fetch("http://localhost:8081/DocumentService/getAllDocuments", {
+		    method: "GET",
+		    headers: {
+		      "Content-Type": "application/json",
+		      "userId": "SYSTEM"
+		    }
+		  });
+
+		  const result = await response.json();
+		  const documents = result.data;
+
+		  const table = document.getElementById("documentTable");
+		  table.innerHTML = "";
+
+		  if (!Array.isArray(documents) || documents.length === 0) {
+		    table.innerHTML = "<tr><td colspan='6'>No documents found.</td></tr>";
+		    return;
+		  }
+
+		  documents.forEach(doc => {
+		    const row = document.createElement("tr");
+		    row.innerHTML = `
+		      <td>${doc.id}</td>
+		      <td>${doc.docName}</td>
+		      <td>${doc.docType}</td>
+		      <td>${doc.createdBy}</td>
+		      <td>${doc.updatedBy}</td>
+		      <td><button onclick="viewDocument('${doc.id}')">View</button></td>
+		    `;
+		    table.appendChild(row);
+		  });
+		}
+
+		async function viewDocument(docId) {
+		  // Fetch the document (image or file) from the API
+		  const response = await fetch(`http://localhost:8081/DocumentService/getDocument?id=${docId}`, {
+		    method: "GET",
+		    headers: {
+		      "Content-Type": "application/json",
+		      "userId": "SYSTEM"
+		    }
+		  });
+
+		  // If the response is not OK, alert the user
+		  if (!response.ok) {
+		    alert("Failed to fetch document.");
+		    return;
+		  }
+
+		  // Get the content type from the response headers to determine how to handle it
+		  const contentType = response.headers.get("Content-Type");
+
+		  // Convert the response to a Blob (binary data)
+		  const blob = await response.blob();
+
+		  // Create an object URL for the Blob, which can be used to display or download the file
+		  const url = URL.createObjectURL(blob);
+
+		  // If it's an image, open it in a new tab for viewing
+		  if (contentType.startsWith("image")) {
+		    window.open(url, '_blank'); // Opens image in a new tab
+		  } else if (contentType === "application/pdf") {
+		    // If it's a PDF, use a viewer to display it
+		    window.open(url, '_blank');
+		  } else {
+		    // If it's another type of document, you can download or display it based on your needs
+		    window.open(url, '_blank');
+		  }
+		}
+
+		  window.onload = fetchDocuments;
+		</script>
+
+
+</body>
+
+</html>

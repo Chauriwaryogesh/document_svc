@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postal Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f8;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .main-header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 20px; /* Reduced padding */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            margin-bottom: 20px; /* Reduced margin */
+            font-size: 1.5em; /* Reduced font size */
+            font-weight: bold;
+            text-align: center;
+            width: 80%;
+            display: flex;
+            justify-content: space-between; /* Space out title and button */
+            align-items: center;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px); /* Reduced translateY */
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-title {
+            margin: 0;
+        }
+
+        .contact-us-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-us-button:hover {
+            background-color: #1e7e34;
+            transform: scale(1.03);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .postal-service-section {
+            background-color: white;
+            padding: 25px; /* Reduced padding */
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 15px; /* Reduced margin */
+            width: 80%;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px); /* Reduced translateY */
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px; /* Reduced margin */
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px; /* Reduced padding */
+            margin: 0 10px; /* Reduced margin */
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.9em; /* Reduced font size */
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button.active {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.03);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px; /* Reduced gap */
+            margin-bottom: 20px; /* Reduced margin */
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-10px); /* Reduced translateX */
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .search-bar input {
+            flex-grow: 1;
+            padding: 10px; /* Reduced padding */
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 0.9em; /* Reduced font size */
+        }
+
+        .search-bar button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px; /* Reduced padding */
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em; /* Reduced font size */
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-bar button:hover {
+            background-color: #1e7e34;
+            transform: scale(1.03);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-content {
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .tab-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .tab-content li {
+            padding: 12px 20px; /* Reduced padding */
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em; /* Reduced font size */
+        }
+
+        .tab-content li:last-child {
+            border-bottom: none;
+        }
+
+        .tab-content li:hover {
+            background-color: #e6f7ff;
+        }
+
+        .tab-content li span {
+            color: #555;
+            font-size: 0.85em; /* Reduced font size */
+        }
+
+        .main-footer {
+            width: 100%;
+            padding: 15px 0; /* Reduced padding */
+            background-color: #e9ecef;
+            color: #555;
+            text-align: center;
+            font-size: 0.85em; /* Reduced font size */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #detailsModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #detailsModal .modal-content {
+            background: white;
+            padding: 25px; /* Reduced padding */
+            border-radius: 12px;
+            max-width: 650px; /* Reduced max-width */
+            width: 90%;
+            max-height: 80vh; /* Reduced max-height */
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        #detailsModal .close {
+            position: absolute;
+            top: 10px; /* Reduced top */
+            right: 15px; /* Reduced right */
+            font-size: 24px; /* Reduced font size */
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+            transition: color 0.2s ease;
+        }
+
+        #detailsModal .close:hover {
+            color: #007bff;
+        }
+
+        #detailsModal h2 {
+            color: #007bff;
+            margin-top: 0;
+            margin-bottom: 15px; /* Reduced margin */
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 8px; /* Reduced padding */
+            font-size: 1.2em; /* Reduced font size */
+        }
+
+        #detailsModal p {
+            line-height: 1.5; /* Reduced line-height */
+            margin-bottom: 8px; /* Reduced margin */
+            font-size: 0.9em; /* Reduced font size */
+        }
+
+        #detailsModal p strong {
+            font-weight: bold;
+            color: #333;
+        }
+
+        #detailsModal hr {
+            border: 1px solid #f0f0f0;
+            margin: 15px 0; /* Reduced margin */
+        }
+
+        #detailsModal .error {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 0.9em; /* Reduced font size */
+        }
+         /* Loading animation styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease-in-out, visibility 0s linear 0s;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #007bff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        
+    </style>
+</head>
+
+<body>
+    <header class="main-header">
+        <h1 class="header-title"><i class="fas fa-envelope"></i> Postal Dashboard</h1>
+        <button class="contact-us-button"><i class="fas fa-envelope"></i> Contact Us</button>
+    </header>
+ <div id="loadingOverlay" class="loading-overlay">
+                <div class="loader"></div>
+            </div>
+    <div class="postal-service-section">
+        <div class="search-bar">
+            <input type="text" id="postalSearchInput" placeholder="<i class='fas fa-search'></i> Search branch or pincode..."
+                oninput="filterPostalList()" />
+            <button onclick="searchPostal()"><i class="fas fa-search"></i> Search</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('cities')">
+                <i class="fas fa-building"></i> Branch Names (<span id="branchCount">0</span>)
+            </button>
+            <button class="tab-button" onclick="showTab('pincodes')">
+                <i class="fas fa-map-pin"></i> Pincodes (<span id="pinCount">0</span>)
+            </button>
+        </div>
+
+        <div id="citiesTab" class="tab-content">
+            <ul id="cityList"></ul>
+        </div>
+
+        <div id="pincodesTab" class="tab-content" style="display: none;">
+            <ul id="pincodeList"></ul>
+        </div>
+    </div>
+
+    <div id="detailsModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="postOfficeDetails">
+                <h2>Post Office Details</h2>
+                <p>Loading details...</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <i class="fas fa-copyright"></i> Secure Access Limited - WOW
+    </footer>
+
+	<script>
+	 const loadingOverlay = document.getElementById('loadingOverlay');
+	function showLoading() {
+        loadingOverlay.classList.add('active');
+    }
+	function hideLoading() {
+        loadingOverlay.classList.remove('active');
+    }
+	
+		let pinBranchData = [];
+		let filteredData = [];
+		let currentTab = 'cities';
+		let detailsModal;
+		let postOfficeDetailsDiv; // Declare outside
+		const userId = 'SYSTEM';
+		async function fetchPincodeOrBranchData() {
+
+			const url = "http://localhost:8081/Post-office/PincodeOrBranch";
+
+			try {
+				const response = await fetch(url, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"userId": userId
+					}
+				});
+
+				if (!response.ok) {
+					console.error(`HTTP error! status: ${response.status}`);
+					return;
+				}
+
+				const json = await response.json();
+
+				if (json && json.data && json.data.length > 0 && json.data[0].pinCodeOrBranchDTO) {
+					const data = json.data[0];
+					pinBranchData = data.pinCodeOrBranchDTO;
+					filteredData = [...pinBranchData]; // Initialize filtered data
+
+					document.getElementById("pinCount").textContent = data.pinCount || 0;
+					document.getElementById("branchCount").textContent = data.branchCount || 0;
+
+					populateList(currentTab);
+					console.log("Fetched pin/branch data:", pinBranchData);
+				} else {
+					console.error("Invalid data structure received from API:", json);
+				}
+
+			} catch (error) {
+				console.error("Error fetching pin/branch data:", error);
+			}
+		}
+
+		function populateList(type) {
+			const list = document.getElementById(type === 'pincodes' ? "pincodeList" : "cityList");
+			list.innerHTML = "";
+
+			filteredData.forEach(item => {
+				const li = document.createElement("li");
+				const mainText = type === 'pincodes' ? item.pincCode : item.branchName;
+				const secondaryText = type === 'pincodes' ? item.branchName : item.pincCode;
+
+				li.innerHTML = `<span>${mainText}</span><span>${secondaryText}</span>`;
+				li.dataset.id = item.id;
+				li.onclick = () => handleItemClick(type, item);
+				list.appendChild(li);
+			});
+		}
+
+		function showTab(tabId) {
+			document.getElementById('citiesTab').style.display = tabId === 'cities' ? 'block' : 'none';
+			document.getElementById('pincodesTab').style.display = tabId === 'pincodes' ? 'block' : 'none';
+			document.querySelector('.tab-button.active').classList.remove('active');
+			document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
+			currentTab = tabId;
+			populateList(currentTab);
+		}
+
+		function filterPostalList() {
+			const searchTerm = document.getElementById("postalSearchInput").value.toLowerCase();
+			filteredData = pinBranchData.filter(item => {
+				const branchName = item.branchName ? item.branchName.toLowerCase() : '';
+				const pincode = item.pincCode ? item.pincCode.toLowerCase() : '';
+				return branchName.includes(searchTerm) || pincode.includes(searchTerm);
+			});
+			populateList(currentTab);
+		}
+
+		function searchPostal() {
+			filterPostalList(); // For now, the search button does the same as the input change
+		}
+
+		// Add loading functions (already included from previous request)
+		function showLoading() {
+		    document.getElementById('loadingOverlay').classList.add('active');
+		}
+
+		function hideLoading() {
+		    document.getElementById('loadingOverlay').classList.remove('active');
+		}
+
+		// Updated handleItemClick function with branchName encoding fix
+		async function handleItemClick(type, item) {
+    const userId = 'SYSTEM'; // Replace with actual user ID logic
+    const baseUrl = "http://localhost:8081/Post-office/serch-postCd/Name";
+    let queryParams = `userId=${encodeURIComponent(userId)}`;
+    
+    if (type === 'pincodes') {
+        console.log("Processing pincode:", type);
+        const pincode = item.pincCode;
+        if (pincode) {
+            queryParams += `&pincode=${encodeURIComponent(pincode)}`;
+            console.log("Pincode:", pincode);
+        }
+    } else if (type === 'cities') {
+        console.log("Processing branch:", type);
+        let branchName = item.branchName ? item.branchName.trim() : null;
+        if (branchName) {
+            // Decode if already encoded to prevent double-encoding
+            branchName = decodeURIComponent(branchName).replace(/%20/g, ' ');
+            queryParams += `&branchName=${encodeURIComponent(branchName)}`;
+            console.log("Raw Branch Name:", item.branchName);
+            console.log("Processed Branch Name:", branchName);
+        }
+    }
+
+    const fullUrl = `${baseUrl}?${queryParams}`;
+    console.log("Constructed URL:", fullUrl);
+
+    showLoading(); // Show loading animation
+
+    try {
+        const response = await fetch(fullUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        hideLoading(); // Hide loading animation
+
+        if (!response.ok) {
+            console.error(`Error fetching post office details: ${response.status}`);
+            postOfficeDetailsDiv.innerHTML = `<p class="error">Failed to load details: ${response.statusText}</p>`;
+            openModal();
+            return;
+        }
+
+        const data = await response.json();
+        console.log("Post office details:", data);
+        displayPostOfficeDetails(data);
+        openModal();
+
+    } catch (error) {
+        hideLoading(); // Hide loading animation on error
+        console.error('Error fetching post office details:', error);
+        postOfficeDetailsDiv.innerHTML = `<p class="error">Error loading details: ${error.message}</p>`;
+        openModal();
+    }
+}
+		function displayPostOfficeDetails(data) {
+			if (!postOfficeDetailsDiv) {
+				console.error("Error: postOfficeDetailsDiv is null in displayPostOfficeDetails.  This function should not have been called.");
+				return; // Important: Stop execution if postOfficeDetailsDiv is not defined.
+			}
+			postOfficeDetailsDiv.innerHTML = ''; // Clear previous details
+			if (data && data.PostOffice && data.PostOffice.length > 0) {
+				data.PostOffice.forEach(office => {
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Name:</strong> ${office.Name}</p>`;
+					if (office.Description) {
+						postOfficeDetailsDiv.innerHTML += `<p><strong>Description:</strong> ${office.Description}</p>`;
+					}
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Branch Type:</strong> ${office.BranchType}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Delivery Status:</strong> ${office.DeliveryStatus}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Circle:</strong> ${office.Circle}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>District:</strong> ${office.District}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Division:</strong> ${office.Division}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Region:</strong> ${office.Region}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Block:</strong> ${office.Block}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>State:</strong> ${office.State}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Country:</strong> ${office.Country}</p>`;
+					postOfficeDetailsDiv.innerHTML += `<p><strong>Pincode:</strong> ${office.Pincode}</p><hr>`;
+				});
+			} else if (data && data.Message) {
+				postOfficeDetailsDiv.innerHTML = `<p>${data.Message}</p>`;
+			} else {
+				postOfficeDetailsDiv.innerHTML = `<p>No details found.</p>`;
+			}
+		}
+
+		function openModal() {
+			document.getElementById("detailsModal").style.display = "flex";
+		}
+
+
+		function closeModal() {
+			if (detailsModal) {
+				detailsModal.style.display = "none";
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			detailsModal = document.getElementById('detailsModal');
+			postOfficeDetailsDiv = document.getElementById('postOfficeDetails'); // Initialize here
+			window.onclick = function (event) {
+				if (event.target == detailsModal) {
+					closeModal();
+				}
+			};
+		});
+
+		window.onload = fetchPincodeOrBranchData;
+	</script>
+
+</body>
+
+</html>
