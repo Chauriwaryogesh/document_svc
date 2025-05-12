@@ -722,21 +722,21 @@
     </footer>
 
     <script>
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const customAlertOverlay = document.getElementById('customAlertOverlay');
-        const customAlertHeader = document.getElementById('customAlertHeader');
-        const customAlertMessage = document.getElementById('customAlertMessage');
-        const customAlertOkBtn = document.getElementById('customAlertOkBtn');
-        const customErrorOverlay = document.getElementById('customErrorOverlay');
-        const customErrorMessage = document.getElementById('customErrorMessage');
-        const customErrorOkBtn = document.getElementById('customErrorOkBtn');
-        const otpPopup = document.getElementById('otpPopup');
-        const qrPopup = document.getElementById('qrPopup');
-        const securityTipsPopup = document.getElementById('securityTipsPopup');
-        const forgotCredentialsPopup = document.getElementById('forgotCredentialsPopup');
-        const actionMenu = document.getElementById('actionMenu');
-        let ws = null;
-        let sessionId = null;
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const customAlertOverlay = document.getElementById('customAlertOverlay');
+    const customAlertHeader = document.getElementById('customAlertHeader');
+    const customAlertMessage = document.getElementById('customAlertMessage');
+    const customAlertOkBtn = document.getElementById('customAlertOkBtn');
+    const customErrorOverlay = document.getElementById('customErrorOverlay');
+    const customErrorMessage = document.getElementById('customErrorMessage');
+    const customErrorOkBtn = document.getElementById('customErrorOkBtn');
+    const otpPopup = document.getElementById('otpPopup');
+    const qrPopup = document.getElementById('qrPopup');
+    const securityTipsPopup = document.getElementById('securityTipsPopup');
+    const forgotCredentialsPopup = document.getElementById('forgotCredentialsPopup');
+    const actionMenu = document.getElementById('actionMenu');
+    let ws = null;
+    let sessionId = null;
 
         function showLoading() {
             loadingOverlay.classList.add('active');
@@ -997,6 +997,8 @@
                 if (data && data.errorMessage) {
                     showErrorAlert(data.errorMessage);
                 } else if (data && !data.errorMessage) {
+                    // Store userId in sessionStorage
+                    sessionStorage.setItem('userId', userId);
                     hideOtpPopup();
                     showCustomAlert("Success", "OTP Verified Successfully", () => {
                         window.location.href = "/dashboard";
@@ -1012,7 +1014,7 @@
                 showErrorAlert("Error verifying OTP. Please try again.");
             });
         }
-
+        
         function redirectToRegister() {
             actionMenu.classList.remove('active');
             window.location.href = "register";
