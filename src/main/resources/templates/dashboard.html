@@ -478,6 +478,56 @@
 .notification-banner .modern-button.small:hover {
     background-color: #1e7e34;
 }
+/* Grid View Styles */
+.work-item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 15px;
+}
+
+.work-item-grid .work-item-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.work-item-grid .work-item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background-color: #e6f7ff;
+}
+
+.work-item-grid .work-item-card input[type="checkbox"] {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.work-item-grid .work-item-card p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #333;
+}
+
+.work-item-grid .work-item-card p strong {
+    color: #007bff;
+}
+
+/* Ensure table is hidden in grid view */
+.work-item-list-container.grid-view #workItemTable {
+    display: none;
+}
+
+.work-item-list-container.grid-view #workItemGrid {
+    display: grid;
+}
 
         .main-footer {
             width: 100%;
@@ -503,6 +553,7 @@
         <span id="notificationBadge" class="notification-badge" style="display: none;">1</span>
     </button>
     <button onclick="redirectToAdminPanel()" class="admin-panel-button">Admin Panel</button>
+    <button onclick="logout()" class="admin-panel-button" style="right: 210px;">Logout</button>
 </div>
 
 <!-- Notification banner remains unchanged -->
@@ -664,6 +715,9 @@
         <option value="on-going">On Going</option>
     </select>
     <button id="applyFilterBtn" class="modern-button">Apply Filter</button>
+    <button id="toggleViewBtn" class="modern-button" style="background-color: #007bff; color: white;">
+        <i class="fas fa-th"></i> Toggle View
+    </button>
 </div>
 
         <div class="workitem-summary">
@@ -672,34 +726,33 @@
             <div class="summary-box closed">Closed: <span id="closedWorkItems"></span></div>
             <div class="summary-box correspondence">Correspondence: <span id="correspondenceWorkItems"></span></div>
         </div>
+       <div class="work-item-list-container" id="workItemListContainer">
+    <table class="work-item-list" id="workItemTable" style="display: table;">
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="selectAll"></th>
+                <th>Id</th>
+                <th>Email</th>
+                <th>User ID</th>
+                <th>Email Verification</th>
+                <th>User ID Verification</th>
+                <th>Access Given Time</th>
+                <th>Expire Time</th>
+            </tr>
+        </thead>
+        <tbody id="workItemsBody"></tbody>
+    </table>
+    <div class="work-item-grid" id="workItemGrid" style="display: none;"></div>
 
-        <div class="work-item-list-container">
-            <table class="work-item-list">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" id="selectAll"></th>
-                        <th>Id</th>
-                        <th>Email</th>
-                        <th>User ID</th>
-                        <th>Email Verification</th>
-                        <th>User ID Verification</th>
-                        <th>Access Given Time</th>
-                        <th>Expire Time</th>
-                    </tr>
-                </thead>
-                <tbody id="workItemsBody"></tbody>
-            </table>
-
-            <div class="bulk-actions">
-                <button class="modern-button primary"><i class="fas fa-user-tag"></i> Assign Selected</button>
-                <button class="modern-button secondary"><i class="fas fa-tasks"></i> Change Status</button>
-            </div>
-
-            <button id="getSelectedBtn" class="modern-button primary" style="margin-top: 20px;">Take Action For User</button>
-            <div id="selectedItems"></div>
-            <div id="paginationControls" class="pagination-controls"></div>
-        </div>
+    <div class="bulk-actions">
+        <button class="modern-button primary"><i class="fas fa-user-tag"></i> Assign Selected</button>
+        <button class="modern-button secondary"><i class="fas fa-tasks"></i> Change Status</button>
     </div>
+
+    <button id="getSelectedBtn" class="modern-button primary" style="margin-top: 20px;">Take Action For User</button>
+    <div id="selectedItems"></div>
+    <div id="paginationControls" class="pagination-controls"></div>
+</div>
 
     <button id="generatePdfBtn" class="floating-button"><i class="fas fa-file-pdf"></i></button>
 
@@ -716,57 +769,103 @@
     <footer class="main-footer">MailSync Dashboard - Powered by ❤️ Company</footer>
 
     <script>
+    
+ // Function to get userId from sessionStorage
+// Function to get userId from sessionStorage
+    function getUserId() {
+        const userId = sessionStorage.getItem('userId');
+        if (!userId) {
+            showErrorAlert('User ID not found. Please log in again.');
+            window.location.href = '/login';
+            return null;
+        }
+        return userId;
+    }
+
+    // Logout function
+    function logout() {
+        sessionStorage.removeItem('userId');
+        window.location.href = '/login';
+    }
+
     const itemsPerPage = 10;
     let currentPage = 1;
     let workItems = [];
-    let filteredWorkItems = []; // Store filtered items
+    let filteredWorkItems = [];
     let originalWorkItems = [];
+    let viewMode = 'list'; // Default to list view
+    function redirectToPostalService() { window.location.href = "PostalService"; }
+    function redirectToDocumentService() { window.location.href = "DocumentService"; }
+    function redirectToEmployeeService() { window.location.href = "EmployeeService"; }
+    function redirectToAdminPanel() { const userId = getUserId();
+    if (userId === "ychouri") {
+        window.location.href = "AdminPanel";
+    } else {
+        showErrorAlert("No admin access for user.");
+    }
+}
+    function redirectToCloudService() { window.location.href = "CloudServices"; }
+    function redirectToMailService() { window.location.href = "MailServices"; }
+    function whatsappService() { window.location.href = "tel:+8208247944"; }
 
-        function redirectToPostalService() { window.location.href = "PostalService"; }
-        function redirectToDocumentService() { window.location.href = "DocumentService"; }
-        function redirectToEmployeeService() { window.location.href = "EmployeeService"; }
-        function redirectToAdminPanel() { window.location.href = "AdminPanel"; }
-        function redirectToCloudService() { window.location.href = "CloudServices"; }
-        function redirectToMailService() { window.location.href = "MailServices"; }
-        function whatsappService() { window.location.href = "tel:+8208247944"; }
+    function animateCircle(circleId, percentage, percentageTextId) {
+        const circle = document.getElementById(circleId);
+        const circumference = 376.99;
+        circle.style.strokeDasharray = circumference;
+        const offset = circumference - (percentage / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+        document.getElementById(percentageTextId).innerText = `${Math.round(percentage)}%`;
+    }
 
-        function animateCircle(circleId, percentage, percentageTextId) {
-            const circle = document.getElementById(circleId);
-            const circumference = 376.99;
-            circle.style.strokeDasharray = circumference;
-            const offset = circumference - (percentage / 100) * circumference;
-            circle.style.strokeDashoffset = offset;
-            document.getElementById(percentageTextId).innerText = `${Math.round(percentage)}%`;
+    function toggleView() {
+        viewMode = viewMode === 'list' ? 'grid' : 'list';
+        const container = document.getElementById('workItemListContainer');
+        if (container) {
+            container.classList.toggle('grid-view', viewMode === 'grid');
+            populateWorkItems();
         }
+    }
 
-        async function fetchWorkItems() {
-            try {
-                const response = await fetch('http://localhost:8081/Security/user-list', {
-                    method: 'GET',
-                    headers: { 'userId': 'ychouri' }
-                });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                originalWorkItems = data.data || []; // Store original data
-                workItems = [...originalWorkItems]; // Initialize workItems
-                filteredWorkItems = [...workItems]; // Initialize filteredWorkItems
-                if (!workItems.length) {
-                    document.getElementById('workItemsBody').innerHTML = `
-                        <tr><td colspan="8" style="text-align: center; color: gray;">No available users.</td></tr>`;
-                    return;
-                }
-                populateTable();
-                renderPagination();
-            } catch (error) {
-                console.error('Error fetching work items:', error);
-                showErrorAlert('Failed to fetch work items.');
+    function toggleBulkActions() {
+        const bulkActions = document.querySelector('.bulk-actions');
+        if (bulkActions) {
+            bulkActions.style.display = document.querySelectorAll('.user-checkbox:checked').length ? 'block' : 'none';
+        }
+    }
+
+    async function fetchWorkItems() {
+        const userId = getUserId();
+        if (!userId) return;
+
+        try {
+            const response = await fetch('http://localhost:8081/Security/user-list', {
+                method: 'GET',
+                headers: { 'userId': userId }
+            });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            originalWorkItems = data.data || [];
+            workItems = [...originalWorkItems];
+            filteredWorkItems = [...workItems];
+            if (!workItems.length) {
+                document.getElementById('workItemsBody').innerHTML = `
+                    <tr><td colspan="8" style="text-align: center; color: gray;">No available users.</td></tr>`;
+                document.getElementById('workItemGrid').innerHTML = `
+                    <p style="text-align: center; color: gray;">No available users.</p>`;
+                return;
             }
+            populateWorkItems();
+            renderPagination();
+        } catch (error) {
+            console.error('Error fetching work items:', error);
+            showErrorAlert('Failed to fetch work items.');
         }
-        //filter logic
-        function filterWorkItems(status) {
-console.log("Status",status);
+    }
+
+    function filterWorkItems(status) {
+        console.log("Status", status);
         if (status === '') {
-            filteredWorkItems = [...originalWorkItems]; // Reset to all items
+            filteredWorkItems = [...originalWorkItems];
         } else if (status === 'completed') {
             filteredWorkItems = originalWorkItems.filter(item =>
                 (item.isEmailVerified === 'Y' || item.isEmailVerified === true) &&
@@ -778,31 +877,39 @@ console.log("Status",status);
                 (item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false)
             );
         } else if (status === 'on-going') {
-            filteredWorkItems = [...originalWorkItems]; // Treat as reset for now
+            filteredWorkItems = [...originalWorkItems];
         }
-        currentPage = 1; // Reset to first page
+        currentPage = 1;
         populateTable();
         renderPagination();
     }
 
-        function populateTable() {
-            const tbody = document.getElementById('workItemsBody');
-            tbody.innerHTML = '';
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const paginatedItems = filteredWorkItems.slice(start, end);
+    function populateWorkItems() {
+        const tbody = document.getElementById('workItemsBody');
+        const grid = document.getElementById('workItemGrid');
+        if (!tbody || !grid) return;
 
-            if (!paginatedItems.length) {
-                tbody.innerHTML = `
-                    <tr><td colspan="8" style="text-align: center; color: gray;">No items match the selected filter.</td></tr>`;
-                return;
-            }
+        tbody.innerHTML = '';
+        grid.innerHTML = '';
 
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginatedItems = filteredWorkItems.slice(start, end);
+
+        if (!paginatedItems.length) {
+            tbody.innerHTML = `
+                <tr><td colspan="8" style="text-align: center; color: gray;">No items match the selected filter.</td></tr>`;
+            grid.innerHTML = `
+                <p style="text-align: center; color: gray;">No items match the selected filter.</p>`;
+            return;
+        }
+
+        if (viewMode === 'list') {
             paginatedItems.forEach(item => {
                 const row = tbody.insertRow();
                 row.innerHTML = `
-                    <td><input type="checkbox" class="user-checkbox" value="${item.id}"></td>
-                    <td>${item.id}</td>
+                    <td><input type="checkbox" class="user-checkbox" value="${item.id || ''}"></td>
+                    <td>${item.id || 'N/A'}</td>
                     <td>${item.email || 'N/A'}</td>
                     <td>${item.userCode || 'N/A'}</td>
                     <td>${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</td>
@@ -811,299 +918,321 @@ console.log("Status",status);
                     <td>${item.remainingTime || 'N/A'}</td>
                 `;
             });
+        } else {
+            paginatedItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'work-item-card';
+                card.innerHTML = `
+                    <input type="checkbox" class="user-checkbox" value="${item.id || ''}">
+                    <p><strong>ID:</strong> ${item.id || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${item.email || 'N/A'}</p>
+                    <p><strong>User ID:</strong> ${item.userCode || 'N/A'}</p>
+                    <p><strong>Email Verification:</strong> ${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</p>
+                    <p><strong>User ID Verification:</strong> ${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</p>
+                    <p><strong>Access Given:</strong> ${item.createdTime || 'N/A'}</p>
+                    <p><strong>Expires:</strong> ${item.remainingTime || 'N/A'}</p>
+                `;
+                grid.appendChild(card);
+            });
         }
 
-        function renderPagination() {
-            const totalPages = Math.ceil(filteredWorkItems.length / itemsPerPage);
-            const paginationControls = document.getElementById('paginationControls');
-            paginationControls.innerHTML = `
-                <button class="pagination-button" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">Previous</button>
-                ${Array.from({ length: totalPages }, (_, i) => `
-                    <button class="pagination-button ${currentPage === i + 1 ? 'active' : ''}" onclick="changePage(${i + 1})">${i + 1}</button>
-                `).join('')}
-                <button class="pagination-button" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Next</button>
-            `;
+        // Remove existing listeners to prevent duplicates
+        document.querySelectorAll('.user-checkbox').forEach(cb => {
+            cb.removeEventListener('change', toggleBulkActions);
+            cb.addEventListener('change', toggleBulkActions);
+        });
+    }
+
+    function renderPagination() {
+        const totalPages = Math.ceil(filteredWorkItems.length / itemsPerPage);
+        const paginationControls = document.getElementById('paginationControls');
+        if (!paginationControls) return;
+        paginationControls.innerHTML = `
+            <button class="pagination-button" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">Previous</button>
+            ${Array.from({ length: totalPages }, (_, i) => `
+                <button class="pagination-button ${currentPage === i + 1 ? 'active' : ''}" onclick="changePage(${i + 1})">${i + 1}</button>
+            `).join('')}
+            <button class="pagination-button" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Next</button>
+        `;
+    }
+
+    function changePage(page) {
+        currentPage = page;
+        populateWorkItems();
+        renderPagination();
+    }
+
+    async function loadEmailCounts() {
+        const userId = getUserId();
+        if (!userId) return;
+
+        try {
+            const response = await fetch('http://localhost:8081/api/dashboard/email-counts', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json', 'userId': userId }
+            });
+            if (!response.ok) throw new Error('Failed to fetch email counts');
+            const data = await response.json();
+            document.getElementById('totalWorkItems').textContent = data.totalEmails ?? 0;
+            document.getElementById('openWorkItems').textContent = data.verPending ?? 0;
+            document.getElementById('closedWorkItems').textContent = data.totalClosed ?? 0;
+            document.getElementById('correspondenceWorkItems').textContent = data.corrospodnace ?? 0;
+        } catch (error) {
+            console.error('Error fetching email counts:', error);
         }
+    }
 
-        function changePage(page) {
-            currentPage = page;
-            populateTable();
-            renderPagination();
+    async function loadDashboardStats() {
+        const userId = getUserId();
+        if (!userId) return;
+
+        try {
+            const response = await fetch('http://localhost:8081/api/dashboard/stats', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json', 'userId': userId }
+            });
+            if (!response.ok) throw new Error('Failed to fetch dashboard stats');
+            const data = await response.json();
+            document.getElementById('totalEmails').innerText = data.totalEmails;
+            document.getElementById('emailsSent').innerText = data.emailsSent;
+            document.getElementById('emailsInDb').innerText = data.emailsInDb;
+            document.getElementById('slaCrossed').innerText = data.slaCrossed;
+            document.getElementById('documentUpload').innerText = data.documentUpload;
+            const total = 200; // Fallback to 200 if totalEmails is 0
+            animateCircle('emailSentCircle', (data.emailsSent / total) * 100, 'emailSentPercentage');
+            animateCircle('emailsInDbCircle', (data.emailsInDb / total) * 100, 'emailsInDbPercentage');
+            animateCircle('slaProgressCircle', (data.totalEmails / total) * 100, 'slaProgressPercentage');
+            animateCircle('documentUploadCircle', (data.documentUpload / total) * 100, 'documentUploadPercentage');
+            animateCircle('slaCrossedCircle', (data.slaCrossed / total) * 100, 'slaCrossedPercentage');
+        } catch (error) {
+            console.error('Error fetching dashboard stats:', error);
         }
+    }
 
-        async function loadEmailCounts() {
-            try {
-                const response = await fetch('http://localhost:8081/api/dashboard/email-counts', {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json', 'userId': 'ychouri' }
-                });
-                if (!response.ok) throw new Error('Failed to fetch email counts');
-                const data = await response.json();
-                document.getElementById('totalWorkItems').textContent = data.totalEmails ?? 0;
-                document.getElementById('openWorkItems').textContent = data.verPending ?? 0;
-                document.getElementById('closedWorkItems').textContent = data.totalClosed ?? 0;
-                document.getElementById('correspondenceWorkItems').textContent = data.corrospodnace ?? 0;
-            } catch (error) {
-                console.error('Error fetching email counts:', error);
-            }
+    function handleTakeAction() {
+        const selectedCheckbox = document.querySelector('input.user-checkbox:checked');
+        if (!selectedCheckbox) {
+            showErrorAlert('Please select one user.');
+            return;
         }
-
-        async function loadDashboardStats() {
-            try {
-                const response = await fetch('http://localhost:8081/api/dashboard/stats', {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json', 'userId': 'SYSTEM' }
-                });
-                if (!response.ok) throw new Error('Failed to fetch dashboard stats');
-                const data = await response.json();
-                document.getElementById('totalEmails').innerText = data.totalEmails;
-                document.getElementById('emailsSent').innerText = data.emailsSent;
-                document.getElementById('emailsInDb').innerText = data.emailsInDb;
-                document.getElementById('slaCrossed').innerText = data.slaCrossed;
-                document.getElementById('documentUpload').innerText = data.documentUpload;
-                const total = 200;
-                animateCircle('emailSentCircle', (data.emailsSent / total) * 100, 'emailSentPercentage');
-                animateCircle('emailsInDbCircle', (data.emailsInDb / total) * 100, 'emailsInDbPercentage');
-                animateCircle('slaProgressCircle', (data.totalEmails / total) * 100, 'slaProgressPercentage');
-                animateCircle('documentUploadCircle', (data.documentUpload / total) * 100, 'documentUploadPercentage');
-                animateCircle('slaCrossedCircle', (data.slaCrossed / total) * 100, 'slaCrossedPercentage');
-            } catch (error) {
-                console.error('Error fetching dashboard stats:', error);
-            }
+        const userId = getUserId();
+        if (userId === "ychouri") {
+        	 window.location.href = `AdminPanel?id=${selectedCheckbox.value}`;
+        } else {
+            showErrorAlert("No admin access for user.");
         }
+    }
+       
+   
 
-        function handleTakeAction() {
-            const selectedCheckbox = document.querySelector('input.user-checkbox:checked');
-            if (!selectedCheckbox) {
-                showErrorAlert('Please select one user.');
-                return;
-            }
-            window.location.href = `AdminPanel?id=${selectedCheckbox.value}`;
+    function showErrorAlert(message) {
+        const overlay = document.getElementById('customErrorOverlay');
+        document.getElementById('customErrorMessage').textContent = message;
+        overlay.classList.add('active');
+        document.getElementById('customErrorOkBtn').onclick = () => overlay.classList.remove('active');
+    }
+
+    async function generatePdf() {
+        const userId = getUserId();
+        if (!userId) return;
+
+        try {
+            const response = await fetch('http://localhost:8081/Employee/generatePDF', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/pdf', 'userId': userId }
+            });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dashboard_report.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            showErrorAlert('Failed to generate PDF.');
         }
+    }
 
-        function showErrorAlert(message) {
-            const overlay = document.getElementById('customErrorOverlay');
-            document.getElementById('customErrorMessage').textContent = message;
-            overlay.classList.add('active');
-            document.getElementById('customErrorOkBtn').onclick = () => overlay.classList.remove('active');
-        }
-
-        async function generatePdf() {
-            try {
-                const response = await fetch('http://localhost:8081/Employee/generatePDF', {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'APPLICATION_PDF_VALUE', 'userId': 'ychouri' }
-                });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'dashboard_report.pdf';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            } catch (error) {
-                console.error('Error generating PDF:', error);
-                showErrorAlert('Failed to generate PDF.');
-            }
-        }
-
-     // Add notification functions
-        function showNotification() {
-            const banner = document.getElementById('notificationBanner');
-            banner.style.display = 'flex';
-            setTimeout(() => {
-                banner.style.display = 'none';
-            }, 5000); // Auto-hide after 5 seconds
-        }
-
-        function closeNotification() {
-            document.getElementById('notificationBanner').style.display = 'none';
-        }
-
-        // Update shareChart function to show modal first
-        async function shareChart() {
-            const target = document.querySelector('.dashboard-container');
-            try {
-                const canvas = await html2canvas(target);
-                canvas.toBlob(blob => {
-                    const file = new File([blob], 'chart.png', { type: 'image/png' });
-                    // Store file in a global variable for use in shareNow
-                    window.shareFile = file;
-                    // Show the share modal
-                    document.getElementById('shareModal').style.display = 'flex';
-                }, 'image/png');
-            } catch (error) {
-                console.error('Capture failed:', error);
-                showErrorAlert('Failed to capture screenshot.');
-            }
-        }
-
-        // Add shareNow function for the "Share Now" button
-        function shareNow() {
-            const file = window.shareFile;
-            if (file) {
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    navigator.share({ files: [file], title: 'Shared Chart', text: 'Dashboard chart shared via web!' })
-                        .then(() => closeShareModal())
-                        .catch(err => showErrorAlert('Sharing failed: ' + err.message));
-                } else {
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(file);
-                    link.download = 'chart.png';
-                    link.click();
-                    closeShareModal();
-                }
-            } else {
-                showErrorAlert('No screenshot available to share.');
-            }
-        }
-        async function fetchNotes() {
-            try {
-                const res = await fetch('/DocumentService/notes/List');
-                const result = await res.json();
-                renderNotes(result.data || []);
-            } catch (err) {
-                console.error('Failed to fetch notes:', err);
-                showErrorAlert('Failed to fetch notes.');
-            }
-        }
-
-        function renderNotes(notes) {
-            const list = document.getElementById('notesList');
-            list.innerHTML = notes.length ? notes.map(note => `
-                <li>${note.text} <button onclick="deleteNote(${note.id})" style="margin-left: 10px; color: red;">🗑</button></li>
-            `).join('') : '<li style="font-style: italic; color: #888;">📝 No notes yet. Click "+ Create Note" to add one.</li>';
-        }
-
-        let noteToDelete = null;
-
-        function openNotesModal() {
-            document.getElementById('notesModal').style.display = 'flex';
-            fetchNotes();
-        }
-
-        function closeNotesModal() { document.getElementById('notesModal').style.display = 'none'; }
-        function openNotePrompt() { document.getElementById('createNoteModal').style.display = 'flex'; }
-        function closeCreateNoteModal() { document.getElementById('createNoteModal').style.display = 'none'; }
-        function closeDeleteModal() { document.getElementById('deleteConfirmModal').style.display = 'none'; }
-        function openFeedbackModal() { document.getElementById('feedbackModal').style.display = 'flex'; }
-        function closeFeedbackModal() { document.getElementById('feedbackModal').style.display = 'none'; }
-        function closeFeedbackSuccessModal() { document.getElementById('feedbackSuccessModal').style.display = 'none'; }
-        function closeShareModal() { document.getElementById('shareModal').style.display = 'none'; }
-        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-
-        async function saveNote() {
-            const noteText = document.getElementById('noteInput').value.trim();
-            if (!noteText) return showErrorAlert("Note can't be empty");
-            try {
-                await fetch('/DocumentService/notes', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: noteText })
-                });
-                closeCreateNoteModal();
-                fetchNotes();
-            } catch (err) {
-                console.error('Save error:', err);
-                showErrorAlert('Failed to save note.');
-            }
-        }
-
-        function deleteNote(id) {
-            noteToDelete = id;
-            document.getElementById('deleteConfirmModal').style.display = 'flex';
-        }
-
-        async function confirmDelete() {
-            if (!noteToDelete) return;
-            try {
-                await fetch(`/DocumentService/notes/delete/${noteToDelete}`, { method: 'DELETE' });
-                closeDeleteModal();
-                fetchNotes();
-            } catch (err) {
-                console.error('Delete failed:', err);
-                showErrorAlert('Failed to delete note.');
-            }
-        }
-
-        function saveFeedback() {
-            const text = document.getElementById('feedbackInput').value.trim();
-            if (!text) return showErrorAlert('Please enter some feedback.');
-            console.log('Feedback submitted:', text);
-            closeFeedbackModal();
-            document.getElementById('feedbackSuccessModal').style.display = 'flex';
-        }
-
-        function showOverview() {
-            document.getElementById('overviewContent').innerHTML = `
-                <p><strong>Total Notes:</strong> 3</p>
-                <p><strong>Total Feedback:</strong> 2</p>
-                <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
-            `;
-            document.getElementById('overviewModal').style.display = 'flex';
-        }
-
-        function showAnalytics() {
-            document.getElementById('analyticsContent').innerHTML = `
-                <p><strong>Notes Created This Week:</strong> 40</p>
-                <p><strong>Positive Feedback:</strong> 80%</p>
-                <p><strong>Negative Feedback:</strong> 20%</p>
-            `;
-            document.getElementById('analyticsModal').style.display = 'flex';
-        }
-
-        function updateClock() {
-            const now = new Date();
-            let hours = now.getHours();
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const amPm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12 || 12;
-            document.getElementById('dashboardHeaderClock').textContent = `${hours}:${minutes} ${amPm}`;
-        }
-
-     // Notification functions
-        function showNotification() {
-            const banner = document.getElementById('notificationBanner');
-            const badge = document.getElementById('notificationBadge');
-            banner.style.display = 'flex';
-            badge.style.display = 'none'; // Hide badge when banner is shown
-            setTimeout(() => {
-                banner.style.display = 'none';
-            }, 5000); // Auto-hide after 5 seconds
-        }
-
-        function closeNotification() {
-            const banner = document.getElementById('notificationBanner');
-            const badge = document.getElementById('notificationBadge');
+    function showNotification() {
+        const banner = document.getElementById('notificationBanner');
+        const badge = document.getElementById('notificationBadge');
+        banner.style.display = 'flex';
+        badge.style.display = 'none';
+        setTimeout(() => {
             banner.style.display = 'none';
-            badge.style.display = 'none'; // Ensure badge is hidden when notification is closed
-        }
+        }, 5000);
+    }
 
-        // Update DOMContentLoaded to show badge on load and attach notification listener
-        document.addEventListener('DOMContentLoaded', () => {
+    function closeNotification() {
+        const banner = document.getElementById('notificationBanner');
+        const badge = document.getElementById('notificationBadge');
+        banner.style.display = 'none';
+        badge.style.display = 'none';
+    }
+
+    async function shareChart() {
+        const target = document.querySelector('.dashboard-container');
+        try {
+            const canvas = await html2canvas(target);
+            canvas.toBlob(blob => {
+                const file = new File([blob], 'chart.png', { type: 'image/png' });
+                window.shareFile = file;
+                document.getElementById('shareModal').style.display = 'flex';
+            }, 'image/png');
+        } catch (error) {
+            console.error('Capture failed:', error);
+            showErrorAlert('Failed to capture screenshot.');
+        }
+    }
+
+    function shareNow() {
+        const file = window.shareFile;
+        if (file) {
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file], title: 'Shared Chart', text: 'Dashboard chart shared via web!' })
+                    .then(() => closeShareModal())
+                    .catch(err => showErrorAlert('Sharing failed: ' + err.message));
+            } else {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(file);
+                link.download = 'chart.png';
+                link.click();
+                closeShareModal();
+            }
+        } else {
+            showErrorAlert('No screenshot available to share.');
+        }
+    }
+
+    async function fetchNotes() {
+        try {
+            const res = await fetch('/DocumentService/notes/List');
+            const result = await res.json();
+            renderNotes(result.data || []);
+        } catch (err) {
+            console.error('Failed to fetch notes:', err);
+            showErrorAlert('Failed to fetch notes.');
+        }
+    }
+
+    function renderNotes(notes) {
+        const list = document.getElementById('notesList');
+        list.innerHTML = notes.length ? notes.map(note => `
+            <li>${note.text} <button onclick="deleteNote(${note.id})" style="margin-left: 10px; color: red;">🗑</button></li>
+        `).join('') : '<li style="font-style: italic; color: #888;">📝 No notes yet. Click "+ Create Note" to add one.</li>';
+    }
+
+    let noteToDelete = null;
+
+    function openNotesModal() {
+        document.getElementById('notesModal').style.display = 'flex';
+        fetchNotes();
+    }
+
+    function closeNotesModal() { document.getElementById('notesModal').style.display = 'none'; }
+    function openNotePrompt() { document.getElementById('createNoteModal').style.display = 'flex'; }
+    function closeCreateNoteModal() { document.getElementById('createNoteModal').style.display = 'none'; }
+    function closeDeleteModal() { document.getElementById('deleteConfirmModal').style.display = 'none'; }
+    function openFeedbackModal() { document.getElementById('feedbackModal').style.display = 'flex'; }
+    function closeFeedbackModal() { document.getElementById('feedbackModal').style.display = 'none'; }
+    function closeFeedbackSuccessModal() { document.getElementById('feedbackSuccessModal').style.display = 'none'; }
+    function closeShareModal() { document.getElementById('shareModal').style.display = 'none'; }
+    function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+    async function saveNote() {
+        const noteText = document.getElementById('noteInput').value.trim();
+        if (!noteText) return showErrorAlert("Note can't be empty");
+        try {
+            await fetch('/DocumentService/notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: noteText })
+            });
+            closeCreateNoteModal();
+            fetchNotes();
+        } catch (err) {
+            console.error('Save error:', err);
+            showErrorAlert('Failed to save note.');
+        }
+    }
+
+    function deleteNote(id) {
+        noteToDelete = id;
+        document.getElementById('deleteConfirmModal').style.display = 'flex';
+    }
+
+    async function confirmDelete() {
+        if (!noteToDelete) return;
+        try {
+            await fetch(`/DocumentService/notes/delete/${noteToDelete}`, { method: 'DELETE' });
+            closeDeleteModal();
+            fetchNotes();
+        } catch (err) {
+            console.error('Delete failed:', err);
+            showErrorAlert('Failed to delete note.');
+        }
+    }
+
+    function saveFeedback() {
+        const text = document.getElementById('feedbackInput').value.trim();
+        if (!text) return showErrorAlert('Please enter some feedback.');
+        console.log('Feedback submitted:', text);
+        closeFeedbackModal();
+        document.getElementById('feedbackSuccessModal').style.display = 'flex';
+    }
+
+    function showOverview() {
+        document.getElementById('overviewContent').innerHTML = `
+            <p><strong>Total Notes:</strong> 3</p>
+            <p><strong>Total Feedback:</strong> 2</p>
+            <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+        `;
+        document.getElementById('overviewModal').style.display = 'flex';
+    }
+
+    function showAnalytics() {
+        document.getElementById('analyticsContent').innerHTML = `
+            <p><strong>Notes Created This Week:</strong> 40</p>
+            <p><strong>Positive Feedback:</strong> 80%</p>
+            <p><strong>Negative Feedback:</strong> 20%</p>
+        `;
+        document.getElementById('analyticsModal').style.display = 'flex';
+    }
+
+    function updateClock() {
+        const now = new Date();
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const amPm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        document.getElementById('dashboardHeaderClock').textContent = `${hours}:${minutes} ${amPm}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
         setInterval(updateClock, 1000);
         updateClock();
         fetchWorkItems();
         loadEmailCounts();
         loadDashboardStats();
 
-        // Show notification badge on page load
         document.getElementById('notificationBadge').style.display = 'flex';
 
-        // Filter event listener
         document.getElementById('applyFilterBtn').addEventListener('click', () => {
             const status = document.getElementById('statusFilter').value;
             filterWorkItems(status);
         });
+        const toggleViewBtn = document.getElementById('toggleViewBtn');
+        if (toggleViewBtn) toggleViewBtn.addEventListener('click', toggleView);
 
         document.getElementById('selectAll').addEventListener('change', function () {
             document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = this.checked);
             toggleBulkActions();
         });
-
+        
         document.getElementById('getSelectedBtn').addEventListener('click', handleTakeAction);
         document.getElementById('shareChartBtn').addEventListener('click', shareChart);
         document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);
