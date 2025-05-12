@@ -2,450 +2,728 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Admin Panel - User Management</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-	<style>
-		body {
-			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-			margin: 0;
-			background: linear-gradient(135deg, #e0f7fa, #c5e1a5);
-			color: #333;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			padding: 30px;
-			min-height: 100vh;
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - User Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #e0f7fa, #c5e1a5);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            min-height: 100vh;
+        }
 
-		h1 {
-			color: #007bff;
-			margin-bottom: 30px;
-			animation: fadeInDown 0.5s ease-out;
-		}
+        h1 {
+            color: #007bff;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.5s ease-out;
+        }
 
-	header {
-    background: linear-gradient(to right, #4c51bf, #667eea);
-    color: white;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+        header {
+            background: linear-gradient(to right, #4c51bf, #667eea);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            margin: 0;
+            gap: 1rem;
+        }
+
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        header nav ul li a:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .header-actions {
+            width: 80%;
+            max-width: 900px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1005;
+        }
+
+        .header-actions button {
+            background-color: #fff;
+            color: #007bff;
+            border: 1px solid #007bff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-actions button:hover {
+            background-color: #007bff;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-actions button[onclick="logout()"] {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .header-actions button[onclick="logout()"]:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .user-list-container {
+            width: 80%;
+            max-width: 900px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-summary {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            animation: slideInLeft 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .user-summary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f8f9fa;
+        }
+
+        .user-summary strong {
+            font-size: 1.1em;
+            color: #007bff;
+            margin-right: 10px;
+        }
+
+        .user-summary .user-checkbox {
+            margin-right: 15px;
+        }
+
+        .user-summary .arrow {
+            margin-left: auto;
+            color: #007bff;
+            transition: transform 0.3s ease;
+        }
+
+        .user-summary.active .arrow {
+            transform: rotate(90deg);
+        }
+
+        .customer-details-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .customer-details-button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+
+        .user-details {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            animation: expandDetails 0.3s ease-out forwards;
+        }
+
+        @keyframes expandDetails {
+            from {
+                opacity: 0;
+                height: 0;
+                padding: 0 20px;
+            }
+            to {
+                opacity: 1;
+                height: auto;
+                padding: 20px;
+            }
+        }
+
+        .user-details:last-child {
+            border-bottom: none;
+        }
+
+        .user-details>div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-details label {
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .user-details input[type="text"],
+        .user-details input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .user-details input[type="text"]:focus,
+        .user-details input[type="date"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .user-details input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .user-details .checkbox-group {
+            display: flex;
+            align-items: center;
+            font-size: 1em;
+        }
+
+        .button-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            width: 80%;
+            max-width: 900px;
+        }
+
+        .button-container button {
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .button-container button:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: scale(1.05);
+        }
+
+        .button-container button:first-child {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .button-container button:first-child:hover {
+            background-color: #c82333;
+        }
+
+        .button-container button:nth-child(2),
+        .button-container button:nth-child(3) {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .button-container button:nth-child(2):hover,
+        .button-container button:nth-child(3):hover {
+            background-color: #0056b3;
+        }
+
+        /* Ensure modal and overlay are above header */
+.customer-details-modal {
+    z-index: 1002; /* Higher than header-actions (1005) and header (100) */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.overlay {
+    z-index: 1001; /* Higher than header (100) but below modal */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 100;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    animation: slideDown 0.4s ease-out;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
-@keyframes slideDown {
-    from {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-		header h1 {
-    font-size: 1.6rem;
-    font-weight: bold;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-header nav ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    margin: 0;
-    gap: 1rem;
-}
-
-header nav ul li a {
-    color: white;
-    text-decoration: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.15);
-    transition: all 0.3s ease;
-    font-weight: 600;
-}
-
-header nav ul li a:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-}
-
-		.header-actions {
-			width: 80%;
-			max-width: 900px;
-			display: flex;
-			justify-content: flex-end;
-			gap: 15px;
-			margin-bottom: 20px;
-		}
-
-		.header-actions button {
-			background-color: #fff;
-			color: #007bff;
-			border: 1px solid #007bff;
-			padding: 10px 15px;
-			border-radius: 8px;
-			cursor: pointer;
-			font-size: 0.9em;
-			transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
-			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-		}
-
-		.header-actions button:hover {
-			background-color: #007bff;
-			color: white;
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-		}
-
-		.user-list-container {
-			width: 80%;
-			max-width: 900px;
-			background-color: #fff;
-			border-radius: 12px;
-			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-			padding: 25px;
-			animation: fadeInUp 0.5s ease-out;
-		}
-
-		@keyframes fadeInUp {
-			from {
-				opacity: 0;
-				transform: translateY(20px);
-			}
-
-			to {
-				opacity: 1;
-				transform: translateY(0);
-			}
-		}
-
-		.user-summary {
-			display: flex;
-			align-items: center;
-			padding: 15px;
-			border-bottom: 1px solid #eee;
-			cursor: pointer;
-			transition: background-color 0.3s ease;
-			animation: slideInLeft 0.3s ease-out forwards;
-			opacity: 0;
-			transform: translateX(-10px);
-		}
-
-		@keyframes slideInLeft {
-			to {
-				opacity: 1;
-				transform: translateX(0);
-			}
-		}
-
-		.user-summary:last-child {
-			border-bottom: none;
-		}
-
-		.user-summary:hover {
-			background-color: #f9f9f9;
-		}
-
-		.user-summary .arrow {
-			margin-left: 10px;
-			transition: transform 0.3s ease;
-		}
-
-		.user-summary.active .arrow {
-			transform: rotate(90deg);
-		}
-
-		.user-details {
-			padding: 15px;
-			border-bottom: 1px solid #ddd;
-			display: none;
-			/* Initially hidden */
-			grid-template-columns: 1fr 1fr;
-			gap: 15px 20px;
-			animation: expandDetails 0.3s ease-out forwards;
-			overflow: hidden;
-			/* Prevent content overflow during animation */
-		}
-
-		@keyframes expandDetails {
-			from {
-				opacity: 0;
-				height: 0;
-				padding: 0 15px;
-			}
-
-			to {
-				opacity: 1;
-				height: auto;
-				padding: 15px;
-			}
-		}
-
-		.user-details:last-child {
-			border-bottom: none;
-		}
-
-		.user-details>div {
-			display: flex;
-			flex-direction: column;
-		}
-
-		.user-details label {
-			font-weight: bold;
-			color: #555;
-			margin-bottom: 5px;
-			font-size: 0.9em;
-		}
-
-		.user-details input[type="text"],
-		.user-details input[type="date"] {
-			padding: 8px;
-			border: 1px solid #ccc;
-			border-radius: 6px;
-			font-size: 0.95em;
-		}
-
-		.user-details input[type="checkbox"] {
-			margin-right: 5px;
-		}
-
-		.user-details .checkbox-group {
-			display: flex;
-			align-items: center;
-		}
-
-		/* Updated button container */
-.button-container {
-    margin-top: 30px;
+/* Adjust header-actions to prevent overlap */
+.header-actions {
+    z-index: 1000; /* Lower than modal (1002) and overlay (1001) */
+    width: 80%;
+    max-width: 900px;
     display: flex;
     justify-content: flex-end;
     gap: 15px;
-    width: 80%;
-    max-width: 900px;
+    margin-bottom: 20px;
+    position: relative;
 }
 
-.button-container button {
-    padding: 12px 25px;
-    border-radius: 8px;
+/* Style tabs at the top */
+.tab-container {
+    margin-bottom: 20px; /* Space below tabs */
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 15px;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    border: none;
+    border-radius: 6px 6px 0 0;
     cursor: pointer;
     font-size: 1em;
-    transition: background-color 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: none;
+    color: #333;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
 }
 
-.button-container button:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    transform: scale(1.05); /* Slightly enlarge button on hover */
+.tab-button:hover {
+    background-color: #e0e0e0;
 }
 
-/* Delete User button (red) */
-.button-container button:first-child {
-    background-color: #dc3545;
-    color: white;
-}
-
-.button-container button:first-child:hover {
-    background-color: #c82333;
-}
-
-/* Create New User and Save Changes buttons (blue with white font) */
-.button-container button:nth-child(2),
-.button-container button:nth-child(3) {
+.tab-button.active {
     background-color: #007bff;
     color: white;
 }
 
-.button-container button:nth-child(2):hover,
-.button-container button:nth-child(3):hover {
-    background-color: #0056b3;
+.tab-content {
+    display: none;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 0 0 6px 6px;
+    min-height: 100px;
 }
 
-		/* New User Modal Styles */
-		.new-user-modal {
-			display: none;
-			position: fixed;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			background-color: #fff;
-			padding: 20px;
-			border-radius: 8px;
-			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-			z-index: 1002;
-			width: 80%;
-			max-width: 400px;
-		}
+.tab-content.active {
+    display: block;
+}
 
-		.new-user-modal h2 {
-			color: #007bff;
-			margin-bottom: 15px;
-		}
+/* Style fields inside tabs */
+.tab-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two-column layout for fields */
+    gap: 15px;
+}
 
-		.new-user-modal .modal-content>div {
-			margin-bottom: 10px;
-		}
+.tab-fields > div {
+    display: flex;
+    flex-direction: column;
+}
 
-		.new-user-modal label {
-			display: block;
-			font-weight: bold;
-			color: #555;
-			margin-bottom: 5px;
-			font-size: 0.9em;
-		}
+.tab-fields label {
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 8px;
+    font-size: 1em;
+}
 
-		.new-user-modal input[type="text"],
-		.new-user-modal input[type="date"],
-		.new-user-modal input[type="checkbox"] {
-			padding: 8px;
-			border: 1px solid #ccc;
-			border-radius: 6px;
-			font-size: 0.95em;
-			width: 100%;
-			box-sizing: border-box;
-		}
+.tab-fields input[type="text"],
+.tab-fields input[type="number"],
+.tab-fields input[type="email"],
+.tab-fields select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
+}
 
-		.new-user-modal .checkbox-group {
-			display: flex;
-			align-items: center;
-		}
+.tab-fields input:focus,
+.tab-fields select:focus {
+    border-color: #007bff;
+    outline: none;
+}
 
-		.new-user-modal .checkbox-group input[type="checkbox"] {
-			margin-right: 5px;
-		}
+/* Style phone group for country code and phone number */
+.phone-group {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
 
-		.new-user-modal .modal-buttons {
-			display: flex;
-			justify-content: flex-end;
-			gap: 10px;
-			margin-top: 20px;
-		}
+.phone-group > div {
+    display: flex;
+    flex-direction: column;
+}
 
-		.new-user-modal .modal-buttons button {
-			padding: 10px 15px;
-			border-radius: 6px;
-			cursor: pointer;
-			font-size: 0.9em;
-		}
+.phone-group input[type="text"] {
+    width: 100%;
+}
 
-		.new-user-modal .modal-buttons .save-button {
-			background-color: #28a745;
-			color: white;
-			border: none;
-		}
+.tab-fields .checkbox-group {
+    display: flex;
+    align-items: center;
+}
 
-		.new-user-modal .modal-buttons .cancel-button {
-			background-color: #dc3545;
-			color: white;
-			border: none;
-		}
+/* Ensure modal and overlay are above header */
+.customer-details-modal {
+    z-index: 1002;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
 
-		.overlay {
-			display: none;
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background-color: rgba(0, 0, 0, 0.5);
-			z-index: 1001;
-		}
+.overlay {
+    z-index: 1001;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
 
-		#popup-message {
-			display: none;
-			background-color: #4CAF50;
-			color: white;
-			padding: 15px 25px;
-			border-radius: 8px;
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-			z-index: 1001;
-			opacity: 0;
-			animation: slideInTop 0.3s ease-out forwards, fadeOut 0.3s ease-in 3s forwards;
-			margin-top: 10px;
-		}
+/* Tab styles */
+.tab-container {
+    margin-bottom: 20px;
+}
 
-		.required {
-			color: red;
-			margin-left: 5px;
-		}
-		/* Styles for the setting popup */
-		.setting-popup {
-		    text-align: left; /* Align text within the popup to the left */
-		}
+.tab-buttons {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 15px;
+}
 
-		.setting-content h3 {
-		    text-align: center; /* Center the title */
-		    color: #007bff;
-		    margin-bottom: 15px;
-		}
+.tab-button {
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    border: none;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+    font-size: 1em;
+    color: #333;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
+}
 
-		.setting-content ul {
-		    list-style: none;
-		    padding: 0;
-		    margin: 0;
-		}
+.tab-button:hover {
+    background-color: #e0e0e0;
+}
 
-		.setting-content li {
-		    padding: 10px 0;
-		    border-bottom: 1px solid #eee;
-		}
+.tab-button.active {
+    background-color: #007bff;
+    color: white;
+}
 
-		.setting-content li:last-child {
-		    border-bottom: none;
-		}
+.tab-content {
+    display: none;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 0 0 6px 6px;
+    min-height: 100px;
+}
 
-		.setting-content a {
-		    text-decoration: none;
-		    color: #333;
-		    display: block;
-		}
+.tab-content.active {
+    display: block;
+}
+        .modal-content>div {
+            margin-bottom: 15px;
+        }
 
-		.setting-content i {
-		    margin-right: 10px;
-		    color: #007bff;
-		}
+        .modal-content label {
+            display: block;
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
 
-		.close-button {
-		    position: absolute;
-		    top: 5px;
-		    right: 10px;
-		    font-size: 1em;
-		    font-weight: bold;
-		    color: #aaa;
-		    cursor: pointer;
-		    border: none;
-		    background: none;
-		    padding: 0;
-		}
+        .modal-content input[type="text"],
+        .modal-content input[type="number"],
+        .modal-content select,
+        .modal-content input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-		.close-button:hover {
-		    color: #333;
-		}
+        .modal-content input[type="checkbox"] {
+            margin-right: 8px;
+        }
 
-		#settingOverlay {
-		    display: none;
-		    position: fixed;
-		    top: 0;
-		    left: 0;
-		    width: 100%;
-		    height: 100%;
-		    background-color: rgba(0, 0, 0, 0.5);
-		    z-index: 1002;
-		}
-		/* Custom Alert Styles */
+        .modal-content .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .modal-buttons .save-button,
+        .modal-buttons .update-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+
+        .modal-buttons .cancel-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+        }
+
+        #popup-message {
+            display: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            opacity: 0;
+            animation: slideInTop 0.3s ease-out forwards, fadeOut 0.3s ease-in 3s forwards;
+            margin-top: 10px;
+        }
+
+        @keyframes slideInTop {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+            }
+        }
+
+        .required {
+            color: red;
+            margin-left: 5px;
+        }
+
+        .setting-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1003;
+            text-align: left;
+            min-width: 200px;
+            pointer-events: auto;
+        }
+
+        .setting-content h3 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .setting-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .setting-content li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .setting-content li:last-child {
+            border-bottom: none;
+        }
+
+        .setting-content a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+
+        .setting-content i {
+            margin-right: 10px;
+            color: #007bff;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 5px;
+            z-index: 1004;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        #settingOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1002;
+        }
+
         .custom-alert-overlay {
             position: fixed;
             top: 0;
@@ -507,96 +785,223 @@ header nav ul li a:hover {
         .custom-alert-buttons button:hover {
             background-color: #0056b3;
         }
-        /* Stylish footer */
-footer {
-    background: linear-gradient(to right, #4c51bf, #667eea);
-    color: white;
-    padding: 1.2rem 0;
-    text-align: center;
-    margin-top: 3rem;
-    width: 100%;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
-    font-weight: 500;
-    font-size: 1rem;
-    animation: fadeInFooter 0.5s ease-in;
+
+        footer {
+            background: linear-gradient(to right, #4c51bf, #667eea);
+            color: white;
+            padding: 1.2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+            width: 100%;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+            font-weight: 500;
+            font-size: 1rem;
+            animation: fadeInFooter 0.5s ease-in;
+        }
+
+        @keyframes fadeInFooter {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        .user-checkbox {
+            margin-right: 10px;
+        }
+
+        .user-list-container.grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .user-list-container.grid-view .user-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .user-list-container.grid-view .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-list-container.grid-view .user-card .user-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .user-list-container.grid-view .user-card .arrow {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        .user-list-container.grid-view .user-card .customer-details-button {
+            margin: 10px 0;
+        }
+
+        .user-list-container.grid-view .user-card .user-details {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .user-list-container.grid-view .user-card.active .user-details {
+            display: block;
+        }
+
+        .user-list-container.grid-view .user-details {
+            grid-template-columns: 1fr;
+        }
+
+        /* Tab Styles */
+        .tab-container {
+            margin-top: 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 15px;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            background-color: #f1f1f1;
+            border: none;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-size: 1em;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        .tab-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .tab-button.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 0 0 6px 6px;
+            min-height: 100px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+        /* Pagination container */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    width: 80%;
+    max-width: 900px;
 }
 
-@keyframes fadeInFooter {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-footer p {
-    margin: 0;
-}
-
-.user-checkbox {
-    margin-right: 10px;
-}
-/* Grid View Styles */
-.user-list-container.grid-view {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
-
-.user-list-container.grid-view .user-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
-    animation: fadeInUp 0.5s ease-out;
-}
-
-.user-list-container.grid-view .user-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.user-list-container.grid-view .user-card .user-checkbox {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-}
-
-.user-list-container.grid-view .user-card .arrow {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+/* Pagination buttons (Previous, Next, page numbers) */
+.pagination-button {
+    padding: 10px 15px;
+    border-radius: 6px;
     cursor: pointer;
+    font-size: 0.9em;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.user-list-container.grid-view .user-card .user-details {
-    display: none;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
+.pagination-button:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.user-list-container.grid-view .user-card.active .user-details {
-    display: block;
+.pagination-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
-/* Adjust user-details for grid view */
-.user-list-container.grid-view .user-details {
-    grid-template-columns: 1fr;
+/* Page number buttons */
+.page-numbers {
+    display: flex;
+    gap: 5px;
 }
-		
-		
-	</style>
+
+.page-numbers button {
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    background-color: #f1f1f1;
+    color: #333;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.page-numbers button:hover:not(.active) {
+    background-color: #e0e0e0;
+    transform: scale(1.05);
+}
+
+.page-numbers button.active {
+    background-color: #007bff;
+    color: white;
+    cursor: default;
+    transform: none;
+}
+.new-user-modal {
+    z-index: 1002;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+    </style>
 </head>
 
 <body>
-   <body>
     <div id="customAlertOverlay" class="custom-alert-overlay">
         <div id="customAlertBox" class="custom-alert-box">
             <div id="customAlertHeader" class="custom-alert-header"></div>
@@ -630,56 +1035,53 @@ footer p {
         <button onclick="toggleView()">
             <i class="fas fa-th"></i> Toggle View
         </button>
-        <button onclick="logout()" style="background-color: #fff; color: #dc3545; border: 1px solid #dc3545; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9em; transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);">
+        <button onclick="logout()">
             <i class="fas fa-sign-out-alt"></i> Logout
         </button>
     </div>
 
     <div class="contact-popup" id="contactPopup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); z-index: 1003; text-align: center;">
         <div class="contact-content">
-            <button class="close-button" onclick="closeContactPopup()" style="position: absolute; top: 10px; right: 15px; font-size: 1.5em; font-weight: bold; color: #aaa; cursor: pointer; border: none; background: none; padding: 0;">×</button>
+            <button class="close-button" onclick="closeContactPopup()">×</button>
             <h3>Contact Information</h3>
             <p style="margin-bottom: 15px; font-size: 1em; color: #555;"><i class="fas fa-envelope" style="margin-right: 8px; color: #007bff;"></i> Email: Chauriwaryogesh@gmail.com</p>
             <p style="margin-bottom: 15px; font-size: 1em; color: #555;"><i class="fas fa-phone" style="margin-right: 8px; color: #007bff;"></i> Phone: 8208247944 (Mon to Fri, 24/7)</p>
         </div>
     </div>
 
-    <div class="overlay" id="contactOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1002;"></div>
+    <div class="overlay" id="contactOverlay"></div>
 
-    <div class="setting-popup" id="settingPopup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); z-index: 1003; text-align: left; min-width: 200px;">
+    <div class="setting-popup" id="settingPopup" style="display: none;">
         <div class="setting-content">
-            <button class="close-button" onclick="toggleSettingPopup()" style="position: absolute; top: 5px; right: 10px; font-size: 1em; font-weight: bold; color: #aaa; cursor: pointer; border: none; background: none; padding: 0;">×</button>
-            <h3 style="color: #007bff; margin-bottom: 15px; text-align: center;">Settings</h3>
-            <ul style="list-style: none; padding: 0; margin: 0;">
-                <li style="padding: 10px 0; border-bottom: 1px solid #eee;">
-                    <a href="#" style="text-decoration: none; color: #333; display: block;"><i class="fas fa-user" style="margin-right: 10px; color: #007bff;"></i> Profile</a>
-                </li>
-                <li style="padding: 10px 0; border-bottom: 1px solid #eee;">
-                    <a href="#" style="text-decoration: none; color: #333; display: block;"><i class="fas fa-cog" style="margin-right: 10px; color: #007bff;"></i> My Settings</a>
-                </li>
-                <li style="padding: 10px 0; border-bottom: 1px solid #eee;">
-                    <a href="#" style="text-decoration: none; color: #333; display: block;"><i class="fas fa-bell" style="margin-right: 10px; color: #007bff;"></i> Notifications</a>
-                </li>
-                <li style="padding: 10px 0;">
-                    <a href="#" style="text-decoration: none; color: #333; display: block;"><i class="fas fa-sliders-h" style="margin-right: 10px; color: #007bff;"></i> Preferences</a>
-                </li>
+            <button class="close-button" onclick="toggleSettingPopup()">×</button>
+            <h3>Settings</h3>
+            <ul>
+                <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> My Settings</a></li>
+                <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="#"><i class="fas fa-sliders-h"></i> Preferences</a></li>
             </ul>
         </div>
     </div>
 
-    <div class="overlay" id="settingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1002;"></div>
+    <div class="overlay" id="settingOverlay"></div>
 
     <div class="user-list-container" id="userListContainer">
-        <div class="loading-message">Loading users... <i class="fas fa-spinner fa-spin"></i></div>
-    </div>
+    <div class="loading-message">Loading users... <i class="fas fa-spinner fa-spin"></i></div>
+</div>
 
-    <div id="popup-message">Changes saved successfully!</div>
+<!-- Pagination controls -->
+<div class="pagination-container" id="paginationContainer">
+    <button class="pagination-button" id="prevPage" disabled><i class="fas fa-chevron-left"></i> Previous</button>
+    <div class="page-numbers" id="pageNumbers"></div>
+    <button class="pagination-button" id="nextPage"><i class="fas fa-chevron-right"></i> Next</button>
+</div>
 
-    <div class="button-container">
-        <button onclick="deleteUserModel()"><i class="fas fa-trash"></i> Delete User</button>
-        <button onclick="openNewUserModal()" class="create-user-button"><i class="fas fa-plus"></i> Create New User</button>
-        <button onclick="saveChanges()"><i class="fas fa-save"></i> Save Changes</button>
-    </div>
+<div class="button-container">
+    <button onclick="deleteUserModel()"><i class="fas fa-trash"></i> Delete User</button>
+    <button onclick="openNewUserModal()" class="create-user-button"><i class="fas fa-plus"></i> Create New User</button>
+    <button onclick="saveChanges()"><i class="fas fa-save"></i> Save Changes</button>
+</div>
 
     <div class="new-user-modal" id="newUserModal">
         <h2>Create New User</h2>
@@ -717,126 +1119,305 @@ footer p {
         </div>
     </div>
 
-    <div class="overlay" id="modalOverlay"></div>
-
+<div class="customer-details-modal" id="customerDetailsModal" style="display: none;">
+    <h2>Customer Details</h2>
+    <button class="close-button" onclick="closeCustomerDetailsModal()">×</button>
+    <div class="modal-content">
+        <!-- Tabs at the top -->
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="tab1">Customer Details</button>
+                <button class="tab-button" data-tab="tab2">Address</button>
+                <button class="tab-button" data-tab="tab3">Contact Details</button>
+                <button class="tab-button" data-tab="tab4">Tab 4</button>
+            </div>
+            <div class="tab-content active" id="tab1">
+                <!-- Customer Details fields -->
+                <div class="tab-fields">
+                    <div>
+                        <label for="customer-name">Name<span class="required">*</span></label>
+                        <input type="text" id="customer-name" required>
+                    </div>
+                    <div>
+                        <label for="customer-middleName">Middle Name</label>
+                        <input type="text" id="customer-middleName">
+                    </div>
+                    <div>
+                        <label for="customer-surname">Surname<span class="required">*</span></label>
+                        <input type="text" id="customer-surname" required>
+                    </div>
+                    <div>
+                        <label for="customer-age">Age<span class="required">*</span></label>
+                        <input type="number" id="customer-age" min="0" required>
+                    </div>
+                    <div>
+                        <label for="customer-gender">Gender<span class="required">*</span></label>
+                        <select id="customer-gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="customer-phoneNumber">Phone Number<span class="required">*</span></label>
+                        <input type="text" id="customer-phoneNumber" required>
+                    </div>
+                    <div>
+                        <label for="customer-email">Email</label>
+                        <input type="text" id="customer-email" readonly>
+                    </div>
+                    <div>
+                        <label for="customer-id">ID</label>
+                        <input type="text" id="customer-id" readonly>
+                    </div>
+                    <div>
+                        <label for="customer-userId">User ID</label>
+                        <input type="text" id="customer-userId" readonly>
+                    </div>
+                    <div>
+                        <label>Smoker Status</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="customer-smokerStatus">
+                            <label for="customer-smokerStatus">Smoker</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label>Admin Access</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="customer-adminAccess">
+                            <label for="customer-adminAccess">Yes</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="tab2">
+                <!-- Address fields -->
+                <div class="tab-fields">
+                    <div>
+                        <label for="customer-street">Street<span class="required">*</span></label>
+                        <input type="text" id="customer-street" required>
+                    </div>
+                    <div>
+                        <label for="customer-city">City<span class="required">*</span></label>
+                        <input type="text" id="customer-city" required>
+                    </div>
+                    <div>
+                        <label for="customer-state">State<span class="required">*</span></label>
+                        <input type="text" id="customer-state" required>
+                    </div>
+                    <div>
+                        <label for="customer-zipCode">ZIP Code<span class="required">*</span></label>
+                        <input type="text" id="customer-zipCode" required>
+                    </div>
+                    <div>
+                        <label for="customer-country">Country<span class="required">*</span></label>
+                        <input type="text" id="customer-country" required>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="tab3">
+                <!-- Contact Details fields -->
+                <div class="tab-fields">
+                    <div>
+                        <label for="customer-alternateEmail">Alternate Email</label>
+                        <input type="email" id="customer-alternateEmail">
+                    </div>
+                    <div class="phone-group">
+                        <div>
+                            <label for="customer-phoneCountryCode">Phone Country Code<span class="required">*</span></label>
+                            <input type="text" id="customer-phoneCountryCode" required style="width: 80px;">
+                        </div>
+                        <div>
+                            <label for="customer-contactPhoneNumber">Phone Number<span class="required">*</span></label>
+                            <input type="text" id="customer-contactPhoneNumber" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="customer-emergencyContactName">Emergency Contact Name<span class="required">*</span></label>
+                        <input type="text" id="customer-emergencyContactName" required>
+                    </div>
+                    <div>
+                        <label for="customer-emergencyContactPhone">Emergency Contact Phone<span class="required">*</span></label>
+                        <input type="text" id="customer-emergencyContactPhone" required>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="tab4">
+                <p>Placeholder content for Tab 4. Add future content here.</p>
+            </div>
+        </div>
+    </div>
+    <div class="modal-buttons">
+        <button class="update-button" onclick="updateCustomerDetails()">Update Details</button>
+        <button class="cancel-button" onclick="closeCustomerDetailsModal()">Cancel</button>
+    </div>
+</div>
+<div class="overlay" id="modalOverlay"></div>
     <footer class="main-footer">
         Access Management Control
     </footer>
-</body>
-	<script>
-	
-	// Function to get userId from sessionStorage
-    function getUserId() {
-        const userId = sessionStorage.getItem('userId');
-        if (!userId) {
-            showErrorAlert('User ID not found. Please log in again.');
-            window.location.href = 'login';
-            return null;
-        }
-        return userId;
-    }
 
-    // Logout function
-    function logout() {
-        sessionStorage.removeItem('userId');
+   <script>
+// Function to get userId from sessionStorage
+function getUserId() {
+    const userId = sessionStorage.getItem('userId');
+    if (!userId) {
+        showErrorAlert('User ID not found. Please log in again.');
         window.location.href = 'login';
+        return null;
+    }
+    return userId;
+}
+
+// Logout function
+function logout() {
+    sessionStorage.removeItem('userId');
+    window.location.href = 'login';
+}
+
+let selectedUserIds = [];
+let viewMode = 'list'; // Default to list view
+
+// Pagination variables
+let allUsers = []; // Store all fetched users
+let currentPage = 0; // Start at page 0 (first page)
+const pageSize = 10; // 10 records per page
+let totalPages = 1; // Calculated from allUsers length
+
+async function fetchWorkItems(id) {
+    const userId = getUserId();
+    if (!userId) return;
+
+    let apiUrl = 'http://localhost:8081/Security/user-list';
+    if (id) {
+        apiUrl += `?id=${id}`;
     }
 
-    let selectedUserIds = [];
-    let viewMode = 'list'; // Default to list view
+    const userListContainer = document.getElementById('userListContainer');
+    userListContainer.innerHTML = '<div class="loading-message">Loading users... <i class="fas fa-spinner fa-spin"></i></div>';
 
-    function toggleUserSelection(userId) {
-        if (selectedUserIds.includes(userId)) {
-            selectedUserIds = selectedUserIds.filter(id => id !== userId);
-        } else {
-            selectedUserIds.push(userId);
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'userId': userId
+            }
+        });
+
+        if (!response.ok) {
+            console.error(`HTTP error! status: ${response.status}`);
+            userListContainer.innerHTML = '<div class="error-message">No available users</div>';
+            updatePagination(0);
+            return;
         }
-        console.log('Selected User IDs:', selectedUserIds);
-    }
 
-    function toggleView() {
-        viewMode = viewMode === 'list' ? 'grid' : 'list';
-        const userListContainer = document.getElementById('userListContainer');
-        userListContainer.classList.toggle('grid-view', viewMode === 'grid');
-        fetchWorkItems(); // Reload to apply the correct view
-    }
-
-    const customAlertOverlay = document.getElementById('customAlertOverlay');
-    const customAlertHeader = document.getElementById('customAlertHeader');
-    const customAlertMessage = document.getElementById('customAlertMessage');
-    const customAlertOkBtn = document.getElementById('customAlertOkBtn');
-    const customErrorOverlay = document.getElementById('customErrorOverlay');
-    const customErrorMessage = document.getElementById('customErrorMessage');
-    const customErrorOkBtn = document.getElementById('customErrorOkBtn');
-
-    window.onload = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
-        fetchWorkItems(id);
-    };
-
-    async function fetchWorkItems(id) {
-        const userId = getUserId();
-        if (!userId) return;
-
-        let apiUrl = 'http://localhost:8081/Security/user-list';
-        if (id) {
-            apiUrl += `?id=${id}`;
+        const data = await response.json();
+        if (data.errorMessage && data.errorMessage.includes("No available users")) {
+            userListContainer.innerHTML = '<div class="error-message">No available users</div>';
+            updatePagination(0);
+            return;
         }
-        const userListContainer = document.getElementById('userListContainer');
-        userListContainer.innerHTML = '<div class="loading-message">Loading users... <i class="fas fa-spinner fa-spin"></i></div>';
 
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'GET',
-                headers: {
-                    'userId': userId
+        // Store all users or single user
+        allUsers = id ? [data.data] : (data.data || []);
+        console.log('Fetched users:', allUsers); // Debug log
+        totalPages = id ? 1 : Math.ceil(allUsers.length / pageSize) || 1;
+        currentPage = 0; // Reset to first page
+        populateUserList();
+        updatePagination(totalPages);
+    } catch (error) {
+        console.error('Error fetching work items:', error);
+        userListContainer.innerHTML = '<div class="error-message">Error loading users.</div>';
+        updatePagination(0);
+    }
+}
+
+function populateUserList() {
+    const userListContainer = document.getElementById('userListContainer');
+    userListContainer.innerHTML = '';
+    selectedUserIds = [];
+
+    // Slice users for the current page
+    const start = currentPage * pageSize;
+    const end = start + pageSize;
+    const workItems = allUsers.slice(start, end);
+
+    if (!workItems || workItems.length === 0) {
+        userListContainer.innerHTML = '<div class="error-message">No users found.</div>';
+        return;
+    }
+
+    workItems.forEach((item, index) => {
+        if (viewMode === 'list') {
+            const userSummary = document.createElement('div');
+            userSummary.classList.add('user-summary');
+            userSummary.style.animationDelay = `${index * 0.1}s`;
+            userSummary.innerHTML = `
+                <input type="checkbox" class="user-checkbox" data-user-id="${item.id}" onchange="toggleUserSelection(${item.id})">
+                <strong>User ID: ${item.id}</strong>
+                <button class="customer-details-button" onclick="showCustomerDetails('${item.email || ''}', ${item.id})">
+                    <i class="fas fa-info-circle"></i> Customer Details
+                </button>
+                <span class="arrow"><i class="fas fa-chevron-right"></i></span>
+            `;
+            userSummary.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('user-checkbox') && !e.target.classList.contains('customer-details-button') && !e.target.closest('.customer-details-button')) {
+                    toggleUserDetails(item.id);
                 }
             });
+            userListContainer.appendChild(userSummary);
 
-            if (!response.ok) {
-                console.error(`HTTP error! status: ${response.status}`);
-                userListContainer.innerHTML = '<div class="error-message">No available users</div>';
-                return;
-            }
-            const data = await response.json();
-            if (data.errorMessage && data.errorMessage.includes("No available users")) {
-                userListContainer.innerHTML = '<div class="error-message">No available users</div>';
-                return;
-            }
-            populateUserList(data.data);
-        } catch (error) {
-            console.error('Error fetching work items:', error);
-            userListContainer.innerHTML = '<div class="error-message">Error loading users.</div>';
-        }
-    }
-
-    function populateUserList(workItems) {
-        const userListContainer = document.getElementById('userListContainer');
-        userListContainer.innerHTML = '';
-        selectedUserIds = [];
-
-        workItems.forEach((item, index) => {
-            if (viewMode === 'list') {
-                const userSummary = document.createElement('div');
-                userSummary.classList.add('user-summary');
-                userSummary.style.animationDelay = `${index * 0.1}s`;
-                userSummary.innerHTML = `
-                    <input type="checkbox" class="user-checkbox" data-user-id="${item.id}" onchange="toggleUserSelection(${item.id})">
-                    <strong>User ID: ${item.id}</strong>
-                    <span class="arrow"><i class="fas fa-chevron-right"></i></span>
-                `;
-                userSummary.addEventListener('click', (e) => {
-                    if (!e.target.classList.contains('user-checkbox')) {
-                        toggleUserDetails(item.id);
-                    }
-                });
-                userListContainer.appendChild(userSummary);
-
-                const userDetails = document.createElement('div');
-                userDetails.classList.add('user-details');
-                userDetails.dataset.userId = item.id;
-                userDetails.innerHTML = `
+            const userDetails = document.createElement('div');
+            userDetails.classList.add('user-details');
+            userDetails.dataset.userId = item.id;
+            userDetails.innerHTML = `
+                <div>
+                    <label for="email-${item.id}">Email</label>
+                    <input type="text" id="email-${item.id}" value="${item.email || ''}" data-user-id="${item.id}" data-field="email">
+                </div>
+                <div>
+                    <label for="userCode-${item.id}">User Code</label>
+                    <input type="text" id="userCode-${item.id}" value="${item.userCode || ''}" data-user-id="${item.id}" data-field="userCode">
+                </div>
+                <div>
+                    <label>Email Verified</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isEmailVerified-${item.id}" ${item.isEmailVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id}" data-field="isEmailVerified">
+                        <label for="isEmailVerified-${item.id}">Yes</label>
+                    </div>
+                </div>
+                <div>
+                    <label>User Code Verified</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isUserCodeVerified-${item.id}" ${item.isUserCodeVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id}" data-field="isUserCodeVerified">
+                        <label for="isUserCodeVerified-${item.id}">Yes</label>
+                    </div>
+                </div>
+                <div>
+                    <label for="remainingTime-${item.id}">Expiry Time</label>
+                    <input type="date" id="remainingTime-${item.id}" value="${item.remainingTime ? item.remainingTime.split('T')[0] : ''}" data-user-id="${item.id}" data-field="remainingTime">
+                </div>
+                <div>
+                    <label>ID</label>
+                    <div>${item.id}</div>
+                </div>
+            `;
+            userListContainer.appendChild(userDetails);
+        } else {
+            const userCard = document.createElement('div');
+            userCard.classList.add('user-card');
+            userCard.style.animationDelay = `${index * 0.1}s`;
+            userCard.innerHTML = `
+                <input type="checkbox" class="user-checkbox" data-user-id="${item.id}" onchange="toggleUserSelection(${item.id})">
+                <strong>User ID: ${item.id}</strong>
+                <button class="customer-details-button" onclick="showCustomerDetails('${item.email || ''}', ${item.id})">
+                    <i class="fas fa-info-circle"></i> Customer Details
+                </button>
+                <p>Email: ${item.email || 'N/A'}</p>
+                <p>User Code: ${item.userCode || 'N/A'}</p>
+                <span class="arrow"><i class="fas fa-chevron-right"></i></span>
+                <div class="user-details" data-user-id="${item.id}">
                     <div>
                         <label for="email-${item.id}">Email</label>
                         <input type="text" id="email-${item.id}" value="${item.email || ''}" data-user-id="${item.id}" data-field="email">
@@ -867,271 +1448,550 @@ footer p {
                         <label>ID</label>
                         <div>${item.id}</div>
                     </div>
-                `;
-                userListContainer.appendChild(userDetails);
-            } else {
-                const userCard = document.createElement('div');
-                userCard.classList.add('user-card');
-                userCard.style.animationDelay = `${index * 0.1}s`;
-                userCard.innerHTML = `
-                    <input type="checkbox" class="user-checkbox" data-user-id="${item.id}" onchange="toggleUserSelection(${item.id})">
-                    <strong>User ID: ${item.id}</strong>
-                    <p>Email: ${item.email || 'N/A'}</p>
-                    <p>User Code: ${item.userCode || 'N/A'}</p>
-                    <span class="arrow"><i class="fas fa-chevron-right"></i></span>
-                    <div class="user-details" data-user-id="${item.id}">
-                        <div>
-                            <label for="email-${item.id}">Email</label>
-                            <input type="text" id="email-${item.id}" value="${item.email || ''}" data-user-id="${item.id}" data-field="email">
-                        </div>
-                        <div>
-                            <label for="userCode-${item.id}">User Code</label>
-                            <input type="text" id="userCode-${item.id}" value="${item.userCode || ''}" data-user-id="${item.id}" data-field="userCode">
-                        </div>
-                        <div>
-                            <label>Email Verified</label>
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="isEmailVerified-${item.id}" ${item.isEmailVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id}" data-field="isEmailVerified">
-                                <label for="isEmailVerified-${item.id}">Yes</label>
-                            </div>
-                        </div>
-                        <div>
-                            <label>User Code Verified</label>
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="isUserCodeVerified-${item.id}" ${item.isUserCodeVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id}" data-field="isUserCodeVerified">
-                                <label for="isUserCodeVerified-${item.id}">Yes</label>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="remainingTime-${item.id}">Expiry Time</label>
-                            <input type="date" id="remainingTime-${item.id}" value="${item.remainingTime ? item.remainingTime.split('T')[0] : ''}" data-user-id="${item.id}" data-field="remainingTime">
-                        </div>
-                        <div>
-                            <label>ID</label>
-                            <div>${item.id}</div>
-                        </div>
-                    </div>
-                `;
-                userCard.querySelector('.arrow').addEventListener('click', () => toggleUserDetails(item.id));
-                userListContainer.appendChild(userCard);
+                </div>
+            `;
+            userCard.querySelector('.arrow').addEventListener('click', () => toggleUserDetails(item.id));
+            userListContainer.appendChild(userCard);
+        }
+    });
+}
+
+function updatePagination(total) {
+    const pageNumbersContainer = document.getElementById('pageNumbers');
+    const prevButton = document.getElementById('prevPage');
+    const nextButton = document.getElementById('nextPage');
+    pageNumbersContainer.innerHTML = '';
+
+    if (total <= 1) {
+        prevButton.disabled = true;
+        nextButton.disabled = true;
+        pageNumbersContainer.innerHTML = '<button class="pagination-button active">1</button>';
+        return;
+    }
+
+
+    const maxVisiblePages = 5;
+    let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(total - 1, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(0, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i + 1;
+        pageButton.className = i === currentPage ? 'pagination-button active' : 'pagination-button';
+        pageButton.addEventListener('click', () => {
+            currentPage = i;
+            populateUserList();
+            updatePagination(totalPages);
+        });
+        pageNumbersContainer.appendChild(pageButton);
+    }
+
+    prevButton.disabled = currentPage === 0;
+    nextButton.disabled = currentPage === total - 1;
+    prevButton.onclick = () => {
+        if (currentPage > 0) {
+            currentPage--;
+            populateUserList();
+            updatePagination(totalPages);
+        }
+    };
+    nextButton.onclick = () => {
+        if (currentPage < total - 1) {
+            currentPage++;
+            populateUserList();
+            updatePagination(totalPages);
+        }
+    };
+}
+
+function toggleView() {
+    viewMode = viewMode === 'list' ? 'grid' : 'list';
+    currentPage = 0; // Reset to first page
+    const userListContainer = document.getElementById('userListContainer');
+    userListContainer.classList.toggle('grid-view', viewMode === 'grid');
+    populateUserList();
+    updatePagination(totalPages);
+}
+
+function toggleUserSelection(userId) {
+    if (selectedUserIds.includes(userId)) {
+        selectedUserIds = selectedUserIds.filter(id => id !== userId);
+    } else {
+        selectedUserIds.push(userId);
+    }
+    console.log('Selected User IDs:', selectedUserIds);
+}
+
+async function showCustomerDetails(emailId, userId) {
+    const authUserId = getUserId();
+    if (!authUserId) return;
+
+    if (!emailId || typeof emailId !== 'string' || emailId.trim() === '') {
+        showErrorAlert('Email is required to fetch customer details.');
+        console.error('Invalid or missing emailId:', emailId);
+        return;
+    }
+
+    try {
+        const basicResponse = await fetch(`http://localhost:8081/Security/customer-details?email=${encodeURIComponent(emailId)}`, {
+            method: 'GET',
+            headers: {
+                'userId': authUserId
             }
         });
+        if (!basicResponse.ok) {
+            throw new Error(`Failed to fetch customer details: ${basicResponse.status}`);
+        }
+
+        const basicData = await basicResponse.json();
+        console.log("basicData", basicData);
+        if (!basicData.data) {
+            throw new Error('No customer data found');
+        }
+
+        document.getElementById('customer-name').value = basicData.data.name || '';
+        document.getElementById('customer-middleName').value = basicData.data.middleName || '';
+        document.getElementById('customer-surname').value = basicData.data.surname || '';
+        document.getElementById('customer-age').value = basicData.data.age || '';
+        document.getElementById('customer-gender').value = basicData.data.gender || '';
+        document.getElementById('customer-phoneNumber').value = basicData.data.phoneNumber || '';
+        document.getElementById('customer-email').value = basicData.data.email || emailId;
+        document.getElementById('customer-id').value = basicData.data.id || '';
+        document.getElementById('customer-userId').value = basicData.data.userId || userId || '';
+        document.getElementById('customer-smokerStatus').checked = basicData.data.smokerStatus === 'Y';
+        document.getElementById('customer-adminAccess').checked = basicData.data.adminAccess === 'Y';
+
+        document.getElementById('customer-street').value = basicData.data.AddressObject?.street || '';
+        document.getElementById('customer-city').value = basicData.data.AddressObject?.city || '';
+        document.getElementById('customer-state').value = basicData.data.AddressObject?.state || '';
+        document.getElementById('customer-zipCode').value = basicData.data.AddressObject?.zipCode || '';
+        document.getElementById('customer-country').value = basicData.data.AddressObject?.country || '';
+
+        document.getElementById('customer-alternateEmail').value = basicData.data.ContactDetailsObject?.alternateEmail || '';
+        document.getElementById('customer-phoneCountryCode').value = basicData.data.ContactDetailsObject?.phoneCountryCode || '';
+        document.getElementById('customer-contactPhoneNumber').value = basicData.data.ContactDetailsObject?.phoneNumber || '';
+        document.getElementById('customer-emergencyContactName').value = basicData.data.ContactDetailsObject?.emergencyContactName || '';
+        document.getElementById('customer-emergencyContactPhone').value = basicData.data.ContactDetailsObject?.emergencyContactPhone || '';
+
+        openCustomerDetailsModal();
+    } catch (error) {
+        console.error('Error fetching customer details:', error.message);
+        showErrorAlert(`Failed to load customer details: ${error.message}`);
     }
+}
 
-    function toggleUserDetails(userId) {
-        const detailsElement = document.querySelector(`.user-details[data-user-id="${userId}"]`);
-        const parentElement = viewMode === 'grid' ? 
-            detailsElement.closest('.user-card') : 
-            Array.from(document.querySelectorAll('.user-summary')).find(summary => summary.textContent.includes(`User ID: ${userId}`));
+function openCustomerDetailsModal() {
+    closeNewUserModal();
+    closeContactPopup();
+    toggleSettingPopup(false);
+    document.getElementById('customAlertOverlay')?.classList.remove('active');
+    document.getElementById('customErrorOverlay')?.classList.remove('active');
 
-        if (detailsElement) {
-            detailsElement.style.display = detailsElement.style.display === (viewMode === 'grid' ? 'block' : 'grid') ? 'none' : (viewMode === 'grid' ? 'block' : 'grid');
-        }
-        if (parentElement && parentElement.querySelector('.arrow')) {
-            parentElement.classList.toggle('active');
-        }
-    }
+    document.getElementById('customerDetailsModal').style.display = 'block';
+    document.getElementById('modalOverlay').style.display = 'block';
 
-    async function saveChanges() {
-        const visibleDetails = document.querySelector(viewMode === 'grid' ? '.user-card.active .user-details' : '.user-details[style*="display: grid;"]');
-        if (visibleDetails) {
-            const userId = visibleDetails.dataset.userId;
-            const updatedUser = { id: parseInt(userId) };
+    initializeTabs();
+}
 
-            const emailInput = visibleDetails.querySelector('[data-field="email"]');
-            if (emailInput) updatedUser.email = emailInput.value;
+function closeCustomerDetailsModal() {
+    document.getElementById('customerDetailsModal').style.display = 'none';
+    document.getElementById('modalOverlay').style.display = 'none';
+}
 
-            const userCodeInput = visibleDetails.querySelector('[data-field="userCode"]');
-            if (userCodeInput) updatedUser.userCode = userCodeInput.value;
+function initializeTabs() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
 
-            const isEmailVerifiedInput = visibleDetails.querySelector('[data-field="isEmailVerified"]');
-            if (isEmailVerifiedInput) updatedUser.isEmailVerified = isEmailVerifiedInput.checked ? 'Y' : 'N';
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
 
-            const isUserCodeVerifiedInput = visibleDetails.querySelector('[data-field="isUserCodeVerified"]');
-            if (isUserCodeVerifiedInput) updatedUser.isUserCodeVerified = isUserCodeVerifiedInput.checked ? 'Y' : 'N';
+            button.classList.add('active');
+            const tabId = button.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
 
-            const remainingTimeInput = visibleDetails.querySelector('[data-field="remainingTime"]');
-            if (remainingTimeInput) updatedUser.remainingTime = remainingTimeInput.value;
+    document.querySelector('.tab-button[data-tab="tab1"]').classList.add('active');
+    document.getElementById('tab1').classList.add('active');
+}
 
-            await sendUpdatedData(updatedUser);
-        } else {
-            showErrorAlert('Please expand a user\'s details to save.');
-        }
-    }
+async function updateCustomerDetails() {
+    const name = document.getElementById('customer-name').value.trim();
+    const surname = document.getElementById('customer-surname').value.trim();
+    const age = document.getElementById('customer-age').value;
+    const gender = document.getElementById('customer-gender').value;
+    const phoneNumber = document.getElementById('customer-phoneNumber').value.trim();
+    const middleName = document.getElementById('customer-middleName').value.trim();
+    const email = document.getElementById('customer-email').value;
+    const id = document.getElementById('customer-id').value;
+    const userId = document.getElementById('customer-userId').value;
+    const smokerStatus = document.getElementById('customer-smokerStatus').checked ? 'Y' : 'N';
+    const adminAccess = document.getElementById('customer-adminAccess').checked ? 'Y' : 'N';
+    const street = document.getElementById('customer-street').value.trim();
+    const city = document.getElementById('customer-city').value.trim();
+    const state = document.getElementById('customer-state').value.trim();
+    const zipCode = document.getElementById('customer-zipCode').value.trim();
+    const country = document.getElementById('customer-country').value.trim();
+    const alternateEmail = document.getElementById('customer-alternateEmail').value.trim();
+    const phoneCountryCode = document.getElementById('customer-phoneCountryCode').value.trim();
+    const contactPhoneNumber = document.getElementById('customer-contactPhoneNumber').value.trim();
+    const emergencyContactName = document.getElementById('customer-emergencyContactName').value.trim();
+    const emergencyContactPhone = document.getElementById('customer-emergencyContactPhone').value.trim();
 
-    async function sendUpdatedData(updatedUser) {
-        const userId = getUserId();
-        if (!userId) return;
+    if (!name) { showErrorAlert('Name is required.'); return; }
+    if (!surname) { showErrorAlert('Surname is required.'); return; }
+    if (!age || age < 0) { showErrorAlert('Valid age is required.'); return; }
+    if (!gender) { showErrorAlert('Gender is required.'); return; }
+    if (!phoneNumber) { showErrorAlert('Phone Number is required.'); return; }
+    if (!street) { showErrorAlert('Street is required.'); return; }
+    if (!city) { showErrorAlert('City is required.'); return; }
+    if (!state) { showErrorAlert('State is required.'); return; }
+    if (!zipCode) { showErrorAlert('ZIP Code is required.'); return; }
+    if (!country) { showErrorAlert('Country is required.'); return; }
+    if (!phoneCountryCode) { showErrorAlert('Phone Country Code is required.'); return; }
+    if (!contactPhoneNumber) { showErrorAlert('Contact Phone Number is required.'); return; }
+    if (!emergencyContactName) { showErrorAlert('Emergency Contact Name is required.'); return; }
+    if (!emergencyContactPhone) { showErrorAlert('Emergency Contact Phone is required.'); return; }
 
-        try {
-            const response = await fetch('http://localhost:8081/Security/add-user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'userId': userId
-                },
-                body: JSON.stringify(updatedUser)
-            });
+    const updatedCustomer = {
+        id,
+        name,
+        middleName,
+        surname,
+        age: parseInt(age),
+        gender,
+        phoneNumber,
+        email,
+        userId,
+        smokerStatus,
+        adminAccess,
+        AddressObject: { street, city, state, zipCode, country },
+        ContactDetailsObject: { alternateEmail, phoneCountryCode, phoneNumber: contactPhoneNumber, emergencyContactName, emergencyContactPhone }
+    };
 
-            if (response.ok) {
-                showCustomAlert("Success", "Changes saved successfully", () => {
-                    window.location.href = "/AdminPanel";
-                });
-            } else {
-                const errorData = await response.json();
-                console.error('Error in save changes:', errorData);
-                showErrorAlert("Error saving changes.");
-            }
-        } catch (error) {
-            console.error('Error sending updated user data:', error);
-            showErrorAlert("Error saving changes. Please try again.");
-        }
-    }
+    const authUserId = getUserId();
+    if (!authUserId) return;
 
-    async function saveNewUser() {
-        const newEmail = document.getElementById('new-email').value.trim();
-        const newUserCode = document.getElementById('new-userCode').value.trim();
-        const isEmailVerified = document.getElementById('new-isEmailVerified').checked ? 'Y' : 'N';
-        const isUserCodeVerified = document.getElementById('new-isUserCodeVerified').checked ? 'Y' : 'N';
-        const remainingTime = document.getElementById('new-remainingTime').value;
+    try {
+        const response = await fetch('http://localhost:8081/Security/customer-details/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'userId': authUserId
+            },
+            body: JSON.stringify(updatedCustomer)
+        });
 
-        if (!newEmail) {
-            showErrorAlert("Email is required.");
-            return;
-        }
-        if (!newUserCode) {
-            showErrorAlert("User Code is required.");
-            return;
-        }
-        if (!remainingTime) {
-            showErrorAlert("Expiry Time is required.");
-            return;
-        }
-
-        const newUser = {
-            email: newEmail,
-            userCode: newUserCode,
-            isEmailVerified: isEmailVerified,
-            isUserCodeVerified: isUserCodeVerified,
-            remainingTime: remainingTime
-        };
-
-        await sendNewUserData(newUser);
-    }
-
-    async function sendNewUserData(newUser) {
-        const userId = getUserId();
-        if (!userId) return;
-
-        try {
-            const response = await fetch('http://localhost:8081/Security/add-user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'userId': userId
-                },
-                body: JSON.stringify(newUser)
-            });
-
-            if (response.ok) {
-                showCustomAlert("Success", "New user created successfully", () => {
-                    window.location.href = "/AdminPanel";
-                });
-                closeNewUserModal();
+        if (response.ok) {
+            showCustomAlert('Success', 'Customer details updated successfully', () => {
+                closeCustomerDetailsModal();
                 fetchWorkItems();
-            } else {
-                const errorData = await response.json();
-                console.error('Error creating new user:', errorData);
-                showErrorAlert("Error creating new user. Please try again.");
-            }
-        } catch (error) {
-            console.error('Error sending new user data:', error);
+            });
+        } else {
+            const errorData = await response.json();
+            console.error('Error updating customer details:', errorData);
+            showErrorAlert('Error updating customer details. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error sending customer update:', error);
+        showErrorAlert('Error updating customer details. Please try again.');
+    }
+}
+
+function toggleSettingPopup(force = true) {
+    const settingPopup = document.getElementById('settingPopup');
+    const settingOverlay = document.getElementById('settingOverlay');
+
+    if (!settingPopup || !settingOverlay) {
+        console.error('Settings popup or overlay not found in DOM');
+        showErrorAlert('Settings popup not available.');
+        return;
+    }
+
+    closeContactPopup();
+    closeNewUserModal();
+    closeCustomerDetailsModal();
+    document.getElementById('customAlertOverlay')?.classList.remove('active');
+    document.getElementById('customErrorOverlay')?.classList.remove('active');
+
+    if (force === false) {
+        settingPopup.style.display = 'none';
+        settingOverlay.style.display = 'none';
+        return;
+    }
+
+    const isHidden = settingPopup.style.display === 'none' || !settingPopup.style.display;
+    console.log('Toggling settings popup. Current state: hidden=', isHidden);
+
+    settingPopup.style.display = isHidden ? 'block' : 'none';
+    settingOverlay.style.display = isHidden ? 'block' : 'none';
+}
+
+function initializeOverlayClick() {
+    const settingOverlay = document.getElementById('settingOverlay');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const contactOverlay = document.getElementById('contactOverlay');
+
+    if (settingOverlay) {
+        settingOverlay.addEventListener('click', () => {
+            console.log('Setting overlay clicked, closing settings popup');
+            toggleSettingPopup();
+        });
+    }
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', () => {
+            console.log('Modal overlay clicked, closing modals');
+            closeNewUserModal();
+            closeCustomerDetailsModal();
+        });
+    }
+    if (contactOverlay) {
+        contactOverlay.addEventListener('click', () => {
+            console.log('Contact overlay clicked, closing contact popup');
+            closeContactPopup();
+        });
+    }
+}
+
+const customAlertOverlay = document.getElementById('customAlertOverlay');
+const customAlertHeader = document.getElementById('customAlertHeader');
+const customAlertMessage = document.getElementById('customAlertMessage');
+const customAlertOkBtn = document.getElementById('customAlertOkBtn');
+const customErrorOverlay = document.getElementById('customErrorOverlay');
+const customErrorMessage = document.getElementById('customErrorMessage');
+const customErrorOkBtn = document.getElementById('customErrorOkBtn');
+
+function toggleUserDetails(userId) {
+    const detailsElement = document.querySelector(`.user-details[data-user-id="${userId}"]`);
+    const parentElement = viewMode === 'grid' ? 
+        detailsElement.closest('.user-card') : 
+        Array.from(document.querySelectorAll('.user-summary')).find(summary => summary.textContent.includes(`User ID: ${userId}`));
+
+    if (detailsElement) {
+        detailsElement.style.display = detailsElement.style.display === (viewMode === 'grid' ? 'block' : 'grid') ? 'none' : (viewMode === 'grid' ? 'block' : 'grid');
+    }
+    if (parentElement && parentElement.querySelector('.arrow')) {
+        parentElement.classList.toggle('active');
+    }
+}
+
+async function saveChanges() {
+    const visibleDetails = document.querySelector(viewMode === 'grid' ? '.user-card.active .user-details' : '.user-details[style*="display: grid;"]');
+    if (visibleDetails) {
+        const userId = visibleDetails.dataset.userId;
+        const updatedUser = { id: parseInt(userId) };
+
+        const emailInput = visibleDetails.querySelector('[data-field="email"]');
+        if (emailInput) updatedUser.email = emailInput.value;
+
+        const userCodeInput = visibleDetails.querySelector('[data-field="userCode"]');
+        if (userCodeInput) updatedUser.userCode = userCodeInput.value;
+
+        const isEmailVerifiedInput = visibleDetails.querySelector('[data-field="isEmailVerified"]');
+        if (isEmailVerifiedInput) updatedUser.isEmailVerified = isEmailVerifiedInput.checked ? 'Y' : 'N';
+
+        const isUserCodeVerifiedInput = visibleDetails.querySelector('[data-field="isUserCodeVerified"]');
+        if (isUserCodeVerifiedInput) updatedUser.isUserCodeVerified = isUserCodeVerifiedInput.checked ? 'Y' : 'N';
+
+        const remainingTimeInput = visibleDetails.querySelector('[data-field="remainingTime"]');
+        if (remainingTimeInput) updatedUser.remainingTime = remainingTimeInput.value;
+
+        await sendUpdatedData(updatedUser);
+    } else {
+        showErrorAlert('Please expand a user\'s details to save.');
+    }
+}
+
+async function sendUpdatedData(updatedUser) {
+    const userId = getUserId();
+    if (!userId) return;
+
+    try {
+        const response = await fetch('http://localhost:8081/Security/add-user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'userId': userId
+            },
+            body: JSON.stringify(updatedUser)
+        });
+
+        if (response.ok) {
+            showCustomAlert("Success", "Changes saved successfully", () => {
+                window.location.href = "/AdminPanel";
+            });
+        } else {
+            const errorData = await response.json();
+            console.error('Error in save changes:', errorData);
+            showErrorAlert("Error saving changes.");
+        }
+    } catch (error) {
+        console.error('Error sending updated user data:', error);
+        showErrorAlert("Error saving changes. Please try again.");
+    }
+}
+
+async function saveNewUser() {
+    const newEmail = document.getElementById('new-email').value.trim();
+    const newUserCode = document.getElementById('new-userCode').value.trim();
+    const isEmailVerified = document.getElementById('new-isEmailVerified').checked ? 'Y' : 'N';
+    const isUserCodeVerified = document.getElementById('new-isUserCodeVerified').checked ? 'Y' : 'N';
+    const remainingTime = document.getElementById('new-remainingTime').value;
+
+    if (!newEmail) { showErrorAlert("Email is required."); return; }
+    if (!newUserCode) { showErrorAlert("User Code is required."); return; }
+    if (!remainingTime) { showErrorAlert("Expiry Time is required."); return; }
+
+    const newUser = {
+        email: newEmail,
+        userCode: newUserCode,
+        isEmailVerified,
+        isUserCodeVerified,
+        remainingTime
+    };
+
+    await sendNewUserData(newUser);
+}
+
+async function sendNewUserData(newUser) {
+    const userId = getUserId();
+    if (!userId) return;
+
+    try {
+        const response = await fetch('http://localhost:8081/Security/add-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'userId': userId },
+            body: JSON.stringify(newUser)
+        });
+
+        if (response.ok) {
+            showCustomAlert("Success", "New user created successfully", () => {
+                closeNewUserModal();
+                window.location.href = "/AdminPanel";
+            });
+        } else {
+            const errorData = await response.json();
+            console.error('Error creating new user:', errorData);
             showErrorAlert("Error creating new user. Please try again.");
         }
+    } catch (error) {
+        console.error('Error sending new user data:', error);
+        showErrorAlert("Error creating new user. Please try again.");
+    }
+}
+
+function deleteUserModel() {
+    if (selectedUserIds.length === 0) {
+        showErrorAlert("Please select at least one user to delete.");
+        return;
     }
 
-    function deleteUserModel() {
-        if (selectedUserIds.length === 0) {
-            showErrorAlert("Please select at least one user to delete.");
-            return;
-        }
+    const userId = getUserId();
+    if (!userId) return;
 
-        const userId = getUserId();
-        if (!userId) return;
-
-        Promise.all(selectedUserIds.map(id => 
-            fetch(`http://localhost:8081/Security/user-list/delete/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'userId': userId
-                }
-            })
-        )).then(responses => {
-            const allSuccessful = responses.every(response => response.ok);
-            if (allSuccessful) {
-                showCustomAlert("Success", "Selected users deleted successfully", () => {
-                    fetchWorkItems();
-                    selectedUserIds = [];
-                });
-            } else {
-                showErrorAlert("Failed to delete some users.");
+    Promise.all(selectedUserIds.map(id => 
+        fetch(`http://localhost:8081/Security/user-list/delete/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'userId': userId
             }
-        }).catch(error => {
-            console.error("Error:", error);
-            showErrorAlert("Error deleting users.");
-        });
-    }
+        })
+    )).then(responses => {
+        const allSuccessful = responses.every(response => response.ok);
+        if (allSuccessful) {
+            showCustomAlert("Success", "Selected users deleted successfully", () => {
+                fetchWorkItems();
+                selectedUserIds = [];
+            });
+        } else {
+            showErrorAlert("Failed to delete some users.");
+        }
+    }).catch(error => {
+        console.error("Error:", error);
+        showErrorAlert("Error deleting users.");
+    });
+}
 
-    function closeNewUserModal() {
-        document.getElementById('newUserModal').style.display = 'none';
-        document.getElementById('modalOverlay').style.display = 'none';
-        resetNewUserForm();
-    }
+function openNewUserModal() {
+    console.log('Opening new user modal'); // Debug log
+    closeCustomerDetailsModal();
+    closeContactPopup();
+    toggleSettingPopup(false);
+    document.getElementById('customAlertOverlay')?.classList.remove('active');
+    document.getElementById('customErrorOverlay')?.classList.remove('active');
+    document.getElementById('newUserModal').style.display = 'block';
+    document.getElementById('modalOverlay').style.display = 'block';
+}
 
-    function resetNewUserForm() {
-        document.getElementById('new-email').value = '';
-        document.getElementById('new-userCode').value = '';
-        document.getElementById('new-isEmailVerified').checked = false;
-        document.getElementById('new-isUserCodeVerified').checked = false;
-        document.getElementById('new-remainingTime').value = '';
-    }
+function closeNewUserModal() {
+    console.log('Closing new user modal'); // Debug log
+    document.getElementById('newUserModal').style.display = 'none';
+    document.getElementById('modalOverlay').style.display = 'none';
+    resetNewUserForm();
+}
 
-    function openContactPopup() {
-        document.getElementById('contactPopup').style.display = 'block';
-        document.getElementById('contactOverlay').style.display = 'block';
-    }
+function resetNewUserForm() {
+    document.getElementById('new-email').value = '';
+    document.getElementById('new-userCode').value = '';
+    document.getElementById('new-isEmailVerified').checked = false;
+    document.getElementById('new-isUserCodeVerified').checked = false;
+    document.getElementById('new-remainingTime').value = '';
+}
 
-    function closeContactPopup() {
-        document.getElementById('contactPopup').style.display = 'none';
-        document.getElementById('contactOverlay').style.display = 'none';
-    }
+function openContactPopup() {
+    document.getElementById('contactPopup').style.display = 'block';
+    document.getElementById('contactOverlay').style.display = 'block';
+}
 
-    function toggleSettingPopup() {
-        const settingPopup = document.getElementById('settingPopup');
-        const settingOverlay = document.getElementById('settingOverlay');
-        settingPopup.style.display = settingPopup.style.display === 'none' ? 'block' : 'none';
-        settingOverlay.style.display = settingOverlay.style.display === 'none' ? 'block' : 'none';
-    }
+function closeContactPopup() {
+    document.getElementById('contactPopup').style.display = 'none';
+    document.getElementById('contactOverlay').style.display = 'none';
+}
 
-    function showCustomAlert(header, message, callback) {
-        customAlertHeader.textContent = header;
-        customAlertMessage.textContent = message;
-        customAlertOverlay.classList.add('active');
-        customAlertOkBtn.onclick = () => {
-            customAlertOverlay.classList.remove('active');
-            if (callback) callback();
-        };
-    }
+function showCustomAlert(header, message, callback) {
+    customAlertHeader.textContent = header;
+    customAlertMessage.textContent = message;
+    customAlertOverlay.classList.add('active');
+    customAlertOkBtn.onclick = () => {
+        customAlertOverlay.classList.remove('active');
+        if (callback) callback();
+    };
+}
 
-    function showErrorAlert(message) {
-        customErrorMessage.textContent = message;
-        customErrorOverlay.classList.add('active');
-        customErrorOkBtn.onclick = () => {
-            customErrorOverlay.classList.remove('active');
-        };
-    }
-	</script>
+function showErrorAlert(message) {
+    customErrorMessage.textContent = message;
+    customErrorOverlay.classList.add('active');
+    customErrorOkBtn.onclick = () => {
+        customErrorOverlay.classList.remove('active');
+    };
+}
 
+function showNotifications() {
+    showCustomAlert('Notifications', 'No new notifications.');
+}
+
+window.onload = () => {
+    console.log('Page loaded, initializing...');
+    initializeOverlayClick();
+    if (customAlertOverlay) customAlertOverlay.classList.remove('active');
+    if (customErrorOverlay) customErrorOverlay.classList.remove('active');
+    // Ensure modals are closed on load
+    closeNewUserModal();
+    closeCustomerDetailsModal();
+    closeContactPopup();
+    toggleSettingPopup(false);
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    currentPage = 0;
+    allUsers = [];
+    fetchWorkItems(id);
+};
+</script>
 </body>
-
 </html>
