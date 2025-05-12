@@ -478,6 +478,56 @@
 .notification-banner .modern-button.small:hover {
     background-color: #1e7e34;
 }
+/* Grid View Styles */
+.work-item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 15px;
+}
+
+.work-item-grid .work-item-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.work-item-grid .work-item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background-color: #e6f7ff;
+}
+
+.work-item-grid .work-item-card input[type="checkbox"] {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.work-item-grid .work-item-card p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #333;
+}
+
+.work-item-grid .work-item-card p strong {
+    color: #007bff;
+}
+
+/* Ensure table is hidden in grid view */
+.work-item-list-container.grid-view #workItemTable {
+    display: none;
+}
+
+.work-item-list-container.grid-view #workItemGrid {
+    display: grid;
+}
 
         .main-footer {
             width: 100%;
@@ -503,7 +553,7 @@
         <span id="notificationBadge" class="notification-badge" style="display: none;">1</span>
     </button>
     <button onclick="redirectToAdminPanel()" class="admin-panel-button">Admin Panel</button>
-    <button onclick="logout()" class="admin-panel-button" style="right: 150px;">Logout</button>
+    <button onclick="logout()" class="admin-panel-button" style="right: 210px;">Logout</button>
 </div>
 
 <!-- Notification banner remains unchanged -->
@@ -665,6 +715,9 @@
         <option value="on-going">On Going</option>
     </select>
     <button id="applyFilterBtn" class="modern-button">Apply Filter</button>
+    <button id="toggleViewBtn" class="modern-button" style="background-color: #007bff; color: white;">
+        <i class="fas fa-th"></i> Toggle View
+    </button>
 </div>
 
         <div class="workitem-summary">
@@ -673,34 +726,33 @@
             <div class="summary-box closed">Closed: <span id="closedWorkItems"></span></div>
             <div class="summary-box correspondence">Correspondence: <span id="correspondenceWorkItems"></span></div>
         </div>
+       <div class="work-item-list-container" id="workItemListContainer">
+    <table class="work-item-list" id="workItemTable" style="display: table;">
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="selectAll"></th>
+                <th>Id</th>
+                <th>Email</th>
+                <th>User ID</th>
+                <th>Email Verification</th>
+                <th>User ID Verification</th>
+                <th>Access Given Time</th>
+                <th>Expire Time</th>
+            </tr>
+        </thead>
+        <tbody id="workItemsBody"></tbody>
+    </table>
+    <div class="work-item-grid" id="workItemGrid" style="display: none;"></div>
 
-        <div class="work-item-list-container">
-            <table class="work-item-list">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" id="selectAll"></th>
-                        <th>Id</th>
-                        <th>Email</th>
-                        <th>User ID</th>
-                        <th>Email Verification</th>
-                        <th>User ID Verification</th>
-                        <th>Access Given Time</th>
-                        <th>Expire Time</th>
-                    </tr>
-                </thead>
-                <tbody id="workItemsBody"></tbody>
-            </table>
-
-            <div class="bulk-actions">
-                <button class="modern-button primary"><i class="fas fa-user-tag"></i> Assign Selected</button>
-                <button class="modern-button secondary"><i class="fas fa-tasks"></i> Change Status</button>
-            </div>
-
-            <button id="getSelectedBtn" class="modern-button primary" style="margin-top: 20px;">Take Action For User</button>
-            <div id="selectedItems"></div>
-            <div id="paginationControls" class="pagination-controls"></div>
-        </div>
+    <div class="bulk-actions">
+        <button class="modern-button primary"><i class="fas fa-user-tag"></i> Assign Selected</button>
+        <button class="modern-button secondary"><i class="fas fa-tasks"></i> Change Status</button>
     </div>
+
+    <button id="getSelectedBtn" class="modern-button primary" style="margin-top: 20px;">Take Action For User</button>
+    <div id="selectedItems"></div>
+    <div id="paginationControls" class="pagination-controls"></div>
+</div>
 
     <button id="generatePdfBtn" class="floating-button"><i class="fas fa-file-pdf"></i></button>
 
@@ -741,11 +793,17 @@
     let workItems = [];
     let filteredWorkItems = [];
     let originalWorkItems = [];
-
+    let viewMode = 'list'; // Default to list view
     function redirectToPostalService() { window.location.href = "PostalService"; }
     function redirectToDocumentService() { window.location.href = "DocumentService"; }
     function redirectToEmployeeService() { window.location.href = "EmployeeService"; }
-    function redirectToAdminPanel() { window.location.href = "AdminPanel"; }
+    function redirectToAdminPanel() { const userId = getUserId();
+    if (userId === "ychouri") {
+        window.location.href = "AdminPanel";
+    } else {
+        showErrorAlert("No admin access for user.");
+    }
+}
     function redirectToCloudService() { window.location.href = "CloudServices"; }
     function redirectToMailService() { window.location.href = "MailServices"; }
     function whatsappService() { window.location.href = "tel:+8208247944"; }
@@ -757,6 +815,22 @@
         const offset = circumference - (percentage / 100) * circumference;
         circle.style.strokeDashoffset = offset;
         document.getElementById(percentageTextId).innerText = `${Math.round(percentage)}%`;
+    }
+
+    function toggleView() {
+        viewMode = viewMode === 'list' ? 'grid' : 'list';
+        const container = document.getElementById('workItemListContainer');
+        if (container) {
+            container.classList.toggle('grid-view', viewMode === 'grid');
+            populateWorkItems();
+        }
+    }
+
+    function toggleBulkActions() {
+        const bulkActions = document.querySelector('.bulk-actions');
+        if (bulkActions) {
+            bulkActions.style.display = document.querySelectorAll('.user-checkbox:checked').length ? 'block' : 'none';
+        }
     }
 
     async function fetchWorkItems() {
@@ -776,9 +850,11 @@
             if (!workItems.length) {
                 document.getElementById('workItemsBody').innerHTML = `
                     <tr><td colspan="8" style="text-align: center; color: gray;">No available users.</td></tr>`;
+                document.getElementById('workItemGrid').innerHTML = `
+                    <p style="text-align: center; color: gray;">No available users.</p>`;
                 return;
             }
-            populateTable();
+            populateWorkItems();
             renderPagination();
         } catch (error) {
             console.error('Error fetching work items:', error);
@@ -808,9 +884,14 @@
         renderPagination();
     }
 
-    function populateTable() {
+    function populateWorkItems() {
         const tbody = document.getElementById('workItemsBody');
+        const grid = document.getElementById('workItemGrid');
+        if (!tbody || !grid) return;
+
         tbody.innerHTML = '';
+        grid.innerHTML = '';
+
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
         const paginatedItems = filteredWorkItems.slice(start, end);
@@ -818,27 +899,54 @@
         if (!paginatedItems.length) {
             tbody.innerHTML = `
                 <tr><td colspan="8" style="text-align: center; color: gray;">No items match the selected filter.</td></tr>`;
+            grid.innerHTML = `
+                <p style="text-align: center; color: gray;">No items match the selected filter.</p>`;
             return;
         }
 
-        paginatedItems.forEach(item => {
-            const row = tbody.insertRow();
-            row.innerHTML = `
-                <td><input type="checkbox" class="user-checkbox" value="${item.id}"></td>
-                <td>${item.id}</td>
-                <td>${item.email || 'N/A'}</td>
-                <td>${item.userCode || 'N/A'}</td>
-                <td>${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</td>
-                <td>${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</td>
-                <td>${item.createdTime || 'N/A'}</td>
-                <td>${item.remainingTime || 'N/A'}</td>
-            `;
+        if (viewMode === 'list') {
+            paginatedItems.forEach(item => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><input type="checkbox" class="user-checkbox" value="${item.id || ''}"></td>
+                    <td>${item.id || 'N/A'}</td>
+                    <td>${item.email || 'N/A'}</td>
+                    <td>${item.userCode || 'N/A'}</td>
+                    <td>${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</td>
+                    <td>${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</td>
+                    <td>${item.createdTime || 'N/A'}</td>
+                    <td>${item.remainingTime || 'N/A'}</td>
+                `;
+            });
+        } else {
+            paginatedItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'work-item-card';
+                card.innerHTML = `
+                    <input type="checkbox" class="user-checkbox" value="${item.id || ''}">
+                    <p><strong>ID:</strong> ${item.id || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${item.email || 'N/A'}</p>
+                    <p><strong>User ID:</strong> ${item.userCode || 'N/A'}</p>
+                    <p><strong>Email Verification:</strong> ${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</p>
+                    <p><strong>User ID Verification:</strong> ${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</p>
+                    <p><strong>Access Given:</strong> ${item.createdTime || 'N/A'}</p>
+                    <p><strong>Expires:</strong> ${item.remainingTime || 'N/A'}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Remove existing listeners to prevent duplicates
+        document.querySelectorAll('.user-checkbox').forEach(cb => {
+            cb.removeEventListener('change', toggleBulkActions);
+            cb.addEventListener('change', toggleBulkActions);
         });
     }
 
     function renderPagination() {
         const totalPages = Math.ceil(filteredWorkItems.length / itemsPerPage);
         const paginationControls = document.getElementById('paginationControls');
+        if (!paginationControls) return;
         paginationControls.innerHTML = `
             <button class="pagination-button" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">Previous</button>
             ${Array.from({ length: totalPages }, (_, i) => `
@@ -850,7 +958,7 @@
 
     function changePage(page) {
         currentPage = page;
-        populateTable();
+        populateWorkItems();
         renderPagination();
     }
 
@@ -890,7 +998,7 @@
             document.getElementById('emailsInDb').innerText = data.emailsInDb;
             document.getElementById('slaCrossed').innerText = data.slaCrossed;
             document.getElementById('documentUpload').innerText = data.documentUpload;
-            const total = data.totalEmails || 200; // Fallback to 200 if totalEmails is 0
+            const total = 200; // Fallback to 200 if totalEmails is 0
             animateCircle('emailSentCircle', (data.emailsSent / total) * 100, 'emailSentPercentage');
             animateCircle('emailsInDbCircle', (data.emailsInDb / total) * 100, 'emailsInDbPercentage');
             animateCircle('slaProgressCircle', (data.totalEmails / total) * 100, 'slaProgressPercentage');
@@ -907,8 +1015,15 @@
             showErrorAlert('Please select one user.');
             return;
         }
-        window.location.href = `AdminPanel?id=${selectedCheckbox.value}`;
+        const userId = getUserId();
+        if (userId === "ychouri") {
+        	 window.location.href = `AdminPanel?id=${selectedCheckbox.value}`;
+        } else {
+            showErrorAlert("No admin access for user.");
+        }
     }
+       
+   
 
     function showErrorAlert(message) {
         const overlay = document.getElementById('customErrorOverlay');
@@ -1110,12 +1225,14 @@
             const status = document.getElementById('statusFilter').value;
             filterWorkItems(status);
         });
+        const toggleViewBtn = document.getElementById('toggleViewBtn');
+        if (toggleViewBtn) toggleViewBtn.addEventListener('click', toggleView);
 
         document.getElementById('selectAll').addEventListener('change', function () {
             document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = this.checked);
             toggleBulkActions();
         });
-
+        
         document.getElementById('getSelectedBtn').addEventListener('click', handleTakeAction);
         document.getElementById('shareChartBtn').addEventListener('click', shareChart);
         document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);

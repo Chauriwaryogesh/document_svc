@@ -343,6 +343,47 @@
                 transform: rotate(360deg);
             }
         }
+/* Grid View Styles */
+.tab-content.grid-view ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 15px;
+    list-style: none;
+}
+
+.tab-content.grid-view li {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tab-content.grid-view li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background-color: #e6f7ff;
+}
+
+.tab-content.grid-view li span {
+    font-size: 0.85em;
+    color: #333;
+}
+
+.tab-content.grid-view li span:first-child {
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Adjust header-buttons for layout */
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
         
         
     </style>
@@ -351,16 +392,25 @@
 <body>
     <header class="main-header">
         <h1 class="header-title"><i class="fas fa-envelope"></i> Postal Dashboard</h1>
-        <button class="contact-us-button"><i class="fas fa-envelope"></i> Contact Us</button>
+        <div class="header-buttons">
+            <button class="contact-us-button"><i class="fas fa-envelope"></i> Contact Us</button>
+            <button class="logout-button" onclick="logout()" style="background-color: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.9em; transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); margin-left: 10px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
     </header>
- <div id="loadingOverlay" class="loading-overlay">
-                <div class="loader"></div>
-            </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loader"></div>
+    </div>
+
     <div class="postal-service-section">
         <div class="search-bar">
-            <input type="text" id="postalSearchInput" placeholder="<i class='fas fa-search'></i> Search branch or pincode..."
-                oninput="filterPostalList()" />
+            <input type="text" id="postalSearchInput" placeholder="Search branch or pincode..." oninput="filterPostalList()" />
             <button onclick="searchPostal()"><i class="fas fa-search"></i> Search</button>
+            <button onclick="toggleView()" style="background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9em; transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                <i class="fas fa-th"></i> Toggle View
+            </button>
         </div>
 
         <div class="tabs">
@@ -381,12 +431,12 @@
         </div>
     </div>
 
-    <div id="detailsModal">
+    <div id="detailsModal" style="display: none;">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" onclick="closeModal()">×</span>
             <div id="postOfficeDetails">
                 <h2>Post Office Details</h2>
-                <p>Loading details...</p>
+                <p></p> <!-- Empty by default to avoid "Loading details..." -->
             </div>
         </div>
     </div>
@@ -396,218 +446,298 @@
     </footer>
 
 	<script>
-	 const loadingOverlay = document.getElementById('loadingOverlay');
-	function showLoading() {
+	// Function to get userId from sessionStorage
+   // Function to get userId from sessionStorage
+    function getUserId() {
+        const userId = sessionStorage.getItem('userId');
+        if (!userId) {
+            alert('User ID not found. Please log in again.');
+            window.location.href = 'login.html';
+            return null;
+        }
+        return userId;
+    }
+
+    // Logout function
+    function logout() {
+        sessionStorage.removeItem('userId');
+        window.location.href = 'login.html';
+    }
+
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    let pinBranchData = [];
+    let filteredData = [];
+    let currentTab = 'cities';
+    let detailsModal;
+    let postOfficeDetailsDiv;
+    let viewMode = 'list'; // Default to list view
+
+    function showLoading() {
         loadingOverlay.classList.add('active');
     }
-	function hideLoading() {
+
+    function hideLoading() {
         loadingOverlay.classList.remove('active');
     }
-	
-		let pinBranchData = [];
-		let filteredData = [];
-		let currentTab = 'cities';
-		let detailsModal;
-		let postOfficeDetailsDiv; // Declare outside
-		const userId = 'SYSTEM';
-		async function fetchPincodeOrBranchData() {
 
-			const url = "http://localhost:8081/Post-office/PincodeOrBranch";
+    function toggleView() {
+        viewMode = viewMode === 'list' ? 'grid' : 'list';
+        const citiesTab = document.getElementById('citiesTab');
+        const pincodesTab = document.getElementById('pincodesTab');
+        citiesTab.classList.toggle('grid-view', viewMode === 'grid');
+        pincodesTab.classList.toggle('grid-view', viewMode === 'grid');
+        populateList(currentTab);
+    }
 
-			try {
-				const response = await fetch(url, {
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-						"userId": userId
-					}
-				});
+    async function fetchPincodeOrBranchData() {
+        const userId = getUserId();
+        if (!userId) return;
 
-				if (!response.ok) {
-					console.error(`HTTP error! status: ${response.status}`);
-					return;
-				}
+        const url = "http://localhost:8081/Post-office/PincodeOrBranch";
 
-				const json = await response.json();
+        try {
+            showLoading();
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "userId": userId
+                }
+            });
 
-				if (json && json.data && json.data.length > 0 && json.data[0].pinCodeOrBranchDTO) {
-					const data = json.data[0];
-					pinBranchData = data.pinCodeOrBranchDTO;
-					filteredData = [...pinBranchData]; // Initialize filtered data
+            hideLoading();
 
-					document.getElementById("pinCount").textContent = data.pinCount || 0;
-					document.getElementById("branchCount").textContent = data.branchCount || 0;
+            if (!response.ok) {
+                console.error(`HTTP error! status: ${response.status}`);
+                alert('Failed to fetch postal data.');
+                return;
+            }
 
-					populateList(currentTab);
-					console.log("Fetched pin/branch data:", pinBranchData);
-				} else {
-					console.error("Invalid data structure received from API:", json);
-				}
+            const json = await response.json();
 
-			} catch (error) {
-				console.error("Error fetching pin/branch data:", error);
-			}
-		}
+            if (json && json.data && json.data.length > 0 && json.data[0].pinCodeOrBranchDTO) {
+                const data = json.data[0];
+                pinBranchData = data.pinCodeOrBranchDTO;
+                filteredData = [...pinBranchData];
 
-		function populateList(type) {
-			const list = document.getElementById(type === 'pincodes' ? "pincodeList" : "cityList");
-			list.innerHTML = "";
+                document.getElementById("pinCount").textContent = data.pinCount || 0;
+                document.getElementById("branchCount").textContent = data.branchCount || 0;
 
-			filteredData.forEach(item => {
-				const li = document.createElement("li");
-				const mainText = type === 'pincodes' ? item.pincCode : item.branchName;
-				const secondaryText = type === 'pincodes' ? item.branchName : item.pincCode;
-
-				li.innerHTML = `<span>${mainText}</span><span>${secondaryText}</span>`;
-				li.dataset.id = item.id;
-				li.onclick = () => handleItemClick(type, item);
-				list.appendChild(li);
-			});
-		}
-
-		function showTab(tabId) {
-			document.getElementById('citiesTab').style.display = tabId === 'cities' ? 'block' : 'none';
-			document.getElementById('pincodesTab').style.display = tabId === 'pincodes' ? 'block' : 'none';
-			document.querySelector('.tab-button.active').classList.remove('active');
-			document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
-			currentTab = tabId;
-			populateList(currentTab);
-		}
-
-		function filterPostalList() {
-			const searchTerm = document.getElementById("postalSearchInput").value.toLowerCase();
-			filteredData = pinBranchData.filter(item => {
-				const branchName = item.branchName ? item.branchName.toLowerCase() : '';
-				const pincode = item.pincCode ? item.pincCode.toLowerCase() : '';
-				return branchName.includes(searchTerm) || pincode.includes(searchTerm);
-			});
-			populateList(currentTab);
-		}
-
-		function searchPostal() {
-			filterPostalList(); // For now, the search button does the same as the input change
-		}
-
-		// Add loading functions (already included from previous request)
-		function showLoading() {
-		    document.getElementById('loadingOverlay').classList.add('active');
-		}
-
-		function hideLoading() {
-		    document.getElementById('loadingOverlay').classList.remove('active');
-		}
-
-		// Updated handleItemClick function with branchName encoding fix
-		async function handleItemClick(type, item) {
-    const userId = 'SYSTEM'; // Replace with actual user ID logic
-    const baseUrl = "http://localhost:8081/Post-office/serch-postCd/Name";
-    let queryParams = `userId=${encodeURIComponent(userId)}`;
-    
-    if (type === 'pincodes') {
-        console.log("Processing pincode:", type);
-        const pincode = item.pincCode;
-        if (pincode) {
-            queryParams += `&pincode=${encodeURIComponent(pincode)}`;
-            console.log("Pincode:", pincode);
-        }
-    } else if (type === 'cities') {
-        console.log("Processing branch:", type);
-        let branchName = item.branchName ? item.branchName.trim() : null;
-        if (branchName) {
-            // Decode if already encoded to prevent double-encoding
-            branchName = decodeURIComponent(branchName).replace(/%20/g, ' ');
-            queryParams += `&branchName=${encodeURIComponent(branchName)}`;
-            console.log("Raw Branch Name:", item.branchName);
-            console.log("Processed Branch Name:", branchName);
+                populateList(currentTab);
+                console.log("Fetched pin/branch data:", pinBranchData);
+            } else {
+                console.error("Invalid data structure received from API:", json);
+                alert('No postal data available.');
+            }
+        } catch (error) {
+            hideLoading();
+            console.error("Error fetching pin/branch data:", error);
+            alert('Error fetching postal data.');
         }
     }
 
-    const fullUrl = `${baseUrl}?${queryParams}`;
-    console.log("Constructed URL:", fullUrl);
+    function populateList(type) {
+        const list = document.getElementById(type === 'pincodes' ? "pincodeList" : "cityList");
+        list.innerHTML = "";
 
-    showLoading(); // Show loading animation
+        filteredData.forEach(item => {
+            const li = document.createElement("li");
+            const mainText = type === 'pincodes' ? item.pincCode : item.branchName;
+            const secondaryText = type === 'pincodes' ? item.branchName : item.pincCode;
 
-    try {
-        const response = await fetch(fullUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            li.innerHTML = `<span>${mainText || 'N/A'}</span><span>${secondaryText || 'N/A'}</span>`;
+            li.dataset.id = item.id;
+            li.onclick = (e) => {
+                e.preventDefault(); // Prevent any default behavior
+                handleItemClick(type, item);
+            };
+            list.appendChild(li);
         });
+    }
 
-        hideLoading(); // Hide loading animation
+    function showTab(tabId) {
+        document.getElementById('citiesTab').style.display = tabId === 'cities' ? 'block' : 'none';
+        document.getElementById('pincodesTab').style.display = tabId === 'pincodes' ? 'block' : 'none';
+        document.querySelector('.tab-button.active').classList.remove('active');
+        document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
+        currentTab = tabId;
+        populateList(currentTab);
+    }
 
-        if (!response.ok) {
-            console.error(`Error fetching post office details: ${response.status}`);
-            postOfficeDetailsDiv.innerHTML = `<p class="error">Failed to load details: ${response.statusText}</p>`;
+    function filterPostalList() {
+        const searchTerm = document.getElementById("postalSearchInput").value.toLowerCase();
+        filteredData = pinBranchData.filter(item => {
+            const branchName = item.branchName ? item.branchName.toLowerCase() : '';
+            const pincode = item.pincCode ? item.pincCode.toLowerCase() : '';
+            return branchName.includes(searchTerm) || pincode.includes(searchTerm);
+        });
+        populateList(currentTab);
+    }
+
+    function searchPostal() {
+        filterPostalList();
+    }
+
+    async function handleItemClick(type, item) {
+        const userId = getUserId();
+        if (!userId) return;
+
+        const baseUrl = "http://localhost:8081/Post-office/serch-postCd/Name";
+        let queryParams = `userId=${encodeURIComponent(userId)}`;
+
+        if (type === 'pincodes') {
+            const pincode = item.pincCode;
+            if (pincode) {
+                queryParams += `&pincode=${encodeURIComponent(pincode)}`;
+            }
+        } else if (type === 'cities') {
+            let branchName = item.branchName ? item.branchName.trim() : null;
+            if (branchName) {
+                branchName = decodeURIComponent(branchName).replace(/%20/g, ' ');
+                queryParams += `&branchName=${encodeURIComponent(branchName)}`;
+            }
+        }
+
+        const fullUrl = `${baseUrl}?${queryParams}`;
+
+        showLoading();
+
+        try {
+            const response = await fetch(fullUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            hideLoading();
+
+            if (!response.ok) {
+                console.error(`Error fetching post office details: ${response.status}`);
+                postOfficeDetailsDiv.innerHTML = `<p class="error">Failed to load details: ${response.statusText}</p>`;
+                openModal();
+                return;
+            }
+
+            const data = await response.json();
+            console.log("Post office details:", data);
+            displayPostOfficeDetails(data);
             openModal();
+        } catch (error) {
+            hideLoading();
+            console.error('Error fetching post office details:', error);
+            postOfficeDetailsDiv.innerHTML = `<p class="error">Error loading details: ${error.message}</p>`;
+            openModal();
+        }
+    }
+
+    function displayPostOfficeDetails(data) {
+        if (!postOfficeDetailsDiv) {
+            console.error("Error: postOfficeDetailsDiv is null in displayPostOfficeDetails.");
             return;
         }
-
-        const data = await response.json();
-        console.log("Post office details:", data);
-        displayPostOfficeDetails(data);
-        openModal();
-
-    } catch (error) {
-        hideLoading(); // Hide loading animation on error
-        console.error('Error fetching post office details:', error);
-        postOfficeDetailsDiv.innerHTML = `<p class="error">Error loading details: ${error.message}</p>`;
-        openModal();
+        postOfficeDetailsDiv.innerHTML = '';
+        if (data && data.PostOffice && data.PostOffice.length > 0) {
+            data.PostOffice.forEach(office => {
+                postOfficeDetailsDiv.innerHTML += `<p><strong>Name:</strong> ${office.Name}</p>`;
+                if (office.Description) {
+                    postOfficeDetailsDiv.innerHTML += `<p><strong>Description:</strong> ${office.Description}</p>`;
+                }
+                postOfficeDetailsDiv.innerHTML += `<p><strong>Branch Type:</strong> ${office.BranchType}</p>`;
+                postOfficeDetailsDiv.innerHTML += `<p><strong>Delivery Status:</strong> ${office.DeliveryStatus}</p>`;
+                postOfficeDetailsDiv.innerHTML += `<p><strong>Circle:</strong> ${office.Circle}</p>`;
+                postOfficeDetailsDiv.innerHTML += `<p><strong>District:</strong> ${office.District}</p>`;
+                postOfficeDetailsDiv.innerHTML += `<p><strong>Division:</strong> ${office.Division}</p>`;
+                postOfficeDetailsDiv.innerHTML += `<p><strong>Region:</strong> ${office.Region}</p>`;
+                postOfficeDetailsDiv.innerHTML += `<p><strong>Block:</strong> ${office.Block}</p>`;
+                postOfficeDetailsDiv.innerHTML += `<p><strong>State:</strong> ${office.State}</p>`;
+                postOfficeDetailsDiv.innerHTML += `<p><strong>Country:</strong> ${office.Country}</p>`;
+                postOfficeDetailsDiv.innerHTML += `<p><strong>Pincode:</strong> ${office.Pincode}</p><hr>`;
+            });
+        } else if (data && data.Message) {
+            postOfficeDetailsDiv.innerHTML = `<p>${data.Message}</p>`;
+        } else {
+            postOfficeDetailsDiv.innerHTML = `<p>No details found.</p>`;
+        }
     }
-}
-		function displayPostOfficeDetails(data) {
-			if (!postOfficeDetailsDiv) {
-				console.error("Error: postOfficeDetailsDiv is null in displayPostOfficeDetails.  This function should not have been called.");
-				return; // Important: Stop execution if postOfficeDetailsDiv is not defined.
-			}
-			postOfficeDetailsDiv.innerHTML = ''; // Clear previous details
-			if (data && data.PostOffice && data.PostOffice.length > 0) {
-				data.PostOffice.forEach(office => {
-					postOfficeDetailsDiv.innerHTML += `<p><strong>Name:</strong> ${office.Name}</p>`;
-					if (office.Description) {
-						postOfficeDetailsDiv.innerHTML += `<p><strong>Description:</strong> ${office.Description}</p>`;
-					}
-					postOfficeDetailsDiv.innerHTML += `<p><strong>Branch Type:</strong> ${office.BranchType}</p>`;
-					postOfficeDetailsDiv.innerHTML += `<p><strong>Delivery Status:</strong> ${office.DeliveryStatus}</p>`;
-					postOfficeDetailsDiv.innerHTML += `<p><strong>Circle:</strong> ${office.Circle}</p>`;
-					postOfficeDetailsDiv.innerHTML += `<p><strong>District:</strong> ${office.District}</p>`;
-					postOfficeDetailsDiv.innerHTML += `<p><strong>Division:</strong> ${office.Division}</p>`;
-					postOfficeDetailsDiv.innerHTML += `<p><strong>Region:</strong> ${office.Region}</p>`;
-					postOfficeDetailsDiv.innerHTML += `<p><strong>Block:</strong> ${office.Block}</p>`;
-					postOfficeDetailsDiv.innerHTML += `<p><strong>State:</strong> ${office.State}</p>`;
-					postOfficeDetailsDiv.innerHTML += `<p><strong>Country:</strong> ${office.Country}</p>`;
-					postOfficeDetailsDiv.innerHTML += `<p><strong>Pincode:</strong> ${office.Pincode}</p><hr>`;
-				});
-			} else if (data && data.Message) {
-				postOfficeDetailsDiv.innerHTML = `<p>${data.Message}</p>`;
-			} else {
-				postOfficeDetailsDiv.innerHTML = `<p>No details found.</p>`;
-			}
-		}
 
-		function openModal() {
-			document.getElementById("detailsModal").style.display = "flex";
-		}
+    function openModal() {
+        if (postOfficeDetailsDiv.innerHTML) { // Only open if content is set
+            detailsModal.style.display = "flex";
+        }
+    }
 
+    function closeModal() {
+        if (detailsModal) {
+            detailsModal.style.display = "none";
+            postOfficeDetailsDiv.innerHTML = ''; // Clear content on close
+        }
+    }
 
-		function closeModal() {
-			if (detailsModal) {
-				detailsModal.style.display = "none";
-			}
-		}
+    document.addEventListener('DOMContentLoaded', function () {
+        detailsModal = document.getElementById('detailsModal');
+        postOfficeDetailsDiv = document.getElementById('postOfficeDetails');
+        postOfficeDetailsDiv.innerHTML = ''; // Ensure modal is empty on load
+        window.onclick = function (event) {
+            if (event.target == detailsModal) {
+                closeModal();
+            }
+        };
+        // Check for query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const pincode = urlParams.get('pincode');
+        const branchName = urlParams.get('branchName');
+        if (pincode || branchName) {
+            handleQueryParam(pincode, branchName);
+        } else {
+            fetchPincodeOrBranchData();
+        }
+    });
 
-		document.addEventListener('DOMContentLoaded', function () {
-			detailsModal = document.getElementById('detailsModal');
-			postOfficeDetailsDiv = document.getElementById('postOfficeDetails'); // Initialize here
-			window.onclick = function (event) {
-				if (event.target == detailsModal) {
-					closeModal();
-				}
-			};
-		});
+    async function handleQueryParam(pincode, branchName) {
+        const userId = getUserId();
+        if (!userId) return;
 
-		window.onload = fetchPincodeOrBranchData;
+        const baseUrl = "http://localhost:8081/Post-office/serch-postCd/Name";
+        let queryParams = `userId=${encodeURIComponent(userId)}`;
+
+        if (pincode) {
+            queryParams += `&pincode=${encodeURIComponent(pincode)}`;
+        } else if (branchName) {
+            queryParams += `&branchName=${encodeURIComponent(branchName)}`;
+        }
+
+        const fullUrl = `${baseUrl}?${queryParams}`;
+
+        showLoading();
+
+        try {
+            const response = await fetch(fullUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            hideLoading();
+
+            if (!response.ok) {
+                console.error(`Error fetching post office details: ${response.status}`);
+                postOfficeDetailsDiv.innerHTML = `<p class="error">Failed to load details: ${response.statusText}</p>`;
+                openModal();
+                return;
+            }
+
+            const data = await response.json();
+            displayPostOfficeDetails(data);
+            openModal();
+        } catch (error) {
+            hideLoading();
+            console.error('Error fetching post office details:', error);
+            postOfficeDetailsDiv.innerHTML = `<p class="error">Error loading details: ${error.message}</p>`;
+            openModal();
+        }
+    }
 	</script>
 
 </body>
