@@ -13,6 +13,20 @@ public class CustomerDTO {
 	private String userId;
 	private String smokerStatus;
 	private String adminAccess;
+	private Address address;
+	private ContactDetails  contactDetails;
+	public Address getAddress() {
+		return address;
+	}
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+	public ContactDetails getContactDetails() {
+		return contactDetails;
+	}
+	public void setContactDetails(ContactDetails contactDetails) {
+		this.contactDetails = contactDetails;
+	}
 	public String getName() {
 		return name;
 	}

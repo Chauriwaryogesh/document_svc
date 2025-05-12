@@ -840,11 +840,26 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .user-list-container.grid-view .user-card .user-checkbox {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-        }
+       .user-list-container.grid-view .user-card .user-checkbox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10; /* Ensure checkbox is above other content */
+}
+
+.user-list-container.grid-view .user-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px 15px 15px 35px; /* Increase left padding to avoid overlap */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.user-list-container.grid-view .user-card strong {
+    margin-left: 5px; /* Add margin to User ID text to shift it right */
+}
 
         .user-list-container.grid-view .user-card .arrow {
             position: absolute;
@@ -1276,14 +1291,12 @@ function logout() {
     window.location.href = 'login';
 }
 
+let viewMode = 'grid';
 let selectedUserIds = [];
-let viewMode = 'list'; // Default to list view
-
-// Pagination variables
-let allUsers = []; // Store all fetched users
-let currentPage = 0; // Start at page 0 (first page)
-const pageSize = 10; // 10 records per page
-let totalPages = 1; // Calculated from allUsers length
+let allUsers = [];
+let currentPage = 0;
+const getPageSize = () => viewMode === 'grid' ? 12 : 10; // 12 for grid, 10 for list
+let totalPages = 1;
 
 async function fetchWorkItems(id) {
     const userId = getUserId();
@@ -1307,28 +1320,28 @@ async function fetchWorkItems(id) {
 
         if (!response.ok) {
             console.error(`HTTP error! status: ${response.status}`);
-            userListContainer.innerHTML = '<div class="error-message">No available users</div>';
+            userListContainer.innerHTML = '<div class="error-message">Failed to load user data</div>';
             updatePagination(0);
             return;
         }
 
         const data = await response.json();
-        if (data.errorMessage && data.errorMessage.includes("No available users")) {
-            userListContainer.innerHTML = '<div class="error-message">No available users</div>';
+        console.log('API Response:', data); // Debug log
+        if (data.errorMessage || !data.data) {
+            console.error('Error message:', data.errorMessage || 'No user data');
+            userListContainer.innerHTML = '<div class="error-message">No user found</div>';
             updatePagination(0);
             return;
         }
-
-        // Store all users or single user
-        allUsers = id ? [data.data] : (data.data || []);
-        console.log('Fetched users:', allUsers); // Debug log
-        totalPages = id ? 1 : Math.ceil(allUsers.length / pageSize) || 1;
-        currentPage = 0; // Reset to first page
+        allUsers = id ? (Array.isArray(data.data) ? data.data : [data.data]) : (data.data || []);
+        console.log('Processed users:', allUsers); // Debug log
+        totalPages = id ? 1 : Math.ceil(allUsers.length / getPageSize()) || 1;
+        currentPage = 0;
         populateUserList();
         updatePagination(totalPages);
     } catch (error) {
         console.error('Error fetching work items:', error);
-        userListContainer.innerHTML = '<div class="error-message">Error loading users.</div>';
+        userListContainer.innerHTML = '<div class="error-message">Error loading users</div>';
         updatePagination(0);
     }
 }
@@ -1339,8 +1352,8 @@ function populateUserList() {
     selectedUserIds = [];
 
     // Slice users for the current page
-    const start = currentPage * pageSize;
-    const end = start + pageSize;
+    const start = currentPage * getPageSize();
+const end = start + getPageSize();
     const workItems = allUsers.slice(start, end);
 
     if (!workItems || workItems.length === 0) {
@@ -1354,103 +1367,104 @@ function populateUserList() {
             userSummary.classList.add('user-summary');
             userSummary.style.animationDelay = `${index * 0.1}s`;
             userSummary.innerHTML = `
-                <input type="checkbox" class="user-checkbox" data-user-id="${item.id}" onchange="toggleUserSelection(${item.id})">
-                <strong>User ID: ${item.id}</strong>
-                <button class="customer-details-button" onclick="showCustomerDetails('${item.email || ''}', ${item.id})">
+                <input type="checkbox" class="user-checkbox" data-user-id="${item.id || 'N/A'}" onchange="toggleUserSelection(${item.id || 0})">
+                <strong>User ID: ${item.id || 'N/A'}</strong>
+                <button class="customer-details-button" onclick="showCustomerDetails('${item.email || ''}', ${item.id || 0})">
                     <i class="fas fa-info-circle"></i> Customer Details
                 </button>
                 <span class="arrow"><i class="fas fa-chevron-right"></i></span>
             `;
             userSummary.addEventListener('click', (e) => {
                 if (!e.target.classList.contains('user-checkbox') && !e.target.classList.contains('customer-details-button') && !e.target.closest('.customer-details-button')) {
-                    toggleUserDetails(item.id);
+                    toggleUserDetails(item.id || 0);
                 }
             });
             userListContainer.appendChild(userSummary);
 
             const userDetails = document.createElement('div');
             userDetails.classList.add('user-details');
-            userDetails.dataset.userId = item.id;
+            userDetails.dataset.userId = item.id || 'N/A';
             userDetails.innerHTML = `
                 <div>
-                    <label for="email-${item.id}">Email</label>
-                    <input type="text" id="email-${item.id}" value="${item.email || ''}" data-user-id="${item.id}" data-field="email">
+                    <label for="email-${item.id || 'N/A'}">Email</label>
+                    <input type="text" id="email-${item.id || 'N/A'}" value="${item.email || ''}" data-user-id="${item.id || 'N/A'}" data-field="email">
                 </div>
                 <div>
-                    <label for="userCode-${item.id}">User Code</label>
-                    <input type="text" id="userCode-${item.id}" value="${item.userCode || ''}" data-user-id="${item.id}" data-field="userCode">
+                    <label for="userCode-${item.id || 'N/A'}">User Code</label>
+                    <input type="text" id="userCode-${item.id || 'N/A'}" value="${item.userCode || ''}" data-user-id="${item.id || 'N/A'}" data-field="userCode">
                 </div>
                 <div>
                     <label>Email Verified</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" id="isEmailVerified-${item.id}" ${item.isEmailVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id}" data-field="isEmailVerified">
-                        <label for="isEmailVerified-${item.id}">Yes</label>
+                        <input type="checkbox" id="isEmailVerified-${item.id || 'N/A'}" ${item.isEmailVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id || 'N/A'}" data-field="isEmailVerified">
+                        <label for="isEmailVerified-${item.id || 'N/A'}">Yes</label>
                     </div>
                 </div>
                 <div>
                     <label>User Code Verified</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" id="isUserCodeVerified-${item.id}" ${item.isUserCodeVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id}" data-field="isUserCodeVerified">
-                        <label for="isUserCodeVerified-${item.id}">Yes</label>
+                        <input type="checkbox" id="isUserCodeVerified-${item.id || 'N/A'}" ${item.isUserCodeVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id || 'N/A'}" data-field="isUserCodeVerified">
+                        <label for="isUserCodeVerified-${item.id || 'N/A'}">Yes</label>
                     </div>
                 </div>
                 <div>
-                    <label for="remainingTime-${item.id}">Expiry Time</label>
-                    <input type="date" id="remainingTime-${item.id}" value="${item.remainingTime ? item.remainingTime.split('T')[0] : ''}" data-user-id="${item.id}" data-field="remainingTime">
+                    <label for="remainingTime-${item.id || 'N/A'}">Expiry Time</label>
+                    <input type="date" id="remainingTime-${item.id || 'N/A'}" value="${item.remainingTime ? item.remainingTime.split('T')[0] : ''}" data-user-id="${item.id || 'N/A'}" data-field="remainingTime">
                 </div>
                 <div>
                     <label>ID</label>
-                    <div>${item.id}</div>
+                    <div>${item.id || 'N/A'}</div>
                 </div>
             `;
             userListContainer.appendChild(userDetails);
         } else {
+            // Grid view code remains similar, apply same default values
             const userCard = document.createElement('div');
             userCard.classList.add('user-card');
             userCard.style.animationDelay = `${index * 0.1}s`;
             userCard.innerHTML = `
-                <input type="checkbox" class="user-checkbox" data-user-id="${item.id}" onchange="toggleUserSelection(${item.id})">
-                <strong>User ID: ${item.id}</strong>
-                <button class="customer-details-button" onclick="showCustomerDetails('${item.email || ''}', ${item.id})">
+                <input type="checkbox" class="user-checkbox" data-user-id="${item.id || 'N/A'}" onchange="toggleUserSelection(${item.id || 0})">
+                <strong>User ID: ${item.id || 'N/A'}</strong>
+                <button class="customer-details-button" onclick="showCustomerDetails('${item.email || ''}', ${item.id || 0})">
                     <i class="fas fa-info-circle"></i> Customer Details
                 </button>
                 <p>Email: ${item.email || 'N/A'}</p>
                 <p>User Code: ${item.userCode || 'N/A'}</p>
                 <span class="arrow"><i class="fas fa-chevron-right"></i></span>
-                <div class="user-details" data-user-id="${item.id}">
+                <div class="user-details" data-user-id="${item.id || 'N/A'}">
                     <div>
-                        <label for="email-${item.id}">Email</label>
-                        <input type="text" id="email-${item.id}" value="${item.email || ''}" data-user-id="${item.id}" data-field="email">
+                        <label for="email-${item.id || 'N/A'}">Email</label>
+                        <input type="text" id="email-${item.id || 'N/A'}" value="${item.email || ''}" data-user-id="${item.id || 'N/A'}" data-field="email">
                     </div>
                     <div>
-                        <label for="userCode-${item.id}">User Code</label>
-                        <input type="text" id="userCode-${item.id}" value="${item.userCode || ''}" data-user-id="${item.id}" data-field="userCode">
+                        <label for="userCode-${item.id || 'N/A'}">User Code</label>
+                        <input type="text" id="userCode-${item.id || 'N/A'}" value="${item.userCode || ''}" data-user-id="${item.id || 'N/A'}" data-field="userCode">
                     </div>
                     <div>
                         <label>Email Verified</label>
                         <div class="checkbox-group">
-                            <input type="checkbox" id="isEmailVerified-${item.id}" ${item.isEmailVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id}" data-field="isEmailVerified">
-                            <label for="isEmailVerified-${item.id}">Yes</label>
+                            <input type="checkbox" id="isEmailVerified-${item.id || 'N/A'}" ${item.isEmailVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id || 'N/A'}" data-field="isEmailVerified">
+                            <label for="isEmailVerified-${item.id || 'N/A'}">Yes</label>
                         </div>
                     </div>
                     <div>
                         <label>User Code Verified</label>
                         <div class="checkbox-group">
-                            <input type="checkbox" id="isUserCodeVerified-${item.id}" ${item.isUserCodeVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id}" data-field="isUserCodeVerified">
-                            <label for="isUserCodeVerified-${item.id}">Yes</label>
+                            <input type="checkbox" id="isUserCodeVerified-${item.id || 'N/A'}" ${item.isUserCodeVerified === 'Y' ? 'checked' : ''} data-user-id="${item.id || 'N/A'}" data-field="isUserCodeVerified">
+                            <label for="isUserCodeVerified-${item.id || 'N/A'}">Yes</label>
                         </div>
                     </div>
                     <div>
-                        <label for="remainingTime-${item.id}">Expiry Time</label>
-                        <input type="date" id="remainingTime-${item.id}" value="${item.remainingTime ? item.remainingTime.split('T')[0] : ''}" data-user-id="${item.id}" data-field="remainingTime">
+                        <label for="remainingTime-${item.id || 'N/A'}">Expiry Time</label>
+                        <input type="date" id="remainingTime-${item.id || 'N/A'}" value="${item.remainingTime ? item.remainingTime.split('T')[0] : ''}" data-user-id="${item.id || 'N/A'}" data-field="remainingTime">
                     </div>
                     <div>
                         <label>ID</label>
-                        <div>${item.id}</div>
+                        <div>${item.id || 'N/A'}</div>
                     </div>
                 </div>
             `;
-            userCard.querySelector('.arrow').addEventListener('click', () => toggleUserDetails(item.id));
+            userCard.querySelector('.arrow').addEventListener('click', () => toggleUserDetails(item.id || 0));
             userListContainer.appendChild(userCard);
         }
     });
@@ -1565,18 +1579,18 @@ async function showCustomerDetails(emailId, userId) {
         document.getElementById('customer-smokerStatus').checked = basicData.data.smokerStatus === 'Y';
         document.getElementById('customer-adminAccess').checked = basicData.data.adminAccess === 'Y';
 
-        document.getElementById('customer-street').value = basicData.data.AddressObject?.street || '';
-        document.getElementById('customer-city').value = basicData.data.AddressObject?.city || '';
-        document.getElementById('customer-state').value = basicData.data.AddressObject?.state || '';
-        document.getElementById('customer-zipCode').value = basicData.data.AddressObject?.zipCode || '';
-        document.getElementById('customer-country').value = basicData.data.AddressObject?.country || '';
+        document.getElementById('customer-street').value = basicData.data.address?.street || '';
+        document.getElementById('customer-city').value = basicData.data.address?.city || '';
+        document.getElementById('customer-state').value = basicData.data.address?.state || '';
+        document.getElementById('customer-zipCode').value = basicData.data.address?.zipCode || '';
+        document.getElementById('customer-country').value = basicData.data.address?.country || '';
 
-        document.getElementById('customer-alternateEmail').value = basicData.data.ContactDetailsObject?.alternateEmail || '';
-        document.getElementById('customer-phoneCountryCode').value = basicData.data.ContactDetailsObject?.phoneCountryCode || '';
-        document.getElementById('customer-contactPhoneNumber').value = basicData.data.ContactDetailsObject?.phoneNumber || '';
-        document.getElementById('customer-emergencyContactName').value = basicData.data.ContactDetailsObject?.emergencyContactName || '';
-        document.getElementById('customer-emergencyContactPhone').value = basicData.data.ContactDetailsObject?.emergencyContactPhone || '';
-
+        document.getElementById('customer-alternateEmail').value = basicData.data.contactDetails?.alternateEmail || '';
+        document.getElementById('customer-phoneCountryCode').value = basicData.data.contactDetails?.phoneCountryCode || '';
+        document.getElementById('customer-contactPhoneNumber').value = basicData.data.contactDetails?.phoneNumber || '';
+        document.getElementById('customer-emergencyContactName').value = basicData.data.contactDetails?.emergencyContactName || '';
+        document.getElementById('customer-emergencyContactPhone').value = basicData.data.contactDetails?.emergencyContactPhone || '';
+console.log("contactdetail",basicData.data.contactDetails);
         openCustomerDetailsModal();
     } catch (error) {
         console.error('Error fetching customer details:', error.message);
@@ -1671,8 +1685,8 @@ async function updateCustomerDetails() {
         userId,
         smokerStatus,
         adminAccess,
-        AddressObject: { street, city, state, zipCode, country },
-        ContactDetailsObject: { alternateEmail, phoneCountryCode, phoneNumber: contactPhoneNumber, emergencyContactName, emergencyContactPhone }
+        address: { street, city, state, zipCode, country },
+        contactDetails: { alternateEmail, phoneCountryCode, phoneNumber: contactPhoneNumber, emergencyContactName, emergencyContactPhone }
     };
 
     const authUserId = getUserId();
@@ -1981,7 +1995,6 @@ window.onload = () => {
     initializeOverlayClick();
     if (customAlertOverlay) customAlertOverlay.classList.remove('active');
     if (customErrorOverlay) customErrorOverlay.classList.remove('active');
-    // Ensure modals are closed on load
     closeNewUserModal();
     closeCustomerDetailsModal();
     closeContactPopup();
@@ -1990,6 +2003,7 @@ window.onload = () => {
     const id = urlParams.get('id');
     currentPage = 0;
     allUsers = [];
+    document.getElementById('userListContainer').classList.add('grid-view'); // Add this
     fetchWorkItems(id);
 };
 </script>
