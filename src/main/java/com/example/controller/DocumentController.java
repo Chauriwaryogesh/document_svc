@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.dto.AddDocument;
 import com.example.dto.DocumentDTO;
 import com.example.dto.NotesDTO;
 import com.example.entity.Document;
@@ -32,7 +31,7 @@ public class DocumentController {
 	@Autowired
 	private IDocumentService docmentSrvice;
 
-	@RequestMapping(value = "getDocument", method = RequestMethod.GET,produces = {"image/png", "image/jpeg", "application/pdf"})
+	@RequestMapping(value = "upload-getDocument", method = RequestMethod.GET,produces = {"image/png", "image/jpeg", "application/pdf"})
 	public ResponseEntity<byte[]> getDocument(@RequestParam(value = "id", required = false) String id,
 			@RequestParam(value = "docName", required = false) String docName,
 			@RequestHeader(value = "userId", required = false) String userId) {
@@ -47,19 +46,8 @@ public class DocumentController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 	}
-
-	@RequestMapping(value = "/uploadDoc", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE
-	/* , produces = MediaType.APPLICATION_JSON_VALUE */)
-	public String uploadDoc(@RequestBody List<AddDocument> document,
-			@RequestHeader String userId) {
 	
-		String message= docmentSrvice.uploadDocService(document, userId);
-		
-		return message;
-		
-	}
-	
-	@PostMapping(value ="/upload",consumes = "multipart/form-data")
+	@PostMapping(value ="/uploadDocument",consumes = "multipart/form-data")
     public ResponseEntity<String> uploadDocument(@RequestParam("file") MultipartFile file,
     		@RequestParam("Doc Name") String docName,
     		@RequestHeader String userId) {
@@ -72,7 +60,7 @@ public class DocumentController {
         }
     }
 	
-	@RequestMapping(value = "getAllDocuments", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "upload-getAllDocuments", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
 	public com.example.service.ResponseEntity<List<DocumentDTO>> getDocument(
 			@RequestHeader(value = "userId", required = false) String userId) {
 		
@@ -86,6 +74,47 @@ public class DocumentController {
     }
 		return docslist;
 	}
+	
+	 @PostMapping("/capture-upload")
+	    public ResponseEntity<String> uploadPhoto(@RequestParam("image") MultipartFile image,
+	                                              @RequestParam("name") String name) {
+	        try {
+	        	docmentSrvice.savePhoto(name, image);
+	            return ResponseEntity.ok("Photo saved successfully.");
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                                 .body("Error saving photo: " + e.getMessage());
+	        }
+	    }
+	 @GetMapping("/capture-getAllDocument")
+	 public com.example.service.ResponseEntity<List<DocumentDTO>> getCaptureAllDocument(
+				@RequestHeader(value = "userId", required = false) String userId) {
+			
+			com.example.service.ResponseEntity<List<DocumentDTO>> docslist= new com.example.service.ResponseEntity<>();
+			List<DocumentDTO> document = docmentSrvice.getCaptureAllDocuments( userId);
+			if(document != null) {
+				docslist.setData(document);
+	    } else {
+	    	docslist.setErrorMessage("documentListisEmpty");
+	       
+	    }
+			return docslist;
+		}
+	 @RequestMapping(value = "capture-getDocument", method = RequestMethod.GET,produces = {"image/png", "image/jpeg", "application/pdf"})
+		public ResponseEntity<byte[]> getCaptureDocument(@RequestParam(value = "id", required = false) String id,
+				@RequestParam(value = "docName", required = false) String docName,
+				@RequestHeader(value = "userId", required = false) String userId) {
+			
+			DocumentDTO document = docmentSrvice.getCaptureDocumentdtls(id, docName, userId);
+			if(document != null) {
+			return ResponseEntity.ok()
+	                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocName() + "\"")
+	                .header(HttpHeaders.CONTENT_TYPE, document.getDocType()) // Set correct MIME type (image/png, image/jpeg, etc.)
+	                .body(document.getData());
+	    } else {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	    }
+		}
 	
 	@PostMapping("/notes")
 	public com.example.service.ResponseEntity<String> createNote(@RequestBody NotesDTO note) {
