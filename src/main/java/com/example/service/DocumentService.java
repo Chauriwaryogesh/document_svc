@@ -16,8 +16,10 @@ import com.example.dto.DocumentDTO;
 import com.example.dto.NotesDTO;
 import com.example.entity.Document;
 import com.example.entity.Note;
+import com.example.entity.Photo;
 import com.example.mapper.DocumentMapper;
 import com.example.repo.IDocumentRepo;
+import com.example.repo.IPhoto;
 import com.example.repo.NotesRepo;
 
 @Service
@@ -31,6 +33,9 @@ public class DocumentService implements IDocumentService {
 	
 	@Autowired
 	private NotesRepo noteRepo;
+	
+	 @Autowired
+	 private IPhoto photoRepository;
 
 
 	@Override
@@ -117,5 +122,45 @@ public class DocumentService implements IDocumentService {
         }
         return false;
     }
+	@Override   
+	public void savePhoto(String name, MultipartFile file) throws IOException {
+	        Photo photo = new Photo();
+	        photo.setName(name);
+	        photo.setContentType(file.getContentType());
+	        photo.setData(file.getBytes());
+
+	        photoRepository.save(photo);
+	    }
+
+	@Override
+	public List<DocumentDTO> getCaptureAllDocuments(String userId) {
+		List<Photo> documents = photoRepository.findAll();
+		return  documents.stream().map(file ->{
+			DocumentDTO document= new DocumentDTO();
+			document.setId(String.valueOf(file.getId()));
+			document.setDocName(file.getName());
+			document.setDocType(file.getContentType());
+			document.setCreatedBy("SYSTEM");
+			document.setUpdatedBy("SYSTEM");
+			document.setData(file.getData());
+			return document;	
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public DocumentDTO getCaptureDocumentdtls(String id, String docName, String userId) {
+		Optional<Photo> documents = photoRepository.findById(Long.valueOf(id));
+		DocumentDTO document= new DocumentDTO();
+		if (documents.isPresent()) {
+			Photo file = documents.get();
+				document.setId(String.valueOf(file.getId()));
+				document.setDocName(file.getName());
+				document.setDocType(file.getContentType());
+				document.setCreatedBy("SYSTEM");
+				document.setUpdatedBy("SYSTEM");
+				document.setData(file.getData());	
+		}
+		return document;
+	}
 
 }

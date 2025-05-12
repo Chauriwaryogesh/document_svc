@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.config.QrCodeWebSocketHandler;
+import com.example.dto.CustomerDTO;
 import com.example.dto.EmailDTO;
 import com.example.dto.SecurityDTO;
 import com.example.service.IEmployeeService;
@@ -274,5 +275,36 @@ public class SecurityController {
 			return ResponseEntity.status(500).body(Map.of("error", "Failed to notify client"));
 		}
 	}
+	
+	@GetMapping("/customer-details")
+	public com.example.service.ResponseEntity<CustomerDTO> getCustomerlDetails(
+			@RequestParam(value = "email", required = false) String email, @RequestHeader String userId) {
+		com.example.service.ResponseEntity<CustomerDTO> emailResp = new com.example.service.ResponseEntity<>();
+
+		CustomerDTO customerDTO = otpService.getCustomerDetails(email, userId);
+
+		if (email != null && !email.isEmpty()) {
+			emailResp.setData(customerDTO);
+		} else {
+			emailResp.setErrorMessage("Error while fetching customerDetails ");
+		}
+		return emailResp;
+	}
+	@PostMapping("/customer-details/update")
+	public com.example.service.ResponseEntity<String> getCustomerlDetails(
+			@RequestBody CustomerDTO customerDTO, @RequestHeader String userId) {
+		com.example.service.ResponseEntity<String> resp = new com.example.service.ResponseEntity<>();
+
+		String message = otpService.updateCustomerDetails(customerDTO, userId);
+
+		if (message.contains("Success")) {
+			resp.setData(message);
+		} else {
+			resp.setErrorMessage("Error while updating  customerDetails ");
+		}
+		return resp;
+	}
+
+	
 
 }

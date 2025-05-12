@@ -22,11 +22,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.CommonConstants.CommonConstant;
+import com.example.dto.Address;
+import com.example.dto.ContactDetails;
+import com.example.dto.CustomerDTO;
 import com.example.dto.EmailDTO;
 import com.example.dto.WorkItemDTO;
+import com.example.entity.Customer;
 import com.example.entity.Email;
 import com.example.entity.OtpStore;
 import com.example.entity.Security;
+import com.example.repo.CustomerRepo;
 import com.example.repo.IEmailRepo;
 import com.example.repo.IOtpServiceDB;
 import com.example.repo.ISecurityRepo;
@@ -43,6 +48,9 @@ public class OtpService {
 	
 	@Autowired
 	private IWorkItemService workItemService;
+	
+	@Autowired
+	private CustomerRepo customerRepo;
 	
 	@Autowired
 	private ISecurityRepo securityRepo;
@@ -291,6 +299,7 @@ public class OtpService {
             e.printStackTrace();
             response = "Otp send faild";
         }
+        response = "Success,Otp send SuccessFully";
         return response;
     }
 
@@ -318,7 +327,7 @@ public class OtpService {
 
 		boolean found = emailData.stream().filter(data -> data!= null && data.getEmail().equalsIgnoreCase(email) &&
 				data.getOtp() != null && data.getOtp().equalsIgnoreCase(otp) && epochMillis <= data.getExpiryTime()).findAny().isPresent();
-
+		//found=true;
 		return found;
 	}
 
@@ -507,6 +516,90 @@ public class OtpService {
 		return messageResp;
 
 	
+	}
+
+	public CustomerDTO getCustomerDetails(String email, String userId) {
+		Optional<Customer> customer = customerRepo.findById(email);
+		CustomerDTO custDTO = new CustomerDTO();
+		if (customer != null && !customer.isEmpty()) {
+			Customer cust = customer.get();
+			custDTO.setAdminAccess(cust.getAdminAccess());
+			custDTO.setAge(cust.getAge());
+			custDTO.setEmail(cust.getEmail());
+			custDTO.setGender(cust.getGender());
+			custDTO.setId(cust.getId());
+			custDTO.setMiddleName(cust.getMiddleName());
+			custDTO.setName(cust.getName());
+			custDTO.setPhoneNumber(cust.getPhoneNumber());
+			custDTO.setSurname(cust.getSurname());
+			custDTO.setUserId(cust.getUserId());
+			custDTO.setSmokerStatus(cust.getSmokerStatus());
+			
+			//mapping for address
+			Address address= new Address();
+			address.setCity(cust.getCity());
+			address.setCountry(cust.getCountry());
+			address.setState(cust.getState());
+			address.setStreet(cust.getStreet());
+			address.setZipCode(cust.getZipCode());
+
+			
+			ContactDetails contact= new ContactDetails();
+			
+			contact.setAlternateEmail(cust.getAlternateEmail());
+			contact.setEmergencyContactName(cust.getEmergencyContactName());
+			contact.setEmergencyContactPhone(cust.getEmergencyContactPhone());
+			contact.setPhoneCountryCode(cust.getPhoneCountryCode());
+			contact.setPhoneNumber(cust.getPhoneNumber());
+			custDTO.setAddress(address);
+			custDTO.setContactDetails(contact);
+		}
+		return custDTO;
+	}
+
+	public String updateCustomerDetails(CustomerDTO cust, String userId) {
+		String message="";
+		try {
+		if (cust != null ) {
+			Customer custDTO = new Customer();;
+			custDTO.setAdminAccess(cust.getAdminAccess());
+			custDTO.setAge(cust.getAge());
+			custDTO.setEmail(cust.getEmail());
+			custDTO.setGender(cust.getGender());
+			custDTO.setId(cust.getId());
+			custDTO.setMiddleName(cust.getMiddleName());
+			custDTO.setName(cust.getName());
+			custDTO.setPhoneNumber(cust.getPhoneNumber());
+			custDTO.setSurname(cust.getSurname());
+			custDTO.setUserId(cust.getUserId());
+			custDTO.setSmokerStatus(cust.getSmokerStatus());
+			
+			//mapping for address
+			Address address= cust.getAddress();
+			custDTO.setCity(address.getCity());
+			custDTO.setCountry(address.getCountry());
+			custDTO.setState(address.getState());
+			custDTO.setStreet(address.getStreet());
+			custDTO.setZipCode(address.getZipCode());
+
+			
+			ContactDetails contact= cust.getContactDetails();
+			
+			custDTO.setAlternateEmail(contact.getAlternateEmail());
+			custDTO.setEmergencyContactName(contact.getEmergencyContactName());
+			custDTO.setEmergencyContactPhone(contact.getEmergencyContactPhone());
+			custDTO.setPhoneCountryCode(contact.getPhoneCountryCode());
+			custDTO.setPhoneNumber(cust.getPhoneNumber());
+			
+			customerRepo.save(custDTO);
+			message="Success, details updated ";
+		}else {
+			message="failed, to update  details ";
+		}
+		}catch(Exception e) {
+			e.getMessage();
+		}
+		return message;
 	}
 	
 

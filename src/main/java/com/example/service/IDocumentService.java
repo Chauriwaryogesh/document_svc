@@ -25,4 +25,10 @@ public interface IDocumentService {
 
 	public boolean deleteNoteById(Long id);
 
+	public void savePhoto(String name, MultipartFile image) throws IOException;
+
+	public List<DocumentDTO> getCaptureAllDocuments(String userId);
+
+	public DocumentDTO getCaptureDocumentdtls(String id, String docName, String userId);
+
 }
