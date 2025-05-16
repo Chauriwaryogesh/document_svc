@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.config.QrCodeWebSocketHandler;
 import com.example.dto.CustomerDTO;
 import com.example.dto.EmailDTO;
+import com.example.dto.EmployeeDTO;
 import com.example.dto.SecurityDTO;
 import com.example.service.IEmployeeService;
 import com.example.service.OtpService;
@@ -52,6 +53,15 @@ public class SecurityController {
 
 	@Autowired
 	private QrCodeWebSocketHandler webSocketHandler;
+	
+	@PostMapping(value = "/serch-user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public com.example.service.ResponseEntity<SecurityDTO> serchUser(@RequestBody SecurityDTO searchRequest,
+			@RequestHeader(value = "userId", required=false) String userId) {
+
+		 com.example.service.ResponseEntity<SecurityDTO> security = empService.searchUserFromList(searchRequest, userId);
+
+		return security;
+	}
 
 	@GetMapping("/user-list")
 	public com.example.service.ResponseEntity<List<SecurityDTO>> fetchSecurityRole(

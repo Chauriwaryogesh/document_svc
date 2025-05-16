@@ -26,6 +26,8 @@ public interface IEmployeeService{
 
 	public boolean deleteNoteById(Long id);
 
+	public com.example.service.ResponseEntity<SecurityDTO> searchUserFromList(SecurityDTO searchRequest, String userId);
+
 	
 
 }

@@ -14,6 +14,10 @@ public class DashboardController {
     public String home(String userId) {
         return "home"; 
     }
+	@GetMapping("/forgot-credentials")
+    public String forgetCredentials(String userId) {
+        return "forgot-credentials"; 
+    }
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
