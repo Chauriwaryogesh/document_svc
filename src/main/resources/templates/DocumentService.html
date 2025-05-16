@@ -694,6 +694,7 @@
             <div class="button-container">
                 <button id="downloadButton" onclick="downloadImage()" disabled><i class="fas fa-download"></i> Download</button>
                 <button id="fullSizeButton" onclick="viewFullSize()" disabled><i class="fas fa-expand"></i> View Full Size</button>
+                <button id="printButton" onclick="printImage()" disabled><i class="fas fa-print"></i> Print</button>
             </div>
         </div>
     </div>
@@ -717,7 +718,7 @@
         // Logout function
         function logout() {
             sessionStorage.removeItem('userId');
-            window.location.href = 'login.html';
+            window.location.href = 'login';
         }
 
         // Popup functions
@@ -874,12 +875,14 @@
             const errorMessage = document.getElementById('imageError');
             const downloadButton = document.getElementById('downloadButton');
             const fullSizeButton = document.getElementById('fullSizeButton');
+            const printButton = document.getElementById('printButton');
 
             // Reset modal state
             image.style.display = 'none';
             errorMessage.style.display = 'none';
             downloadButton.disabled = true;
             fullSizeButton.disabled = true;
+            printButton.disabled = true;
 
             // Set image source
             image.src = imageUrl;
@@ -893,6 +896,7 @@
                 image.style.display = 'block';
                 downloadButton.disabled = false;
                 fullSizeButton.disabled = false;
+                printButton.disabled = false;
             };
 
             modal.style.display = 'flex';
@@ -935,6 +939,31 @@
             const docId = modal.dataset.docId;
             console.log('Viewing full size for docId:', docId);
             viewDocumentInNewTab(docId);
+        }
+
+        function printImage() {
+            const modal = document.getElementById('imageViewModal');
+            const docId = modal.dataset.docId;
+            const docName = modal.dataset.docName;
+            const imageUrl = document.getElementById('viewImage').src;
+
+            console.log('Printing image for docId:', docId, 'docName:', docName);
+            const printWindow = window.open('');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Print ${docName}</title>
+                        <style>
+                            body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                            img { max-width: 100%; max-height: 100%; object-fit: contain; }
+                        </style>
+                    </head>
+                    <body>
+                        <img src="${imageUrl}" onload="window.print(); window.close();" />
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
 
         async function viewDocumentInNewTab(docId) {
