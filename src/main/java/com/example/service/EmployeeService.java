@@ -389,4 +389,32 @@ public class EmployeeService implements IEmployeeService {
 		return false;
 	}
 
+	@Override
+	public ResponseEntity<SecurityDTO> searchUserFromList(SecurityDTO searchRequest, String userId) {
+		ResponseEntity<SecurityDTO> serchResp=  new ResponseEntity<>();
+		
+		SecurityDTO securityDTO= new SecurityDTO();
+		
+		if(searchRequest.getUserName() != null) {
+			Security user= securityRepo.findByUserName(searchRequest.getUserName(),"N");
+			if(user != null) {
+				securityDTO.setEmail(user.getEmail());
+				securityDTO.setUserCode(user.getUserCode());
+				serchResp.setData(securityDTO);
+			}else {
+			serchResp.setErrorMessage("No user found");
+			}	
+		}else if(searchRequest.getEmail() != null) {
+			Security user= securityRepo.findByEmail(searchRequest.getEmail(),"N");
+			if(user != null) {
+				securityDTO.setEmail(user.getEmail());
+				securityDTO.setUserCode(user.getUserCode());
+				serchResp.setData(securityDTO);
+			}else {
+			serchResp.setErrorMessage("No user found");
+			}
+		}
+		return serchResp;
+	}
+
 }

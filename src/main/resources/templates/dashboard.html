@@ -8,12 +8,14 @@
     <style>
         body {
             margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', sans-serif;
             background: #f4f6f8;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding-bottom: 60px;
+            box-sizing: border-box;
         }
 
         .main-header {
@@ -415,152 +417,406 @@
         .custom-alert-buttons button:hover {
             background-color: #0056b3;
         }
-.notification-button {
-    position: absolute;
-    right: 300px; /* Your adjusted position */
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: transparent;
-    color: white;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    display: flex;
-    align-items: center;
-    z-index: 10; /* Ensure button is above other elements */
-}
 
-.notification-button:hover {
-    color: #ffc107;
-}
+        .notification-button {
+            position: absolute;
+            right: 300px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: transparent;
+            color: white;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
 
-.notification-badge {
-    position: absolute;
-    top: -8px; /* Adjusted for better visibility */
-    right: -9px; /* Adjusted for better visibility */
-    background-color: #dc3545; /* Red color for alert */
-    color: white;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    font-size: 10px;
-    display: flex; /* Default to flex to ensure visibility */
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    z-index: 11; /* Ensure badge is above the bell icon */
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3); /* Add slight shadow for visibility */
-}
+        .notification-button:hover {
+            color: #ffc107;
+        }
 
-.notification-banner {
-    width: 100%;
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 0;
-    z-index: 1000;
-}
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -9px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            z-index: 11;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        }
 
-.notification-banner .modern-button.small {
-    padding: 5px 10px;
-    font-size: 12px;
-    background-color: #218838;
-}
+        .notification-banner {
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
 
-.notification-banner .modern-button.small:hover {
-    background-color: #1e7e34;
-}
-/* Grid View Styles */
-.work-item-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;
-    padding: 15px;
-}
+        .notification-banner .modern-button.small {
+            padding: 5px 10px;
+            font-size: 12px;
+            background-color: #218838;
+        }
 
-.work-item-grid .work-item-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    position: relative;
-}
+        .notification-banner .modern-button.small:hover {
+            background-color: #1e7e34;
+        }
 
-.work-item-grid .work-item-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    background-color: #e6f7ff;
-}
+        .work-item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            padding: 15px;
+        }
 
-.work-item-grid .work-item-card input[type="checkbox"] {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
+        .work-item-grid .work-item-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
 
-.work-item-grid .work-item-card p {
-    margin: 5px 0;
-    font-size: 0.9em;
-    color: #333;
-}
+        .work-item-grid .work-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background-color: #e6f7ff;
+        }
 
-.work-item-grid .work-item-card p strong {
-    color: #007bff;
-}
+        .work-item-grid .work-item-card input[type="checkbox"] {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
 
-/* Ensure table is hidden in grid view */
-.work-item-list-container.grid-view #workItemTable {
-    display: none;
-}
+        .work-item-grid .work-item-card p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #333;
+        }
 
-.work-item-list-container.grid-view #workItemGrid {
-    display: grid;
-}
+        .work-item-grid .work-item-card p strong {
+            color: #007bff;
+        }
+
+        .work-item-list-container.grid-view #workItemTable {
+            display: none;
+        }
+
+        .work-item-list-container.grid-view #workItemGrid {
+            display: grid;
+        }
 
         .main-footer {
             width: 100%;
             padding: 15px;
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             color: #555;
             text-align: center;
             font-size: 14px;
             position: fixed;
             bottom: 0;
             border-top: 1px solid #ddd;
+            z-index: 1000;
+            opacity: 1;
+        }
+
+        /* Chatbot Styles */
+        .chatbot-button {
+            position: fixed;
+            bottom: 100px;
+            right: 40px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .chatbot-button:hover {
+            transform: scale(1.1);
+        }
+
+        .chatbot-container {
+            display: none;
+            position: fixed;
+            bottom: 160px;
+            right: 40px;
+            width: 300px;
+            height: 400px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            z-index: 10000;
+        }
+
+        .chatbot-header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+
+        .chatbot-message {
+            margin: 5px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .chatbot-message.user {
+            background-color: #007bff;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 0;
+        }
+
+        .chatbot-message.bot {
+            background-color: #e6e6e6;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 0;
+        }
+
+        .chatbot-input-container {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .chatbot-send {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .chatbot-send:hover {
+            background-color: #218838;
+        }
+
+        /* Menu Toggle Button (Below Clock) */
+        .menu-toggle-button {
+            position: absolute;
+            left: 30px;
+            top: 90px; /* Below clock (20px top + 40px height + 10px gap) */
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background 0.3s ease;
+            z-index: 10002;
+        }
+
+        .menu-toggle-button:hover {
+            background: linear-gradient(135deg, #218838, #1e7e34);
+            transform: scale(1.1);
+        }
+
+        /* Sliding Menu Bar */
+        .menu-bar {
+            position: fixed;
+            top: 0;
+            left: -350px;
+            width: 350px;
+            height: 100%;
+            background: #ffffff;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+            box-sizing: border-box;
+        }
+
+        .menu-bar.open {
+            left: 0;
+        }
+
+        .menu-header {
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-right-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-header h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-close-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .menu-close-button:hover {
+            color: #ffc107;
+        }
+
+        .menu-content {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .menu-section h4 {
+            margin: 0 0 15px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+
+        .menu-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-section li {
+            padding: 12px 15px;
+            color: #444;
+            font-size: 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #ffffff;
+            transition: background 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .menu-section li:hover {
+            background: #e6f7ff;
+            transform: translateX(5px);
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-    <!-- Inside <body>, replace the .main-header div -->
-<div class="main-header">
-    <div class="header-title">Dashboard Overview</div>
-    <div id="dashboardHeaderClock">--:--:--</div>
-    <button id="notificationIcon" class="notification-button">
-        <i class="fas fa-bell"></i>
-        <span id="notificationBadge" class="notification-badge" style="display: none;">1</span>
-    </button>
-    <button onclick="redirectToAdminPanel()" class="admin-panel-button">Admin Panel</button>
-    <button onclick="logout()" class="admin-panel-button" style="right: 170px;">Logout</button>
-</div>
+    <div class="main-header">
+        <div class="header-title">Dashboard Overview</div>
+        <div id="dashboardHeaderClock">--:--:--</div>
+        <button id="notificationIcon" class="notification-button">
+            <i class="fas fa-bell"></i>
+            <span id="notificationBadge" class="notification-badge" style="display: none;">1</span>
+        </button>
+        <button onclick="redirectToAdminPanel()" class="admin-panel-button">Admin Panel</button>
+        <button onclick="logout()" class="admin-panel-button" style="right: 170px;">Logout</button>
+        <button id="menuToggleButton" class="menu-toggle-button"><i class="fas fa-bars"></i></button>
+    </div>
 
-<!-- Notification banner remains unchanged -->
-<div id="notificationBanner" class="notification-banner" style="display: none;">
-    <span id="notificationMessage">New update: Dashboard data refreshed!</span>
-    <button onclick="closeNotification()" class="modern-button small">Close</button>
-</div>
+    <div id="menuBar" class="menu-bar">
+        <div class="menu-header">
+            <h3>Menu</h3>
+            <button id="menuCloseButton" class="menu-close-button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="menu-content">
+            <div class="menu-section">
+                <h4>Activity Tracing</h4>
+                <ul id="activityList">
+                    <li>No activities yet.</li>
+                </ul>
+                <button id="viewActivitiesBtn" class="modern-button primary" style="margin-top: 15px;">View All Activities</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notificationBanner" class="notification-banner" style="display: none;">
+        <span id="notificationMessage">New update: Dashboard data refreshed!</span>
+        <button onclick="closeNotification()" class="modern-button small">Close</button>
+    </div>
 
     <div class="dashboard-options">
         <button onclick="showOverview()" class="modern-button">Overview</button>
@@ -635,23 +891,22 @@
         </div>
     </div>
 
-    <!-- Inside .service-actions, update the screenshot button -->
     <div class="service-actions">
-    <button onclick="redirectToPostalService()" class="modern-button"><i class="fas fa-envelope"></i> Postal Service</button>
-    <button onclick="redirectToDocumentService()" class="modern-button"><i class="fas fa-file-alt"></i> Document Service</button>
-    <button onclick="redirectToEmployeeService()" class="modern-button"><i class="fas fa-file-alt"></i> Employee Service</button>
-    <button onclick="redirectToCloudService()" class="modern-button"><i class="fas fa-plus-circle"></i> Cloud Service</button>
-    <button onclick="redirectToMailService()" class="modern-button"><i class="fas fa-file-csv"></i> Mail Service</button>
-    <button id="shareChartBtn" class="modern-button"><i class="fas fa-chart-bar"></i> Screenshot</button>
-    <button onclick="whatsappService()" class="modern-button"><i class="fas fa-file-csv"></i> WhatsApp</button>
-    <div id="shareModal" class="modal-overlay">
-        <div class="modal-box">
-            <h3>Preview ready to share!</h3>
-            <button id="shareNowBtn" class="modern-button primary">Share Now</button>
-            <button onclick="closeShareModal()" class="modern-button secondary">Cancel</button>
+        <button onclick="redirectToPostalService()" class="modern-button"><i class="fas fa-envelope"></i> Postal Service</button>
+        <button onclick="redirectToDocumentService()" class="modern-button"><i class="fas fa-file-alt"></i> Document Service</button>
+        <button onclick="redirectToEmployeeService()" class="modern-button"><i class="fas fa-file-alt"></i> Employee Service</button>
+        <button onclick="redirectToCloudService()" class="modern-button"><i class="fas fa-plus-circle"></i> Cloud Service</button>
+        <button onclick="redirectToMailService()" class="modern-button"><i class="fas fa-file-csv"></i> Mail Service</button>
+        <button id="shareChartBtn" class="modern-button"><i class="fas fa-chart-bar"></i> Screenshot</button>
+        <button onclick="whatsappService()" class="modern-button"><i class="fas fa-file-csv"></i> WhatsApp</button>
+        <div id="shareModal" class="modal-overlay">
+            <div class="modal-box">
+                <h3>Preview ready to share!</h3>
+                <button id="shareNowBtn" class="modern-button primary">Share Now</button>
+                <button onclick="closeShareModal()" class="modern-button secondary">Cancel</button>
+            </div>
         </div>
     </div>
-</div>
 
     <div class="dashboard-container">
         <div class="sla-container">
@@ -708,17 +963,17 @@
         </div>
 
         <div class="filter-container">
-    <select id="statusFilter" class="modern-dropdown">
-        <option value="">Filter by Status</option>
-        <option value="completed">Completed</option>
-        <option value="in-progress">In Progress</option>
-        <option value="on-going">On Going</option>
-    </select>
-    <button id="applyFilterBtn" class="modern-button">Apply Filter</button>
-    <button id="toggleViewBtn" class="modern-button" style="background-color: #007bff; color: white;">
-        <i class="fas fa-th"></i> Toggle View
-    </button>
-</div>
+            <select id="statusFilter" class="modern-dropdown">
+                <option value="">Filter by Status</option>
+                <option value="completed">Completed</option>
+                <option value="in-progress">In Progress</option>
+                <option value="on-going">On Going</option>
+            </select>
+            <button id="applyFilterBtn" class="modern-button">Apply Filter</button>
+            <button id="toggleViewBtn" class="modern-button" style="background-color: #007bff; color: white;">
+                <i class="fas fa-th"></i> Toggle View
+            </button>
+        </div>
 
         <div class="workitem-summary">
             <div class="summary-box total">Total: <span id="totalWorkItems"></span></div>
@@ -726,523 +981,638 @@
             <div class="summary-box closed">Closed: <span id="closedWorkItems"></span></div>
             <div class="summary-box correspondence">Correspondence: <span id="correspondenceWorkItems"></span></div>
         </div>
-       <div class="work-item-list-container" id="workItemListContainer">
-    <table class="work-item-list" id="workItemTable" style="display: table;">
-        <thead>
-            <tr>
-                <th><input type="checkbox" id="selectAll"></th>
-                <th>Id</th>
-                <th>Email</th>
-                <th>User ID</th>
-                <th>Email Verification</th>
-                <th>User ID Verification</th>
-                <th>Access Given Time</th>
-                <th>Expire Time</th>
-            </tr>
-        </thead>
-        <tbody id="workItemsBody"></tbody>
-    </table>
-    <div class="work-item-grid" id="workItemGrid" style="display: none;"></div>
 
-    <div class="bulk-actions">
-        <button class="modern-button primary"><i class="fas fa-user-tag"></i> Assign Selected</button>
-        <button class="modern-button secondary"><i class="fas fa-tasks"></i> Change Status</button>
-    </div>
+        <div class="work-item-list-container" id="workItemListContainer">
+            <table class="work-item-list" id="workItemTable" style="display: table;">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>Id</th>
+                        <th>Email</th>
+                        <th>User ID</th>
+                        <th>Email Verification</th>
+                        <th>User ID Verification</th>
+                        <th>Access Given Time</th>
+                        <th>Expire Time</th>
+                    </tr>
+                </thead>
+                <tbody id="workItemsBody"></tbody>
+            </table>
+            <div class="work-item-grid" id="workItemGrid" style="display: none;"></div>
 
-    <button id="getSelectedBtn" class="modern-button primary" style="margin-top: 20px;">Take Action For User</button>
-    <div id="selectedItems"></div>
-    <div id="paginationControls" class="pagination-controls"></div>
-</div>
+            <div class="bulk-actions">
+                <button class="modern-button primary"><i class="fas fa-user-tag"></i> Assign Selected</button>
+                <button class="modern-button secondary"><i class="fas fa-tasks"></i> Change Status</button>
+            </div>
 
-    <button id="generatePdfBtn" class="floating-button"><i class="fas fa-file-pdf"></i></button>
+            <button id="getSelectedBtn" class="modern-button primary" style="margin-top: 20px;">Take Action For User</button>
+            <div id="selectedItems"></div>
+            <div id="paginationControls" class="pagination-controls"></div>
+        </div>
 
-    <div id="customErrorOverlay" class="custom-alert-overlay error">
-        <div id="customErrorBox" class="custom-alert-box">
-            <div id="customErrorHeader" class="custom-alert-header error">Error</div>
-            <div id="customErrorMessage" class="custom-alert-message error"></div>
-            <div class="custom-alert-buttons">
-                <button id="customErrorOkBtn">OK</button>
+        <button id="generatePdfBtn" class="floating-button"><i class="fas fa-file-pdf"></i></button>
+        <button id="chatbotButton" class="chatbot-button"><i class="fas fa-robot"></i></button>
+
+        <div id="chatbotContainer" class="chatbot-container">
+            <div class="chatbot-header">
+                <h3>Dashboard Assistant</h3>
+                <button id="chatbotClose" class="chatbot-close">×</button>
+            </div>
+            <div id="chatbotMessages" class="chatbot-messages"></div>
+            <div class="chatbot-input-container">
+                <input id="chatbotInput" class="chatbot-input" type="text" placeholder="Type a message...">
+                <button id="chatbotSend" class="chatbot-send"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
-    </div>
 
-    <footer class="main-footer">MailSync Dashboard - Powered by ❤️ Company</footer>
+        <div id="customErrorOverlay" class="custom-alert-overlay error">
+            <div id="customErrorBox" class="custom-alert-box">
+                <div id="customErrorHeader" class="custom-alert-header error">Error</div>
+                <div id="customErrorMessage" class="custom-alert-message error"></div>
+                <div class="custom-alert-buttons">
+                    <button id="customErrorOkBtn">OK</button>
+                </div>
+            </div>
+        </div>
 
-    <script>
-    
- // Function to get userId from sessionStorage
-// Function to get userId from sessionStorage
-    function getUserId() {
-        const userId = sessionStorage.getItem('userId');
-        if (!userId) {
-            showErrorAlert('User ID not found. Please log in again.');
-            window.location.href = '/login';
-            return null;
-        }
-        return userId;
-    }
+        <footer class="main-footer">© 2025 Secure Access Limited. All rights reserved ❤️ Company.</footer>
 
-    // Logout function
-    function logout() {
-        sessionStorage.removeItem('userId');
-        window.location.href = '/login';
-    }
+        <script>
+            const itemsPerPage = 10;
+            let currentPage = 1;
+            let workItems = [];
+            let filteredWorkItems = [];
+            let originalWorkItems = [];
+            let viewMode = 'list';
 
-    const itemsPerPage = 10;
-    let currentPage = 1;
-    let workItems = [];
-    let filteredWorkItems = [];
-    let originalWorkItems = [];
-    let viewMode = 'list'; // Default to list view
-    function redirectToPostalService() { window.location.href = "PostalService"; }
-    function redirectToDocumentService() { window.location.href = "DocumentService"; }
-    function redirectToEmployeeService() { window.location.href = "EmployeeService"; }
-    function redirectToAdminPanel() { const userId = getUserId();
-    if (userId === "ychouri") {
-        window.location.href = "AdminPanel";
-    } else {
-        showErrorAlert("No admin access for user.");
-    }
-}
-    function redirectToCloudService() { window.location.href = "CloudServices"; }
-    function redirectToMailService() { window.location.href = "MailServices"; }
-    function whatsappService() { window.location.href = "tel:+8208247944"; }
-
-    function animateCircle(circleId, percentage, percentageTextId) {
-        const circle = document.getElementById(circleId);
-        const circumference = 376.99;
-        circle.style.strokeDasharray = circumference;
-        const offset = circumference - (percentage / 100) * circumference;
-        circle.style.strokeDashoffset = offset;
-        document.getElementById(percentageTextId).innerText = `${Math.round(percentage)}%`;
-    }
-
-    function toggleView() {
-        viewMode = viewMode === 'list' ? 'grid' : 'list';
-        const container = document.getElementById('workItemListContainer');
-        if (container) {
-            container.classList.toggle('grid-view', viewMode === 'grid');
-            populateWorkItems();
-        }
-    }
-
-    function toggleBulkActions() {
-        const bulkActions = document.querySelector('.bulk-actions');
-        if (bulkActions) {
-            bulkActions.style.display = document.querySelectorAll('.user-checkbox:checked').length ? 'block' : 'none';
-        }
-    }
-
-    async function fetchWorkItems() {
-        const userId = getUserId();
-        if (!userId) return;
-
-        try {
-            const response = await fetch('http://localhost:8081/Security/user-list', {
-                method: 'GET',
-                headers: { 'userId': userId }
-            });
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const data = await response.json();
-            originalWorkItems = data.data || [];
-            workItems = [...originalWorkItems];
-            filteredWorkItems = [...workItems];
-            if (!workItems.length) {
-                document.getElementById('workItemsBody').innerHTML = `
-                    <tr><td colspan="8" style="text-align: center; color: gray;">No available users.</td></tr>`;
-                document.getElementById('workItemGrid').innerHTML = `
-                    <p style="text-align: center; color: gray;">No available users.</p>`;
-                return;
+            function getUserId() {
+                const PaneluserId = sessionStorage.getItem('userId');
+                if (!PaneluserId) {
+                    showErrorAlert('User ID not found. Please log in again.');
+                    window.location.href = '/login';
+                    return null;
+                }
+                return PaneluserId;
             }
-            populateWorkItems();
-            renderPagination();
-        } catch (error) {
-            console.error('Error fetching work items:', error);
-            showErrorAlert('Failed to fetch work items.');
-        }
-    }
 
-    function filterWorkItems(status) {
-        console.log("Status", status);
-        if (status === '') {
-            filteredWorkItems = [...originalWorkItems];
-        } else if (status === 'completed') {
-            filteredWorkItems = originalWorkItems.filter(item =>
-                (item.isEmailVerified === 'Y' || item.isEmailVerified === true) &&
-                (item.isUserCodeVerified === 'Y' || item.isUserCodeVerified === true)
-            );
-        } else if (status === 'in-progress') {
-            filteredWorkItems = originalWorkItems.filter(item =>
-                (item.isEmailVerified === 'N' || item.isEmailVerified === false) ||
-                (item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false)
-            );
-        } else if (status === 'on-going') {
-            filteredWorkItems = [...originalWorkItems];
-        }
-        currentPage = 1;
-        populateTable();
-        renderPagination();
-    }
-
-    function populateWorkItems() {
-        const tbody = document.getElementById('workItemsBody');
-        const grid = document.getElementById('workItemGrid');
-        if (!tbody || !grid) return;
-
-        tbody.innerHTML = '';
-        grid.innerHTML = '';
-
-        const start = (currentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        const paginatedItems = filteredWorkItems.slice(start, end);
-
-        if (!paginatedItems.length) {
-            tbody.innerHTML = `
-                <tr><td colspan="8" style="text-align: center; color: gray;">No items match the selected filter.</td></tr>`;
-            grid.innerHTML = `
-                <p style="text-align: center; color: gray;">No items match the selected filter.</p>`;
-            return;
-        }
-
-        if (viewMode === 'list') {
-            paginatedItems.forEach(item => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td><input type="checkbox" class="user-checkbox" value="${item.id || ''}"></td>
-                    <td>${item.id || 'N/A'}</td>
-                    <td>${item.email || 'N/A'}</td>
-                    <td>${item.userCode || 'N/A'}</td>
-                    <td>${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</td>
-                    <td>${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</td>
-                    <td>${item.createdTime || 'N/A'}</td>
-                    <td>${item.remainingTime || 'N/A'}</td>
-                `;
-            });
-        } else {
-            paginatedItems.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'work-item-card';
-                card.innerHTML = `
-                    <input type="checkbox" class="user-checkbox" value="${item.id || ''}">
-                    <p><strong>ID:</strong> ${item.id || 'N/A'}</p>
-                    <p><strong>Email:</strong> ${item.email || 'N/A'}</p>
-                    <p><strong>User ID:</strong> ${item.userCode || 'N/A'}</p>
-                    <p><strong>Email Verification:</strong> ${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</p>
-                    <p><strong>User ID Verification:</strong> ${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</p>
-                    <p><strong>Access Given:</strong> ${item.createdTime || 'N/A'}</p>
-                    <p><strong>Expires:</strong> ${item.remainingTime || 'N/A'}</p>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // Remove existing listeners to prevent duplicates
-        document.querySelectorAll('.user-checkbox').forEach(cb => {
-            cb.removeEventListener('change', toggleBulkActions);
-            cb.addEventListener('change', toggleBulkActions);
-        });
-    }
-
-    function renderPagination() {
-        const totalPages = Math.ceil(filteredWorkItems.length / itemsPerPage);
-        const paginationControls = document.getElementById('paginationControls');
-        if (!paginationControls) return;
-        paginationControls.innerHTML = `
-            <button class="pagination-button" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">Previous</button>
-            ${Array.from({ length: totalPages }, (_, i) => `
-                <button class="pagination-button ${currentPage === i + 1 ? 'active' : ''}" onclick="changePage(${i + 1})">${i + 1}</button>
-            `).join('')}
-            <button class="pagination-button" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Next</button>
-        `;
-    }
-
-    function changePage(page) {
-        currentPage = page;
-        populateWorkItems();
-        renderPagination();
-    }
-
-    async function loadEmailCounts() {
-        const userId = getUserId();
-        if (!userId) return;
-
-        try {
-            const response = await fetch('http://localhost:8081/api/dashboard/email-counts', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json', 'userId': userId }
-            });
-            if (!response.ok) throw new Error('Failed to fetch email counts');
-            const data = await response.json();
-            document.getElementById('totalWorkItems').textContent = data.totalEmails ?? 0;
-            document.getElementById('openWorkItems').textContent = data.verPending ?? 0;
-            document.getElementById('closedWorkItems').textContent = data.totalClosed ?? 0;
-            document.getElementById('correspondenceWorkItems').textContent = data.corrospodnace ?? 0;
-        } catch (error) {
-            console.error('Error fetching email counts:', error);
-        }
-    }
-
-    async function loadDashboardStats() {
-        const userId = getUserId();
-        if (!userId) return;
-
-        try {
-            const response = await fetch('http://localhost:8081/api/dashboard/stats', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json', 'userId': userId }
-            });
-            if (!response.ok) throw new Error('Failed to fetch dashboard stats');
-            const data = await response.json();
-            document.getElementById('totalEmails').innerText = data.totalEmails;
-            document.getElementById('emailsSent').innerText = data.emailsSent;
-            document.getElementById('emailsInDb').innerText = data.emailsInDb;
-            document.getElementById('slaCrossed').innerText = data.slaCrossed;
-            document.getElementById('documentUpload').innerText = data.documentUpload;
-            const total = 200; // Fallback to 200 if totalEmails is 0
-            animateCircle('emailSentCircle', (data.emailsSent / total) * 100, 'emailSentPercentage');
-            animateCircle('emailsInDbCircle', (data.emailsInDb / total) * 100, 'emailsInDbPercentage');
-            animateCircle('slaProgressCircle', (data.totalEmails / total) * 100, 'slaProgressPercentage');
-            animateCircle('documentUploadCircle', (data.documentUpload / total) * 100, 'documentUploadPercentage');
-            animateCircle('slaCrossedCircle', (data.slaCrossed / total) * 100, 'slaCrossedPercentage');
-        } catch (error) {
-            console.error('Error fetching dashboard stats:', error);
-        }
-    }
-
-    function handleTakeAction() {
-        const selectedCheckbox = document.querySelector('input.user-checkbox:checked');
-        if (!selectedCheckbox) {
-            showErrorAlert('Please select one user.');
-            return;
-        }
-        const userId = getUserId();
-        if (userId === "ychouri") {
-        	 window.location.href = `AdminPanel?id=${selectedCheckbox.value}`;
-        } else {
-            showErrorAlert("No admin access for user.");
-        }
-    }
-       
-   
-
-    function showErrorAlert(message) {
-        const overlay = document.getElementById('customErrorOverlay');
-        document.getElementById('customErrorMessage').textContent = message;
-        overlay.classList.add('active');
-        document.getElementById('customErrorOkBtn').onclick = () => overlay.classList.remove('active');
-    }
-
-    async function generatePdf() {
-        const userId = getUserId();
-        if (!userId) return;
-
-        try {
-            const response = await fetch('http://localhost:8081/Employee/generatePDF', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/pdf', 'userId': userId }
-            });
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'dashboard_report.pdf';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            showErrorAlert('Failed to generate PDF.');
-        }
-    }
-
-    function showNotification() {
-        const banner = document.getElementById('notificationBanner');
-        const badge = document.getElementById('notificationBadge');
-        banner.style.display = 'flex';
-        badge.style.display = 'none';
-        setTimeout(() => {
-            banner.style.display = 'none';
-        }, 5000);
-    }
-
-    function closeNotification() {
-        const banner = document.getElementById('notificationBanner');
-        const badge = document.getElementById('notificationBadge');
-        banner.style.display = 'none';
-        badge.style.display = 'none';
-    }
-
-    async function shareChart() {
-        const target = document.querySelector('.dashboard-container');
-        try {
-            const canvas = await html2canvas(target);
-            canvas.toBlob(blob => {
-                const file = new File([blob], 'chart.png', { type: 'image/png' });
-                window.shareFile = file;
-                document.getElementById('shareModal').style.display = 'flex';
-            }, 'image/png');
-        } catch (error) {
-            console.error('Capture failed:', error);
-            showErrorAlert('Failed to capture screenshot.');
-        }
-    }
-
-    function shareNow() {
-        const file = window.shareFile;
-        if (file) {
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({ files: [file], title: 'Shared Chart', text: 'Dashboard chart shared via web!' })
-                    .then(() => closeShareModal())
-                    .catch(err => showErrorAlert('Sharing failed: ' + err.message));
-            } else {
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(file);
-                link.download = 'chart.png';
-                link.click();
-                closeShareModal();
+            function logout() {
+                sessionStorage.removeItem('userId');
+                window.location.href = '/login';
             }
-        } else {
-            showErrorAlert('No screenshot available to share.');
-        }
-    }
 
-    async function fetchNotes() {
-        try {
-            const res = await fetch('/DocumentService/notes/List');
-            const result = await res.json();
-            renderNotes(result.data || []);
-        } catch (err) {
-            console.error('Failed to fetch notes:', err);
-            showErrorAlert('Failed to fetch notes.');
-        }
-    }
+            function redirectToPostalService() { window.location.href = "PostalService"; }
+            function redirectToDocumentService() { window.location.href = "DocumentService"; }
+            function redirectToEmployeeService() { window.location.href = "EmployeeService"; }
+            function redirectToAdminPanel() {
+                const PaneluserId = getUserId();
+                if (PaneluserId === "ychouri") {
+                    window.location.href = "AdminPanel";
+                } else {
+                    showErrorAlert("No admin access for user.");
+                }
+            }
+            function redirectToCloudService() { window.location.href = "CloudServices"; }
+            function redirectToMailService() { window.location.href = "MailServices"; }
+            function whatsappService() { window.location.href = "tel:+8208247944"; }
 
-    function renderNotes(notes) {
-        const list = document.getElementById('notesList');
-        list.innerHTML = notes.length ? notes.map(note => `
-            <li>${note.text} <button onclick="deleteNote(${note.id})" style="margin-left: 10px; color: red;">🗑</button></li>
-        `).join('') : '<li style="font-style: italic; color: #888;">📝 No notes yet. Click "+ Create Note" to add one.</li>';
-    }
+            function animateCircle(circleId, percentage, percentageTextId) {
+                const circle = document.getElementById(circleId);
+                const circumference = 376.99;
+                circle.style.strokeDasharray = circumference;
+                const offset = circumference - (percentage / 100) * circumference;
+                circle.style.strokeDashoffset = offset;
+                document.getElementById(percentageTextId).innerText = `${Math.round(percentage)}%`;
+            }
 
-    let noteToDelete = null;
+            function toggleView() {
+                viewMode = viewMode === 'list' ? 'grid' : 'list';
+                const container = document.getElementById('workItemListContainer');
+                if (container) {
+                    container.classList.toggle('grid-view', viewMode === 'grid');
+                    populateWorkItems();
+                }
+            }
 
-    function openNotesModal() {
-        document.getElementById('notesModal').style.display = 'flex';
-        fetchNotes();
-    }
+            function toggleBulkActions() {
+                const bulkActions = document.querySelector('.bulk-actions');
+                if (bulkActions) {
+                    bulkActions.style.display = document.querySelectorAll('.user-checkbox:checked').length ? 'block' : 'none';
+                }
+            }
 
-    function closeNotesModal() { document.getElementById('notesModal').style.display = 'none'; }
-    function openNotePrompt() { document.getElementById('createNoteModal').style.display = 'flex'; }
-    function closeCreateNoteModal() { document.getElementById('createNoteModal').style.display = 'none'; }
-    function closeDeleteModal() { document.getElementById('deleteConfirmModal').style.display = 'none'; }
-    function openFeedbackModal() { document.getElementById('feedbackModal').style.display = 'flex'; }
-    function closeFeedbackModal() { document.getElementById('feedbackModal').style.display = 'none'; }
-    function closeFeedbackSuccessModal() { document.getElementById('feedbackSuccessModal').style.display = 'none'; }
-    function closeShareModal() { document.getElementById('shareModal').style.display = 'none'; }
-    function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+            async function fetchWorkItems() {
+                const PaneluserId = getUserId();
+                if (!PaneluserId) return;
 
-    async function saveNote() {
-        const noteText = document.getElementById('noteInput').value.trim();
-        if (!noteText) return showErrorAlert("Note can't be empty");
-        try {
-            await fetch('/DocumentService/notes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: noteText })
+                try {
+                    const response = await fetch('http://localhost:8081/Security/user-list', {
+                        method: 'GET',
+                        headers: { 'userId': PaneluserId }
+                    });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const data = await response.json();
+                    originalWorkItems = data.data || [];
+                    workItems = [...originalWorkItems];
+                    filteredWorkItems = [...workItems];
+                    if (!workItems.length) {
+                        document.getElementById('workItemsBody').innerHTML = `
+                            <tr><td colspan="8" style="text-align: center; color: gray;">No available users.</td></tr>`;
+                        document.getElementById('workItemGrid').innerHTML = `
+                            <p style="text-align: center; color: gray;">No available users.</p>`;
+                        return;
+                    }
+                    populateWorkItems();
+                    renderPagination();
+                } catch (error) {
+                    console.error('Error fetching work items:', error);
+                    showErrorAlert('Failed to fetch work items.');
+                }
+            }
+
+            function filterWorkItems(status) {
+                console.log("Status", status);
+                if (status === '') {
+                    filteredWorkItems = [...originalWorkItems];
+                } else if (status === 'completed') {
+                    filteredWorkItems = originalWorkItems.filter(item =>
+                        (item.isEmailVerified === 'Y' || item.isEmailVerified === true) &&
+                        (item.isUserCodeVerified === 'Y' || item.isUserCodeVerified === true)
+                    );
+                } else if (status === 'in-progress') {
+                    filteredWorkItems = originalWorkItems.filter(item =>
+                        (item.isEmailVerified === 'N' || item.isEmailVerified === false) ||
+                        (item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false)
+                    );
+                } else if (status === 'on-going') {
+                    filteredWorkItems = [...originalWorkItems];
+                }
+                currentPage = 1;
+                populateWorkItems();
+                renderPagination();
+            }
+
+            function populateWorkItems() {
+                const tbody = document.getElementById('workItemsBody');
+                const grid = document.getElementById('workItemGrid');
+                if (!tbody || !grid) return;
+
+                tbody.innerHTML = '';
+                grid.innerHTML = '';
+
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const paginatedItems = filteredWorkItems.slice(start, end);
+
+                if (!paginatedItems.length) {
+                    tbody.innerHTML = `
+                        <tr><td colspan="8" style="text-align: center; color: gray;">No items match the selected filter.</td></tr>`;
+                    grid.innerHTML = `
+                        <p style="text-align: center; color: gray;">No items match the selected filter.</p>`;
+                    return;
+                }
+
+                if (viewMode === 'list') {
+                    paginatedItems.forEach(item => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td><input type="checkbox" class="user-checkbox" value="${item.id || ''}"></td>
+                            <td>${item.id || 'N/A'}</td>
+                            <td>${item.email || 'N/A'}</td>
+                            <td>${item.userCode || 'N/A'}</td>
+                            <td>${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</td>
+                            <td>${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</td>
+                            <td>${item.createdTime || 'N/A'}</td>
+                            <td>${item.remainingTime || 'N/A'}</td>
+                        `;
+                    });
+                } else {
+                    paginatedItems.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'work-item-card';
+                        card.innerHTML = `
+                            <input type="checkbox" class="user-checkbox" value="${item.id || ''}">
+                            <p><strong>ID:</strong> ${item.id || 'N/A'}</p>
+                            <p><strong>Email:</strong> ${item.email || 'N/A'}</p>
+                            <p><strong>User ID:</strong> ${item.userCode || 'N/A'}</p>
+                            <p><strong>Email Verification:</strong> ${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</p>
+                            <p><strong>User ID Verification:</strong> ${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</p>
+                            <p><strong>Access Given:</strong> ${item.createdTime || 'N/A'}</p>
+                            <p><strong>Expires:</strong> ${item.remainingTime || 'N/A'}</p>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+
+                document.querySelectorAll('.user-checkbox').forEach(cb => {
+                    cb.removeEventListener('change', toggleBulkActions);
+                    cb.addEventListener('change', toggleBulkActions);
+                });
+            }
+
+            function renderPagination() {
+                const totalPages = Math.ceil(filteredWorkItems.length / itemsPerPage);
+                const paginationControls = document.getElementById('paginationControls');
+                if (!paginationControls) return;
+                paginationControls.innerHTML = `
+                    <button class="pagination-button" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">Previous</button>
+                    ${Array.from({ length: totalPages }, (_, i) => `
+                        <button class="pagination-button ${currentPage === i + 1 ? 'active' : ''}" onclick="changePage(${i + 1})">${i + 1}</button>
+                    `).join('')}
+                    <button class="pagination-button" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Next</button>
+                `;
+            }
+
+            function changePage(page) {
+                currentPage = page;
+                populateWorkItems();
+                renderPagination();
+            }
+
+            async function loadEmailCounts() {
+                const PaneluserId = getUserId();
+                if (!PaneluserId) return;
+
+                try {
+                    const response = await fetch('http://localhost:8081/api/dashboard/email-counts', {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json', 'userId': PaneluserId }
+                    });
+                    if (!response.ok) throw new Error('Failed to fetch email counts');
+                    const data = await response.json();
+                    document.getElementById('totalWorkItems').textContent = data.totalEmails ?? 0;
+                    document.getElementById('openWorkItems').textContent = data.verPending ?? 0;
+                    document.getElementById('closedWorkItems').textContent = data.totalClosed ?? 0;
+                    document.getElementById('correspondenceWorkItems').textContent = data.corrospodnace ?? 0;
+                } catch (error) {
+                    console.error('Error fetching email counts:', error);
+                }
+            }
+
+            async function loadDashboardStats() {
+                const PaneluserId = getUserId();
+                if (!PaneluserId) return;
+
+                try {
+                    const response = await fetch('http://localhost:8081/api/dashboard/stats', {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json', 'userId': PaneluserId }
+                    });
+                    if (!response.ok) throw new Error('Failed to fetch dashboard stats');
+                    const data = await response.json();
+                    document.getElementById('totalEmails').innerText = data.totalEmails;
+                    document.getElementById('emailsSent').innerText = data.emailsSent;
+                    document.getElementById('emailsInDb').innerText = data.emailsInDb;
+                    document.getElementById('slaCrossed').innerText = data.slaCrossed;
+                    document.getElementById('documentUpload').innerText = data.documentUpload;
+                    const total = 200;
+                    animateCircle('emailSentCircle', (data.emailsSent / total) * 100, 'emailSentPercentage');
+                    animateCircle('emailsInDbCircle', (data.emailsInDb / total) * 100, 'emailsInDbPercentage');
+                    animateCircle('slaProgressCircle', (data.totalEmails / total) * 100, 'slaProgressPercentage');
+                    animateCircle('documentUploadCircle', (data.documentUpload / total) * 100, 'documentUploadPercentage');
+                    animateCircle('slaCrossedCircle', (data.slaCrossed / total) * 100, 'slaCrossedPercentage');
+                } catch (error) {
+                    console.error('Error fetching dashboard stats:', error);
+                }
+            }
+
+            function handleTakeAction() {
+                const selectedCheckbox = document.querySelector('input.user-checkbox:checked');
+                if (!selectedCheckbox) {
+                    showErrorAlert('Please select one user.');
+                    return;
+                }
+                const PaneluserId = getUserId();
+                if (PaneluserId === "ychouri") {
+                    window.location.href = `AdminPanel?id=${selectedCheckbox.value}`;
+                } else {
+                    showErrorAlert("No admin access for user.");
+                }
+            }
+
+            function showErrorAlert(message) {
+                const overlay = document.getElementById('customErrorOverlay');
+                document.getElementById('customErrorMessage').textContent = message;
+                overlay.classList.add('active');
+                document.getElementById('customErrorOkBtn').onclick = () => overlay.classList.remove('active');
+            }
+
+            async function generatePdf() {
+                const PaneluserId = getUserId();
+                if (!PaneluserId) return;
+
+                try {
+                    const response = await fetch('http://localhost:8081/Employee/generatePDF', {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/pdf', 'userId': PaneluserId }
+                    });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'dashboard_report.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                } catch (error) {
+                    console.error('Error generating PDF:', error);
+                    showErrorAlert('Failed to generate PDF.');
+                }
+            }
+
+            function showNotification() {
+                const banner = document.getElementById('notificationBanner');
+                const badge = document.getElementById('notificationBadge');
+                banner.style.display = 'flex';
+                badge.style.display = 'none';
+                setTimeout(() => {
+                    banner.style.display = 'none';
+                }, 5000);
+            }
+
+            function closeNotification() {
+                const banner = document.getElementById('notificationBanner');
+                const badge = document.getElementById('notificationBadge');
+                banner.style.display = 'none';
+                badge.style.display = 'none';
+            }
+
+            async function shareChart() {
+                const target = document.querySelector('.dashboard-container');
+                try {
+                    const canvas = await html2canvas(target);
+                    canvas.toBlob(blob => {
+                        const file = new File([blob], 'chart.png', { type: 'image/png' });
+                        window.shareFile = file;
+                        document.getElementById('shareModal').style.display = 'flex';
+                    }, 'image/png');
+                } catch (error) {
+                    console.error('Capture failed:', error);
+                    showErrorAlert('Failed to capture screenshot.');
+                }
+            }
+
+            function shareNow() {
+                const file = window.shareFile;
+                if (file) {
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({ files: [file], title: 'Shared Chart', text: 'Dashboard chart shared via web!' })
+                            .then(() => closeShareModal())
+                            .catch(err => showErrorAlert('Sharing failed: ' + err.message));
+                    } else {
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(file);
+                        link.download = 'chart.png';
+                        link.click();
+                        closeShareModal();
+                    }
+                } else {
+                    showErrorAlert('No screenshot available to share.');
+                }
+            }
+
+            async function fetchNotes() {
+                try {
+                    const res = await fetch('/DocumentService/notes/List');
+                    const result = await res.json();
+                    renderNotes(result.data || []);
+                } catch (err) {
+                    console.error('Failed to fetch notes:', err);
+                    showErrorAlert('Failed to fetch notes.');
+                }
+            }
+
+            function renderNotes(notes) {
+                const list = document.getElementById('notesList');
+                list.innerHTML = notes.length ? notes.map(note => `
+                    <li>${note.text} <button onclick="deleteNote(${note.id})" style="margin-left: 10px; color: red;">🗑</button></li>
+                `).join('') : '<li style="font-style: italic; color: #888;">📝 No notes yet. Click "+ Create Note" to add one.</li>';
+            }
+
+            let noteToDelete = null;
+
+            function openNotesModal() {
+                document.getElementById('notesModal').style.display = 'flex';
+                fetchNotes();
+            }
+
+            function closeNotesModal() { document.getElementById('notesModal').style.display = 'none'; }
+            function openNotePrompt() { document.getElementById('createNoteModal').style.display = 'flex'; }
+            function closeCreateNoteModal() { document.getElementById('createNoteModal').style.display = 'none'; }
+            function closeDeleteModal() { document.getElementById('deleteConfirmModal').style.display = 'none'; }
+            function openFeedbackModal() { document.getElementById('feedbackModal').style.display = 'flex'; }
+            function closeFeedbackModal() { document.getElementById('feedbackModal').style.display = 'none'; }
+            function closeFeedbackSuccessModal() { document.getElementById('feedbackSuccessModal').style.display = 'none'; }
+            function closeShareModal() { document.getElementById('shareModal').style.display = 'none'; }
+            function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+            async function saveNote() {
+                const noteText = document.getElementById('noteInput').value.trim();
+                if (!noteText) return showErrorAlert("Note can't be empty");
+                try {
+                    await fetch('/DocumentService/notes', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: noteText })
+                    });
+                    closeCreateNoteModal();
+                    fetchNotes();
+                } catch (err) {
+                    console.error('Save error:', err);
+                    showErrorAlert('Failed to save note.');
+                }
+            }
+
+            function deleteNote(id) {
+                noteToDelete = id;
+                document.getElementById('deleteConfirmModal').style.display = 'flex';
+            }
+
+            async function confirmDelete() {
+                if (!noteToDelete) return;
+                try {
+                    await fetch(`/DocumentService/notes/delete/${noteToDelete}`, { method: 'DELETE' });
+                    closeDeleteModal();
+                    fetchNotes();
+                } catch (err) {
+                    console.error('Delete failed:', err);
+                    showErrorAlert('Failed to delete note.');
+                }
+            }
+
+            function saveFeedback() {
+                const text = document.getElementById('feedbackInput').value.trim();
+                if (!text) return showErrorAlert('Please enter some feedback.');
+                console.log('Feedback submitted:', text);
+                closeFeedbackModal();
+                document.getElementById('feedbackSuccessModal').style.display = 'flex';
+            }
+
+            function showOverview() {
+                document.getElementById('overviewContent').innerHTML = `
+                    <p><strong>Total Notes:</strong> 3</p>
+                    <p><strong>Total Feedback:</strong> 2</p>
+                    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+                `;
+                document.getElementById('overviewModal').style.display = 'flex';
+            }
+
+            function showAnalytics() {
+                document.getElementById('analyticsContent').innerHTML = `
+                    <p><strong>Notes Created This Week:</strong> 40</p>
+                    <p><strong>Positive Feedback:</strong> 80%</p>
+                    <p><strong>Negative Feedback:</strong> 20%</p>
+                `;
+                document.getElementById('analyticsModal').style.display = 'flex';
+            }
+
+            function updateClock() {
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const amPm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12;
+                document.getElementById('dashboardHeaderClock').textContent = `${hours}:${minutes} ${amPm}`;
+            }
+
+            function initializeChatbot() {
+                const chatbotContainer = document.getElementById('chatbotContainer');
+                if (chatbotContainer) {
+                    chatbotContainer.style.display = 'none';
+                }
+            }
+
+            function toggleChatbot() {
+                const chatbotContainer = document.getElementById('chatbotContainer');
+                chatbotContainer.style.display = chatbotContainer.style.display === 'flex' ? 'none' : 'flex';
+            }
+
+            function addMessage(message, sender) {
+                const messages = document.getElementById('chatbotMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chatbot-message ${sender}`;
+                messageDiv.textContent = message;
+                messages.appendChild(messageDiv);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            async function sendMessage() {
+                const input = document.getElementById('chatbotInput');
+                const message = input.value.trim();
+                if (!message) return;
+
+                addMessage(message, 'user');
+                input.value = '';
+
+                try {
+                    const PaneluserId = getUserId() || 'test_user';
+                    const response = await fetch('http://0.0.0.0:5005/webhooks/rest/webhook', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sender: PaneluserId, message })
+                    });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const data = await response.json();
+                    data.forEach(msg => {
+                        if (msg.text) addMessage(msg.text, 'bot');
+                    });
+                } catch (error) {
+                    console.error('Error sending message to Rasa:', error);
+                    addMessage('Sorry, I couldn’t connect to the server.', 'bot');
+                }
+            }
+
+            function toggleMenuBar() {
+                const menuBar = document.getElementById('menuBar');
+                menuBar.classList.toggle('open');
+            }
+
+            async function fetchActivityTracing() {
+                const activityList = document.getElementById('activityList');
+                try {
+                    const response = await fetch('http://localhost:8081/api/activity-tracing', {
+                        method: 'GET',
+                        headers: { 'userId': getUserId() || 'ychouri' }
+                    });
+                    if (!response.ok) throw new Error('Failed to fetch activities');
+                    const activities = await response.json();
+                    activityList.innerHTML = activities.length
+                        ? activities.map(activity => `<li>${activity.description} - ${activity.timestamp}</li>`).join('')
+                        : '<li>No activities yet.</li>';
+                } catch (error) {
+                    console.error('Error fetching activity tracing:', error);
+                    activityList.innerHTML = '<li>Failed to load activities.</li>';
+                }
+            }
+
+            function closeMenuOnOutsideClick(event) {
+                const menuBar = document.getElementById('menuBar');
+                const toggleButton = document.getElementById('menuToggleButton');
+                if (
+                    menuBar.classList.contains('open') &&
+                    !menuBar.contains(event.target) &&
+                    !toggleButton.contains(event.target)
+                ) {
+                    menuBar.classList.remove('open');
+                }
+            }
+
+            async function viewAllActivities() {
+                const activityList = document.getElementById('activityList');
+                try {
+                    const response = await fetch('http://localhost:8081/api/activity-log', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'userId': getUserId() || 'ychouri'
+                        },
+                        body: JSON.stringify({ action: 'view_all_activities', timestamp: new Date().toISOString() })
+                    });
+                    if (!response.ok) throw new Error('Failed to log activity');
+                    window.location.href = 'activity';
+                } catch (error) {
+                    console.error('Error logging activity:', error);
+                    activityList.innerHTML = '<li>Failed to load activities.</li>';
+                    window.location.href = 'activity';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                initializeChatbot();
+                setInterval(updateClock, 1000);
+                updateClock();
+                fetchWorkItems();
+                loadEmailCounts();
+                loadDashboardStats();
+                document.getElementById('notificationBadge').style.display = 'flex';
+                document.getElementById('applyFilterBtn').addEventListener('click', () => {
+                    const status = document.getElementById('statusFilter').value;
+                    filterWorkItems(status);
+                });
+                const toggleViewBtn = document.getElementById('toggleViewBtn');
+                if (toggleViewBtn) toggleViewBtn.addEventListener('click', toggleView);
+                document.getElementById('selectAll').addEventListener('change', function () {
+                    document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = this.checked);
+                    toggleBulkActions();
+                });
+                document.getElementById('getSelectedBtn').addEventListener('click', handleTakeAction);
+                document.getElementById('shareChartBtn').addEventListener('click', shareChart);
+                document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);
+                document.getElementById('notificationIcon').addEventListener('click', showNotification);
+                document.getElementById('shareNowBtn').addEventListener('click', shareNow);
+                document.getElementById('chatbotButton').addEventListener('click', toggleChatbot);
+                document.getElementById('chatbotClose').addEventListener('click', toggleChatbot);
+                document.getElementById('chatbotSend').addEventListener('click', sendMessage);
+                document.getElementById('chatbotInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') sendMessage();
+                });
+                document.getElementById('menuToggleButton').addEventListener('click', toggleMenuBar);
+                document.getElementById('menuCloseButton').addEventListener('click', toggleMenuBar);
+                document.getElementById('viewActivitiesBtn').addEventListener('click', viewAllActivities);
+                document.addEventListener('click', closeMenuOnOutsideClick);
+                fetchActivityTracing();
             });
-            closeCreateNoteModal();
-            fetchNotes();
-        } catch (err) {
-            console.error('Save error:', err);
-            showErrorAlert('Failed to save note.');
-        }
-    }
-
-    function deleteNote(id) {
-        noteToDelete = id;
-        document.getElementById('deleteConfirmModal').style.display = 'flex';
-    }
-
-    async function confirmDelete() {
-        if (!noteToDelete) return;
-        try {
-            await fetch(`/DocumentService/notes/delete/${noteToDelete}`, { method: 'DELETE' });
-            closeDeleteModal();
-            fetchNotes();
-        } catch (err) {
-            console.error('Delete failed:', err);
-            showErrorAlert('Failed to delete note.');
-        }
-    }
-
-    function saveFeedback() {
-        const text = document.getElementById('feedbackInput').value.trim();
-        if (!text) return showErrorAlert('Please enter some feedback.');
-        console.log('Feedback submitted:', text);
-        closeFeedbackModal();
-        document.getElementById('feedbackSuccessModal').style.display = 'flex';
-    }
-
-    function showOverview() {
-        document.getElementById('overviewContent').innerHTML = `
-            <p><strong>Total Notes:</strong> 3</p>
-            <p><strong>Total Feedback:</strong> 2</p>
-            <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
-        `;
-        document.getElementById('overviewModal').style.display = 'flex';
-    }
-
-    function showAnalytics() {
-        document.getElementById('analyticsContent').innerHTML = `
-            <p><strong>Notes Created This Week:</strong> 40</p>
-            <p><strong>Positive Feedback:</strong> 80%</p>
-            <p><strong>Negative Feedback:</strong> 20%</p>
-        `;
-        document.getElementById('analyticsModal').style.display = 'flex';
-    }
-
-    function updateClock() {
-        const now = new Date();
-        let hours = now.getHours();
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const amPm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12 || 12;
-        document.getElementById('dashboardHeaderClock').textContent = `${hours}:${minutes} ${amPm}`;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        setInterval(updateClock, 1000);
-        updateClock();
-        fetchWorkItems();
-        loadEmailCounts();
-        loadDashboardStats();
-
-        document.getElementById('notificationBadge').style.display = 'flex';
-
-        document.getElementById('applyFilterBtn').addEventListener('click', () => {
-            const status = document.getElementById('statusFilter').value;
-            filterWorkItems(status);
-        });
-        const toggleViewBtn = document.getElementById('toggleViewBtn');
-        if (toggleViewBtn) toggleViewBtn.addEventListener('click', toggleView);
-
-        document.getElementById('selectAll').addEventListener('change', function () {
-            document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = this.checked);
-            toggleBulkActions();
-        });
-        
-        document.getElementById('getSelectedBtn').addEventListener('click', handleTakeAction);
-        document.getElementById('shareChartBtn').addEventListener('click', shareChart);
-        document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);
-        document.getElementById('notificationIcon').addEventListener('click', showNotification);
-        document.getElementById('shareNowBtn').addEventListener('click', shareNow);
-
-        function toggleBulkActions() {
-            document.querySelector('.bulk-actions').style.display = document.querySelectorAll('.user-checkbox:checked').length ? 'block' : 'none';
-        }
-    });
-    </script>
+        </script>
 </body>
 </html>

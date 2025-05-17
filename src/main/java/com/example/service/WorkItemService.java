@@ -2,15 +2,20 @@ package com.example.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.dto.ActivityDetailsDTO;
 import com.example.dto.WorkItemDTO;
+import com.example.entity.ActivityDtls;
 import com.example.entity.WorkItem;
 import com.example.mapper.WorkItemMapper;
+import com.example.repo.ActivityDtlsRepo;
 
 @Service
 public class WorkItemService implements IWorkItemService {
@@ -20,6 +25,9 @@ public class WorkItemService implements IWorkItemService {
 
 	@Autowired
 	private WorkItemMapper workItemMapper;
+	
+	@Autowired
+	private ActivityDtlsRepo activityDtlsRepo;
 
 	@Override
 	public WorkItemDTO createWorkItem(WorkItemDTO workItemRequest, String userId) {
@@ -59,6 +67,34 @@ public class WorkItemService implements IWorkItemService {
 
 		long randomNumber = 1000000000L + new Random().nextLong(9000000000L); // ensures 10 digits
 		return "WI" + year + randomNumber;
+	}
+
+	@Override
+	public ResponseEntity<List<ActivityDetailsDTO>> getActivityDtls(String userId) {
+		ResponseEntity<List<ActivityDetailsDTO>> response = new ResponseEntity<List<ActivityDetailsDTO>>();
+		List<ActivityDtls> activityDtls = activityDtlsRepo.findByUserId(userId);
+		if (activityDtls != null && !activityDtls.isEmpty()) {
+			List<ActivityDetailsDTO> activityList = activityDtls.stream().map(activity -> {
+				ActivityDetailsDTO activityDetailsDTO = new ActivityDetailsDTO();
+				activityDetailsDTO.setActivityTime(activity.getActivityTime());
+				activityDetailsDTO.setActivityType(activity.getActivityType());
+				activityDetailsDTO.setDetails(activity.getDetails());
+				activityDetailsDTO.setEmail(activity.getEmail());
+				activityDetailsDTO.setId(String.valueOf(activity.getId()));
+				activityDetailsDTO.setIpAddress(activity.getIpAddress());
+				activityDetailsDTO.setScreenName(activity.getScreenName());
+				activityDetailsDTO.setTimeSpentSeconds(activity.getTimeSpentSeconds());
+				activityDetailsDTO.setUserId(activity.getUserId());
+				return activityDetailsDTO;
+			}).collect(Collectors.toList());
+
+			response.setData(activityList);
+
+		} else {
+			response.setErrorMessage("Not activity Found");
+		}
+
+		return response;
 	}
 
 }

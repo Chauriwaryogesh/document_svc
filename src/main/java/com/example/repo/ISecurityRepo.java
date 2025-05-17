@@ -20,4 +20,8 @@ public interface ISecurityRepo  extends JpaRepository<Security, Long>{
 	@Query(value="Select * from security s where s.deletedFlag=?1",nativeQuery = true)
 	List<Security> findAll(String string);
 
+	@Query("SELECT s FROM Security s WHERE LOWER(s.userName) = LOWER(?1) AND s.deletedFlag = ?2")
+	Security findByUserName(String userName, String deletedFlag);
+
+
 }

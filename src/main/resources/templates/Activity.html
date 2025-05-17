@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Activity Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding-top: 5rem;
+            padding-bottom: 4rem;
+            background-color: #f3f4f6;
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            padding: 1rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+        .header-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #4f46e5;
+            transition: transform 0.2s ease-in-out;
+        }
+        .header-logo:hover {
+            transform: scale(1.05);
+        }
+        .header-nav {
+            display: flex;
+            align-items: center;
+        }
+        .header-nav a, .header-nav button {
+            margin-left: 1.75rem;
+            color: #4b5563;
+            text-decoration: none;
+            transition: color 0.2s, transform 0.2s;
+            font-weight: 500;
+        }
+        .header-nav a:hover, .header-nav button:hover {
+            color: #4f46e5;
+            transform: translateY(-1px);
+        }
+        .header-button {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .header-button:hover {
+            background-color: #4338ca;
+            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+        }
+        .profile-icon-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .profile-icon-button i {
+            width: 24px;
+            height: 24px;
+        }
+        .footer {
+            background-color: #111827;
+            color: #9ca3af;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            border-top: 3px solid #4f46e5;
+        }
+        .footer p {
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+        }
+        .footer a {
+            color: #a5b4fc;
+            text-decoration: none;
+            margin: 0 1.25rem;
+            transition: color 0.2s, text-shadow 0.2s;
+            font-weight: 500;
+        }
+        .footer a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(165, 180, 252, 0.7);
+        }
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s;
+        }
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .spinner {
+            width: 3.5rem;
+            height: 3.5rem;
+            border: 5px solid #4f46e5;
+            border-top: 5px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+        .card-header {
+            padding: 1.75rem;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+        }
+        .card-title {
+            font-size: 1.65rem;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .card-description {
+            color: #6b7280;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .card-content {
+            padding: 1.75rem;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-right: 0.75rem;
+            margin-bottom: 0.5rem;
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            border: 1px solid transparent;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .badge:hover {
+            background-color: #c7d2fe;
+            transform: translateY(-1px);
+        }
+        .badge i {
+            margin-right: 0.35rem;
+        }
+        .table-container {
+            max-height: 24rem;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-header-row {
+            background-color: #f3f4f6;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .table-header-cell {
+            padding: 0.75rem 1.25rem;
+            font-weight: 600;
+            text-align: left;
+            color: #374151;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        .table-body-row {
+            border-bottom: 1px solid #e5e7eb;
+            transition: background-color 0.2s;
+        }
+        .table-body-row:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        .table-body-row:hover {
+            background-color: #eff6ff;
+        }
+        .table-body-row:last-child {
+            border-bottom: none;
+        }
+        .table-cell {
+            padding: 0.75rem 1.25rem;
+            text-align: left;
+            color: #1f2937;
+            font-size: 0.875rem;
+            vertical-align: middle;
+        }
+        .table-cell.email {
+            min-width: 200px;
+            max-width: 250px;
+            white-space: normal;
+            word-break: break-all;
+        }
+        .table-cell.screen-time {
+            text-align: center;
+            width: 60px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.5rem;
+        }
+        .pagination button {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+        }
+        .pagination button:hover:not(:disabled) {
+            background-color: #4f46e5;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+        .pagination button:disabled {
+            background-color: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .pagination button.active {
+            background-color: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+        }
+        /* Profile Popup Styles */
+        .profile-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1050;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .profile-popup-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .profile-popup {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 450px;
+            text-align: left;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s ease-in-out;
+        }
+        .profile-popup-overlay.active .profile-popup {
+            transform: scale(1);
+        }
+        .profile-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .profile-popup-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .profile-popup-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+        .profile-popup-close:hover {
+            color: #1f2937;
+        }
+        .profile-popup-content p {
+            font-size: 1rem;
+            color: #4b5563;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .profile-popup-content strong {
+            color: #374151;
+            font-weight: 500;
+        }
+        .profile-popup-content .data-field {
+            background-color: #f3f4f6;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            margin-top: 0.25rem;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        /* Error Popup Styles */
+        .error-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1050;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .error-popup-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .error-popup {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s ease-in-out;
+        }
+        .error-popup-overlay.active .error-popup {
+            transform: scale(1);
+        }
+        .error-popup-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+        }
+        .error-popup-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+        .error-popup-close:hover {
+            color: #1f2937;
+        }
+        .error-popup-content {
+            font-size: 1.125rem;
+            color: #dc2626;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .error-popup-content i {
+            margin-right: 0.5rem;
+        }
+        .error-popup-footer {
+            margin-top: 1rem;
+        }
+        .error-popup-footer a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .error-popup-footer a:hover {
+            color: #4338ca;
+            text-decoration: underline;
+        }
+        /* Other utility classes */
+        .font-medium { font-weight: 500; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-900 { color: #1f2937; }
+        .flex { display: flex; align-items: center; }
+        .gap-1 { gap: 0.25rem; } .gap-2 { gap: 0.5rem; } .gap-4 { gap: 1rem; }
+        .mt-2 { margin-top: 0.5rem; } .mb-6 { margin-bottom: 1.5rem; }
+        .text-red-600 { color: #dc2626; } .text-red-500 { color: #ef4444; }
+        .border-red-500 { border-color: #ef4444; }
+        .bg-red-50\/50 { background-color: rgba(254, 226, 226, 0.5); }
+        .h-64 { height: 16rem; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .rounded-full { border-radius: 9999px; }
+        .border-blue-500 { border-color: #4f46e5; }
+        .border-t-2 { border-top-width: 2px; } .border-b-2 { border-bottom-width: 2px; }
+        .truncate { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .max-w-\[200px\] { max-width: 12.5rem; }
+        .overflow-hidden { overflow: hidden; }
+        .time-circle { width: 40px; height: 40px; transform: rotate(-90deg); }
+        .time-circle-bg { fill: none; stroke: #e5e7eb; stroke-width: 4; }
+        .time-circle-progress { fill: none; stroke-linecap: round; stroke-width: 4; transition: stroke-dashoffset 0.5s ease; }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .table-header-cell, .table-cell {
+                font-size: 0.75rem;
+                padding: 0.5rem;
+            }
+            .table-cell.email {
+                min-width: 120px;
+                max-width: 150px;
+            }
+            .table-cell.screen-time {
+                width: 50px;
+            }
+            .time-circle {
+                width: 32px;
+                height: 32px;
+            }
+            .pagination button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.75rem;
+            }
+            .error-popup {
+                padding: 1.5rem;
+                max-width: 300px;
+            }
+            .error-popup-content {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="header">
+        <div class="header-logo">Activity Tracker</div>
+        <nav class="header-nav">
+            <a href="#home" onclick="redirectToDashBoard()">Home</a>
+            <a href="#activity">Activity</a>
+            <button class="profile-icon-button" id="profileButton" aria-label="View Profile">
+                <i data-lucide="user-circle-2"></i>
+            </button>
+            <a href="#" class="header-button" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+            <i data-lucide="list-checks" class="w-8 h-8 text-indigo-600"></i> User Activity Details
+        </h1>
+
+        <div class="mb-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i data-lucide="user" class="text-indigo-600"></i> User Information
+                    </h2>
+                    <p class="card-description">Key details of the user's profile and recent activity.</p>
+                </div>
+                <div class="card-content">
+                    <div class="flex flex-wrap gap-4">
+                        <span class="badge">
+                            <i data-lucide="shield-check"></i> User Code: <strong id="userCode" class="ml-1">Loading...</strong>
+                        </span>
+                        <span class="badge">
+                            <i data-lucide="mail"></i> Email: <strong id="email" class="ml-1">Loading...</strong>
+                        </span>
+                        <span class="badge">
+                            <i data-lucide="clock-3"></i> Last Activity: <strong id="lastActivity" class="ml-1">Loading...</strong>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i data-lucide="history" class="text-indigo-600"></i> Activity Log
+                </h2>
+                <p class="card-description">A detailed chronological record of user interactions.</p>
+            </div>
+            <div class="card-content">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr class="table-header-row">
+                                <th class="table-header-cell">ID</th>
+                                <th class="table-header-cell">User Code</th>
+                                <th class="table-header-cell">Email</th>
+                                <th class="table-header-cell">Activity</th>
+                                <th class="table-header-cell">Screen</th>
+                                <th class="table-header-cell">Time</th>
+                                <th class="table-header-cell">Time Spent</th>
+                                <th class="table-header-cell">Screen Time</th>
+                                <th class="table-header-cell">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body" id="activityTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-popup-overlay" id="profilePopupOverlay">
+        <div class="profile-popup" id="profilePopup">
+            <div class="profile-popup-header">
+                <h3 class="profile-popup-title">
+                    <i data-lucide="user-check" class="text-indigo-600"></i> User Profile
+                </h3>
+                <button class="profile-popup-close" id="closeProfilePopup" aria-label="Close profile popup">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="profile-popup-content">
+                <p><strong>User Code:</strong></p>
+                <div class="data-field" id="popupUserCode">N/A</div>
+                <p class="mt-4"><strong>Email:</strong></p>
+                <div class="data-field" id="popupUserEmail">N/A</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="error-popup-overlay" id="errorPopupOverlay">
+        <div class="error-popup" id="errorPopup">
+            <div class="error-popup-header">
+                <button class="error-popup-close" id="closeErrorPopup" aria-label="Close error popup">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="error-popup-content">
+                <i data-lucide="alert-triangle" class="text-red-600"></i>
+                User Id/Email Not Found
+            </div>
+            <div class="error-popup-footer">
+                <p>Please <a href="login">log in</a> to continue.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2025 Secure Access Limited. All rights reserved.</p>
+        <div>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </footer>
+
+    <script>
+    function redirectToDashBoard() {
+        window.location.href = '/dashboard';
+    }
+        const API_ENDPOINT = 'http://localhost:8081/get-ActivityDtls';
+        const MAX_SCREEN_TIME = 1500;
+        const ITEMS_PER_PAGE = 10;
+        let currentUserData = null;
+        let allActivityData = [];
+        let currentPage = 1;
+
+        function showLoader() {
+            document.getElementById('loader').classList.remove('hidden');
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+            setTimeout(() => {
+                if (loader.classList.contains('hidden')) {
+                    loader.style.display = 'none';
+                }
+            }, 500);
+        }
+
+        function logout() {
+            sessionStorage.removeItem('userId');
+            currentUserData = null;
+            allActivityData = [];
+            window.location.href = 'login';
+        }
+
+        function showErrorPopup() {
+            const errorPopupOverlay = document.getElementById('errorPopupOverlay');
+            errorPopupOverlay.classList.add('active');
+            lucide.createIcons();
+        }
+
+        function hideErrorPopup() {
+            const errorPopupOverlay = document.getElementById('errorPopupOverlay');
+            errorPopupOverlay.classList.remove('active');
+        }
+
+        function displayActivityDetails(userId) {
+            if (!userId) {
+                hideLoader();
+                showErrorPopup();
+                return;
+            }
+
+            showLoader();
+            console.log(`Fetching activity data for userId: ${userId}`);
+            fetch(API_ENDPOINT, {
+                method: 'GET',
+                headers: {
+                    'userId': userId,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            try {
+                                const errorJson = JSON.parse(text);
+                                throw new Error(`HTTP error! status: ${response.status}, message: ${errorJson.errorMessage || text}`);
+                            } catch (e) {
+                                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+                            }
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API response:', data);
+                    hideLoader();
+                    if (data.errorMessage) {
+                        displayErrorMessage(data.errorMessage);
+                    } else if (!data.data || data.data.length === 0) {
+                        displayNoDataMessage(userId);
+                    } else {
+                        currentUserData = data.data[0];
+                        allActivityData = data.data;
+                        currentPage = 1;
+                        populateActivityDetails();
+                        updateProfilePopupData();
+                    }
+                })
+                .catch(error => {
+                    console.error("Failed to fetch activity data:", error);
+                    hideLoader();
+                    displayErrorMessage(`Failed to load activity data: ${error.message}. Check network connection and API endpoint.`);
+                });
+        }
+
+        function displayErrorMessage(message) {
+            const mainContentArea = document.querySelector('.container.mx-auto');
+            mainContentArea.innerHTML = '';
+            const errorCard = document.createElement('div');
+            errorCard.className = 'card border-red-500 bg-red-50/50 my-10';
+            errorCard.innerHTML = `
+                <div class="card-header items-center">
+                    <h2 class="card-title text-red-600 flex items-center gap-2">
+                        <i data-lucide="alert-triangle"></i> Error
+                    </h2>
+                </div>
+                <div class="card-content">
+                    <p class="card-description text-red-500 text-lg">
+                        ${message}
+                    </p>
+                    <p class="mt-4 text-gray-600">
+                        Please try refreshing the page or <a href="login" class="text-indigo-600 hover:underline">log in again</a>.
+                        If the issue persists, contact support.
+                    </p>
+                </div>
+            `;
+            mainContentArea.appendChild(errorCard);
+            lucide.createIcons();
+        }
+
+        function displayNoDataMessage(userId) {
+            const mainContentArea = document.querySelector('.container.mx-auto');
+            const activityLogCard = mainContentArea.querySelector('.card:nth-of-type(2)');
+            if (currentUserData) {
+                document.getElementById('userCode').textContent = currentUserData.userId || 'N/A';
+                document.getElementById('email').textContent = currentUserData.email || 'N/A';
+                document.getElementById('lastActivity').textContent = 'No activity yet';
+            } else if (userId) {
+                document.getElementById('userCode').textContent = userId;
+                document.getElementById('email').textContent = 'N/A (no activity data)';
+                document.getElementById('lastActivity').textContent = 'N/A';
+            }
+            if (activityLogCard) {
+                activityLogCard.innerHTML = `
+                    <div class="card-header">
+                        <h2 class="card-title flex items-center gap-2">
+                            <i data-lucide="info" class="text-indigo-600"></i> No Activity Found
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description text-center text-gray-500 py-8 text-lg">
+                            There is no activity data to display for this user yet.
+                        </p>
+                    </div>`;
+            } else {
+                const noDataCard = document.createElement('div');
+                noDataCard.className = 'card my-10';
+                noDataCard.innerHTML = `
+                    <div class="card-header">
+                        <h2 class="card-title flex items-center gap-2">
+                            <i data-lucide="info" class="text-indigo-600"></i> No Activity
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description text-center text-gray-500 py-8 text-lg">
+                            There is no activity data to display.
+                        </p>
+                    </div>
+                `;
+                mainContentArea.appendChild(noDataCard);
+            }
+            lucide.createIcons();
+        }
+
+        function populateActivityDetails() {
+            const activityTableBody = document.getElementById('activityTableBody');
+            activityTableBody.innerHTML = '';
+
+            if (allActivityData.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="9" class="table-cell text-center text-gray-500 py-4">No activity records found.</td>`;
+                activityTableBody.appendChild(row);
+                updatePagination();
+                return;
+            }
+
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const paginatedData = allActivityData.slice(start, end);
+
+            if (currentUserData) {
+                document.getElementById('userCode').textContent = currentUserData.userId;
+                document.getElementById('email').textContent = currentUserData.email;
+                document.getElementById('lastActivity').textContent = formatDistanceToNow(
+                    new Date(currentUserData.activityTime.replace(' ', 'T')),
+                    { addSuffix: true }
+                );
+            }
+
+            paginatedData.forEach(activity => {
+                const timeSpent = parseInt(activity.timeSpentSeconds) || 0;
+                const percentage = Math.min((timeSpent / MAX_SCREEN_TIME) * 100, 100);
+                const circumference = 2 * Math.PI * 18;
+                const offset = circumference - (percentage / 100) * circumference;
+                const strokeColor = timeSpent > MAX_SCREEN_TIME * 0.8 ? (timeSpent > MAX_SCREEN_TIME ? '#ef4444' : '#f59e0b') : '#4f46e5';
+
+                const row = document.createElement('tr');
+                row.className = 'table-body-row';
+                row.innerHTML = `
+                    <td class="table-cell font-medium">${activity.id}</td>
+                    <td class="table-cell">${activity.userId}</td>
+                    <td class="table-cell email">${escapeHtml(activity.email)}</td>
+                    <td class="table-cell">${activity.activityType}</td>
+                    <td class="table-cell">${activity.screenName}</td>
+                    <td class="table-cell font-medium">
+                        <div class="flex items-center gap-1">
+                            <i data-lucide="calendar-days" class="w-4 h-4 text-gray-500"></i>
+                            <span>${format(new Date(activity.activityTime.replace(' ', 'T')), 'PPPpp')}</span>
+                        </div>
+                    </td>
+                    <td class="table-cell">${activity.timeSpentSeconds ? activity.timeSpentSeconds + 's' : '-'}</td>
+                    <td class="table-cell screen-time">
+                        <div class="flex items-center justify-center w-10 h-10">
+                            <svg class="time-circle" viewBox="0 0 40 40">
+                                <circle class="time-circle-bg" cx="20" cy="20" r="18"/>
+                                <circle class="time-circle-progress" cx="20" cy="20" r="18"
+                                        stroke="${strokeColor}" stroke-dasharray="${circumference}"
+                                        stroke-dashoffset="${offset}"/>
+                            </svg>
+                        </div>
+                    </td>
+                    <td class="table-cell">
+                        ${activity.details && activity.details !== "{}" && activity.details.trim() !== "" ? `<span class="badge truncate max-w-[200px] overflow-hidden" title="${escapeHtml(activity.details)}">${escapeHtml(activity.details)}</span>` : '<span class="text-gray-400">-</span>'}
+                    </td>
+                `;
+                activityTableBody.appendChild(row);
+            });
+            lucide.createIcons();
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+            const totalPages = Math.ceil(allActivityData.length / ITEMS_PER_PAGE);
+
+            if (totalPages <= 1) return;
+
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'Previous';
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    populateActivityDetails();
+                }
+            });
+            paginationContainer.appendChild(prevButton);
+
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = i === currentPage ? 'active' : '';
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    populateActivityDetails();
+                });
+                paginationContainer.appendChild(pageButton);
+            }
+
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Next';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    populateActivityDetails();
+                }
+            });
+            paginationContainer.appendChild(nextButton);
+        }
+
+        function escapeHtml(unsafe) {
+            if (unsafe === null || typeof unsafe === 'undefined') return '';
+            return String(unsafe)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function format(date, formatStr) {
+            const optionsDate = { year: 'numeric', month: 'short', day: 'numeric' };
+            const optionsTime = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+            let formattedDate = date.toLocaleDateString('en-US', optionsDate);
+            let formattedTime = date.toLocaleTimeString('en-US', optionsTime);
+            if (formatStr === 'PPPpp') {
+                return `${formattedDate}, ${formattedTime}`;
+            }
+            return date.toISOString();
+        }
+
+        function formatDistanceToNow(date, { addSuffix } = {}) {
+            const now = new Date();
+            const diffInSeconds = Math.round(Math.abs(now - date) / 1000);
+            const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+            if (diffInSeconds < 60) {
+                return rtf.format(-diffInSeconds, 'second');
+            } else if (diffInSeconds < 3600) {
+                return rtf.format(-Math.floor(diffInSeconds / 60), 'minute');
+            } else if (diffInSeconds < 86400) {
+                return rtf.format(-Math.floor(diffInSeconds / 3600), 'hour');
+            } else if (diffInSeconds < 2592000) {
+                return rtf.format(-Math.floor(diffInSeconds / 86400), 'day');
+            } else if (diffInSeconds < 31536000) {
+                return rtf.format(-Math.floor(diffInSeconds / 2592000), 'month');
+            } else {
+                return rtf.format(-Math.floor(diffInSeconds / 31536000), 'year');
+            }
+        }
+
+        // Profile Popup Logic
+        const profileButton = document.getElementById('profileButton');
+        const profilePopupOverlay = document.getElementById('profilePopupOverlay');
+        const profilePopup = document.getElementById('profilePopup');
+        const closeProfilePopup = document.getElementById('closeProfilePopup');
+
+        function updateProfilePopupData() {
+            if (currentUserData) {
+                document.getElementById('popupUserCode').textContent = currentUserData.userId || 'N/A';
+                document.getElementById('popupUserEmail').textContent = currentUserData.email || 'N/A';
+            } else {
+                document.getElementById('popupUserCode').textContent = 'Loading...';
+                document.getElementById('popupUserEmail').textContent = 'Loading...';
+            }
+        }
+
+        profileButton.addEventListener('click', () => {
+            updateProfilePopupData();
+            profilePopupOverlay.classList.add('active');
+        });
+
+        closeProfilePopup.addEventListener('click', () => {
+            profilePopupOverlay.classList.remove('active');
+        });
+
+        profilePopupOverlay.addEventListener('click', (event) => {
+            if (event.target === profilePopupOverlay) {
+                profilePopupOverlay.classList.remove('active');
+            }
+        });
+
+        // Error Popup Logic
+        const errorPopupOverlay = document.getElementById('errorPopupOverlay');
+        const closeErrorPopup = document.getElementById('closeErrorPopup');
+
+        closeErrorPopup.addEventListener('click', () => {
+            hideErrorPopup();
+        });
+
+        errorPopupOverlay.addEventListener('click', (event) => {
+            if (event.target === errorPopupOverlay) {
+                hideErrorPopup();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            let userId = sessionStorage.getItem('userId');
+            console.log('Session userId:', userId);
+            if (!userId) {
+                const urlParams = new URLSearchParams(window.location.search);
+                userId = urlParams.get('userId');
+                console.log('URL userId:', userId);
+                if (userId) {
+                    sessionStorage.setItem('userId', userId);
+                }
+            }
+            if (userId) {
+                displayActivityDetails(userId);
+            } else {
+                hideLoader();
+                showErrorPopup();
+            }
+        });
+    </script>
+</body>
+</html>

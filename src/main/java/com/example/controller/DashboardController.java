@@ -13,6 +13,18 @@ public class DashboardController {
     public String home(String userId) {
         return "home"; 
     }
+<<<<<<< HEAD
+=======
+	@GetMapping("/forgot-credentials")
+    public String forgetCredentials(String userId) {
+        return "forgot-credentials"; 
+    }
+	@GetMapping("/activity")
+    public String activity(String userId) {
+        return "Activity"; 
+    }
+
+>>>>>>> remotes/origin/document_svc
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         // Optionally, you can pass some data to the dashboard page here
