@@ -1035,7 +1035,7 @@
             </div>
         </div>
 
-        <footer class="main-footer">MailSync Dashboard - Powered by ❤️ Company</footer>
+        <footer class="main-footer">© 2025 Secure Access Limited. All rights reserved ❤️ Company.</footer>
 
         <script>
             const itemsPerPage = 10;
@@ -1570,11 +1570,11 @@
                         body: JSON.stringify({ action: 'view_all_activities', timestamp: new Date().toISOString() })
                     });
                     if (!response.ok) throw new Error('Failed to log activity');
-                    window.location.href = 'Activity';
+                    window.location.href = 'activity';
                 } catch (error) {
                     console.error('Error logging activity:', error);
                     activityList.innerHTML = '<li>Failed to load activities.</li>';
-                    window.location.href = 'Activity';
+                    window.location.href = 'activity';
                 }
             }
 

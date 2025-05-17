@@ -586,6 +586,121 @@
                 padding: 1.5rem;
             }
         }
+         /* Popper Button Styles */
+    .popper-btn {
+        display: block;
+        width: 100%;
+        margin: 0.6主体;
+        padding: 0.7rem;
+        border-radius: 7px;
+        font-size: 1rem;
+        border: 1px solid rgba(0, 123, 255, 0.3);
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        position: relative;
+    }
+    .popper-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        background-color: #0056b3;
+    }
+    .popper-btn:active {
+        transform: scale(0.95);
+    }
+    .popper-btn.cancel {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+    .popper-btn.cancel:hover {
+        background-color: #5a6268;
+    }
+    .popper-btn .btn-loader {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #fff;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 1s linear infinite;
+        margin-left: 8px;
+        display: inline-block;
+    }
+    .popper-btn .btn-loader.hidden {
+        display: none;
+    }
+    /* Popup Animation */
+    @keyframes popupFadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+        /* Enhanced Input for Forgot Credentials */
+    .enhanced-input {
+        width: 90%;
+        padding: 0.8rem;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 123, 255, 0.3);
+        background-color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        color: #333;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .enhanced-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+        outline: none;
+    }
+     /* Contact Support Popup */
+    .contact-support-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 10001;
+    }
+    .contact-support-popup.active {
+        display: flex;
+    }
+    .contact-support-popup-box {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        text-align: center;
+        min-width: 300px;
+        max-width: 80%;
+        animation: popupFadeIn 0.3s ease-out;
+    }
+    .contact-support-popup-box h3 {
+        color: #007bff;
+        margin-bottom: 15px;
+    }
+    .contact-support-popup-box .contact-info p {
+        color: #555;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .contact-support-popup-box .contact-info i {
+        margin-right: 8px;
+    }
+    
+    
     </style>
 </head>
 
@@ -643,18 +758,34 @@
             <button onclick="closeSecurityTipsPopup()">Close</button>
         </div>
     </div>
-
-    <div id="forgotCredentialsPopup" class="forgot-credentials-popup">
-        <div class="forgot-credentials-popup-box">
-            <h3>Forgot User ID/Email</h3>
-            <p>Enter your email to receive recovery instructions.</p>
-            <div class="input-group">
-                <input type="email" id="recoveryEmail" placeholder="Enter Email" required />
-            </div>
-            <button onclick="submitForgotCredentials()">Submit</button>
-            <button onclick="closeForgotCredentialsPopup()">Cancel</button>
+    <!-- New Contact Support Popup -->
+<div id="contactSupportPopup" class="contact-support-popup">
+    <div class="contact-support-popup-box">
+        <h3>Contact Support</h3>
+        <div class="contact-info">
+            <p><i class="fas fa-envelope"></i> <a href="mailto:chauriwaryogesh@gmail.com" style="color: #007bff;">chauriwaryogesh@gmail.com</a></p>
+            <p><i class="fas fa-phone" style="color: #28a745;"></i> 8208247944</p>
         </div>
+        <button class="popper-btn cancel" onclick="closeContactSupportPopup()">Close</button>
     </div>
+</div>
+    
+
+    <!-- Updated Forgot Credentials Popup -->
+<div id="forgotCredentialsPopup" class="forgot-credentials-popup">
+    <div class="forgot-credentials-popup-box">
+        <h3>Forgot User ID/Email</h3>
+        <p>Enter your email to receive recovery instructions.</p>
+        <div class="input-group">
+            <input type="email" id="recoveryEmail" placeholder="Enter Email" required class="enhanced-input" />
+        </div>
+        <button class="popper-btn" id="submitForgotBtn" onclick="submitForgotCredentials()">
+            <span class="btn-text">Submit</span>
+            <span class="btn-loader hidden"></span>
+        </button>
+        <button class="popper-btn cancel" onclick="closeForgotCredentialsPopup()">Cancel</button>
+    </div>
+</div>
 
     <header class="main-header">
         <div class="header-title">Secure Access Portal</div>
@@ -735,6 +866,7 @@
     const securityTipsPopup = document.getElementById('securityTipsPopup');
     const forgotCredentialsPopup = document.getElementById('forgotCredentialsPopup');
     const actionMenu = document.getElementById('actionMenu');
+    const contactSupportPopup = document.getElementById('contactSupportPopup');
     let ws = null;
     let sessionId = null;
 
@@ -1054,6 +1186,15 @@
                 showErrorAlert('QR code functionality is unavailable. Please check your network and try again.');
             }
         };
+
+        // New Contact Support Functions
+        function contactSupport() {
+            actionMenu.classList.remove('active');
+            contactSupportPopup.classList.add('active');
+        }
+        function closeContactSupportPopup() {
+            contactSupportPopup.classList.remove('active');
+        }
     </script>
 </body>
 </html>

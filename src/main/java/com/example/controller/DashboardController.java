@@ -18,6 +18,10 @@ public class DashboardController {
     public String forgetCredentials(String userId) {
         return "forgot-credentials"; 
     }
+	@GetMapping("/activity")
+    public String activity(String userId) {
+        return "Activity"; 
+    }
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
