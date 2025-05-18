@@ -22,6 +22,10 @@ public class DashboardController {
     public String activity(String userId) {
         return "Activity"; 
     }
+	@GetMapping("/cloudServices")
+    public String cloudServices(String userId) {
+        return "CloudServices"; 
+    }
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
