@@ -30,7 +30,7 @@ import com.example.service.IDocumentService;
 
 @RestController
 @RequestMapping("/DocumentService")
-public class DocumentController {
+public class PhotoCaptureController {
 
 	@Autowired
 	private IDocumentService docmentSrvice;

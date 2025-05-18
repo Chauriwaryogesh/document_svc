@@ -7,7 +7,7 @@ public class DocumentResponse {
 	private String name;
 	private String type;
 	private String size;
-	private JsonNode content;
+	private String content;
 	private String message;
 
 //	public DocumentResponse(Long id, String name, String type, String size,JsonNode content, String message) {
@@ -20,16 +20,18 @@ public class DocumentResponse {
 //		
 //	}
 
-	public JsonNode getContent() {
-		return content;
-	}
-
-	public void setContent(JsonNode content) {
-		this.content = content;
-	}
+	
 
 	public long getId() {
 		return id;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	public void setId(long id) {

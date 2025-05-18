@@ -35,7 +35,7 @@ public class BusinessDocument {
     private String contentPath; // For file storage
     
     @Column
-    private LocalDateTime createdBy;
+    private String createdBy;
 
 	public Long getId() {
 		return id;
@@ -93,11 +93,11 @@ public class BusinessDocument {
 		this.contentPath = contentPath;
 	}
 
-	public LocalDateTime getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(LocalDateTime createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
    

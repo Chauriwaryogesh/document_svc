@@ -160,13 +160,22 @@ public class NewBusinessService {
 		document.setType(doc.getType());
 		document.setSize(doc.getSize());
 		try {
-			JsonNode contentNode = doc.getContent() != null ? new ObjectMapper().readTree(doc.getContent()) : null;
+			String contentNode = doc.getContent() ;
 			document.setContent(contentNode);
-		} catch (JsonProcessingException e) {
+		} catch (Exception  e) {
 			documentResponse.setErrorMessage("Failed to parse document content");
 		}
 		document.setMessage("Document retrieved");
 		documentResponse.setData(Arrays.asList(document));
 		return documentResponse;
 	}
+
+
+	 public boolean deleteNoteById(Long id) {
+       if (documentRepo.existsById(id)) {
+    	   documentRepo.deleteById(id);
+           return true;
+       }
+       return false;
+   }
 }
