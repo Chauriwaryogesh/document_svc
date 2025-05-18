@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "T_WKF_DOCUMENT")
-public class Document {
+public class CapturePhoto {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

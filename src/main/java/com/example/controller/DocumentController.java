@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.dto.DocumentDTO;
+import com.example.dto.PhotoDTO;
+import com.example.dto.DocumentRequest;
+import com.example.dto.DocumentResponse;
 import com.example.dto.NotesDTO;
-import com.example.entity.Document;
+import com.example.entity.CapturePhoto;
+import com.example.entity.BusinessDocument;
 import com.example.service.IDocumentService;
 
 @RestController
@@ -31,112 +35,117 @@ public class DocumentController {
 	@Autowired
 	private IDocumentService docmentSrvice;
 
-	@RequestMapping(value = "upload-getDocument", method = RequestMethod.GET,produces = {"image/png", "image/jpeg", "application/pdf"})
+	@RequestMapping(value = "upload-getDocument", method = RequestMethod.GET, produces = { "image/png", "image/jpeg",
+			"application/pdf" })
 	public ResponseEntity<byte[]> getDocument(@RequestParam(value = "id", required = false) String id,
 			@RequestParam(value = "docName", required = false) String docName,
 			@RequestHeader(value = "userId", required = false) String userId) {
-		
-		Document document = docmentSrvice.getDocumentdtls(id, docName, userId);
-		if(document != null) {
-		return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocName() + "\"")
-                .header(HttpHeaders.CONTENT_TYPE, document.getDocType()) // Set correct MIME type (image/png, image/jpeg, etc.)
-                .body(document.getData());
-    } else {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-    }
+
+		CapturePhoto document = docmentSrvice.getDocumentdtls(id, docName, userId);
+		if (document != null) {
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocName() + "\"")
+					.header(HttpHeaders.CONTENT_TYPE, document.getDocType()) // Set correct MIME type (image/png,
+																				// image/jpeg, etc.)
+					.body(document.getData());
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
 	}
-	
-	@PostMapping(value ="/uploadDocument",consumes = "multipart/form-data")
-    public ResponseEntity<String> uploadDocument(@RequestParam("file") MultipartFile file,
-    		@RequestParam("Doc Name") String docName,
-    		@RequestHeader String userId) {
-        try {
-            Document document = docmentSrvice.uploadDocument(file,docName,userId);
-            return ResponseEntity.ok("Document uploaded successfully. ID: " + document.getId());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to upload document: " + e.getMessage());
-        }
-    }
-	
-	@RequestMapping(value = "upload-getAllDocuments", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
-	public com.example.service.ResponseEntity<List<DocumentDTO>> getDocument(
+
+	@PostMapping(value = "/uploadDocument", consumes = "multipart/form-data")
+	public ResponseEntity<String> uploadDocument(@RequestParam("file") MultipartFile file,
+			@RequestParam("Doc Name") String docName, @RequestHeader String userId) {
+		try {
+			CapturePhoto document = docmentSrvice.uploadDocument(file, docName, userId);
+			return ResponseEntity.ok("Document uploaded successfully. ID: " + document.getId());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Failed to upload document: " + e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "upload-getAllDocuments", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public com.example.service.ResponseEntity<List<PhotoDTO>> getDocument(
 			@RequestHeader(value = "userId", required = false) String userId) {
-		
-		com.example.service.ResponseEntity<List<DocumentDTO>> docslist= new com.example.service.ResponseEntity<>();
-		List<DocumentDTO> document = docmentSrvice.getAllDocuments( userId);
-		if(document != null) {
+
+		com.example.service.ResponseEntity<List<PhotoDTO>> docslist = new com.example.service.ResponseEntity<>();
+		List<PhotoDTO> document = docmentSrvice.getAllDocuments(userId);
+		if (document != null) {
 			docslist.setData(document);
-    } else {
-    	docslist.setErrorMessage("documentListisEmpty");
-       
-    }
+		} else {
+			docslist.setErrorMessage("documentListisEmpty");
+
+		}
 		return docslist;
 	}
-	
-	 @PostMapping("/capture-upload")
-	    public ResponseEntity<String> uploadPhoto(@RequestParam("image") MultipartFile image,
-	                                              @RequestParam("name") String name) {
-	        try {
-	        	docmentSrvice.savePhoto(name, image);
-	            return ResponseEntity.ok("Photo saved successfully.");
-	        } catch (Exception e) {
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                                 .body("Error saving photo: " + e.getMessage());
-	        }
-	    }
-	 @GetMapping("/capture-getAllDocument")
-	 public com.example.service.ResponseEntity<List<DocumentDTO>> getCaptureAllDocument(
-				@RequestHeader(value = "userId", required = false) String userId) {
-			
-			com.example.service.ResponseEntity<List<DocumentDTO>> docslist= new com.example.service.ResponseEntity<>();
-			List<DocumentDTO> document = docmentSrvice.getCaptureAllDocuments( userId);
-			if(document != null) {
-				docslist.setData(document);
-	    } else {
-	    	docslist.setErrorMessage("documentListisEmpty");
-	       
-	    }
-			return docslist;
+
+	@PostMapping("/capture-upload")
+	public ResponseEntity<String> uploadPhoto(@RequestParam("image") MultipartFile image,
+			@RequestParam("name") String name) {
+		try {
+			docmentSrvice.savePhoto(name, image);
+			return ResponseEntity.ok("Photo saved successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error saving photo: " + e.getMessage());
 		}
-	 @RequestMapping(value = "capture-getDocument", method = RequestMethod.GET,produces = {"image/png", "image/jpeg", "application/pdf"})
-		public ResponseEntity<byte[]> getCaptureDocument(@RequestParam(value = "id", required = false) String id,
-				@RequestParam(value = "docName", required = false) String docName,
-				@RequestHeader(value = "userId", required = false) String userId) {
-			
-			DocumentDTO document = docmentSrvice.getCaptureDocumentdtls(id, docName, userId);
-			if(document != null) {
+	}
+
+	@GetMapping("/capture-getAllDocument")
+	public com.example.service.ResponseEntity<List<PhotoDTO>> getCaptureAllDocument(
+			@RequestHeader(value = "userId", required = false) String userId) {
+
+		com.example.service.ResponseEntity<List<PhotoDTO>> docslist = new com.example.service.ResponseEntity<>();
+		List<PhotoDTO> document = docmentSrvice.getCaptureAllDocuments(userId);
+		if (document != null) {
+			docslist.setData(document);
+		} else {
+			docslist.setErrorMessage("documentListisEmpty");
+
+		}
+		return docslist;
+	}
+
+	@RequestMapping(value = "capture-getDocument", method = RequestMethod.GET, produces = { "image/png", "image/jpeg",
+			"application/pdf" })
+	public ResponseEntity<byte[]> getCaptureDocument(@RequestParam(value = "id", required = false) String id,
+			@RequestParam(value = "docName", required = false) String docName,
+			@RequestHeader(value = "userId", required = false) String userId) {
+
+		PhotoDTO document = docmentSrvice.getCaptureDocumentdtls(id, docName, userId);
+		if (document != null) {
 			return ResponseEntity.ok()
-	                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocName() + "\"")
-	                .header(HttpHeaders.CONTENT_TYPE, document.getDocType()) // Set correct MIME type (image/png, image/jpeg, etc.)
-	                .body(document.getData());
-	    } else {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-	    }
+					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocName() + "\"")
+					.header(HttpHeaders.CONTENT_TYPE, document.getDocType()) // Set correct MIME type (image/png,
+																				// image/jpeg, etc.)
+					.body(document.getData());
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
-	
+	}
+
 	@PostMapping("/notes")
 	public com.example.service.ResponseEntity<String> createNote(@RequestBody NotesDTO note) {
-		com.example.service.ResponseEntity<String> responce= new com.example.service.ResponseEntity<>();
-	    String saved = docmentSrvice.save(note);
-	    responce.setData(saved);
-	    return responce;
+		com.example.service.ResponseEntity<String> responce = new com.example.service.ResponseEntity<>();
+		String saved = docmentSrvice.save(note);
+		responce.setData(saved);
+		return responce;
 	}
-	
+
 	@GetMapping("/notes/List")
-	public com.example.service.ResponseEntity<List<NotesDTO>> fetchNotes(@RequestHeader(value = "userId", required = false) String userId) {
-		com.example.service.ResponseEntity<List<NotesDTO>> responce= new com.example.service.ResponseEntity<>();
+	public com.example.service.ResponseEntity<List<NotesDTO>> fetchNotes(
+			@RequestHeader(value = "userId", required = false) String userId) {
+		com.example.service.ResponseEntity<List<NotesDTO>> responce = new com.example.service.ResponseEntity<>();
 		List<NotesDTO> saved = docmentSrvice.getList(userId);
-	    responce.setData(saved);
-	    return responce;
+		responce.setData(saved);
+		return responce;
 	}
-	
 
-	    @DeleteMapping("notes/delete/{id}")
-	    public ResponseEntity<Void> deleteNote(@PathVariable Long id) {
-	        boolean deleted = docmentSrvice.deleteNoteById(id);
-	        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-	    }
-
+	@DeleteMapping("notes/delete/{id}")
+	public ResponseEntity<Void> deleteNote(@PathVariable Long id) {
+		boolean deleted = docmentSrvice.deleteNoteById(id);
+		return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+	}
+		
 }

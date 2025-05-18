@@ -1,6 +1,6 @@
 package com.example.dto;
 
-public class DocumentDTO {
+public class PhotoDTO {
 	private String id;
 	private String docName;
 	private String docType;

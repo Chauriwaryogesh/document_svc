@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.dto.AddDocument;
-import com.example.dto.DocumentDTO;
 import com.example.dto.NotesDTO;
-import com.example.entity.Document;
+import com.example.dto.PhotoDTO;
+import com.example.entity.CapturePhoto;
 import com.example.entity.Note;
 import com.example.entity.Photo;
 import com.example.mapper.DocumentMapper;
-import com.example.repo.IDocumentRepo;
+import com.example.repo.ICapturePhtoRepo;
 import com.example.repo.IPhoto;
 import com.example.repo.NotesRepo;
 
@@ -26,7 +26,7 @@ import com.example.repo.NotesRepo;
 public class DocumentService implements IDocumentService {
 
 	@Autowired
-	private IDocumentRepo docRepo;
+	private ICapturePhtoRepo docRepo;
 
 	@Autowired
 	private DocumentMapper documentMapper;
@@ -36,13 +36,12 @@ public class DocumentService implements IDocumentService {
 	
 	 @Autowired
 	 private IPhoto photoRepository;
-
-
+	 
 	@Override
-	public Document getDocumentdtls(String id, String docName, String userId) {
+	public CapturePhoto getDocumentdtls(String id, String docName, String userId) {
 		// List<DocumentDTO> documentDto = new ArrayList<>();
-		Optional<Document> documents = docRepo.findById(Long.valueOf(id));
-		Document document = null;
+		Optional<CapturePhoto> documents = docRepo.findById(Long.valueOf(id));
+		CapturePhoto document = null;
 		if (documents.isPresent()) {
 			document = documents.get();
 			// documentDto = documentMapper.mapDOcumentDtls(documents);
@@ -53,7 +52,7 @@ public class DocumentService implements IDocumentService {
 	@Override
 	public String uploadDocService(List<AddDocument> documentList, String userId) {
 
-		List<Document> document = documentMapper.uploadDoc(documentList);
+		List<CapturePhoto> document = documentMapper.uploadDoc(documentList);
 
 		docRepo.save(document.get(0));
 
@@ -62,8 +61,8 @@ public class DocumentService implements IDocumentService {
 		return str;
 	}
 
-	public Document uploadDocument(MultipartFile file,String docName, String userId) throws IOException {
-		Document document = new Document();
+	public CapturePhoto uploadDocument(MultipartFile file,String docName, String userId) throws IOException {
+		CapturePhoto document = new CapturePhoto();
 		document.setDocId(String.valueOf(UUID.randomUUID()));
 		document.setDocName(docName);
 		document.setDocType(file.getContentType());
@@ -75,10 +74,10 @@ public class DocumentService implements IDocumentService {
 	}
 
 	@Override
-	public List<DocumentDTO> getAllDocuments(String userId) {
-		List<Document> documents = docRepo.findAll();
+	public List<PhotoDTO> getAllDocuments(String userId) {
+		List<CapturePhoto> documents = docRepo.findAll();
 		return  documents.stream().map(file ->{
-			DocumentDTO document= new DocumentDTO();
+			PhotoDTO document= new PhotoDTO();
 			document.setId(String.valueOf(file.getId()));
 			document.setDocName(file.getDocName());
 			document.setDocType(file.getDocType());
@@ -133,10 +132,10 @@ public class DocumentService implements IDocumentService {
 	    }
 
 	@Override
-	public List<DocumentDTO> getCaptureAllDocuments(String userId) {
+	public List<PhotoDTO> getCaptureAllDocuments(String userId) {
 		List<Photo> documents = photoRepository.findAll();
 		return  documents.stream().map(file ->{
-			DocumentDTO document= new DocumentDTO();
+			PhotoDTO document= new PhotoDTO();
 			document.setId(String.valueOf(file.getId()));
 			document.setDocName(file.getName());
 			document.setDocType(file.getContentType());
@@ -148,9 +147,9 @@ public class DocumentService implements IDocumentService {
 	}
 
 	@Override
-	public DocumentDTO getCaptureDocumentdtls(String id, String docName, String userId) {
+	public PhotoDTO getCaptureDocumentdtls(String id, String docName, String userId) {
 		Optional<Photo> documents = photoRepository.findById(Long.valueOf(id));
-		DocumentDTO document= new DocumentDTO();
+		PhotoDTO document= new PhotoDTO();
 		if (documents.isPresent()) {
 			Photo file = documents.get();
 				document.setId(String.valueOf(file.getId()));

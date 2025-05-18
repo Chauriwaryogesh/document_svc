@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.dto.DashboardStats;
-import com.example.entity.Document;
+import com.example.entity.CapturePhoto;
 import com.example.entity.Security;
-import com.example.repo.IDocumentRepo;
+import com.example.repo.ICapturePhtoRepo;
 import com.example.repo.ISecurityRepo;
 
 
@@ -20,14 +20,14 @@ import com.example.repo.ISecurityRepo;
 	public class DashboardService {
 		
 		@Autowired
-		private IDocumentRepo docRepo;
+		private ICapturePhtoRepo docRepo;
 		
 		@Autowired
 		private ISecurityRepo securityRepo;
 
 	    public DashboardStats getDashboardStats(String userId) {
 	        // Fetch stats for the dashboard based on the userId
-	    	List<Document> documents = docRepo.findAll();
+	    	List<CapturePhoto> documents = docRepo.findAll();
 	    	 long docsCount=documents.stream().count();
 	    	
 	    	 List<Security> security = securityRepo.findAll();

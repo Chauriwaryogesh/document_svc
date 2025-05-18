@@ -17,6 +17,317 @@
             padding-bottom: 60px;
             box-sizing: border-box;
         }
+        body {
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+        background: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .main-header {
+        background: linear-gradient(90deg, #1e3a8a, #1e40af);
+        border-bottom: 3px solid #1e3a8a;
+    }
+
+    body.dark-mode #dashboardHeaderClock {
+        background-color: #3b82f6;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .admin-panel-button {
+        background-color: #2d2d2d;
+        color: #60a5fa;
+    }
+
+    body.dark-mode .admin-panel-button:hover {
+        background-color: #3d3d3d;
+    }
+
+    body.dark-mode .modern-button {
+        background-color: #3b82f6;
+    }
+
+    body.dark-mode .modern-button:hover {
+        background-color: #2563eb;
+    }
+
+    body.dark-mode .modern-button.primary {
+        background-color: #16a34a;
+    }
+
+    body.dark-mode .modern-button.primary:hover {
+        background-color: #15803d;
+    }
+
+    body.dark-mode .modern-button.secondary {
+        background-color: #f59e0b;
+        color: #1a1a1a;
+    }
+
+    body.dark-mode .modern-button.secondary:hover {
+        background-color: #d97706;
+    }
+
+    body.dark-mode .sla {
+        background: #2d2d2d;
+        border: 2px solid #4b4b4b;
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .sla p {
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .circle-background {
+        stroke: #4b4b4b;
+    }
+
+    body.dark-mode #emailSentCircle { stroke: #16a34a; }
+    body.dark-mode #emailsInDbCircle { stroke: #06b6d4; }
+    body.dark-mode #slaProgressCircle { stroke: #3b82f6; }
+    body.dark-mode #documentUploadCircle { stroke: #8b5cf6; }
+    body.dark-mode #slaCrossedCircle { stroke: #ef4444; }
+
+    body.dark-mode .sla-label {
+        color: #b0b0b0;
+    }
+
+    body.dark-mode .summary-box {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .summary-box.total { background-color: #3b82f6; }
+    body.dark-mode .summary-box.open { background-color: #f59e0b; color: #1a1a1a; }
+    body.dark-mode .summary-box.closed { background-color: #16a34a; }
+    body.dark-mode .summary-box.correspondence { background-color: #ef4444; }
+
+    body.dark-mode .filter-container select,
+    body.dark-mode .filter-container button {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+        border: 1px solid #4b4b4b;
+    }
+
+    body.dark-mode .filter-container select:focus,
+    body.dark-mode .filter-container button:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+    }
+
+    body.dark-mode .work-item-list-container {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .work-item-list {
+        background-color: #2d2d2d;
+    }
+
+    body.dark-mode .work-item-list th,
+    body.dark-mode .work-item-list td {
+        border-bottom: 1px solid #4b4b4b;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .work-item-list th {
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .work-item-list tbody tr:nth-child(even) {
+        background-color: #252525;
+    }
+
+    body.dark-mode .work-item-list tbody tr:hover {
+        background-color: #1e40af;
+    }
+
+    body.dark-mode .pagination-button {
+        background-color: #2d2d2d;
+        border: 1px solid #4b4b4b;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .pagination-button:hover {
+        background-color: #3b82f6;
+    }
+
+    body.dark-mode .pagination-button.active {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+    body.dark-mode .pagination-button:disabled {
+        background-color: #4b4b4b;
+    }
+
+    body.dark-mode .floating-button {
+        background-color: #f97316;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    body.dark-mode .modal-box {
+        background: #2d2d2d;
+        color: #e0e0e0;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    body.dark-mode .custom-alert-box {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .custom-alert-header {
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .custom-alert-message {
+        color: #b0b0b0;
+    }
+
+    body.dark-mode .custom-alert-buttons button {
+        background-color: #3b82f6;
+    }
+
+    body.dark-mode .custom-alert-buttons button:hover {
+        background-color: #2563eb;
+    }
+
+    body.dark-mode .notification-badge {
+        background-color: #ef4444;
+    }
+
+    body.dark-mode .notification-banner {
+        background-color: #16a34a;
+    }
+
+    body.dark-mode .notification-banner .modern-button.small {
+        background-color: #15803d;
+    }
+
+    body.dark-mode .notification-banner .modern-button.small:hover {
+        background-color: #14532d;
+    }
+
+    body.dark-mode .work-item-grid .work-item-card {
+        background-color: #2d2d2d;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .work-item-grid .work-item-card:hover {
+        background-color: #1e40af;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    body.dark-mode .work-item-grid .work-item-card p {
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .work-item-grid .work-item-card p strong {
+        color: #3b82f6;
+    }
+
+    body.dark-mode .main-footer {
+        background-color: #1e1e1e;
+        color: #b0b0b0;
+        border-top: 1px solid #4b4b4b;
+    }
+
+    body.dark-mode .chatbot-button {
+        background-color: #16a34a;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    body.dark-mode .chatbot-container {
+        background-color: #2d2d2d;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    body.dark-mode .chatbot-header {
+        background-color: #3b82f6;
+    }
+
+    body.dark-mode .chatbot-messages {
+        background-color: #252525;
+    }
+
+    body.dark-mode .chatbot-message.user {
+        background-color: #3b82f6;
+    }
+
+    body.dark-mode .chatbot-message.bot {
+        background-color: #4b4b4b;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .chatbot-input-container {
+        border-top: 1px solid #4b4b4b;
+    }
+
+    body.dark-mode .chatbot-input {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+        border: 1px solid #4b4b4b;
+    }
+
+    body.dark-mode .chatbot-send {
+        background-color: #16a34a;
+    }
+
+    body.dark-mode .chatbot-send:hover {
+        background-color: #15803d;
+    }
+
+    body.dark-mode .menu-toggle-button {
+        background: linear-gradient(135deg, #16a34a, #15803d);
+    }
+
+    body.dark-mode .menu-toggle-button:hover {
+        background: linear-gradient(135deg, #15803d, #14532d);
+    }
+
+    body.dark-mode .menu-bar {
+        background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    }
+
+    body.dark-mode .menu-header {
+        background: linear-gradient(90deg, #1e40af, #1e3a8a);
+    }
+
+    body.dark-mode .menu-profile {
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode .menu-content {
+        background: #252525;
+    }
+
+    body.dark-mode .menu-section h4 {
+        color: #93c5fd;
+        border-bottom: 2px solid #3b82f6;
+    }
+
+    body.dark-mode .menu-section li {
+        color: #e0e0e0;
+        background: #2d2d2d;
+    }
+
+    body.dark-mode .menu-section li:hover {
+        background: #1e40af;
+        box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+    }
+
+    body.dark-mode .menu-footer {
+        background: rgba(255, 255, 255, 0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode .menu-footer a {
+        color: #b0b0b0;
+    }
 
         .main-header {
             width: 100%;
@@ -669,7 +980,7 @@
         .menu-toggle-button {
             position: absolute;
             left: 30px;
-            top: 90px; /* Below clock (20px top + 40px height + 10px gap) */
+            top: 90px;
             background: linear-gradient(135deg, #28a745, #218838);
             color: white;
             border: none;
@@ -695,12 +1006,12 @@
         .menu-bar {
             position: fixed;
             top: 0;
-            left: -350px;
-            width: 350px;
+            left: -280px;
+            width: 280px;
             height: 100%;
-            background: #ffffff;
-            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
-            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+            transition: left 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             z-index: 10001;
             display: flex;
             flex-direction: column;
@@ -714,19 +1025,19 @@
         }
 
         .menu-header {
-            background: linear-gradient(90deg, #007bff, #0056b3);
+            background: linear-gradient(90deg, #0056b3, #003d80);
             color: white;
-            padding: 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-top-right-radius: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .menu-header h3 {
             margin: 0;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
@@ -735,7 +1046,7 @@
             background: none;
             border: none;
             color: white;
-            font-size: 22px;
+            font-size: 20px;
             cursor: pointer;
             transition: color 0.3s ease;
         }
@@ -744,42 +1055,126 @@
             color: #ffc107;
         }
 
+        .menu-profile {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .menu-profile i {
+            font-size: 24px;
+        }
+
+        .menu-profile span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
         .menu-content {
             flex: 1;
-            padding: 25px;
+            padding: 20px;
             overflow-y: auto;
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.95);
         }
 
         .menu-section h4 {
-            margin: 0 0 15px;
-            font-size: 18px;
+            margin: 0 0 10px;
+            font-size: 16px;
             font-weight: 600;
-            color: #333;
+            color: #1a3c6d;
             border-bottom: 2px solid #007bff;
             padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .menu-section h4 i {
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-section h4.collapsed i {
+            transform: rotate(-90deg);
         }
 
         .menu-section ul {
             list-style: none;
             padding: 0;
             margin: 0;
+            display: none;
+        }
+
+        .menu-section ul.active {
+            display: block;
         }
 
         .menu-section li {
-            padding: 12px 15px;
-            color: #444;
-            font-size: 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
+            padding: 10px 15px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            margin-bottom: 6px;
             background: #ffffff;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .menu-section li:hover {
             background: #e6f7ff;
             transform: translateX(5px);
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+        }
+
+        .menu-footer {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .menu-footer a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .menu-footer a:hover {
+            color: #ffc107;
+        }
+
+        @media (max-width: 768px) {
+            .menu-bar {
+                width: 250px;
+                left: -250px;
+            }
+            .main-header {
+                font-size: 20px;
+                padding: 15px 20px;
+            }
+            #dashboardHeaderClock {
+                font-size: 16px;
+                padding: 8px 15px;
+            }
+            .menu-toggle-button {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+            .admin-panel-button {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -792,25 +1187,43 @@
             <i class="fas fa-bell"></i>
             <span id="notificationBadge" class="notification-badge" style="display: none;">1</span>
         </button>
-        <button onclick="redirectToAdminPanel()" class="admin-panel-button">Admin Panel</button>
         <button onclick="logout()" class="admin-panel-button" style="right: 170px;">Logout</button>
+        <button onclick="redirectToAdminPanel()" class="admin-panel-button">Admin Panel</button>
         <button id="menuToggleButton" class="menu-toggle-button"><i class="fas fa-bars"></i></button>
     </div>
 
     <div id="menuBar" class="menu-bar">
         <div class="menu-header">
-            <h3>Menu</h3>
+            <h3>Dashboard Menu</h3>
             <button id="menuCloseButton" class="menu-close-button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="menu-profile">
+            <i class="fas fa-user-circle"></i>
+            <span id="menuUserId">Loading...</span>
         </div>
         <div class="menu-content">
             <div class="menu-section">
-                <h4>Activity Tracing</h4>
-                <ul id="activityList">
-                    <li>No activities yet.</li>
+                <h4 id="activitySection"><i class="fas fa-chevron-down"></i> Activity Tracing</h4>
+                <ul id="activityList" class="active">
+                    <li><i class="fas fa-history"></i> No activities yet.</li>
                 </ul>
                 <button id="viewActivitiesBtn" class="modern-button primary" style="margin-top: 15px;">View All Activities</button>
+                <button id="pdfGenerateServiceBtn" class="modern-button primary" style="margin-top: 10px;" onclick="generatePdfService()"> Comming soon...</button>
+            </div>
+            <div class="menu-section">
+                <h4 id="otherSection"><i class="fas fa-chevron-down"></i> Other Actions</h4>
+                <ul>
+                    <li onclick="showOverview()"><i class="fas fa-tachometer-alt"></i> Overview</li>
+                    <li onclick="showAnalytics()"><i class="fas fa-chart-line"></i> Analytics</li>
+                    <li onclick="openNotesModal()"><i class="fas fa-sticky-note"></i> Notes</li>
+                    <li onclick="openFeedbackModal()"><i class="fas fa-comment"></i> Feedback</li>
+                </ul>
             </div>
         </div>
+        <div class="menu-footer">
+    <a href="#settings">Settings</a>
+    <button id="darkModeToggle" class="modern-button"><i class="fas fa-moon"></i> Dark Mode</button>
+</div>
     </div>
 
     <div id="notificationBanner" class="notification-banner" style="display: none;">
@@ -1010,7 +1423,6 @@
             <div id="paginationControls" class="pagination-controls"></div>
         </div>
 
-        <button id="generatePdfBtn" class="floating-button"><i class="fas fa-file-pdf"></i></button>
         <button id="chatbotButton" class="chatbot-button"><i class="fas fa-robot"></i></button>
 
         <div id="chatbotContainer" class="chatbot-container">
@@ -1071,9 +1483,14 @@
                     showErrorAlert("No admin access for user.");
                 }
             }
-            function redirectToCloudService() { window.location.href = "CloudServices"; }
+            function redirectToCloudService() { window.location.href = "cloudServices"; }
             function redirectToMailService() { window.location.href = "MailServices"; }
             function whatsappService() { window.location.href = "tel:+8208247944"; }
+
+            function generatePdfService() {
+                console.log('PDF Generate Service clicked');
+                showErrorAlert('PDF Generate Service is not implemented yet.');
+            }
 
             function animateCircle(circleId, percentage, percentageTextId) {
                 const circle = document.getElementById(circleId);
@@ -1296,31 +1713,6 @@
                 document.getElementById('customErrorOkBtn').onclick = () => overlay.classList.remove('active');
             }
 
-            async function generatePdf() {
-                const PaneluserId = getUserId();
-                if (!PaneluserId) return;
-
-                try {
-                    const response = await fetch('http://localhost:8081/Employee/generatePDF', {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/pdf', 'userId': PaneluserId }
-                    });
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'dashboard_report.pdf';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                } catch (error) {
-                    console.error('Error generating PDF:', error);
-                    showErrorAlert('Failed to generate PDF.');
-                }
-            }
-
             function showNotification() {
                 const banner = document.getElementById('notificationBanner');
                 const badge = document.getElementById('notificationBadge');
@@ -1538,11 +1930,11 @@
                     if (!response.ok) throw new Error('Failed to fetch activities');
                     const activities = await response.json();
                     activityList.innerHTML = activities.length
-                        ? activities.map(activity => `<li>${activity.description} - ${activity.timestamp}</li>`).join('')
-                        : '<li>No activities yet.</li>';
+                        ? activities.map(activity => `<li><i class="fas fa-history"></i> ${activity.description} - ${activity.timestamp}</li>`).join('')
+                        : '<li><i class="fas fa-history"></i> No activities yet.</li>';
                 } catch (error) {
                     console.error('Error fetching activity tracing:', error);
-                    activityList.innerHTML = '<li>Failed to load activities.</li>';
+                    activityList.innerHTML = '<li><i class="fas fa-exclamation-circle"></i> Failed to load activities.</li>';
                 }
             }
 
@@ -1573,8 +1965,38 @@
                     window.location.href = 'activity';
                 } catch (error) {
                     console.error('Error logging activity:', error);
-                    activityList.innerHTML = '<li>Failed to load activities.</li>';
+                    activityList.innerHTML = '<li><i class="fas fa-exclamation-circle"></i> Failed to load activities.</li>';
                     window.location.href = 'activity';
+                }
+            }
+
+            function toggleMenuSection(event) {
+                const header = event.currentTarget;
+                const ul = header.nextElementSibling;
+                if (ul.tagName === 'UL') {
+                    ul.classList.toggle('active');
+                    header.classList.toggle('collapsed');
+                }
+            }
+            function toggleDarkMode() {
+                const body = document.body;
+                const isDarkMode = body.classList.toggle('dark-mode');
+                const darkModeToggle = document.getElementById('darkModeToggle');
+                darkModeToggle.innerHTML = isDarkMode
+                    ? '<i class="fas fa-sun"></i> Light Mode'
+                    : '<i class="fas fa-moon"></i> Dark Mode';
+                localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+            }
+
+            function loadTheme() {
+                const darkMode = localStorage.getItem('darkMode');
+                const body = document.body;
+                const darkModeToggle = document.getElementById('darkModeToggle');
+                if (darkMode === 'enabled') {
+                    body.classList.add('dark-mode');
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                } else {
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
                 }
             }
 
@@ -1585,6 +2007,7 @@
                 fetchWorkItems();
                 loadEmailCounts();
                 loadDashboardStats();
+                document.getElementById('menuUserId').textContent = getUserId() || 'Guest';
                 document.getElementById('notificationBadge').style.display = 'flex';
                 document.getElementById('applyFilterBtn').addEventListener('click', () => {
                     const status = document.getElementById('statusFilter').value;
@@ -1596,9 +2019,10 @@
                     document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = this.checked);
                     toggleBulkActions();
                 });
+                document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+         
                 document.getElementById('getSelectedBtn').addEventListener('click', handleTakeAction);
                 document.getElementById('shareChartBtn').addEventListener('click', shareChart);
-                document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);
                 document.getElementById('notificationIcon').addEventListener('click', showNotification);
                 document.getElementById('shareNowBtn').addEventListener('click', shareNow);
                 document.getElementById('chatbotButton').addEventListener('click', toggleChatbot);
@@ -1610,7 +2034,10 @@
                 document.getElementById('menuToggleButton').addEventListener('click', toggleMenuBar);
                 document.getElementById('menuCloseButton').addEventListener('click', toggleMenuBar);
                 document.getElementById('viewActivitiesBtn').addEventListener('click', viewAllActivities);
+                document.getElementById('activitySection').addEventListener('click', toggleMenuSection);
+                document.getElementById('otherSection').addEventListener('click', toggleMenuSection);
                 document.addEventListener('click', closeMenuOnOutsideClick);
+                document.addEventListener('DOMContentLoaded', loadTheme);
                 fetchActivityTracing();
             });
         </script>

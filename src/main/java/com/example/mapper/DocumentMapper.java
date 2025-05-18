@@ -8,17 +8,17 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import com.example.dto.AddDocument;
-import com.example.dto.DocumentDTO;
-import com.example.entity.Document;
+import com.example.dto.PhotoDTO;
+import com.example.entity.CapturePhoto;
 
 @Component
 public class DocumentMapper {
 
-	public List<DocumentDTO> mapDOcumentDtls(Optional<Document> documentOpt) {
-		List<DocumentDTO> documentList = new ArrayList<>();
-		Document document = documentOpt.get();
+	public List<PhotoDTO> mapDOcumentDtls(Optional<CapturePhoto> documentOpt) {
+		List<PhotoDTO> documentList = new ArrayList<>();
+		CapturePhoto document = documentOpt.get();
 		return documentList.stream().map(list -> {
-			DocumentDTO documentDTO = new DocumentDTO();
+			PhotoDTO documentDTO = new PhotoDTO();
 			documentDTO.setId(document.getDocId());
 			documentDTO.setDocName(document.getDocName());
 			documentDTO.setDocType(document.getDocType());
@@ -29,7 +29,7 @@ public class DocumentMapper {
 
 	}
 
-	public List<Document> uploadDoc(List<AddDocument> documentList) {
+	public List<CapturePhoto> uploadDoc(List<AddDocument> documentList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -23,6 +23,10 @@ public class DashboardController {
     public String activity(String userId) {
         return "Activity"; 
     }
+	@GetMapping("/cloudServices")
+    public String cloudServices(String userId) {
+        return "CloudServices"; 
+    }
 
 >>>>>>> remotes/origin/document_svc
     @GetMapping("/dashboard")
