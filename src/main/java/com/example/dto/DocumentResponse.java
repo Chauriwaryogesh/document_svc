@@ -1,7 +1,5 @@
 package com.example.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 public class DocumentResponse {
 	private long id;
 	private String name;
@@ -9,18 +7,22 @@ public class DocumentResponse {
 	private String size;
 	private String content;
 	private String message;
+	private String createdDate;
 
-//	public DocumentResponse(Long id, String name, String type, String size,JsonNode content, String message) {
-//		this.id=id;
-//		this.name=name;
-//		this.type=type;
-//		this.size=size;
-//		this.content= content;
-//		this.message=message;
-//		
-//	}
 
-	
+	/**
+	 * @return the createdDate
+	 */
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	/**
+	 * @param createdDate the createdDate to set
+	 */
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
+	}
 
 	public long getId() {
 		return id;
