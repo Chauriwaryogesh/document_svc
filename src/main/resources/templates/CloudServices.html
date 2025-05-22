@@ -513,7 +513,7 @@
 </head>
 <body>
     <header class="main-header">
-        <h1>Secure access limited</h1>
+        <h1>Secure Access Limited</h1>
         <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </header>
 
@@ -568,1109 +568,934 @@
                         <th>Name</th>
                         <th>Type</th>
                         <th>Size</th>
-                        <th>Created Date</th>
-                        <th style="width: 150px;">View</th>
-                        <th style="width: 150px;">PDF</th>
-                    </tr>
-                </thead>
-                <tbody id="newBusinessDocsList"></tbody>
-            </table>
-            <div class="pagination-controls" id="paginationControls"></div>
+            <th>Created Date</th>
+            <th style="width: 150px;">View</th>
+            <th style="width: 150px;">PDF</th>
+        </tr>
+    </thead>
+    <tbody id="newBusinessDocsList"></tbody>
+</table>
+<div class="pagination-controls" id="paginationControls"></div>
+</div>
+</div>
+
+<div id="customErrorOverlay" class="custom-alert-overlay error">
+<div class="custom-alert error">
+    <h3>Error</h3>
+    <p id="errorMessage"></p>
+    <button id="errorOkBtn" class="modern-button secondary">OK</button>
+</div>
+</div>
+
+<div id="customSuccessOverlay" class="custom-alert-overlay">
+<div class="custom-alert">
+    <h3>Success</h3>
+    <p id="successMessage"></p>
+    <button id="successOkBtn" class="modern-button secondary">OK</button>
+</div>
+</div>
+
+<div id="createDocumentOverlay" class="custom-alert-overlay">
+<div class="create-document-modal">
+    <h2>Create New Business Doc</h2>
+    <form id="createDocumentForm">
+        <label for="docName">New Business Doc Name</label>
+        <input type="text" id="docName" placeholder="Enter New Business Doc name" required>
+        <label for="docType">New Business Doc Type</label>
+        <select id="docType">
+            <option value="XLS">Excel</option>
+            <option value="Word">Word</option>
+            <option value="PDF">NotePad</option>
+        </select>
+        <div id="editorToolbar" class="editor-toolbar"></div>
+        <div id="editorContainer" class="editor-container"></div>
+        <div class="modal-buttons">
+            <button type="button" id="createDocCancelBtn" class="modern-button secondary">Cancel</button>
+            <button type="submit" id="createDocSaveBtn" class="modern-button primary">Save</button>
         </div>
+    </form>
+</div>
+</div>
+
+<div id="viewDocumentOverlay" class="custom-alert-overlay">
+<div class="view-document-modal">
+    <h2>View New Business Doc</h2>
+    <div id="viewDocName" style="margin-bottom: 16px; font-weight: 500;"></div>
+    <div id="viewEditorContainer" class="editor-container"></div>
+    <div class="modal-buttons">
+        <button id="viewDocCloseBtn" class="modern-button secondary">Close</button>
     </div>
+</div>
+</div>
 
-    <div id="customErrorOverlay" class="custom-alert-overlay error">
-        <div class="custom-alert error">
-            <h3>Error</h3>
-            <p id="errorMessage"></p>
-            <button id="errorOkBtn" class="modern-button secondary">OK</button>
-        </div>
+<div id="pdfSecurityOverlay" class="custom-alert-overlay">
+<div class="custom-alert">
+    <h3>Secure PDF</h3>
+    <p>Would you like to secure the PDF with a password?</p>
+    <div id="passwordContainer" style="display: none;">
+        <label for="pdfPassword">Password</label>
+        <input type="password" id="pdfPassword" placeholder="Enter password">
     </div>
-
-    <div id="customSuccessOverlay" class="custom-alert-overlay">
-        <div class="custom-alert">
-            <h3>Success</h3>
-            <p id="successMessage"></p>
-            <button id="successOkBtn" class="modern-button secondary">OK</button>
-        </div>
+    <div class="modal-buttons">
+        <button id="pdfSecureBtn" class="modern-button primary">Secure PDF</button>
+        <button id="pdfContinueBtn" class="modern-button secondary">Continue</button>
+        <button id="pdfCancelBtn" class="modern-button secondary">Cancel</button>
     </div>
+</div>
+</div>
 
-    <div id="createDocumentOverlay" class="custom-alert-overlay">
-        <div class="create-document-modal">
-            <h2>Create New Business Doc</h2>
-            <form id="createDocumentForm">
-                <label for="docName">New Business Doc Name</label>
-                <input type="text" id="docName" placeholder="Enter New Business Doc name" required>
-                <label for="docType">New Business Doc Type</label>
-                <select id="docType">
-                    <option value="XLS">Excel</option>
-                    <option value="Word">Word</option>
-                    <option value="PDF">NotePad</option>
-                </select>
-                <div id="editorToolbar" class="editor-toolbar"></div>
-                <div id="editorContainer" class="editor-container"></div>
-                <div class="modal-buttons">
-                    <button type="button" id="createDocCancelBtn" class="modern-button secondary">Cancel</button>
-                    <button type="submit" id="createDocSaveBtn" class="modern-button primary">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<footer class="main-footer">
+<p>Secure Access Limited © 2025. All rights reserved.</p>
+</footer>
 
-    <div id="viewDocumentOverlay" class="custom-alert-overlay">
-        <div class="view-document-modal">
-            <h2>View New Business Doc</h2>
-            <div id="viewDocName" style="margin-bottom: 16px; font-weight: 500;"></div>
-            <div id="viewEditorContainer" class="editor-container"></div>
-            <div class="modal-buttons">
-                <button id="viewDocCloseBtn" class="modern-button secondary">Close</button>
-            </div>
-        </div>
-    </div>
+<script>
+const config = {
+    apiBase: 'http://localhost:8081/NewBusinessController',
+    timeout: 5000,
+    userId: null, // Initialize as null to avoid default userId issues
+    itemsPerPage: 5,
+    currentPage: 1
+};
 
-    <div id="pdfSecurityOverlay" class="custom-alert-overlay">
-        <div class="custom-alert">
-            <h3>Secure PDF</h3>
-            <p>Would you like to secure the PDF with a password?</p>
-            <div id="passwordContainer" style="display: none;">
-                <label for="pdfPassword">Password</label>
-                <input type="password" id="pdfPassword" placeholder="Enter password">
-            </div>
-            <div class="modal-buttons">
-                <button id="pdfSecureBtn" class="modern-button primary">Secure PDF</button>
-                <button id="pdfContinueBtn" class="modern-button secondary">Continue</button>
-                <button id="pdfCancelBtn" class="modern-button secondary">Cancel</button>
-            </div>
-        </div>
-    </div>
+const elements = {
+    newBusinessDocsList: document.getElementById('newBusinessDocsList'),
+    errorOverlay: document.getElementById('customErrorOverlay'),
+    errorMessage: document.getElementById('errorMessage'),
+    successOverlay: document.getElementById('customSuccessOverlay'),
+    successMessage: document.getElementById('successMessage'),
+    createOverlay: document.getElementById('createDocumentOverlay'),
+    docName: document.getElementById('docName'),
+    docType: document.getElementById('docType'),
+    editorToolbar: document.getElementById('editorToolbar'),
+    editorContainer: document.getElementById('editorContainer'),
+    viewOverlay: document.getElementById('viewDocumentOverlay'),
+    viewDocName: document.getElementById('viewDocName'),
+    viewEditorContainer: document.getElementById('viewEditorContainer'),
+    pdfSecurityOverlay: document.getElementById('pdfSecurityOverlay'),
+    pdfPassword: document.getElementById('pdfPassword'),
+    passwordContainer: document.getElementById('passwordContainer'),
+    deleteSelectedBtn: document.getElementById('deleteSelectedBtn'),
+    logoutBtn: document.getElementById('logoutBtn'),
+    paginationControls: document.getElementById('paginationControls'),
+    docSearch: document.getElementById('docSearch'),
+    dateFilter: document.getElementById('dateFilter'),
+    customDateRange: document.getElementById('customDateRange'),
+    dateStart: document.getElementById('dateStart'),
+    dateEnd: document.getElementById('dateEnd')
+};
 
-    <footer class="main-footer">
-        <p>Secure access limited © 2025. All rights reserved.</p>
-    </footer>
+const storageData = { used: 120, total: 1000 };
+const newBusinessDocTypeData = { Excel: 5, Word: 2, NotePad: 4 };
+const backupData = { completed: 8, pending: 2 };
+const costData = { compute: 200, storage: 150, network: 50 };
+let newBusinessDocs = [];
+let hotInstance = null;
+let quillInstance = null;
+let pdfTextEditor = null;
+let viewHotInstance = null;
+let viewTextEditor = null;
+let docTypeChartInstance = null;
 
-   <script>
-    const config = {
-        apiBase: 'http://localhost:8081/NewBusinessController',
-        timeout: 5000,
-        userId: sessionStorage.getItem('userId') || 'ychouri',
-        itemsPerPage: 5,
-        currentPage: 1
+// Utility Functions
+function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
     };
+}
 
-    const elements = {
-        newBusinessDocsList: document.getElementById('newBusinessDocsList'),
-        errorOverlay: document.getElementById('customErrorOverlay'),
-        errorMessage: document.getElementById('errorMessage'),
-        successOverlay: document.getElementById('customSuccessOverlay'),
-        successMessage: document.getElementById('successMessage'),
-        createOverlay: document.getElementById('createDocumentOverlay'),
-        docName: document.getElementById('docName'),
-        docType: document.getElementById('docType'),
-        editorToolbar: document.getElementById('editorToolbar'),
-        editorContainer: document.getElementById('editorContainer'),
-        viewOverlay: document.getElementById('viewDocumentOverlay'),
-        viewDocName: document.getElementById('viewDocName'),
-        viewEditorContainer: document.getElementById('viewEditorContainer'),
-        pdfSecurityOverlay: document.getElementById('pdfSecurityOverlay'),
-        pdfPassword: document.getElementById('pdfPassword'),
-        passwordContainer: document.getElementById('passwordContainer'),
-        deleteSelectedBtn: document.getElementById('deleteSelectedBtn'),
-        logoutBtn: document.getElementById('logoutBtn'),
-        paginationControls: document.getElementById('paginationControls'),
-        docSearch: document.getElementById('docSearch'),
-        dateFilter: document.getElementById('dateFilter'),
-        customDateRange: document.getElementById('customDateRange'),
-        dateStart: document.getElementById('dateStart'),
-        dateEnd: document.getElementById('dateEnd')
+async function fetchWithTimeout(url, options) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), config.timeout);
+    try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timeoutId);
+        return response;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        throw error;
+    }
+}
+
+function showErrorAlert(message) {
+    elements.errorMessage.textContent = message;
+   elements.errorOverlay.classList.add('show');
+}
+
+function showSuccessAlert(message) {
+    elements.successMessage.textContent = message;
+    elements.successOverlay.classList.add('show');
+}
+
+function normalizeDocType(type) {
+    if (!type) return 'UNKNOWN';
+    const typeMap = {
+        'excel': 'XLS',
+        'word': 'Word',
+        'pdf': 'PDF',
+        'notepad': 'PDF'
     };
+    return typeMap[type.toLowerCase()] || type.toUpperCase();
+}
 
-    const storageData = { used: 120, total: 1000 };
-    const newBusinessDocTypeData = { Excel: 5, Word: 2, NotePad: 4 };
-    const backupData = { completed: 8, pending: 2 };
-    const costData = { compute: 200, storage: 150, network: 50 };
-    let newBusinessDocs = [];
-    let hotInstance = null;
-    let quillInstance = null;
-    let pdfTextEditor = null;
-    let viewHotInstance = null;
-    let viewTextEditor = null;
-    let docTypeChartInstance = null;
-
-    // Debounce utility to limit filter event frequency
-    function debounce(func, wait) {
-        let timeout;
-        return function (...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
+function formatDate(dateStr) {
+    if (!dateStr) return 'Unknown';
+    try {
+        return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch {
+        return 'Invalid Date';
     }
+}
 
-    async function deleteSelectedNewBusinessDocs() {
-        const checkboxes = document.querySelectorAll('.doc-checkbox:checked');
-        const selectedIds = Array.from(checkboxes).map(cb => cb.dataset.id);
-        if (selectedIds.length === 0) {
-            showErrorAlert('No New Business Docs selected for deletion.');
-            return;
-        }
-        if (!config.userId) {
-            showErrorAlert('User not authenticated.');
-            return;
-        }
-
-        try {
-            const deletePromises = selectedIds.map(async (id) => {
-                const response = await fetchWithTimeout(`${config.apiBase}/documents/delete/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'userId': config.userId }
-                });
-                if (!response.ok) {
-                    const text = await response.text();
-                    console.error(`API error deleting New Business Doc ${id}:`, text);
-                    throw new Error(`Failed to delete New Business Doc ID ${id}: ${response.status} ${text}`);
-                }
-                return id;
-            });
-
-            const deletedIds = await Promise.all(deletePromises);
-            console.log('Deleted New Business Docs:', deletedIds);
-
-            newBusinessDocs = newBusinessDocs.filter(doc => !deletedIds.includes(String(doc.id)));
-            config.currentPage = 1;
-            populateNewBusinessDocs();
-            renderPaginationControls(filterNewBusinessDocs());
-            updateDocTypeChart();
-            toggleDeleteButton();
-            showSuccessAlert('New Business Docs deleted successfully!');
-        } catch (error) {
-            console.error('Error deleting New Business Docs:', error);
-            showErrorAlert(`Failed to delete New Business Docs: ${error.message}`);
-        }
+// Authentication
+function initializeUserId() {
+    config.userId = sessionStorage.getItem('userId');
+    if (!config.userId) {
+        showErrorAlert('Please log in to continue.');
+        setTimeout(() => window.location.href = '/login', 2000);
+        return false;
     }
+    return true;
+}
 
-    function normalizeDocType(type) {
-        console.log('Normalizing type:', type);
-        if (!type) return 'UNKNOWN';
-        const typeMap = {
-            'excel': 'XLS',
-            'word': 'Word',
-            'pdf': 'PDF',
-            'notepad': 'PDF'
-        };
-        return typeMap[type.toLowerCase()] || type.toUpperCase();
+function logout() {
+    sessionStorage.removeItem('userId');
+    config.userId = null;
+    showSuccessAlert('Logged out successfully!');
+    setTimeout(() => window.location.href = '/login', 1000);
+}
+
+// Chart Initialization
+function initializeCharts() {
+    new Chart(document.getElementById('storageChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Used (GB)', 'Free (GB)'],
+            datasets: [{ data: [storageData.used, storageData.total - storageData.used], backgroundColor: ['#007bff', '#e9ecef'] }]
+        },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    docTypeChartInstance = new Chart(document.getElementById('docTypeChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(newBusinessDocTypeData),
+            datasets: [{ label: 'New Business Docs', data: Object.values(newBusinessDocTypeData), backgroundColor: '#007bff' }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('backupChart').getContext('2d'), {
+        type: 'pie',
+        data: {
+            labels: ['Completed', 'Pending'],
+            datasets: [{ data: [backupData.completed, backupData.pending], backgroundColor: ['#28a745', '#dc3545'] }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    new Chart(document.getElementById('costChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Compute', 'Storage', 'Network'],
+            datasets: [{ label: 'Cost ($)', data: [costData.compute, costData.storage, costData.network], backgroundColor: ['#007bff', '#28a745', '#ffc107'] }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+}
+
+function updateDocTypeChart() {
+    const types = newBusinessDocs.reduce((acc, doc) => {
+        acc[doc.type] = (acc[doc.type] || 0) + 1;
+        return acc;
+    }, {});
+    if (docTypeChartInstance) {
+        docTypeChartInstance.destroy();
     }
+    docTypeChartInstance = new Chart(document.getElementById('docTypeChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(types),
+            datasets: [{ label: 'New Business Docs', data: Object.values(types), backgroundColor: '#007bff' }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+}
 
-    function formatDate(dateStr) {
-        if (!dateStr) return 'Unknown';
-        try {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        } catch (e) {
-            console.warn('Invalid date format:', dateStr);
-            return 'Invalid Date';
-        }
-    }
-
-    async function fetchWithTimeout(url, options) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), config.timeout);
-        try {
-            console.log('Fetching:', url, options);
-            const response = await fetch(url, { ...options, signal: controller.signal });
-            clearTimeout(timeoutId);
-            console.log('Response:', response.status, response.statusText);
-            return response;
-        } catch (error) {
-            clearTimeout(timeoutId);
-            console.error('Fetch error:', error);
-            throw error;
-        }
-    }
-
-    function showErrorAlert(message) {
-        console.error('Error:', message);
-        elements.errorMessage.textContent = message;
-        elements.errorOverlay.classList.add('show');
-    }
-
-    function showSuccessAlert(message) {
-        console.log('Success:', message);
-        elements.successMessage.textContent = message;
-        elements.successOverlay.classList.add('show');
-    }
-
-    function toggleDeleteButton() {
-        const checkboxes = document.querySelectorAll('.doc-checkbox:checked');
-        elements.deleteSelectedBtn.style.display = checkboxes.length > 0 ? 'inline-block' : 'none';
-    }
-
-    function logout() {
-        sessionStorage.removeItem('userId');
-        showSuccessAlert('Logged out successfully!');
-        setTimeout(() => {
-            window.location.href = '/login';
-        }, 1000);
-    }
-
-    function initializeCharts() {
-        const storageCtx = document.getElementById('storageChart').getContext('2d');
-        new Chart(storageCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Used (GB)', 'Free (GB)'],
-                datasets: [{ data: [storageData.used, storageData.total - storageData.used], backgroundColor: ['#007bff', '#e9ecef'] }]
-            },
-            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+// Document Management
+async function fetchNewBusinessDocs() {
+    if (!config.userId) return;
+    try {
+        const response = await fetchWithTimeout(`${config.apiBase}/documents`, {
+            headers: { 'userId': config.userId }
         });
-
-        const docTypeCtx = document.getElementById('docTypeChart').getContext('2d');
-        docTypeChartInstance = new Chart(docTypeCtx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(newBusinessDocTypeData),
-                datasets: [{ label: 'New Business Docs', data: Object.values(newBusinessDocTypeData), backgroundColor: '#007bff' }]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-
-        const backupCtx = document.getElementById('backupChart').getContext('2d');
-        new Chart(backupCtx, {
-            type: 'pie',
-            data: {
-                labels: ['Completed', 'Pending'],
-                datasets: [{ data: [backupData.completed, backupData.pending], backgroundColor: ['#28a745', '#dc3545'] }]
-            },
-            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-        });
-
-        const costCtx = document.getElementById('costChart').getContext('2d');
-        new Chart(costCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Compute', 'Storage', 'Network'],
-                datasets: [{ label: 'Cost ($)', data: [costData.compute, costData.storage, costData.network], backgroundColor: ['#007bff', '#28a745', '#ffc107'] }]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-    }
-
-    function updateDocTypeChart() {
-        const types = newBusinessDocs.reduce((acc, doc) => {
-            acc[doc.type] = (acc[doc.type] || 0) + 1;
-            return acc;
-        }, {});
-        const docTypeCtx = document.getElementById('docTypeChart').getContext('2d');
-        if (docTypeChartInstance) {
-            docTypeChartInstance.destroy();
-            docTypeChartInstance = null;
-        }
-        docTypeChartInstance = new Chart(docTypeCtx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(types),
-                datasets: [{ label: 'New Business Docs', data: Object.values(types), backgroundColor: '#007bff' }]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-        console.log('Updated docTypeChart:', types);
-    }
-
-    function filterNewBusinessDocs() {
-        const searchTerm = elements.docSearch.value.toLowerCase();
-        const dateFilter = elements.dateFilter.value;
-        const dateStart = elements.dateStart.value;
-        const dateEnd = elements.dateEnd.value;
-
-        console.log('Filter values:', { searchTerm, dateFilter, dateStart, dateEnd });
-
-        return newBusinessDocs.filter(doc => {
-            // Safely handle undefined or null doc.name
-            const matchesSearch = doc.name ? doc.name.toLowerCase().includes(searchTerm) : false;
-            let matchesDate = true;
-            if (dateFilter && doc.createdDate) { // Check if createdDate exists
-                const docDate = new Date(doc.createdDate);
-                const now = new Date();
-                if (dateFilter === '7days') {
-                    const sevenDaysAgo = new Date(now.setDate(now.getDate() - 7));
-                    matchesDate = docDate >= sevenDaysAgo;
-                } else if (dateFilter === '30days') {
-                    const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
-                    matchesDate = docDate >= thirtyDaysAgo;
-                } else if (dateFilter === 'custom' && dateStart && dateEnd) {
-                    const start = new Date(dateStart);
-                    const end = new Date(dateEnd);
-                    matchesDate = docDate >= start && docDate <= end;
-                }
-            }
-            console.log('Doc:', doc, 'Matches:', { matchesSearch, matchesDate });
-            return matchesSearch && matchesDate;
-        });
-    }
-
-    async function fetchNewBusinessDocs() {
-        if (!config.userId) {
-            showErrorAlert('User not authenticated.');
-            return;
-        }
-        try {
-            const response = await fetchWithTimeout(`${config.apiBase}/documents`, {
-                headers: { 'userId': config.userId }
-            });
-            if (!response.ok) {
-                const text = await response.text();
-                console.error('API error response:', text);
-                throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
-            }
-            const data = await response.json();
-            console.log('Raw API response:', data);
-            // Handle nested data structure
-            const docs = Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : [];
-            newBusinessDocs = docs.map(doc => ({
-                id: doc.id,
-                name: doc.name || 'Untitled',
-                type: normalizeDocType(doc.type),
-                createdDate: doc.createdDate || new Date().toISOString(),
-                size: doc.size || '0.00 MB',
-                content: doc.content
-            })).filter(doc => doc.id && doc.name);
-            console.log('Processed New Business Docs:', newBusinessDocs);
-            if (newBusinessDocs.length === 0) {
-                console.warn('No valid New Business Docs found');
-            }
-            config.currentPage = 1;
-            populateNewBusinessDocs();
-            renderPaginationControls(filterNewBusinessDocs());
-            try {
-                updateDocTypeChart();
-            } catch (chartError) {
-                console.error('Error updating chart:', chartError);
-                showErrorAlert('Failed to update New Business Docs type chart.');
-            }
-        } catch (error) {
-            console.error('Error fetching New Business Docs:', error);
-            showErrorAlert(`Failed to fetch New Business Docs: ${error.message}`);
-            newBusinessDocs = [];
-            populateNewBusinessDocs();
-            renderPaginationControls(filterNewBusinessDocs());
-        }
-    }
-
-    function populateNewBusinessDocs() {
-        console.log('Populating New Business Docs:', newBusinessDocs);
-        const filteredDocs = filterNewBusinessDocs();
-        console.log('Filtered Docs:', filteredDocs);
-        elements.newBusinessDocsList.innerHTML = '';
-        if (!Array.isArray(filteredDocs) || filteredDocs.length === 0) {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        newBusinessDocs = (Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : []).map(doc => ({
+            id: doc.id,
+            name: doc.name || 'Untitled',
+            type: normalizeDocType(doc.type),
+            createdDate: doc.createdDate || new Date().toISOString(),
+            size: doc.size || '0.00 MB',
+            content: doc.content
+        })).filter(doc => doc.id && doc.name);
+        if (newBusinessDocs.length === 0) {
             elements.newBusinessDocsList.innerHTML = '<tr><td colspan="7">No New Business Docs found.</td></tr>';
-            return;
         }
-        const start = (config.currentPage - 1) * config.itemsPerPage;
-        const end = start + config.itemsPerPage;
-        const paginatedDocs = filteredDocs.slice(start, end);
-        paginatedDocs.forEach(doc => {
-            // Validate doc before rendering
-            if (!doc.id || !doc.name) {
-                console.warn('Skipping invalid document:', doc);
-                return;
-            }
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><input type="checkbox" class="doc-checkbox" data-id="${doc.id}"></td>
-                <td>${doc.name || 'Untitled'}</td>
-                <td>${doc.type || 'Unknown'}</td>
-                <td>${doc.size || '0.00 MB'}</td>
-                <td>${formatDate(doc.createdDate)}</td>
-                <td><button class="modern-button primary view-btn" data-id="${doc.id}">View</button></td>
-                <td><button class="modern-button pdf pdf-btn" data-id="${doc.id}">Generate PDF</button></td>
-            `;
-            elements.newBusinessDocsList.appendChild(row);
-        });
-        bindViewButtons();
-        bindPdfButtons();
-        bindCheckboxEvents();
-        renderPaginationControls(filteredDocs);
-    }
-
-    function renderPaginationControls(docs = []) {
-        elements.paginationControls.innerHTML = '';
-        if (docs.length <= config.itemsPerPage) {
-            return;
-        }
-        const totalPages = Math.ceil(docs.length / config.itemsPerPage);
-        if (config.currentPage > totalPages) {
-            config.currentPage = totalPages || 1;
-        }
-        const paginationDiv = document.createElement('div');
-        paginationDiv.className = 'pagination-controls';
-
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'pagination-btn';
-        prevBtn.textContent = 'Previous';
-        prevBtn.disabled = config.currentPage === 1;
-        if (prevBtn.disabled) prevBtn.classList.add('disabled');
-        prevBtn.addEventListener('click', () => {
-            if (config.currentPage > 1) {
-                config.currentPage--;
-                populateNewBusinessDocs();
-                renderPaginationControls(filterNewBusinessDocs());
-            }
-        });
-
-        const pageNumbers = document.createElement('div');
-        for (let i = 1; i <= totalPages; i++) {
-            const pageBtn = document.createElement('button');
-            pageBtn.className = 'pagination-btn';
-            if (i === config.currentPage) pageBtn.classList.add('active-page');
-            pageBtn.textContent = i;
-            pageBtn.addEventListener('click', () => {
-                config.currentPage = i;
-                populateNewBusinessDocs();
-                renderPaginationControls(filterNewBusinessDocs());
-            });
-            pageNumbers.appendChild(pageBtn);
-        }
-
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'pagination-btn';
-        nextBtn.textContent = 'Next';
-        nextBtn.disabled = config.currentPage === totalPages;
-        if (nextBtn.disabled) nextBtn.classList.add('disabled');
-        nextBtn.addEventListener('click', () => {
-            if (config.currentPage < totalPages) {
-                config.currentPage++;
-                populateNewBusinessDocs();
-                renderPaginationControls(filterNewBusinessDocs());
-            }
-        });
-
-        const pageInfo = document.createElement('span');
-        pageInfo.className = 'pagination-info';
-        pageInfo.textContent = `Page ${config.currentPage} of ${totalPages || 1}`;
-
-        paginationDiv.appendChild(prevBtn);
-        paginationDiv.appendChild(pageNumbers);
-        paginationDiv.appendChild(nextBtn);
-        paginationDiv.appendChild(pageInfo);
-        elements.paginationControls.appendChild(paginationDiv);
-    }
-
-    function bindViewButtons() {
-        document.querySelectorAll('.view-btn').forEach(btn => {
-            btn.removeEventListener('click', viewNewBusinessDoc);
-            btn.addEventListener('click', () => viewNewBusinessDoc(btn.dataset.id));
-        });
-    }
-
-    function bindPdfButtons() {
-        document.querySelectorAll('.pdf-btn').forEach(btn => {
-            btn.removeEventListener('click', generatePdf);
-            btn.addEventListener('click', () => generatePdf(btn.dataset.id));
-        });
-    }
-
-    function bindCheckboxEvents() {
-        document.querySelectorAll('.doc-checkbox').forEach(checkbox => {
-            checkbox.removeEventListener('change', toggleDeleteButton);
-            checkbox.addEventListener('change', toggleDeleteButton);
-        });
-    }
-
-    async function viewNewBusinessDoc(docId) {
-        if (!config.userId) {
-            showErrorAlert('User not authenticated.');
-            return;
-        }
-        try {
-            const response = await fetchWithTimeout(`${config.apiBase}/getDocument?id=${docId}`, {
-                headers: { 'userId': config.userId }
-            });
-            if (!response.ok) {
-                const text = await response.text();
-                console.error('API error response:', text);
-                throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
-            }
-            const responseData = await response.json();
-            console.log('API response:', responseData);
-            // Handle nested data structure
-            const doc = Array.isArray(responseData.data) && responseData.data.length > 0 ? responseData.data[0] : responseData.data || responseData;
-            if (!doc || !doc.id) {
-                throw new Error('No New Business Doc data returned');
-            }
-            doc.type = normalizeDocType(doc.type);
-            doc.createdDate = doc.createdDate || new Date().toISOString();
-            doc.name = doc.name || 'Untitled';
-            showViewNewBusinessDocModal(doc);
-        } catch (error) {
-            console.error('Error fetching New Business Doc:', error);
-            showErrorAlert(`Failed to fetch New Business Doc: ${error.message}`);
-        }
-    }
-
-    function showViewNewBusinessDocModal(doc) {
-        console.log('Showing New Business Doc:', doc);
-        elements.viewDocName.textContent = `New Business Doc: ${doc.name} (${doc.type})`;
-        elements.viewEditorContainer.innerHTML = '';
-        if (viewHotInstance) {
-            try {
-                viewHotInstance.destroy();
-            } catch (e) {
-                console.warn('Error destroying viewHotInstance:', e);
-            }
-            viewHotInstance = null;
-        }
-        if (viewTextEditor) {
-            elements.viewEditorContainer.removeChild(viewTextEditor);
-            viewTextEditor = null;
-        }
-        if (doc.type === 'XLS') {
-            const hotContainer = document.createElement('div');
-            hotContainer.className = 'handsontable-container';
-            elements.viewEditorContainer.appendChild(hotContainer);
-            let data = Handsontable.helper.createSpreadsheetData(10, 10);
-            if (doc.content) {
-                try {
-                    if (Array.isArray(doc.content) && doc.content.every(row => Array.isArray(row))) {
-                        data = doc.content;
-                    } else {
-                        data = JSON.parse(doc.content);
-                        if (!Array.isArray(data) || !data.every(row => Array.isArray(row))) {
-                            throw new Error('Invalid XLS content format');
-                        }
-                    }
-                } catch (e) {
-                    console.error('Error processing XLS content:', e, doc.content);
-                    showErrorAlert('Invalid Excel content format. Using default data.');
-                }
-            } else {
-                console.warn('XLS content is null, using default data');
-                showErrorAlert('No Excel content available. Using default data.');
-            }
-            console.log('XLS data for Handsontable:', data);
-            viewHotInstance = new Handsontable(hotContainer, {
-                data,
-                rowHeaders: true,
-                colHeaders: true,
-                contextMenu: true,
-                width: '100%',
-                height: '100%',
-                stretchH: 'all',
-                readOnly: true,
-                licenseKey: 'non-commercial-and-evaluation'
-            });
-        } else {
-            viewTextEditor = document.createElement('textarea');
-            viewTextEditor.value = doc.content || 'No content available.';
-            viewTextEditor.readOnly = true;
-            viewTextEditor.style.width = '100%';
-            viewTextEditor.style.height = '100%';
-            viewTextEditor.style.padding = '12px';
-            viewTextEditor.style.boxSizing = 'border-box';
-            elements.viewEditorContainer.appendChild(viewTextEditor);
-            console.log('Text content:', doc.content);
-        }
-        elements.viewOverlay.classList.add('show');
-    }
-
-    function hideViewNewBusinessDocModal() {
-        elements.viewOverlay.classList.remove('show');
-        if (viewHotInstance) {
-            try {
-                viewHotInstance.destroy();
-            } catch (e) {
-                console.warn('Error destroying viewHotInstance:', e);
-            }
-            viewHotInstance = null;
-        }
-        if (viewTextEditor) {
-            elements.viewEditorContainer.removeChild(viewTextEditor);
-            viewTextEditor = null;
-        }
-    }
-
-    async function createNewBusinessDoc(event) {
-        event.preventDefault();
-        if (!config.userId) {
-            showErrorAlert('User not authenticated.');
-            return;
-        }
-        const name = elements.docName.value.trim();
-        const type = elements.docType.value;
-        let content = null;
-
-        if (!name) {
-            showErrorAlert('Please enter a New Business Doc name.');
-            return;
-        }
-
-        if (type === 'XLS') {
-            if (!hotInstance) {
-                showErrorAlert('Excel editor not initialized.');
-                return;
-            }
-            content = hotInstance.getData();
-            if (content.length === 0 || content.every(row => row.every(cell => cell === null || cell === ''))) {
-                showErrorAlert('Please enter some data in the Excel sheet.');
-                return;
-            }
-        } else if (type === 'Word') {
-            if (!quillInstance) {
-                showErrorAlert('Word editor not initialized.');
-                return;
-            }
-            content = quillInstance.root.innerHTML.trim();
-            if (!content || content === '<p><br></p>') {
-                showErrorAlert('Please enter Word content.');
-                return;
-            }
-        } else if (type === 'PDF') {
-            if (!pdfTextEditor) {
-                showErrorAlert('NotePad editor not initialized.');
-                return;
-            }
-            content = pdfTextEditor.value.trim();
-            if (!content) {
-                showErrorAlert('Please enter NotePad content.');
-                return;
-            }
-        } else {
-            showErrorAlert('Unsupported New Business Doc type selected.');
-            return;
-        }
-
-        try {
-            const response = await fetchWithTimeout(`${config.apiBase}/createDocument`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'userId': config.userId
-                },
-                body: JSON.stringify({ name, type, userId: config.userId, content })
-            });
-            if (!response.ok) {
-                const text = await response.text();
-                console.error('API error response:', text);
-                throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
-            }
-            const responseData = await response.json();
-            console.log('Created New Business Doc:', responseData);
-            if (!Array.isArray(newBusinessDocs)) {
-                newBusinessDocs = [];
-            }
-            // Normalize response data
-            const newDoc = responseData.data || responseData;
-            const normalizedDoc = {
-                id: newDoc.id || Date.now(), // Fallback ID
-                name: newDoc.name || name,
-                type: normalizeDocType(newDoc.type || type),
-                createdDate: newDoc.createdDate || new Date().toISOString(),
-                size: newDoc.size || '0.00 MB',
-                content: newDoc.content || content
-            };
-            newBusinessDocs.push(normalizedDoc);
-            config.currentPage = 1;
-            hideCreateDocumentModal();
-            showSuccessAlert('New Business Doc created successfully!');
-            // Attempt to populate, but don't let errors block success
-            try {
-                populateNewBusinessDocs();
-                renderPaginationControls(filterNewBusinessDocs());
-            } catch (e) {
-                console.error('Error updating document list:', e);
-                showErrorAlert('Document created, but failed to update list: ' + e.message);
-            }
-        } catch (error) {
-            console.error('Error creating New Business Doc:', error);
-            showErrorAlert(`Failed to create New Business Doc: ${error.message}`);
-        }
-    }
-
-    function showCreateDocumentModal() {
-        const selectedDocType = elements.docType.value;
-        console.log('Showing create New Business Doc modal, type:', selectedDocType);
-        elements.createOverlay.classList.add('show');
-        elements.editorContainer.innerHTML = '';
-        elements.editorToolbar.innerHTML = '';
-
-        if (hotInstance) {
-            try {
-                hotInstance.destroy();
-            } catch (e) {
-                console.warn('Error destroying hotInstance:', e);
-            }
-            hotInstance = null;
-        }
-        if (quillInstance) {
-            quillInstance = null;
-        }
-        if (pdfTextEditor && pdfTextEditor.parentNode && pdfTextEditor.parentNode.parentNode === elements.editorContainer) {
-            elements.editorContainer.removeChild(pdfTextEditor.parentNode);
-            pdfTextEditor = null;
-        }
-
-        if (selectedDocType === 'XLS') {
-            elements.editorToolbar.innerHTML = `
-                <button onclick="if(hotInstance) hotInstance.alter('insert_row_above')">Insert Row Above</button>
-                <button onclick="if(hotInstance) hotInstance.alter('insert_row_below')">Insert Row Below</button>
-                <button onclick="if(hotInstance) hotInstance.alter('insert_col_start')">Insert Col Left</button>
-                <button onclick="if(hotInstance) hotInstance.alter('insert_col_end')">Insert Col Right</button>
-                <button onclick="applyHotBold()">Bold</button>
-            `;
-            const hotContainer = document.createElement('div');
-            hotContainer.className = 'handsontable-container';
-            elements.editorContainer.appendChild(hotContainer);
-            try {
-                hotInstance = new Handsontable(hotContainer, {
-                    data: Handsontable.helper.createSpreadsheetData(10, 10),
-                    rowHeaders: true,
-                    colHeaders: true,
-                    contextMenu: true,
-                    width: '100%',
-                    height: '100%',
-                    stretchH: 'all',
-                    licenseKey: 'non-commercial-and-evaluation',
-                    autoWrapRow: true,
-                    manualRowResize: true,
-                    manualColumnResize: true
-                });
-                console.log('Handsontable initialized for create modal');
-            } catch (e) {
-                console.error('Error initializing Handsontable:', e);
-                showErrorAlert('Failed to initialize Excel editor.');
-            }
-        } else if (selectedDocType === 'Word') {
-            const quillContainer = document.createElement('div');
-            quillContainer.id = 'quillEditor';
-            elements.editorContainer.appendChild(quillContainer);
-            try {
-                quillInstance = new Quill('#quillEditor', {
-                    theme: 'snow',
-                    modules: {
-                        toolbar: [
-                            ['bold', 'italic', 'underline'],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            [{ 'header': [1, 2, 3, false] }],
-                            ['link', 'image'],
-                            ['clean']
-                        ],
-                        clipboard: { matchVisual: false }
-                    },
-                    placeholder: "Type your Word content here..."
-                });
-                const quillEditorElement = document.getElementById('quillEditor');
-                if (quillEditorElement) quillEditorElement.style.height = '100%';
-                console.log('Quill initialized for create modal');
-            } catch (e) {
-                console.error('Error initializing Quill:', e);
-                showErrorAlert('Failed to initialize Word editor.');
-            }
-        } else if (selectedDocType === 'PDF') {
-            elements.editorToolbar.innerHTML = `
-                <button onclick="if(pdfTextEditor) pdfTextEditor.value = ''">Clear Content</button>
-            `;
-            const textContainer = document.createElement('div');
-            textContainer.className = 'text-editor-container';
-            pdfTextEditor = document.createElement('textarea');
-            pdfTextEditor.id = 'pdfTextEditor';
-            textContainer.appendChild(pdfTextEditor);
-            elements.editorContainer.appendChild(textContainer);
-            console.log('Basic textarea initialized for NotePad content');
-        }
-
-        elements.editorContainer.style.height = `calc(100% - ${elements.editorToolbar.offsetHeight}px - 70px)`;
-        if (quillInstance && selectedDocType === 'Word') {
-            const quillEditorElement = document.getElementById('quillEditor');
-            if (quillEditorElement) quillEditorElement.style.height = '100%';
-        }
-    }
-
-    function hideCreateDocumentModal() {
-        elements.createOverlay.classList.remove('show');
-        elements.docName.value = '';
-        if (hotInstance) {
-            try {
-                hotInstance.destroy();
-            } catch (e) {
-                console.warn('Error destroying hotInstance:', e);
-            }
-            hotInstance = null;
-        }
-        if (quillInstance) {
-            quillInstance = null;
-        }
-        if (pdfTextEditor && pdfTextEditor.parentNode && pdfTextEditor.parentNode.parentNode === elements.editorContainer) {
-            elements.editorContainer.removeChild(pdfTextEditor.parentNode);
-            pdfTextEditor = null;
-        }
-        elements.editorContainer.innerHTML = '';
-        elements.editorToolbar.innerHTML = '';
-    }
-
-    window.applyHotBold = function() {
-        if (!hotInstance) return;
-        const selected = hotInstance.getSelected();
-        if (!selected || selected.length === 0) return;
-
-        selected.forEach(range => {
-            for (let r = range[0]; r <= range[2]; r++) {
-                for (let c = range[1]; c <= range[3]; c++) {
-                    const cellMeta = hotInstance.getCellMeta(r, c);
-                    let currentClassName = cellMeta.className || '';
-                    if (currentClassName.includes('htBold')) {
-                        currentClassName = currentClassName.replace('htBold', '').trim();
-                    } else {
-                        currentClassName = (currentClassName + ' htBold').trim();
-                    }
-                    hotInstance.setCellMeta(r, c, 'className', currentClassName);
-                }
-            }
-        });
-        hotInstance.render();
-    }
-
-    function showPdfSecurityPopup(docId) {
-        console.log('Showing PDF security popup for docId:', docId);
-        elements.pdfSecurityOverlay.classList.add('show');
-        elements.pdfPassword.value = '';
-        elements.passwordContainer.style.display = 'none';
-
-        const secureBtn = document.getElementById('pdfSecureBtn');
-        const continueBtn = document.getElementById('pdfContinueBtn');
-        const cancelBtn = document.getElementById('pdfCancelBtn');
-
-        secureBtn.onclick = () => {
-            elements.passwordContainer.style.display = 'block';
-            secureBtn.textContent = 'Generate Secure PDF';
-            secureBtn.onclick = () => {
-                const password = elements.pdfPassword.value.trim();
-                if (!password) {
-                    showErrorAlert('Please enter a password.');
-                    return;
-                }
-                elements.pdfSecurityOverlay.classList.remove('show');
-                generatePdfWithOptions(docId, { userPassword: password });
-            };
-        };
-
-        continueBtn.onclick = () => {
-            elements.pdfSecurityOverlay.classList.remove('show');
-            generatePdfWithOptions(docId, {});
-        };
-
-        cancelBtn.onclick = () => {
-            elements.pdfSecurityOverlay.classList.remove('show');
-        };
-    }
-
-    async function generatePdf(docId) {
-        showPdfSecurityPopup(docId);
-    }
-
-    async function generatePdfWithOptions(docId, options) {
-        try {
-            const response = await fetchWithTimeout(`${config.apiBase}/getDocument?id=${docId}`, {
-                headers: { 'userId': config.userId }
-            });
-            if (!response.ok) {
-                const text = await response.text();
-                console.error('API error response:', text);
-                throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
-            }
-            const responseData = await response.json();
-            console.log('Fetched New Business Doc for PDF:', responseData);
-            const doc = Array.isArray(responseData.data) && responseData.data.length > 0 ? responseData.data[0] : responseData.data || responseData;
-            if (!doc || !doc.id) {
-                throw new Error('No New Business Doc data returned');
-            }
-            doc.type = normalizeDocType(doc.type);
-            doc.createdDate = doc.createdDate || new Date().toISOString();
-            doc.name = doc.name || 'Untitled';
-
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({
-                encryption: options.userPassword ? {
-                    userPassword: options.userPassword,
-                    ownerPassword: options.userPassword,
-                    userPermissions: ['print', 'modify', 'copy', 'annot-forms']
-                } : undefined
-            });
-
-            const pageHeight = pdf.internal.pageSize.height;
-            const pageWidth = pdf.internal.pageSize.width;
-            const margin = 10;
-            const headerHeight = 20;
-            const footerHeight = 15;
-            const currentDate = new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-
-            const addHeaderFooter = () => {
-                pdf.setFillColor(0, 123, 255);
-                pdf.rect(0, 0, pageWidth, headerHeight, 'F');
-                pdf.setFont('Helvetica', 'bold');
-                pdf.setFontSize(12);
-                pdf.setTextColor(255, 255, 255);
-                pdf.text('Secure access limited', margin, headerHeight - 8);
-                pdf.text(currentDate, pageWidth - margin, headerHeight - 8, { align: 'right' });
-                pdf.setDrawColor(255, 255, 255);
-                pdf.setLineWidth(0.5);
-                pdf.line(margin, headerHeight, pageWidth - margin, headerHeight);
-
-                pdf.setFillColor(108, 117, 125);
-                pdf.rect(0, pageHeight - footerHeight, pageWidth, footerHeight, 'F');
-                pdf.setFont('Helvetica', 'normal');
-                pdf.setFontSize(10);
-                pdf.setTextColor(255, 255, 255);
-                pdf.text('All rights reserved', pageWidth / 2, pageHeight - 5, { align: 'center' });
-                pdf.setDrawColor(255, 255, 255);
-                pdf.line(margin, pageHeight - footerHeight, pageWidth - margin, pageHeight - footerHeight);
-            };
-
-            pdf.setFontSize(16);
-            pdf.setTextColor(0, 0, 0);
-            pdf.text(`New Business Doc: ${doc.name} (${doc.type})`, margin, headerHeight + margin);
-            pdf.setFontSize(12);
-            pdf.text(`Created: ${formatDate(doc.createdDate)}`, margin, headerHeight + margin + 10);
-
-            let finalY = headerHeight + margin + 20;
-
-            if (doc.type === 'XLS' && doc.content) {
-                let data = [];
-                try {
-                    data = Array.isArray(doc.content) && doc.content.every(row => Array.isArray(row)) ? doc.content : JSON.parse(doc.content);
-                } catch (e) {
-                    console.error('Error parsing XLS content for PDF:', e);
-                    data.errorMessage='No data available'; // Fixed: in Data there is errorMessage filed need to set message .
-                }
-                pdf.autoTable({
-                    head: [data[0] || ['Column 1', 'Column 2']],
-                    body: data.slice(1) || [],
-                    startY: finalY,
-                    margin: { top: headerHeight + margin, bottom: footerHeight + margin },
-                    theme: 'striped',
-                    headStyles: { fillColor: [0, 123, 255], textColor: [255, 255, 255], fontSize: 11 },
-                    bodyStyles: { textColor: [0, 0, 0], fontSize: 10 },
-                    columnStyles: { 0: { cellWidth: 'auto' } },
-                    didDrawPage: (data) => {
-                        addHeaderFooter();
-                        finalY = data.cursor.y;
-                    }
-                });
-                finalY = pdf.lastAutoTable.finalY || finalY;
-            } else {
-                const content = doc.content || 'No content available.';
-                pdf.setFontSize(12);
-                pdf.text(content, margin, finalY, { maxWidth: pageWidth - 2 * margin });
-                finalY += pdf.splitTextToSize(content, pageWidth - 2 * margin).length * 7;
-                addHeaderFooter();
-            }
-
-            if (finalY + 30 > pageHeight - footerHeight - margin) {
-                pdf.addPage();
-                finalY = headerHeight + margin;
-                addHeaderFooter();
-            }
-            pdf.setFontSize(11);
-            pdf.setFont('Helvetica', 'italic');
-            pdf.setTextColor(0, 123, 255);
-            pdf.text('Contact Us', margin, finalY + 10);
-            pdf.setFont('Helvetica', 'normal');
-            pdf.setTextColor(0, 0, 0);
-            pdf.text('Email: support@cloudservices.com', margin + 5, finalY + 17);
-            pdf.text('Phone: +1-800-123-4567', margin + 5, finalY + 24);
-            pdf.text('Website: www.cloudservices.com', margin + 5, finalY + 31);
-            pdf.setDrawColor(0, 123, 255);
-            pdf.setLineWidth(0.3);
-            pdf.rect(margin, finalY + 5, pageWidth - 2 * margin, 32);
-
-            pdf.save(`${doc.name}.pdf`);
-            showSuccessAlert(options.userPassword ? 'Secure PDF generated successfully!' : 'PDF generated successfully!');
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            showErrorAlert(`Failed to generate PDF: ${error.message}`);
-        }
-    }
-
-    // Reset filter inputs to avoid unwanted filtering
-    function resetFilters() {
-        elements.docSearch.value = '';
-        elements.dateFilter.value = '';
-        elements.dateStart.value = '';
-        elements.dateEnd.value = '';
-        elements.customDateRange.style.display = 'none';
-    }
-
-    // Debounced filter update function
-    const updateFilters = debounce(() => {
         config.currentPage = 1;
         populateNewBusinessDocs();
         renderPaginationControls(filterNewBusinessDocs());
-    }, 300);
+        updateDocTypeChart();
+    } catch (error) {
+        showErrorAlert(`Failed to fetch New Business Docs: ${error.message}`);
+        newBusinessDocs = [];
+        populateNewBusinessDocs();
+        renderPaginationControls(filterNewBusinessDocs());
+    }
+}
 
-    elements.errorOverlay.querySelector('#errorOkBtn').addEventListener('click', () => {
-        elements.errorOverlay.classList.remove('show');
+function filterNewBusinessDocs() {
+    const searchTerm = elements.docSearch.value.toLowerCase();
+    const dateFilter = elements.dateFilter.value;
+    const dateStart = elements.dateStart.value;
+    const dateEnd = elements.dateEnd.value;
+
+    return newBusinessDocs.filter(doc => {
+        const matchesSearch = doc.name?.toLowerCase().includes(searchTerm) ?? false;
+        let matchesDate = true;
+        if (dateFilter && doc.createdDate) {
+            const docDate = new Date(doc.createdDate);
+            const now = new Date();
+            if (dateFilter === '7days') {
+                matchesDate = docDate >= new Date(now.setDate(now.getDate() - 7));
+            } else if (dateFilter === '30days') {
+                matchesDate = docDate >= new Date(now.setDate(now.getDate() - 30));
+            } else if (dateFilter === 'custom' && dateStart && dateEnd) {
+                matchesDate = docDate >= new Date(dateStart) && docDate <= new Date(dateEnd);
+            }
+        }
+        return matchesSearch && matchesDate;
+    });
+}
+
+function populateNewBusinessDocs() {
+    const filteredDocs = filterNewBusinessDocs();
+    elements.newBusinessDocsList.innerHTML = filteredDocs.length === 0 ? '<tr><td colspan="7">No New Business Docs found.</td></tr>' : '';
+    const start = (config.currentPage - 1) * config.itemsPerPage;
+    const end = start + config.itemsPerPage;
+    filteredDocs.slice(start, end).forEach(doc => {
+        if (!doc.id || !doc.name) return;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><input type="checkbox" class="doc-checkbox" data-id="${doc.id}"></td>
+            <td>${doc.name}</td>
+            <td>${doc.type}</td>
+            <td>${doc.size}</td>
+            <td>${formatDate(doc.createdDate)}</td>
+            <td><button class="modern-button primary view-btn" data-id="${doc.id}">View</button></td>
+            <td><button class="modern-button pdf pdf-btn" data-id="${doc.id}">Generate PDF</button></td>
+        `;
+        elements.newBusinessDocsList.appendChild(row);
+    });
+    bindViewButtons();
+    bindPdfButtons();
+    bindCheckboxEvents();
+    renderPaginationControls(filteredDocs);
+}
+
+function renderPaginationControls(docs) {
+    elements.paginationControls.innerHTML = '';
+    if (docs.length <= config.itemsPerPage) return;
+    const totalPages = Math.ceil(docs.length / config.itemsPerPage);
+    if (config.currentPage > totalPages) config.currentPage = totalPages || 1;
+
+    const paginationDiv = document.createElement('div');
+    paginationDiv.className = 'pagination-controls';
+
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'pagination-btn' + (config.currentPage === 1 ? ' disabled' : '');
+    prevBtn.textContent = 'Previous';
+    prevBtn.disabled = config.currentPage === 1;
+    prevBtn.addEventListener('click', () => {
+        if (config.currentPage > 1) {
+            config.currentPage--;
+            populateNewBusinessDocs();
+            renderPaginationControls(filterNewBusinessDocs());
+        }
     });
 
-    elements.successOverlay.querySelector('#successOkBtn').addEventListener('click', () => {
-        elements.successOverlay.classList.remove('show');
+    const pageNumbers = document.createElement('div');
+    for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = 'pagination-btn' + (i === config.currentPage ? ' active-page' : '');
+        pageBtn.textContent = i;
+        pageBtn.addEventListener('click', () => {
+            config.currentPage = i;
+            populateNewBusinessDocs();
+            renderPaginationControls(filterNewBusinessDocs());
+        });
+        pageNumbers.appendChild(pageBtn);
+    }
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'pagination-btn' + (config.currentPage === totalPages ? ' disabled' : '');
+    nextBtn.textContent = 'Next';
+    nextBtn.disabled = config.currentPage === totalPages;
+    nextBtn.addEventListener('click', () => {
+        if (config.currentPage < totalPages) {
+            config.currentPage++;
+            populateNewBusinessDocs();
+            renderPaginationControls(filterNewBusinessDocs());
+        }
     });
 
+    const pageInfo = document.createElement('span');
+    pageInfo.className = 'pagination-info';
+    pageInfo.textContent = `Page ${config.currentPage} of ${totalPages || 1}`;
+
+    paginationDiv.appendChild(prevBtn);
+    paginationDiv.appendChild(pageNumbers);
+    paginationDiv.appendChild(nextBtn);
+    paginationDiv.appendChild(pageInfo);
+    elements.paginationControls.appendChild(paginationDiv);
+}
+
+async function deleteSelectedNewBusinessDocs() {
+    const selectedIds = Array.from(document.querySelectorAll('.doc-checkbox:checked')).map(cb => cb.dataset.id);
+    if (!selectedIds.length) {
+        showErrorAlert('No New Business Docs selected for deletion.');
+        return;
+    }
+    try {
+        await Promise.all(selectedIds.map(id => 
+            fetchWithTimeout(`${config.apiBase}/documents/delete/${id}`, {
+                method: 'DELETE',
+                headers: { 'userId': config.userId }
+            }).then(response => {
+                if (!response.ok) throw new Error(`Failed to delete New Business Doc ID ${id}`);
+                return id;
+            })
+        ));
+        newBusinessDocs = newBusinessDocs.filter(doc => !selectedIds.includes(String(doc.id)));
+        config.currentPage = 1;
+        populateNewBusinessDocs();
+        renderPaginationControls(filterNewBusinessDocs());
+        updateDocTypeChart();
+        toggleDeleteButton();
+        showSuccessAlert('New Business Docs deleted successfully!');
+    } catch (error) {
+        showErrorAlert(`Failed to delete New Business Docs: ${error.message}`);
+    }
+}
+
+function showCreateDocumentModal() {
+    const selectedDocType = elements.docType.value;
+    elements.createOverlay.classList.add('show');
+    elements.editorContainer.innerHTML = '';
+    elements.editorToolbar.innerHTML = '';
+
+    if (hotInstance) {
+        hotInstance.destroy();
+        hotInstance = null;
+    }
+    if (quillInstance) {
+        quillInstance = null;
+    }
+    if (pdfTextEditor) {
+        elements.editorContainer.removeChild(pdfTextEditor.parentNode);
+        pdfTextEditor = null;
+    }
+
+    if (selectedDocType === 'XLS') {
+        elements.editorToolbar.innerHTML = `
+            <button type="button" onclick="hotInstance?.alter('insert_row_above')">Insert Row Above</button>
+            <button type="button" onclick="hotInstance?.alter('insert_row_below')">Insert Row Below</button>
+            <button type="button" onclick="hotInstance?.alter('insert_col_start')">Insert Col Left</button>
+            <button type="button" onclick="hotInstance?.alter('insert_col_end')">Insert Col Right</button>
+            <button type="button" onclick="applyHotBold()">Bold</button>
+        `;
+        const hotContainer = document.createElement('div');
+        hotContainer.className = 'handsontable-container';
+        elements.editorContainer.appendChild(hotContainer);
+        hotInstance = new Handsontable(hotContainer, {
+            data: Handsontable.helper.createSpreadsheetData(10, 10),
+            rowHeaders: true,
+            colHeaders: true,
+            contextMenu: true,
+            width: '100%',
+            height: '100%',
+            stretchH: 'all',
+            licenseKey: 'non-commercial-and-evaluation',
+            autoWrapRow: true,
+            manualRowResize: true,
+            manualColumnResize: true
+        });
+    } else if (selectedDocType === 'Word') {
+        const quillContainer = document.createElement('div');
+        quillContainer.id = 'quillEditor';
+        elements.editorContainer.appendChild(quillContainer);
+        quillInstance = new Quill('#quillEditor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['link', 'image'],
+                    ['clean']
+                ],
+                clipboard: { matchVisual: false }
+            },
+            placeholder: "Type your Word content here..."
+        });
+        document.getElementById('quillEditor').style.height = '100%';
+    } else if (selectedDocType === 'PDF') {
+        elements.editorToolbar.innerHTML = `
+            <button type="button" onclick="pdfTextEditor.value = ''">Clear Content</button>
+        `;
+        const textContainer = document.createElement('div');
+        textContainer.className = 'text-editor-container';
+        pdfTextEditor = document.createElement('textarea');
+        pdfTextEditor.id = 'pdfTextEditor';
+        textContainer.appendChild(pdfTextEditor);
+        elements.editorContainer.appendChild(textContainer);
+    }
+
+    elements.editorContainer.style.height = `calc(100% - ${elements.editorToolbar.offsetHeight}px - 70px)`;
+}
+
+function hideCreateDocumentModal() {
+    elements.createOverlay.classList.remove('show');
+    elements.docName.value = '';
+    if (hotInstance) {
+        hotInstance.destroy();
+        hotInstance = null;
+    }
+    if (quillInstance) {
+        quillInstance = null;
+    }
+    if (pdfTextEditor) {
+        elements.editorContainer.removeChild(pdfTextEditor.parentNode);
+        pdfTextEditor = null;
+    }
+    elements.editorContainer.innerHTML = '';
+    elements.editorToolbar.innerHTML = '';
+}
+
+async function createNewBusinessDoc(event) {
+    event.preventDefault();
+    if (!config.userId) {
+        showErrorAlert('User not authenticated.');
+        return;
+    }
+    const name = elements.docName.value.trim();
+    const type = elements.docType.value;
+    let content = null;
+
+    if (!name) {
+        showErrorAlert('Please enter a New Business Doc name.');
+        return;
+    }
+
+    if (type === 'XLS') {
+        if (!hotInstance) {
+            showErrorAlert('Excel editor not initialized.');
+            return;
+        }
+        content = hotInstance.getData();
+        if (content.every(row => row.every(cell => !cell))) {
+            showErrorAlert('Please enter some data in the Excel sheet.');
+            return;
+        }
+    } else if (type === 'Word') {
+        if (!quillInstance) {
+            showErrorAlert('Word editor not initialized.');
+            return;
+        }
+        content = quillInstance.root.innerHTML.trim();
+        if (!content || content === '<p><br></p>') {
+            showErrorAlert('Please enter Word content.');
+            return;
+        }
+    } else if (type === 'PDF') {
+        if (!pdfTextEditor) {
+            showErrorAlert('NotePad editor not initialized.');
+            return;
+        }
+        content = pdfTextEditor.value.trim();
+        if (!content) {
+            showErrorAlert('Please enter NotePad content.');
+            return;
+        }
+    }
+
+    try {
+        const response = await fetchWithTimeout(`${config.apiBase}/createDocument`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'userId': config.userId
+            },
+            body: JSON.stringify({ name, type, userId: config.userId, content })
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const newDoc = await response.json();
+        newBusinessDocs.push({
+            id: newDoc.data?.id || Date.now(),
+            name: newDoc.data?.name || name,
+            type: normalizeDocType(newDoc.data?.type || type),
+            createdDate: newDoc.data?.createdDate || new Date().toISOString(),
+            size: newDoc.data?.size || '0.00 MB',
+            content: newDoc.data?.content || content
+        });
+        config.currentPage = 1;
+        hideCreateDocumentModal();
+        populateNewBusinessDocs();
+        renderPaginationControls(filterNewBusinessDocs());
+        updateDocTypeChart();
+        showSuccessAlert('New Business Doc created successfully!');
+    } catch (error) {
+        showErrorAlert(`Failed to create New Business Doc: ${error.message}`);
+    }
+}
+
+async function viewNewBusinessDoc(docId) {
+    if (!config.userId) {
+        showErrorAlert('User not authenticated.');
+        return;
+    }
+    try {
+        const response = await fetchWithTimeout(`${config.apiBase}/getDocument?id=${docId}`, {
+            headers: { 'userId': config.userId }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const doc = Array.isArray(data.data) && data.data.length ? data.data[0] : data.data || data;
+        if (!doc.id) throw new Error('No New Business Doc data returned');
+        showViewNewBusinessDocModal({
+            id: doc.id,
+            name: doc.name || 'Untitled',
+            type: normalizeDocType(doc.type),
+            createdDate: doc.createdDate || new Date().toISOString(),
+            content: doc.content
+        });
+    } catch (error) {
+        showErrorAlert(`Failed to fetch New Business Doc: ${error.message}`);
+    }
+}
+
+function showViewNewBusinessDocModal(doc) {
+    elements.viewDocName.textContent = `New Business Doc: ${doc.name} (${doc.type})`;
+    elements.viewEditorContainer.innerHTML = '';
+    if (viewHotInstance) {
+        viewHotInstance.destroy();
+        viewHotInstance = null;
+    }
+    if (viewTextEditor) {
+        elements.viewEditorContainer.removeChild(viewTextEditor);
+        viewTextEditor = null;
+    }
+    if (doc.type === 'XLS') {
+        const hotContainer = document.createElement('div');
+        hotContainer.className = 'handsontable-container';
+        elements.viewEditorContainer.appendChild(hotContainer);
+        let data = Handsontable.helper.createSpreadsheetData(10, 10);
+        try {
+            data = Array.isArray(doc.content) ? doc.content : JSON.parse(doc.content);
+            if (!Array.isArray(data) || !data.every(row => Array.isArray(row))) throw new Error('Invalid XLS content format');
+        } catch {
+            showErrorAlert('Invalid Excel content format. Using default data.');
+        }
+        viewHotInstance = new Handsontable(hotContainer, {
+            data,
+            rowHeaders: true,
+            colHeaders: true,
+            contextMenu: true,
+            width: '100%',
+            height: '100%',
+            stretchH: 'all',
+            readOnly: true,
+            licenseKey: 'non-commercial-and-evaluation'
+        });
+    } else {
+        viewTextEditor = document.createElement('textarea');
+        viewTextEditor.value = doc.content || 'No content available.';
+        viewTextEditor.readOnly = true;
+        viewTextEditor.style.width = '100%';
+        viewTextEditor.style.height = '100%';
+        viewTextEditor.style.padding = '12px';
+        viewTextEditor.style.boxSizing = 'border-box';
+        elements.viewEditorContainer.appendChild(viewTextEditor);
+    }
+    elements.viewOverlay.classList.add('show');
+}
+
+function hideViewNewBusinessDocModal() {
+    elements.viewOverlay.classList.remove('show');
+    if (viewHotInstance) {
+        viewHotInstance.destroy();
+        viewHotInstance = null;
+    }
+    if (viewTextEditor) {
+        elements.viewEditorContainer.removeChild(viewTextEditor);
+        viewTextEditor = null;
+    }
+}
+
+// PDF Generation
+function showPdfSecurityPopup(docId) {
+    elements.pdfSecurityOverlay.classList.add('show');
+    elements.pdfPassword.value = '';
+    elements.passwordContainer.style.display = 'none';
+
+    const secureBtn = document.getElementById('pdfSecureBtn');
+    const continueBtn = document.getElementById('pdfContinueBtn');
+    const cancelBtn = document.getElementById('pdfCancelBtn');
+
+    secureBtn.onclick = () => {
+        elements.passwordContainer.style.display = 'block';
+        secureBtn.textContent = 'Generate Secure PDF';
+        secureBtn.onclick = () => {
+            const password = elements.pdfPassword.value.trim();
+            if (!password) {
+                showErrorAlert('Please enter a password.');
+                return;
+            }
+            elements.pdfSecurityOverlay.classList.remove('show');
+            generatePdfWithOptions(docId, { userPassword: password });
+        };
+    };
+
+    continueBtn.onclick = () => {
+        elements.pdfSecurityOverlay.classList.remove('show');
+        generatePdfWithOptions(docId, {});
+    };
+
+    cancelBtn.onclick = () => {
+        elements.pdfSecurityOverlay.classList.remove('show');
+    };
+}
+
+async function generatePdf(docId) {
+    showPdfSecurityPopup(docId);
+}
+
+async function generatePdfWithOptions(docId, options) {
+    try {
+        const response = await fetchWithTimeout(`${config.apiBase}/getDocument?id=${docId}`, {
+            headers: { 'userId': config.userId }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const doc = Array.isArray(data.data) && data.data.length ? data.data[0] : data.data || data;
+        if (!doc.id) throw new Error('No New Business Doc data returned');
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            encryption: options.userPassword ? {
+                userPassword: options.userPassword,
+                ownerPassword: options.userPassword,
+                userPermissions: ['print', 'modify', 'copy', 'annot-forms']
+            } : undefined
+        });
+
+        const pageHeight = pdf.internal.pageSize.height;
+        const pageWidth = pdf.internal.pageSize.width;
+        const margin = 10;
+        const headerHeight = 20;
+        const footerHeight = 15;
+        const currentDate = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        const addHeaderFooter = () => {
+            pdf.setFillColor(0, 123, 255);
+            pdf.rect(0, 0, pageWidth, headerHeight, 'F');
+            pdf.setFont('Helvetica', 'bold');
+            pdf.setFontSize(12);
+            pdf.setTextColor(255, 255, 255);
+            pdf.text('Secure access limited', margin, headerHeight - 8);
+            pdf.text(currentDate, pageWidth - margin, headerHeight - 8, { align: 'right' });
+            pdf.setDrawColor(255, 255, 255);
+            pdf.setLineWidth(0.5);
+            pdf.line(margin, headerHeight, pageWidth - margin, headerHeight);
+
+            pdf.setFillColor(108, 117, 125);
+            pdf.rect(0, pageHeight - footerHeight, pageWidth, footerHeight, 'F');
+            pdf.setFont('Helvetica', 'normal');
+            pdf.setFontSize(10);
+            pdf.setTextColor(255, 255, 255);
+            pdf.text('All rights reserved', pageWidth / 2, pageHeight - 5, { align: 'center' });
+            pdf.setDrawColor(255, 255, 255);
+            pdf.line(margin, pageHeight - footerHeight, pageWidth - margin, pageHeight - footerHeight);
+        };
+
+        pdf.setFontSize(16);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(`New Business Doc: ${doc.name} (${doc.type})`, margin, headerHeight + margin);
+        pdf.setFontSize(12);
+        pdf.text(`Created: ${formatDate(doc.createdDate)}`, margin, headerHeight + margin + 10);
+
+        let finalY = headerHeight + margin + 20;
+
+        if (doc.type === 'XLS' && doc.content) {
+            let data = [];
+            try {
+                data = Array.isArray(doc.content) && doc.content.every(row => Array.isArray(row)) ? doc.content : JSON.parse(doc.content);
+            } catch (e) {
+                console.error('Error parsing XLS content for PDF:', e);
+                data.errorMessage='No data available'; // Use default data for the table
+            }
+            pdf.autoTable({
+                head: [data[0] || ['Column 1', 'Column 2']],
+                body: data.slice(1) || [],
+                startY: finalY,
+                margin: { top: headerHeight + margin, bottom: footerHeight + margin },
+                theme: 'striped',
+                headStyles: { fillColor: [0, 123, 255], textColor: [255, 255, 255], fontSize: 11 },
+                bodyStyles: { textColor: [0, 0, 0], fontSize: 10 },
+                columnStyles: { 0: { cellWidth: 'auto' } },
+                didDrawPage: (data) => {
+                    addHeaderFooter();
+                    finalY = data.cursor.y;
+                }
+            });
+            finalY = pdf.lastAutoTable.finalY || finalY;
+        } else {
+            const content = doc.content || 'No content available.';
+            pdf.setFontSize(12);
+            pdf.text(content, margin, finalY, { maxWidth: pageWidth - 2 * margin });
+            finalY += pdf.splitTextToSize(content, pageWidth - 2 * margin).length * 7;
+            addHeaderFooter();
+        }
+
+        if (finalY + 30 > pageHeight - footerHeight - margin) {
+            pdf.addPage();
+            finalY = headerHeight + margin;
+            addHeaderFooter();
+        }
+        pdf.setFontSize(11);
+        pdf.setFont('Helvetica', 'italic');
+        pdf.setTextColor(0, 123, 255);
+        pdf.text('Contact Us', margin, finalY + 10);
+        pdf.setFont('Helvetica', 'normal');
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('Email: support@cloudservices.com', margin + 5, finalY + 17);
+        pdf.text('Phone: +1-800-123-4567', margin + 5, finalY + 24);
+        pdf.text('Website: www.cloudservices.com', margin + 5, finalY + 31);
+        pdf.setDrawColor(0, 123, 255);
+        pdf.setLineWidth(0.3);
+        pdf.rect(margin, finalY + 5, pageWidth - 2 * margin, 32);
+
+        pdf.save(`${doc.name}.pdf`);
+        showSuccessAlert(options.userPassword ? 'Secure PDF generated successfully!' : 'PDF generated successfully!');
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        showErrorAlert(`Failed to generate PDF: ${error.message}`);
+    }
+}
+
+// Event Handlers
+function toggleDeleteButton() {
+    elements.deleteSelectedBtn.style.display = document.querySelectorAll('.doc-checkbox:checked').length > 0 ? 'inline-block' : 'none';
+}
+
+function bindViewButtons() {
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.removeEventListener('click', viewNewBusinessDoc);
+        btn.addEventListener('click', () => viewNewBusinessDoc(btn.dataset.id));
+    });
+}
+
+function bindPdfButtons() {
+    document.querySelectorAll('.pdf-btn').forEach(btn => {
+        btn.removeEventListener('click', generatePdf);
+        btn.addEventListener('click', () => generatePdf(btn.dataset.id));
+    });
+}
+
+function bindCheckboxEvents() {
+    document.querySelectorAll('.doc-checkbox').forEach(checkbox => {
+        checkbox.removeEventListener('change', toggleDeleteButton);
+        checkbox.addEventListener('change', toggleDeleteButton);
+    });
+}
+
+window.applyHotBold = function() {
+    if (!hotInstance) return;
+    const selected = hotInstance.getSelected();
+    if (!selected || !selected.length) return;
+
+    selected.forEach(range => {
+        for (let r = range[0]; r <= range[2]; r++) {
+            for (let c = range[1]; c <= range[3]; c++) {
+                const cellMeta = hotInstance.getCellMeta(r, c);
+                let className = cellMeta.className || '';
+                className = className.includes('htBold') ? className.replace('htBold', '').trim() : (className + ' htBold').trim();
+                hotInstance.setCellMeta(r, c, 'className', className);
+            }
+        }
+    });
+    hotInstance.render();
+}
+
+// Filter Management
+function resetFilters() {
+    elements.docSearch.value = '';
+    elements.dateFilter.value = '';
+    elements.dateStart.value = '';
+    elements.dateEnd.value = '';
+    elements.customDateRange.style.display = 'none';
+}
+
+const updateFilters = debounce(() => {
+    config.currentPage = 1;
+    populateNewBusinessDocs();
+    renderPaginationControls(filterNewBusinessDocs());
+}, 300);
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+	resetFilters(); // Clear search bar and other filters
+    initializeUserId();
+    if (config.userId) {
+        initializeCharts();
+        fetchNewBusinessDocs();
+    }
+    document.getElementById('createDocumentBtn').addEventListener('click', showCreateDocumentModal);
+    elements.errorOverlay.querySelector('#errorOkBtn').addEventListener('click', () => elements.errorOverlay.classList.remove('show'));
+    elements.successOverlay.querySelector('#successOkBtn').addEventListener('click', () => elements.successOverlay.classList.remove('show'));
     document.getElementById('createDocCancelBtn').addEventListener('click', hideCreateDocumentModal);
-
     document.getElementById('createDocumentForm').addEventListener('submit', createNewBusinessDoc);
-
     elements.docType.addEventListener('change', showCreateDocumentModal);
-
     document.getElementById('viewDocCloseBtn').addEventListener('click', hideViewNewBusinessDocModal);
-
     elements.deleteSelectedBtn.addEventListener('click', deleteSelectedNewBusinessDocs);
-
     elements.logoutBtn.addEventListener('click', logout);
-
     elements.docSearch.addEventListener('input', updateFilters);
-
     elements.dateFilter.addEventListener('change', () => {
         elements.customDateRange.style.display = elements.dateFilter.value === 'custom' ? 'flex' : 'none';
         updateFilters();
     });
+    [elements.dateStart, elements.dateEnd].forEach(el => el.addEventListener('change', () => {
+        if (elements.dateFilter.value === 'custom') updateFilters();
+    }));
+});
 
-    [elements.dateStart, elements.dateEnd].forEach(el =>
-        el.addEventListener('change', () => {
-            if (elements.dateFilter.value === 'custom') {
-                updateFilters();
-            }
-        })
-    );
-
-    window.addEventListener('resize', () => {
-        if (elements.createOverlay.classList.contains('show')) {
-            const modalElement = document.querySelector('.create-document-modal');
-            if (modalElement) {
-                modalElement.style.height = '80vh';
-            }
-            elements.editorContainer.style.height = `calc(100% - ${elements.editorToolbar.offsetHeight}px - 70px)`;
-            if (quillInstance && elements.docType.value === 'Word') {
-                const quillEditorElement = document.getElementById('quillEditor');
-                if (quillEditorElement) quillEditorElement.style.height = '100%';
-            }
-            if (hotInstance && elements.docType.value === 'XLS') {
-                hotInstance.render();
-            }
+window.addEventListener('resize', () => {
+    if (elements.createOverlay.classList.contains('show')) {
+        document.querySelector('.create-document-modal').style.height = '80vh';
+        elements.editorContainer.style.height = `calc(100% - ${elements.editorToolbar.offsetHeight}px - 70px)`;
+        if (quillInstance && elements.docType.value === 'Word') {
+            document.getElementById('quillEditor').style.height = '100%';
         }
-    });
-
-    // Use DOMContentLoaded to ensure resetFilters runs after autofill
-    document.addEventListener('DOMContentLoaded', () => {
-        resetFilters();
-        initializeCharts();
-        fetchNewBusinessDocs();
-        const createBtn = document.getElementById('createDocumentBtn');
-        if (createBtn) {
-            createBtn.addEventListener('click', showCreateDocumentModal);
-        } else {
-            console.error('Element with ID createDocumentBtn not found');
+        if (hotInstance && elements.docType.value === 'XLS') {
+            hotInstance.render();
         }
-    });
+    }
+});
 </script>
 </body>
 </html>
