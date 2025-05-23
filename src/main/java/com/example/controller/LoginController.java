@@ -14,5 +14,10 @@ public class LoginController {
         return "register";  // This looks for login.html in src/main/resources/templates/
     }
     
+    @GetMapping("/ServicePage")
+    public String servicePage(String userId) {
+        return "ServicePage";
+    }
+    
 }
 

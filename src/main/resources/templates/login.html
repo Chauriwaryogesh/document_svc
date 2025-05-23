@@ -961,7 +961,7 @@
                     if (data.status === 'success') {
                         closeQrPopup();
                         showCustomAlert('Success', `Logged in as ${data.userId}`, () => {
-                            window.location.href = '/dashboard';
+                            window.location.href = '/ServiePage';
                         });
                     } else {
                         showErrorAlert('QR code authentication failed.');
@@ -1132,7 +1132,7 @@
                     sessionStorage.setItem('userId', userId);
                     hideOtpPopup();
                     showCustomAlert("Success", "OTP Verified Successfully", () => {
-                        window.location.href = "/dashboard";
+                        window.location.href = "/ServicePage";
                     });
                 } else {
                     showErrorAlert("Invalid response from the server.");

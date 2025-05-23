@@ -452,7 +452,7 @@
         const userId = sessionStorage.getItem('userId');
         if (!userId) {
             alert('User ID not found. Please log in again.');
-            window.location.href = 'login.html';
+            window.location.href = 'login';
             return null;
         }
         return userId;
@@ -461,7 +461,7 @@
     // Logout function
     function logout() {
         sessionStorage.removeItem('userId');
-        window.location.href = 'login.html';
+        window.location.href = 'login';
     }
 
     const loadingOverlay = document.getElementById('loadingOverlay');

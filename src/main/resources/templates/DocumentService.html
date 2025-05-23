@@ -12,76 +12,77 @@
             background: linear-gradient(135deg, #e0f2fe, #a5b4fc);
             animation: gradientShift 20s ease infinite;
             color: #1f2937;
-            line-height: 1.6;
+            line-height: 1.5;
+            font-size: 0.9rem; /* Reduced base font size */
         }
 
         header {
             background: linear-gradient(90deg, #3b82f6, #1e40af);
             color: white;
-            padding: 2rem;
+            padding: 1rem; /* Reduced padding */
             text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(12px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(8px);
         }
 
         header h2 {
             margin: 0;
             font-weight: 700;
-            font-size: 2rem;
-            letter-spacing: -0.025em;
+            font-size: 1.5rem; /* Reduced font size */
+            letter-spacing: -0.02em;
         }
 
         .container {
             display: flex;
             justify-content: space-around;
-            padding: 2.5rem;
+            padding: 1.5rem; /* Reduced padding */
             flex-wrap: wrap;
-            max-width: 1280px;
+            max-width: 1000px; /* Reduced max-width */
             margin: 0 auto;
-            gap: 1.5rem;
+            gap: 1rem; /* Reduced gap */
         }
 
         .card {
             background: #ffffff;
-            padding: 2rem;
-            margin: 1rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 1.25rem; /* Reduced padding */
+            margin: 0.75rem; /* Reduced margin */
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
             flex: 1 1 45%;
-            min-width: 320px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            min-width: 280px; /* Slightly reduced min-width */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
 
         .card h2 {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             color: #111827;
             font-weight: 600;
-            font-size: 1.75rem;
-            letter-spacing: -0.025em;
+            font-size: 1.25rem; /* Reduced font size */
+            letter-spacing: -0.02em;
         }
 
         .card input,
         .card select,
         .card button {
             width: 100%;
-            padding: 0.875rem;
-            margin-bottom: 1rem;
-            border-radius: 10px;
+            padding: 0.625rem; /* Reduced padding */
+            margin-bottom: 0.75rem; /* Reduced margin */
+            border-radius: 8px;
             border: 1px solid #d1d5db;
-            font-size: 1rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 0.875rem; /* Reduced font size */
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .card input:focus,
         .card select:focus {
             outline: none;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
 
         .card button {
@@ -91,15 +92,15 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             font-weight: 600;
-            transition: transform 0.2s ease, background 0.3s ease;
+            transition: transform 0.2s ease, background 0.2s ease;
         }
 
         .card button:hover {
             background: linear-gradient(90deg, #059669, #047857);
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
 
         .card button:disabled {
@@ -111,23 +112,23 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
+            margin-top: 0.75rem;
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
         th,
         td {
-            padding: 14px;
+            padding: 10px; /* Reduced padding */
             border: 1px solid #e5e7eb;
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.85rem; /* Reduced font size */
         }
 
         tr {
-            border: 2px solid #3b82f6;
+            border: 1px solid #3b82f6;
             transition: background 0.2s ease;
         }
 
@@ -143,37 +144,37 @@
 
         .document-list-container.grid-view {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-            padding: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Smaller card size */
+            gap: 16px; /* Reduced gap */
+            padding: 16px; /* Reduced padding */
         }
 
         .document-list-container.grid-view .document-card {
             background: #ffffff;
-            border-radius: 12px;
-            border: 2px solid #3b82f6;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: fadeInUp 0.6s ease-out;
+            border-radius: 10px;
+            border: 1px solid #3b82f6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 14px; /* Reduced padding */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: fadeInUp 0.5s ease-out;
             text-align: left;
         }
 
         .document-list-container.grid-view .document-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
         }
 
         .document-list-container.grid-view .document-card p {
-            margin: 10px 0;
-            font-size: 0.95rem;
+            margin: 6px 0; /* Reduced margin */
+            font-size: 0.85rem; /* Reduced font size */
             color: #4b5563;
         }
 
         .document-list-container.grid-view .document-card button {
             width: auto;
-            padding: 10px 16px;
-            font-size: 0.95rem;
+            padding: 8px 12px; /* Reduced padding */
+            font-size: 0.85rem; /* Reduced font size */
             background: linear-gradient(90deg, #3b82f6, #1e40af);
         }
 
@@ -181,29 +182,29 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
-            margin: 2.5rem auto;
+            gap: 8px; /* Reduced gap */
+            margin: 1.5rem auto; /* Reduced margin */
             width: 90%;
-            max-width: 1000px;
+            max-width: 800px; /* Reduced max-width */
         }
 
         .pagination-button {
-            padding: 12px 18px;
-            border-radius: 10px;
+            padding: 8px 12px; /* Reduced padding */
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.85rem; /* Reduced font size */
             background: linear-gradient(90deg, #3b82f6, #1e40af);
             color: white;
             border: none;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: background 0.2s ease, transform 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .pagination-button:hover:not(:disabled) {
             background: linear-gradient(90deg, #1e40af, #1e3a8a);
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
         .pagination-button:disabled {
@@ -213,23 +214,23 @@
 
         .page-numbers {
             display: flex;
-            gap: 8px;
+            gap: 6px; /* Reduced gap */
         }
 
         .page-numbers button {
-            padding: 10px 14px;
-            border-radius: 10px;
+            padding: 8px 12px; /* Reduced padding */
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.85rem; /* Reduced font size */
             background: #f3f4f6;
             color: #374151;
             border: none;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: background 0.2s ease, transform 0.2s ease;
         }
 
         .page-numbers button:hover:not(.active) {
             background: #e5e7eb;
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
         .page-numbers button.active {
@@ -240,32 +241,32 @@
 
         .header-actions {
             width: 90%;
-            max-width: 1000px;
+            max-width: 800px; /* Reduced max-width */
             display: flex;
             justify-content: flex-end;
-            gap: 12px;
-            margin: 2rem auto;
+            gap: 8px; /* Reduced gap */
+            margin: 1rem auto; /* Reduced margin */
         }
 
         .header-actions button {
             background: linear-gradient(90deg, #ffffff, #f3f4f6);
             color: #3b82f6;
             border: 1px solid #3b82f6;
-            padding: 12px 18px;
-            border-radius: 10px;
+            padding: 8px 12px; /* Reduced padding */
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.85rem; /* Reduced font size */
             font-weight: 600;
-            transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .header-actions button:hover {
             background: linear-gradient(90deg, #3b82f6, #1e40af);
             color: white;
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
 
         .header-actions button.logout-btn {
@@ -281,18 +282,18 @@
         .tabs {
             display: flex;
             justify-content: flex-start;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 1rem; /* Reduced margin */
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .tab {
-            padding: 12px 24px;
+            padding: 8px 16px; /* Reduced padding */
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem; /* Reduced font size */
             font-weight: 600;
             color: #6b7280;
-            border-bottom: 3px solid transparent;
-            transition: color 0.3s ease, border-bottom 0.3s ease;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s ease, border-bottom 0.2s ease;
         }
 
         .tab:hover {
@@ -301,7 +302,7 @@
 
         .tab.active {
             color: #3b82f6;
-            border-bottom: 3px solid #3b82f6;
+            border-bottom: 2px solid #3b82f6;
         }
 
         .modal {
@@ -320,27 +321,27 @@
         .modal-content {
             position: relative;
             background: #ffffff;
-            padding: 24px;
-            width: 400px;
+            padding: 16px; /* Reduced padding */
+            width: 360px; /* Reduced width */
             text-align: center;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 0.4s ease-in-out;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            animation: fadeIn 0.3s ease-in-out;
         }
 
         .close {
             position: absolute;
-            top: 12px;
-            right: 12px;
-            font-size: 24px;
+            top: 8px;
+            right: 8px;
+            font-size: 20px; /* Reduced font size */
             color: #4b5563;
             font-weight: bold;
             background: #f3f4f6;
             border: 1px solid #d1d5db;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            line-height: 28px;
+            width: 28px; /* Reduced size */
+            height: 28px;
+            line-height: 24px;
             text-align: center;
             cursor: pointer;
             transition: background 0.2s ease;
@@ -354,17 +355,17 @@
             width: 100%;
             height: auto;
             border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            margin-bottom: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px; /* Reduced margin */
         }
 
         #nameInput {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-bottom: 16px;
-            border-radius: 10px;
+            width: calc(100% - 16px);
+            padding: 8px; /* Reduced padding */
+            margin-bottom: 12px; /* Reduced margin */
+            border-radius: 8px;
             border: 1px solid #d1d5db;
-            font-size: 1rem;
+            font-size: 0.875rem; /* Reduced font size */
         }
 
         .card input:focus,
@@ -372,24 +373,24 @@
         #nameInput:focus {
             outline: none;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
 
         .modal-content button {
             background: linear-gradient(90deg, #3b82f6, #1e40af);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
+            padding: 8px 16px; /* Reduced padding */
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.875rem; /* Reduced font size */
             font-weight: 600;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: background 0.2s ease, transform 0.2s ease;
         }
 
         .modal-content button:hover {
             background: linear-gradient(90deg, #1e40af, #1e3a8a);
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
 
         .image-view-modal {
@@ -408,54 +409,54 @@
         .image-view-content {
             position: relative;
             background: #ffffff;
-            padding: 24px;
-            max-width: 85%;
-            max-height: 85%;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 0.4s ease-in-out;
+            padding: 16px; /* Reduced padding */
+            max-width: 80%; /* Reduced max-width */
+            max-height: 80%; /* Reduced max-height */
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            animation: fadeIn 0.3s ease-in-out;
             text-align: center;
-            border: 2px solid #3b82f6;
+            border: 1px solid #3b82f6;
         }
 
         .image-view-content img {
             max-width: 100%;
-            max-height: 65vh;
-            border-radius: 10px;
-            margin-bottom: 16px;
+            max-height: 60vh; /* Reduced max-height */
+            border-radius: 8px;
+            margin-bottom: 12px; /* Reduced margin */
             object-fit: contain;
         }
 
         .image-view-content .error-message {
             color: #ef4444;
-            font-size: 1rem;
-            margin-bottom: 16px;
+            font-size: 0.875rem; /* Reduced font size */
+            margin-bottom: 12px; /* Reduced margin */
         }
 
         .image-view-content .button-container {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 8px; /* Reduced gap */
         }
 
         .image-view-content button {
             background: linear-gradient(90deg, #3b82f6, #1e40af);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
+            padding: 8px 16px; /* Reduced padding */
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.85rem; /* Reduced font size */
             font-weight: 600;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: background 0.2s ease, transform 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .image-view-content button:hover {
             background: linear-gradient(90deg, #1e40af, #1e3a8a);
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
 
         .popup-overlay {
@@ -473,25 +474,25 @@
 
         .popup {
             background: #ffffff;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem; /* Reduced padding */
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
             text-align: center;
-            max-width: 450px;
+            max-width: 400px; /* Reduced max-width */
             width: 90%;
-            animation: fadeIn 0.4s ease;
+            animation: fadeIn 0.3s ease;
         }
 
         .popup h3 {
-            margin: 0 0 1rem;
+            margin: 0 0 0.75rem;
             color: #111827;
             font-weight: 600;
-            font-size: 1.5rem;
+            font-size: 1.25rem; /* Reduced font size */
         }
 
         .popup p {
-            margin: 0 0 1rem;
-            font-size: 1rem;
+            margin: 0 0 0.75rem;
+            font-size: 0.875rem; /* Reduced font size */
             color: #4b5563;
         }
 
@@ -509,38 +510,38 @@
             background: linear-gradient(90deg, #3b82f6, #1e40af);
             color: white;
             border: none;
-            padding: 0.875rem 1.75rem;
-            border-radius: 10px;
+            padding: 0.625rem 1.25rem; /* Reduced padding */
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.875rem; /* Reduced font size */
             font-weight: 600;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: background 0.2s ease, transform 0.2s ease;
         }
 
         .popup button:hover {
             background: linear-gradient(90deg, #1e40af, #1e3a8a);
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
 
         .success-popup {
             background: #eff6ff;
-            border: 2px solid #3b82f6;
-            animation: popupBounce 0.6s ease;
+            border: 1px solid #3b82f6;
+            animation: popupBounce 0.5s ease;
         }
 
         footer {
             text-align: center;
             background: linear-gradient(90deg, #3b82f6, #1e40af);
             color: white;
-            padding: 1.5rem;
-            margin-top: 3rem;
-            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(12px);
+            padding: 1rem; /* Reduced padding */
+            margin-top: 2rem; /* Reduced margin */
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(8px);
         }
 
         footer p {
             margin: 0;
-            font-size: 0.95rem;
+            font-size: 0.85rem; /* Reduced font size */
             font-weight: 500;
         }
 
@@ -557,13 +558,13 @@
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes popupBounce {
             0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.05); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 1; }
             100% { transform: scale(1); opacity: 1; }
         }
     </style>
@@ -952,7 +953,7 @@
             const docName = modal.dataset.docName;
             const imageUrl = document.getElementById('viewImage').src;
 
-            console.log('Printing image for docId:', docId, 'docName:', docName);
+            console.log('Printing image for docId:', docId, 'docName:', docName, 'imageUrl:', imageUrl);
             const printWindow = window.open('');
             printWindow.document.write(`
                 <html>
