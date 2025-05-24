@@ -15,7 +15,6 @@ public class WorkItem {
 	@Id
 	@Column
 	@NotBlank
-	@NotNull
 	private String workItemRefNumber;
 	
 	@Column
@@ -41,6 +40,36 @@ public class WorkItem {
 	
 	@Column
 	private String userId;
+	
+	@Column
+	private String status;
+	
+	@Column
+	private String queue;
+	/**
+	 * @return the queue
+	 */
+	public String getQueue() {
+		return queue;
+	}
+	/**
+	 * @param queue the queue to set
+	 */
+	public void setQueue(String queue) {
+		this.queue = queue;
+	}
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	/**
 	 * @return the workItemReferenceNumber
 	 */
@@ -144,7 +173,4 @@ public class WorkItem {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	
-	
-
 }

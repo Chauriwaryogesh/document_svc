@@ -1,6 +1,7 @@
 package com.example.entity;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,32 +11,49 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="BUSINESS_DOCUMENT")
+@Table(name = "BUSINESS_DOCUMENT")
 public class BusinessDocument {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(nullable = false)
-    private String name;
-    
-    @Column(nullable = false)
-    private String type;
-    
-    @Column
-    private String size;
-    
-    @Column(nullable = false)
-    private String userId;
-    
-    @Column(columnDefinition = "TEXT")
-    private String content; // For database storage
-    
-    @Column
-    private String contentPath; // For file storage
-    
-    @Column
-    private LocalDateTime createdBy;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(nullable = false)
+	private String name;
+
+	@Column(nullable = false)
+	private String type;
+
+	@Column
+	private String size;
+
+	@Column(nullable = false)
+	private String userId;
+
+	@Column(columnDefinition = "TEXT")
+	private String content; // For database storage
+
+	@Column
+	private String contentPath; // For file storage
+
+	@Column
+	private String createdBy;
+
+	@Column
+	private LocalDateTime createdDate;
+
+	/**
+	 * @return the createdDate
+	 */
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
+	}
+
+	/**
+	 * @param createdDate the createdDate to set
+	 */
+	public void setCreatedDate(LocalDateTime createdDate) {
+		this.createdDate = createdDate;
+	}
 
 	public Long getId() {
 		return id;
@@ -93,12 +111,12 @@ public class BusinessDocument {
 		this.contentPath = contentPath;
 	}
 
-	public LocalDateTime getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(LocalDateTime createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-   
+
 }

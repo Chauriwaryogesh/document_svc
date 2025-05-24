@@ -1,11 +1,13 @@
 package com.example.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.example.dto.DocumentRequest;
@@ -30,6 +32,8 @@ public class NewBusinessService {
 		doc.setType(normalizeType(request.getType()));
 		doc.setSize(calculateSize(request.getContent()));
 		doc.setUserId(userId);
+		doc.setCreatedDate(LocalDateTime.now());
+		doc.setCreatedBy(userId);
 		storeContent(doc, request.getContent());
 		BusinessDocument savedDoc = documentRepo.save(doc);
 //        if (savedDoc == null) {
@@ -124,7 +128,15 @@ public class NewBusinessService {
 			documentResponse.setName(doc.getName());
 			documentResponse.setType(doc.getType());
 			documentResponse.setSize(doc.getSize());
+			if(doc.getCreatedDate() != null) {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
+		        String formattedDate = doc.getCreatedDate().format(formatter).toUpperCase();
+			
+			
+			documentResponse.setCreatedDate(formattedDate );
+			}
 			documentResponse.setMessage("Document retrieved");
+			
 			return documentResponse;
 		}).collect(Collectors.toList());
 
@@ -159,14 +171,28 @@ public class NewBusinessService {
 		document.setName(doc.getName());
 		document.setType(doc.getType());
 		document.setSize(doc.getSize());
+		if(doc.getCreatedDate() != null) {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
+	        String formattedDate = doc.getCreatedDate().format(formatter).toUpperCase();
+		document.setCreatedDate(formattedDate );
+		}
 		try {
-			JsonNode contentNode = doc.getContent() != null ? new ObjectMapper().readTree(doc.getContent()) : null;
+			String contentNode = doc.getContent() ;
 			document.setContent(contentNode);
-		} catch (JsonProcessingException e) {
+		} catch (Exception  e) {
 			documentResponse.setErrorMessage("Failed to parse document content");
 		}
 		document.setMessage("Document retrieved");
 		documentResponse.setData(Arrays.asList(document));
 		return documentResponse;
 	}
+
+
+	 public boolean deleteNoteById(Long id) {
+       if (documentRepo.existsById(id)) {
+    	   documentRepo.deleteById(id);
+           return true;
+       }
+       return false;
+   }
 }

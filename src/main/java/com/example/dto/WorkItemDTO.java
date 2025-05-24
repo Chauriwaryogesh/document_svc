@@ -9,7 +9,32 @@ public class WorkItemDTO {
 	private String createdBy;
 	private String createdTime;
 	private String userId;
-	
+	private String status;
+	private String queue;
+	/**
+	 * @return the queue
+	 */
+	public String getQueue() {
+		return queue;
+	}
+	/**
+	 * @param queue the queue to set
+	 */
+	public void setQueue(String queue) {
+		this.queue = queue;
+	}
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	/**
 	 * @return the workItemId
 	 */

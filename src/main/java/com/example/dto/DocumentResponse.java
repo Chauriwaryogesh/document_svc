@@ -1,35 +1,39 @@
 package com.example.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 public class DocumentResponse {
 	private long id;
 	private String name;
 	private String type;
 	private String size;
-	private JsonNode content;
+	private String content;
 	private String message;
+	private String createdDate;
 
-//	public DocumentResponse(Long id, String name, String type, String size,JsonNode content, String message) {
-//		this.id=id;
-//		this.name=name;
-//		this.type=type;
-//		this.size=size;
-//		this.content= content;
-//		this.message=message;
-//		
-//	}
 
-	public JsonNode getContent() {
-		return content;
+	/**
+	 * @return the createdDate
+	 */
+	public String getCreatedDate() {
+		return createdDate;
 	}
 
-	public void setContent(JsonNode content) {
-		this.content = content;
+	/**
+	 * @param createdDate the createdDate to set
+	 */
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
 	}
 
 	public long getId() {
 		return id;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	public void setId(long id) {

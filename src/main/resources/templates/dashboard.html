@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Overview</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="dark-mode.css">
     <style>
         body {
             margin: 0;
@@ -17,318 +18,6 @@
             padding-bottom: 60px;
             box-sizing: border-box;
         }
-        body {
-        transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    body.dark-mode {
-        background: #1a1a1a;
-        color: #e0e0e0;
-    }
-
-    body.dark-mode .main-header {
-        background: linear-gradient(90deg, #1e3a8a, #1e40af);
-        border-bottom: 3px solid #1e3a8a;
-    }
-
-    body.dark-mode #dashboardHeaderClock {
-        background-color: #3b82f6;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    body.dark-mode .admin-panel-button {
-        background-color: #2d2d2d;
-        color: #60a5fa;
-    }
-
-    body.dark-mode .admin-panel-button:hover {
-        background-color: #3d3d3d;
-    }
-
-    body.dark-mode .modern-button {
-        background-color: #3b82f6;
-    }
-
-    body.dark-mode .modern-button:hover {
-        background-color: #2563eb;
-    }
-
-    body.dark-mode .modern-button.primary {
-        background-color: #16a34a;
-    }
-
-    body.dark-mode .modern-button.primary:hover {
-        background-color: #15803d;
-    }
-
-    body.dark-mode .modern-button.secondary {
-        background-color: #f59e0b;
-        color: #1a1a1a;
-    }
-
-    body.dark-mode .modern-button.secondary:hover {
-        background-color: #d97706;
-    }
-
-    body.dark-mode .sla {
-        background: #2d2d2d;
-        border: 2px solid #4b4b4b;
-        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    body.dark-mode .sla p {
-        color: #e0e0e0;
-    }
-
-    body.dark-mode .circle-background {
-        stroke: #4b4b4b;
-    }
-
-    body.dark-mode #emailSentCircle { stroke: #16a34a; }
-    body.dark-mode #emailsInDbCircle { stroke: #06b6d4; }
-    body.dark-mode #slaProgressCircle { stroke: #3b82f6; }
-    body.dark-mode #documentUploadCircle { stroke: #8b5cf6; }
-    body.dark-mode #slaCrossedCircle { stroke: #ef4444; }
-
-    body.dark-mode .sla-label {
-        color: #b0b0b0;
-    }
-
-    body.dark-mode .summary-box {
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    body.dark-mode .summary-box.total { background-color: #3b82f6; }
-    body.dark-mode .summary-box.open { background-color: #f59e0b; color: #1a1a1a; }
-    body.dark-mode .summary-box.closed { background-color: #16a34a; }
-    body.dark-mode .summary-box.correspondence { background-color: #ef4444; }
-
-    body.dark-mode .filter-container select,
-    body.dark-mode .filter-container button {
-        background-color: #2d2d2d;
-        color: #e0e0e0;
-        border: 1px solid #4b4b4b;
-    }
-
-    body.dark-mode .filter-container select:focus,
-    body.dark-mode .filter-container button:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
-    }
-
-    body.dark-mode .work-item-list-container {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    body.dark-mode .work-item-list {
-        background-color: #2d2d2d;
-    }
-
-    body.dark-mode .work-item-list th,
-    body.dark-mode .work-item-list td {
-        border-bottom: 1px solid #4b4b4b;
-        color: #e0e0e0;
-    }
-
-    body.dark-mode .work-item-list th {
-        background-color: #1e1e1e;
-        color: #e0e0e0;
-    }
-
-    body.dark-mode .work-item-list tbody tr:nth-child(even) {
-        background-color: #252525;
-    }
-
-    body.dark-mode .work-item-list tbody tr:hover {
-        background-color: #1e40af;
-    }
-
-    body.dark-mode .pagination-button {
-        background-color: #2d2d2d;
-        border: 1px solid #4b4b4b;
-        color: #e0e0e0;
-    }
-
-    body.dark-mode .pagination-button:hover {
-        background-color: #3b82f6;
-    }
-
-    body.dark-mode .pagination-button.active {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
-    }
-
-    body.dark-mode .pagination-button:disabled {
-        background-color: #4b4b4b;
-    }
-
-    body.dark-mode .floating-button {
-        background-color: #f97316;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    }
-
-    body.dark-mode .modal-box {
-        background: #2d2d2d;
-        color: #e0e0e0;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-    }
-
-    body.dark-mode .custom-alert-box {
-        background-color: #2d2d2d;
-        color: #e0e0e0;
-    }
-
-    body.dark-mode .custom-alert-header {
-        color: #e0e0e0;
-    }
-
-    body.dark-mode .custom-alert-message {
-        color: #b0b0b0;
-    }
-
-    body.dark-mode .custom-alert-buttons button {
-        background-color: #3b82f6;
-    }
-
-    body.dark-mode .custom-alert-buttons button:hover {
-        background-color: #2563eb;
-    }
-
-    body.dark-mode .notification-badge {
-        background-color: #ef4444;
-    }
-
-    body.dark-mode .notification-banner {
-        background-color: #16a34a;
-    }
-
-    body.dark-mode .notification-banner .modern-button.small {
-        background-color: #15803d;
-    }
-
-    body.dark-mode .notification-banner .modern-button.small:hover {
-        background-color: #14532d;
-    }
-
-    body.dark-mode .work-item-grid .work-item-card {
-        background-color: #2d2d2d;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        color: #e0e0e0;
-    }
-
-    body.dark-mode .work-item-grid .work-item-card:hover {
-        background-color: #1e40af;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-    }
-
-    body.dark-mode .work-item-grid .work-item-card p {
-        color: #e0e0e0;
-    }
-
-    body.dark-mode .work-item-grid .work-item-card p strong {
-        color: #3b82f6;
-    }
-
-    body.dark-mode .main-footer {
-        background-color: #1e1e1e;
-        color: #b0b0b0;
-        border-top: 1px solid #4b4b4b;
-    }
-
-    body.dark-mode .chatbot-button {
-        background-color: #16a34a;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    }
-
-    body.dark-mode .chatbot-container {
-        background-color: #2d2d2d;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    }
-
-    body.dark-mode .chatbot-header {
-        background-color: #3b82f6;
-    }
-
-    body.dark-mode .chatbot-messages {
-        background-color: #252525;
-    }
-
-    body.dark-mode .chatbot-message.user {
-        background-color: #3b82f6;
-    }
-
-    body.dark-mode .chatbot-message.bot {
-        background-color: #4b4b4b;
-        color: #e0e0e0;
-    }
-
-    body.dark-mode .chatbot-input-container {
-        border-top: 1px solid #4b4b4b;
-    }
-
-    body.dark-mode .chatbot-input {
-        background-color: #2d2d2d;
-        color: #e0e0e0;
-        border: 1px solid #4b4b4b;
-    }
-
-    body.dark-mode .chatbot-send {
-        background-color: #16a34a;
-    }
-
-    body.dark-mode .chatbot-send:hover {
-        background-color: #15803d;
-    }
-
-    body.dark-mode .menu-toggle-button {
-        background: linear-gradient(135deg, #16a34a, #15803d);
-    }
-
-    body.dark-mode .menu-toggle-button:hover {
-        background: linear-gradient(135deg, #15803d, #14532d);
-    }
-
-    body.dark-mode .menu-bar {
-        background: linear-gradient(135deg, #1e3a8a, #1e40af);
-    }
-
-    body.dark-mode .menu-header {
-        background: linear-gradient(90deg, #1e40af, #1e3a8a);
-    }
-
-    body.dark-mode .menu-profile {
-        background: rgba(255, 255, 255, 0.05);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    body.dark-mode .menu-content {
-        background: #252525;
-    }
-
-    body.dark-mode .menu-section h4 {
-        color: #93c5fd;
-        border-bottom: 2px solid #3b82f6;
-    }
-
-    body.dark-mode .menu-section li {
-        color: #e0e0e0;
-        background: #2d2d2d;
-    }
-
-    body.dark-mode .menu-section li:hover {
-        background: #1e40af;
-        box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
-    }
-
-    body.dark-mode .menu-footer {
-        background: rgba(255, 255, 255, 0.05);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    body.dark-mode .menu-footer a {
-        color: #b0b0b0;
-    }
-
         .main-header {
             width: 100%;
             padding: 25px 30px;
@@ -343,7 +32,6 @@
             text-transform: uppercase;
             position: relative;
         }
-
         #dashboardHeaderClock {
             position: absolute;
             top: 20px;
@@ -357,16 +45,13 @@
             box-shadow: 0 4px 10px rgba(0, 51, 204, 0.6);
             transition: transform 0.3s ease;
         }
-
         #dashboardHeaderClock:hover {
             transform: scale(1.1);
         }
-
         #dashboardHeaderClock::before {
             content: '⏰';
             margin-right: 10px;
         }
-
         .admin-panel-button {
             position: absolute;
             right: 30px;
@@ -381,17 +66,14 @@
             cursor: pointer;
             font-weight: bold;
         }
-
         .admin-panel-button:hover {
             background-color: #f0f0f0;
         }
-
         .dashboard-options {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
-
         .modern-button {
             background-color: #007bff;
             color: white;
@@ -402,34 +84,27 @@
             font-size: 15px;
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
-
         .modern-button:hover {
             background-color: #0056b3;
             transform: scale(1.08);
         }
-
         .modern-button.primary {
             background-color: #28a745;
         }
-
         .modern-button.primary:hover {
             background-color: #218838;
         }
-
         .modern-button.secondary {
             background-color: #ffc107;
             color: #333;
         }
-
         .modern-button.secondary:hover {
             background-color: #e0a800;
         }
-
         .dashboard-container {
             width: 95%;
             margin-top: 20px;
         }
-
         .sla-container {
             display: flex;
             flex-wrap: wrap;
@@ -437,13 +112,11 @@
             gap: 25px;
             margin-bottom: 30px;
         }
-
         .sla-item {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-
         .sla {
             width: 140px;
             height: 140px;
@@ -457,11 +130,9 @@
             position: relative;
             transition: transform 0.3s ease;
         }
-
         .sla:hover {
             transform: scale(1.08);
         }
-
         .sla p {
             font-size: 20px;
             font-weight: bold;
@@ -471,14 +142,12 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
-
         svg {
             position: absolute;
             width: 100%;
             height: 100%;
             transform: rotate(-90deg);
         }
-
         circle {
             fill: none;
             stroke-width: 10;
@@ -486,31 +155,26 @@
             cx: 70;
             cy: 70;
         }
-
         .circle-background {
             stroke: #e6e6e6;
         }
-
         .circle-progress {
             stroke-linecap: round;
             stroke-dasharray: 376.99;
             stroke-dashoffset: 376.99;
             transition: stroke-dashoffset 1s ease-out;
         }
-
         #emailSentCircle { stroke: #28a745; }
         #emailsInDbCircle { stroke: #17a2b8; }
         #slaProgressCircle { stroke: #007bff; }
         #documentUploadCircle { stroke: #6f42c1; }
         #slaCrossedCircle { stroke: #dc3545; }
-
         .sla-label {
             margin-top: 10px;
             font-size: 15px;
             font-weight: 500;
             color: #555;
         }
-
         .workitem-summary {
             display: flex;
             justify-content: space-between;
@@ -518,7 +182,6 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
-
         .summary-box {
             flex: 1;
             text-align: center;
@@ -529,18 +192,15 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             font-size: 16px;
         }
-
         .summary-box.total { background-color: #007bff; }
         .summary-box.open { background-color: #ffc107; color: #333; }
         .summary-box.closed { background-color: #28a745; }
         .summary-box.correspondence { background-color: #dc3545; }
-
         .filter-container {
             display: flex;
             justify-content: flex-end;
             margin-bottom: 20px;
         }
-
         .filter-container select, .filter-container button {
             padding: 12px 15px;
             margin-left: 15px;
@@ -548,12 +208,10 @@
             border-radius: 6px;
             border: 1px solid #ccc;
         }
-
         .filter-container select:focus, .filter-container button:focus {
             border-color: #007bff;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
-
         .work-item-list-container {
             width: 95%;
             margin: 0 auto;
@@ -561,40 +219,33 @@
             border-radius: 8px;
             overflow: hidden;
         }
-
         .work-item-list {
             width: 100%;
             border-collapse: collapse;
             background-color: #fff;
         }
-
         .work-item-list th, .work-item-list td {
             padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
-
         .work-item-list th {
             background-color: #f8f9fa;
             font-weight: bold;
             color: #333;
         }
-
         .work-item-list tbody tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-
         .work-item-list tbody tr:hover {
             background-color: #e6f7ff;
         }
-
         .pagination-controls {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
         }
-
         .pagination-button {
             padding: 8px 12px;
             border: 1px solid #ccc;
@@ -603,28 +254,23 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
         .pagination-button:hover {
             background-color: #007bff;
             color: white;
         }
-
         .pagination-button.active {
             background-color: #007bff;
             color: white;
             border-color: #007bff;
         }
-
         .pagination-button:disabled {
             background-color: #e6e6e6;
             cursor: not-allowed;
         }
-
         .bulk-actions {
             display: none;
             margin-top: 10px;
         }
-
         .floating-button {
             position: fixed;
             bottom: 40px;
@@ -643,11 +289,9 @@
             justify-content: center;
             align-items: center;
         }
-
         .floating-button:hover {
             transform: scale(1.1);
         }
-
         .modal-overlay {
             display: none;
             position: fixed;
@@ -660,7 +304,6 @@
             align-items: center;
             z-index: 9999;
         }
-
         .modal-box {
             background: white;
             padding: 25px;
@@ -669,7 +312,6 @@
             max-width: 95%;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
-
         .custom-alert-overlay {
             position: fixed;
             top: 0;
@@ -682,11 +324,9 @@
             align-items: center;
             z-index: 10000;
         }
-
         .custom-alert-overlay.active {
             display: flex;
         }
-
         .custom-alert-box {
             background-color: #fff;
             border-radius: 8px;
@@ -695,27 +335,22 @@
             min-width: 300px;
             max-width: 80%;
         }
-
         .custom-alert-header {
             font-size: 1.2em;
             font-weight: bold;
             margin-bottom: 10px;
             color: #333;
         }
-
         .custom-alert-header.error {
             color: #f44336;
         }
-
         .custom-alert-message {
             color: #555;
             margin-bottom: 15px;
         }
-
         .custom-alert-message.error {
             color: #f44336;
         }
-
         .custom-alert-buttons button {
             background-color: #007bff;
             color: white;
@@ -724,11 +359,9 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
         .custom-alert-buttons button:hover {
             background-color: #0056b3;
         }
-
         .notification-button {
             position: absolute;
             right: 300px;
@@ -744,11 +377,9 @@
             align-items: center;
             z-index: 10;
         }
-
         .notification-button:hover {
             color: #ffc107;
         }
-
         .notification-badge {
             position: absolute;
             top: -8px;
@@ -766,7 +397,6 @@
             z-index: 11;
             box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
         }
-
         .notification-banner {
             width: 100%;
             background-color: #28a745;
@@ -782,24 +412,20 @@
             top: 0;
             z-index: 1000;
         }
-
         .notification-banner .modern-button.small {
             padding: 5px 10px;
             font-size: 12px;
             background-color: #218838;
         }
-
         .notification-banner .modern-button.small:hover {
             background-color: #1e7e34;
         }
-
         .work-item-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 15px;
             padding: 15px;
         }
-
         .work-item-grid .work-item-card {
             background-color: #fff;
             border-radius: 8px;
@@ -811,37 +437,30 @@
             cursor: pointer;
             position: relative;
         }
-
         .work-item-grid .work-item-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
             background-color: #e6f7ff;
         }
-
         .work-item-grid .work-item-card input[type="checkbox"] {
             position: absolute;
             top: 10px;
             right: 10px;
         }
-
         .work-item-grid .work-item-card p {
             margin: 5px 0;
             font-size: 0.9em;
             color: #333;
         }
-
         .work-item-grid .work-item-card p strong {
             color: #007bff;
         }
-
         .work-item-list-container.grid-view #workItemTable {
             display: none;
         }
-
         .work-item-list-container.grid-view #workItemGrid {
             display: grid;
         }
-
         .main-footer {
             width: 100%;
             padding: 15px;
@@ -855,7 +474,6 @@
             z-index: 1000;
             opacity: 1;
         }
-
         /* Chatbot Styles */
         .chatbot-button {
             position: fixed;
@@ -876,11 +494,9 @@
             align-items: center;
             z-index: 10001;
         }
-
         .chatbot-button:hover {
             transform: scale(1.1);
         }
-
         .chatbot-container {
             display: none;
             position: fixed;
@@ -895,7 +511,6 @@
             flex-direction: column;
             z-index: 10000;
         }
-
         .chatbot-header {
             background-color: #007bff;
             color: white;
@@ -906,12 +521,10 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .chatbot-header h3 {
             margin: 0;
             font-size: 16px;
         }
-
         .chatbot-close {
             background: none;
             border: none;
@@ -919,14 +532,12 @@
             font-size: 16px;
             cursor: pointer;
         }
-
         .chatbot-messages {
             flex: 1;
             padding: 10px;
             overflow-y: auto;
             background-color: #f9f9f9;
         }
-
         .chatbot-message {
             margin: 5px 0;
             padding: 8px 12px;
@@ -934,27 +545,23 @@
             max-width: 80%;
             word-wrap: break-word;
         }
-
         .chatbot-message.user {
             background-color: #007bff;
             color: white;
             margin-left: auto;
             border-bottom-right-radius: 0;
         }
-
         .chatbot-message.bot {
             background-color: #e6e6e6;
             color: #333;
             margin-right: auto;
             border-bottom-left-radius: 0;
         }
-
         .chatbot-input-container {
             display: flex;
             padding: 10px;
             border-top: 1px solid #ddd;
         }
-
         .chatbot-input {
             flex: 1;
             padding: 8px;
@@ -962,7 +569,6 @@
             border-radius: 4px;
             margin-right: 10px;
         }
-
         .chatbot-send {
             background-color: #28a745;
             color: white;
@@ -971,11 +577,9 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
         .chatbot-send:hover {
             background-color: #218838;
         }
-
         /* Menu Toggle Button (Below Clock) */
         .menu-toggle-button {
             position: absolute;
@@ -996,12 +600,10 @@
             transition: transform 0.3s ease, background 0.3s ease;
             z-index: 10002;
         }
-
         .menu-toggle-button:hover {
             background: linear-gradient(135deg, #218838, #1e7e34);
             transform: scale(1.1);
         }
-
         /* Sliding Menu Bar */
         .menu-bar {
             position: fixed;
@@ -1019,11 +621,9 @@
             border-bottom-right-radius: 15px;
             box-sizing: border-box;
         }
-
         .menu-bar.open {
             left: 0;
         }
-
         .menu-header {
             background: linear-gradient(90deg, #0056b3, #003d80);
             color: white;
@@ -1034,14 +634,12 @@
             border-top-right-radius: 15px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-
         .menu-header h3 {
             margin: 0;
             font-size: 18px;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
-
         .menu-close-button {
             background: none;
             border: none;
@@ -1050,11 +648,9 @@
             cursor: pointer;
             transition: color 0.3s ease;
         }
-
         .menu-close-button:hover {
             color: #ffc107;
         }
-
         .menu-profile {
             padding: 15px 20px;
             background: rgba(255, 255, 255, 0.1);
@@ -1064,23 +660,19 @@
             gap: 10px;
             color: white;
         }
-
         .menu-profile i {
             font-size: 24px;
         }
-
         .menu-profile span {
             font-size: 14px;
             font-weight: 500;
         }
-
         .menu-content {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
             background: rgba(255, 255, 255, 0.95);
         }
-
         .menu-section h4 {
             margin: 0 0 10px;
             font-size: 16px;
@@ -1092,27 +684,22 @@
             align-items: center;
             cursor: pointer;
         }
-
         .menu-section h4 i {
             margin-right: 8px;
             transition: transform 0.3s ease;
         }
-
         .menu-section h4.collapsed i {
             transform: rotate(-90deg);
         }
-
         .menu-section ul {
             list-style: none;
             padding: 0;
             margin: 0;
             display: none;
         }
-
         .menu-section ul.active {
             display: block;
         }
-
         .menu-section li {
             padding: 10px 15px;
             color: #333;
@@ -1127,32 +714,47 @@
             align-items: center;
             gap: 10px;
         }
-
         .menu-section li:hover {
             background: #e6f7ff;
             transform: translateX(5px);
             box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
         }
-
         .menu-footer {
-            padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            text-align: center;
-        }
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
 
-        .menu-footer a {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
+.settings-button {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    text-align: center;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
 
-        .menu-footer a:hover {
-            color: #ffc107;
-        }
+.settings-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.08);
+}
 
+.menu-footer .theme-toggle-button {
+    width: 100%;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
         @media (max-width: 768px) {
             .menu-bar {
                 width: 250px;
@@ -1175,9 +777,18 @@
                 padding: 8px 12px;
                 font-size: 14px;
             }
+            .menu-footer {
+        padding: 15px;
+    }
+    .settings-button, .menu-footer .theme-toggle-button {
+        padding: 8px 14px;
+        font-size: 13px;
+        line-height: 1.5;
+    }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="dark-mode.js" defer></script>
 </head>
 <body>
     <div class="main-header">
@@ -1221,11 +832,12 @@
             </div>
         </div>
         <div class="menu-footer">
-    <a href="#settings">Settings</a>
-    <button id="darkModeToggle" class="modern-button"><i class="fas fa-moon"></i> Dark Mode</button>
-</div>
+            <button class="settings-button" onclick="window.location.href='#settings'">Settings</button>
+            <button id="themeToggleButton" class="theme-toggle-button"><i class="fas fa-moon"></i> Dark Mode</button>
+        </div>
     </div>
 
+    <!-- Rest of the HTML remains unchanged -->
     <div id="notificationBanner" class="notification-banner" style="display: none;">
         <span id="notificationMessage">New update: Dashboard data refreshed!</span>
         <button onclick="closeNotification()" class="modern-button small">Close</button>
@@ -1306,9 +918,9 @@
 
     <div class="service-actions">
         <button onclick="redirectToPostalService()" class="modern-button"><i class="fas fa-envelope"></i> Postal Service</button>
-        <button onclick="redirectToDocumentService()" class="modern-button"><i class="fas fa-file-alt"></i> Document Service</button>
+        <button onclick="redirectToDocumentService()" class="modern-button"><i class="fas fa-file-alt"></i> Photos Service</button>
         <button onclick="redirectToEmployeeService()" class="modern-button"><i class="fas fa-file-alt"></i> Employee Service</button>
-        <button onclick="redirectToCloudService()" class="modern-button"><i class="fas fa-plus-circle"></i> Cloud Service</button>
+        <button onclick="redirectToCloudService()" class="modern-button"><i class="fas fa-plus-circle"></i> Business Service</button>
         <button onclick="redirectToMailService()" class="modern-button"><i class="fas fa-file-csv"></i> Mail Service</button>
         <button id="shareChartBtn" class="modern-button"><i class="fas fa-chart-bar"></i> Screenshot</button>
         <button onclick="whatsappService()" class="modern-button"><i class="fas fa-file-csv"></i> WhatsApp</button>
@@ -1978,27 +1590,6 @@
                     header.classList.toggle('collapsed');
                 }
             }
-            function toggleDarkMode() {
-                const body = document.body;
-                const isDarkMode = body.classList.toggle('dark-mode');
-                const darkModeToggle = document.getElementById('darkModeToggle');
-                darkModeToggle.innerHTML = isDarkMode
-                    ? '<i class="fas fa-sun"></i> Light Mode'
-                    : '<i class="fas fa-moon"></i> Dark Mode';
-                localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
-            }
-
-            function loadTheme() {
-                const darkMode = localStorage.getItem('darkMode');
-                const body = document.body;
-                const darkModeToggle = document.getElementById('darkModeToggle');
-                if (darkMode === 'enabled') {
-                    body.classList.add('dark-mode');
-                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-                } else {
-                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-                }
-            }
 
             document.addEventListener('DOMContentLoaded', () => {
                 initializeChatbot();
@@ -2019,8 +1610,6 @@
                     document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = this.checked);
                     toggleBulkActions();
                 });
-                document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
-         
                 document.getElementById('getSelectedBtn').addEventListener('click', handleTakeAction);
                 document.getElementById('shareChartBtn').addEventListener('click', shareChart);
                 document.getElementById('notificationIcon').addEventListener('click', showNotification);
@@ -2037,8 +1626,6 @@
                 document.getElementById('activitySection').addEventListener('click', toggleMenuSection);
                 document.getElementById('otherSection').addEventListener('click', toggleMenuSection);
                 document.addEventListener('click', closeMenuOnOutsideClick);
-                document.addEventListener('DOMContentLoaded', loadTheme);
-                fetchActivityTracing();
             });
         </script>
 </body>
