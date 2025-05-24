@@ -3,6 +3,7 @@ package com.example.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.CommonConstants.CommonConstant;
 import com.example.dto.ActivityDetailsDTO;
 import com.example.dto.Queue;
 import com.example.dto.WorkItemCount;
@@ -52,7 +54,12 @@ public class WorkItemService implements IWorkItemService {
 
 			String refNo = generateRandomWorkItemRefNumber();
 			workItem.setWorkItemRefNumber(refNo);
-			workItem.setStatus(workItemRequest.getStatus());
+			workItem.setQueue(CommonConstant.TEAM_MEMBER);
+			if (workItemRequest.getStatus() != null) {
+				workItem.setStatus(CommonConstant.OPEN);
+			} else {
+				workItem.setStatus(workItemRequest.getStatus());
+			}
 			WorkItem repoData = repository.save(workItem);
 			if (repoData == null) {
 				workItemDTO.setComment("failed to create WorkItem");
@@ -143,7 +150,9 @@ public class WorkItemService implements IWorkItemService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return workItemDTOList;
+		List<WorkItemDTO> sortedList = workItemDTOList.stream().filter(item -> item.getCreatedTime() != null)
+				.sorted(Comparator.comparing(WorkItemDTO::getCreatedTime).reversed()).collect(Collectors.toList());
+		return sortedList;
 	}
 
 	@Override
@@ -166,11 +175,14 @@ public class WorkItemService implements IWorkItemService {
 				.count();
 		long passed = workItemsList.stream().filter(sttus -> sttus.getStatus().equalsIgnoreCase("PASSED")).count();
 
-		long complaintsTeam = workItemsList.stream().filter(que -> que.getQueue()!= null && que.getQueue().equalsIgnoreCase("COMPLAINTS_TEAM")).count();
-		long adminTeam = workItemsList.stream().filter(que -> que.getQueue()!= null &&que.getQueue().equalsIgnoreCase("ADMIN_TEAM")).count();
-		long workflowTeam = workItemsList.stream().filter(que -> que.getQueue()!= null &&que.getQueue().equalsIgnoreCase("WORKFLOW_TEAM"))
-				.count();
-		long teamMember = workItemsList.stream().filter(que -> que.getQueue()!= null &&que.getQueue().equalsIgnoreCase("TEAM_MEMBER")).count();
+		long complaintsTeam = workItemsList.stream()
+				.filter(que -> que.getQueue() != null && que.getQueue().equalsIgnoreCase("COMPLAINTS_TEAM")).count();
+		long adminTeam = workItemsList.stream()
+				.filter(que -> que.getQueue() != null && que.getQueue().equalsIgnoreCase("ADMIN_TEAM")).count();
+		long workflowTeam = workItemsList.stream()
+				.filter(que -> que.getQueue() != null && que.getQueue().equalsIgnoreCase("WORKFLOW_TEAM")).count();
+		long teamMember = workItemsList.stream()
+				.filter(que -> que.getQueue() != null && que.getQueue().equalsIgnoreCase("TEAM_MEMBER")).count();
 		long total = workItemsList.stream().count();
 
 		queue.setComplaintsTeam(String.valueOf(complaintsTeam));

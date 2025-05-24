@@ -93,10 +93,10 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
     .gradient-text {
-      background: linear-gradient(to right, #3b82f6, #60a5fa);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      color: #ffffff;
+      -webkit-background-clip: initial;
+      background-clip: initial;
+      background: none;
       position: relative;
     }
     .loader {
@@ -278,6 +278,9 @@
       border-bottom: none;
     }
     thead {
+      position: sticky;
+      top: 0;
+      z-index: 30;
       background: #60a5fa;
     }
     th {
@@ -285,7 +288,7 @@
       font-weight: 600;
       position: sticky;
       top: 0;
-      z-index: 20;
+      z-index: 30;
       background-clip: padding-box;
       background: inherit;
     }
@@ -298,7 +301,7 @@
     th:nth-child(7) { background: #9ca3af; }
     th:nth-child(8) { background: #f87171; }
     tbody {
-      padding-top: 48px; /* Space for sticky header */
+      padding-top: 0;
     }
     tr:nth-child(even) {
       background: #f9fafb;
@@ -453,14 +456,16 @@
       margin-bottom: 8px;
     }
     .filter-section input[type="text"],
-    .filter-section input[type="date"] {
+    .filter-section input[type="date"],
+    .filter-section select {
       width: 100%;
       border: 1px solid #d1d5db;
       border-radius: 6px;
       padding: 8px;
       font-size: 0.875rem;
     }
-    .filter-section input:focus {
+    .filter-section input:focus,
+    .filter-section select:focus {
       outline: none;
       border-color: #3b82f6;
       box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
@@ -702,6 +707,20 @@
           Total Work Items: <span id="total-count">0</span>
         </div>
         <div id="filter-popup" class="filter-popup hidden">
+          <div class="filter-section">
+            <label for="filter-refnum">Reference Number</label>
+            <input type="text" id="filter-refnum" placeholder="Enter Reference Number">
+          </div>
+          <div class="filter-section">
+            <label for="filter-queue">Queue</label>
+            <select id="filter-queue">
+              <option value="">Select Queue</option>
+              <option value="COMPLAINTS_TEAM">Complaints Team</option>
+              <option value="WORKFLOW_TEAM">Workflow Team</option>
+              <option value="TEAM_MEMBER">Team Member</option>
+              <option value="ADMIN_TEAM">Admin Team</option>
+            </select>
+          </div>
           <div class="filter-section">
             <label for="filter-userid">User ID</label>
             <input type="text" id="filter-userid" placeholder="Enter User ID">
@@ -983,6 +1002,8 @@
 
     let currentPage = 1;
     let allWorkItems = [];
+    let filterRefNum = '';
+    let filterQueue = '';
     let filterUserId = '';
     let filterStatuses = [];
     let filterCreatedBy = '';
@@ -1236,6 +1257,8 @@
 
     function applyFilters(items) {
       return items.filter(item => {
+        const refNumMatch = !filterRefNum || item.workItemReferenceNumber?.toLowerCase().includes(filterRefNum.toLowerCase());
+        const queueMatch = !filterQueue || item.queue === filterQueue;
         const userIdMatch = !filterUserId || item.userId?.toLowerCase().includes(filterUserId.toLowerCase());
         const statusMatch = filterStatuses.length === 0 || filterStatuses.includes(item.status?.toLowerCase());
         const createdByMatch = !filterCreatedBy || item.createdBy?.toLowerCase().includes(filterCreatedBy.toLowerCase());
@@ -1243,7 +1266,7 @@
         const dateTo = filterDateTo ? new Date(filterDateTo).setHours(23, 59, 59, 999) : null;
         const itemDate = item.createdTime ? new Date(item.createdTime).getTime() : null;
         const dateMatch = !itemDate || (!dateFrom || itemDate >= dateFrom) && (!dateTo || itemDate <= dateTo);
-        return userIdMatch && statusMatch && createdByMatch && dateMatch;
+        return refNumMatch && queueMatch && userIdMatch && statusMatch && createdByMatch && dateMatch;
       });
     }
 
@@ -1284,6 +1307,8 @@
       const filterPopup = document.getElementById('filter-popup');
       const applyFilter = document.getElementById('apply-filter');
       const clearFilter = document.getElementById('clear-filter');
+      const filterRefNumInput = document.getElementById('filter-refnum');
+      const filterQueueInput = document.getElementById('filter-queue');
       const filterUserIdInput = document.getElementById('filter-userid');
       const filterCreatedByInput = document.getElementById('filter-createdby');
       const filterDateFromInput = document.getElementById('filter-date-from');
@@ -1295,6 +1320,8 @@
       });
 
       applyFilter.addEventListener('click', () => {
+        filterRefNum = filterRefNumInput.value.trim();
+        filterQueue = filterQueueInput.value;
         filterUserId = filterUserIdInput.value.trim();
         filterStatuses = Array.from(filterCheckboxes)
           .filter(cb => cb.checked)
@@ -1313,11 +1340,15 @@
       });
 
       clearFilter.addEventListener('click', () => {
+        filterRefNumInput.value = '';
+        filterQueueInput.value = '';
         filterUserIdInput.value = '';
         filterCheckboxes.forEach(cb => cb.checked = false);
         filterCreatedByInput.value = '';
         filterDateFromInput.value = '';
         filterDateToInput.value = '';
+        filterRefNum = '';
+        filterQueue = '';
         filterUserId = '';
         filterStatuses = [];
         filterCreatedBy = '';
@@ -1358,7 +1389,7 @@
             const newWorkItem = await createWorkItem(workItem);
             allWorkItems.push(newWorkItem);
             closeModal('create-workitem');
-            showAlert('success', 'Work item created successfully!');
+            showAlert('success', `Work item ${newWorkItem.workItemReferenceNumber} created successfully!`);
             document.getElementById('create-workitem-form').reset();
             document.querySelectorAll('input[name="status"]').forEach(radio => radio.checked = false);
             renderPage(currentPage);

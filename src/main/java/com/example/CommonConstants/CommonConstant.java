@@ -7,5 +7,7 @@ public class CommonConstant {
 	public static final String WORK_ITEM="create-workItem";
 	public static final String ADD_NEW_EMPLOYEE = "add_New_Employee";
 	public static final String Email_added = "Email id added successfully";
+	public static final String OPEN = "OPEN";
+	public static final String TEAM_MEMBER = "TEAM_MEMBER";
 
 }
