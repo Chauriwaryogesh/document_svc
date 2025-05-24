@@ -30,14 +30,12 @@ import com.example.dto.WorkItemDTO;
 import com.example.entity.Customer;
 import com.example.entity.Email;
 import com.example.entity.OtpStore;
-import com.example.entity.Security;
 import com.example.repo.CustomerRepo;
 import com.example.repo.IEmailRepo;
 import com.example.repo.IOtpServiceDB;
 import com.example.repo.ISecurityRepo;
 
 import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class OtpService {

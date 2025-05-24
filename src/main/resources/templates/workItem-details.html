@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Item Details - Dashboard Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+    .text-hidden {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .text-visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .button-hidden {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .button-visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .btn-neutral {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-neutral::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(to right, transparent, currentColor, transparent);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.3s ease;
+    }
+    .btn-neutral:hover::after {
+      transform: scaleX(1);
+    }
+    .btn-neutral:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+    .modal {
+      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    }
+    .modal.hidden {
+      opacity: 0;
+      transform: scale(0.95);
+      pointer-events: none;
+    }
+    .modal-content {
+      transition: transform 0.4s ease-out;
+      background: white;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: fadeInModal 0.3s ease-out;
+    }
+    .modal.hidden .modal-content {
+      transform: translateY(-20px);
+    }
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeIn 0.5s ease-out forwards;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    .gradient-text {
+      color: #ffffff;
+      -webkit-background-clip: initial;
+      background-clip: initial;
+      background: none;
+      position: relative;
+    }
+    .loader {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      display: none;
+    }
+    .loader.active {
+      display: flex;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 4px solid #e5e7eb;
+      border-top: 4px solid #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    .nav-popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+      display: none;
+    }
+    .nav-popup.active {
+      display: flex;
+    }
+    .nav-popup-content {
+      background: white;
+      border-radius: 12px;
+      padding: 16px 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .glow:hover {
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+      transform: scale(1.05);
+    }
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(to right, #3b82f6, #60a5fa);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      z-index: 100;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 4rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .logout-button {
+      background: #dc2626;
+      color: white;
+      border: none;
+      font-weight: 600;
+      padding: 0.5rem 1.5rem;
+      border-radius: 8px;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .logout-button:hover {
+      background: #b91c1c;
+      transform: scale(1.05);
+    }
+    .logout-button:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+    footer {
+      background: transparent;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      color: #1f2937;
+      padding: 1.5rem 0;
+      width: 100%;
+      position: relative;
+    }
+    footer .footer-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+    }
+    footer p {
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    footer p:hover {
+      transform: scale(1.02);
+      color: #3b82f6;
+    }
+    footer .separator {
+      font-size: 1rem;
+      color: #6b7280;
+    }
+    footer .secondary-text {
+      color: #6b7280;
+    }
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: inline-block;
+    }
+    .status-open { background: #dbeafe; color: #1e40af; }
+    .status-close { background: #e5e7eb; color: #4b5563; }
+    .status-in_progress { background: #ffedd5; color: #c2410c; }
+    .status-completed { background: #dcfce7; color: #15803d; }
+    .status-pend_external { background: #f3e8ff; color: #6b21a8; }
+    .status-pent_internal { background: #ccfbf1; color: #0f766e; }
+    .status-rejected { background: #fee2e2; color: #b91c1c; }
+    .status-passed { background: #e0e7ff; color: #3730a3; }
+    .table-container {
+      max-height: 400px;
+      overflow-y: auto;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: white;
+      position: relative;
+      scroll-behavior: smooth;
+    }
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+    }
+    th, td {
+      border-bottom: 1px solid #e5e7eb;
+      border-right: 1px solid #e5e7eb;
+      padding: 12px 16px;
+      font-size: 0.875rem;
+      white-space: nowrap;
+    }
+    th:last-child, td:last-child {
+      border-right: none;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: #60a5fa;
+    }
+    th {
+      color: white;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background-clip: padding-box;
+      background: inherit;
+    }
+    th:nth-child(1) { background: #60a5fa; }
+    th:nth-child(2) { background: #2dd4bf; }
+    th:nth-child(3) { background: #a78bfa; }
+    th:nth-child(4) { background: #fb923c; }
+    th:nth-child(5) { background: #4ade80; }
+    th:nth-child(6) { background: #818cf8; }
+    th:nth-child(7) { background: #9ca3af; }
+    th:nth-child(8) { background: #f87171; }
+    th:nth-child(9) { background: #f472b6; }
+    tbody {
+      padding-top: 0;
+    }
+    tr:nth-child(even) {
+      background: #f9fafb;
+    }
+    tr:hover {
+      background: #f0f9ff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: background 0.2s ease, box-shadow 0.2s ease;
+    }
+    tr {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    .required::after {
+      content: ' *';
+      color: #ef4444;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInModal {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    @media (max-width: 640px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        padding: 0.75rem;
+      }
+      header .left-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center selection:bg-blue-500 selection:text-white relative">
+  <header>
+    <div class="left-section flex items-center space-x-3">
+      <h1 id="header-title" class="text-xl sm:text-xl font-semibold gradient-text text-visible">Work Item Details</h1>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button id="btn-profile" title="Profile"
+        class="btn-neutral text-white border border-white font-medium py-1 px-3 text-sm rounded-md hover:bg-white hover:bg-opacity-10 focus:outline-none transition-all glow sm:flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 sm:mr-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+        <span class="sm:hidden">Profile</span>
+      </button>
+      <button id="btn-contact"
+        class="btn-neutral text-white border border-white font-medium py-1 px-3 text-sm rounded-md hover:bg-white hover:bg-opacity-10 focus:outline-none transition-all glow">
+        Contact
+      </button>
+      <button id="btn-logout" onclick="navigateTo('logout')"
+        class="logout-button">
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-7xl flex flex-col flex-grow p-6 mt-20">
+    <!-- Back Button -->
+    <div class="mb-6">
+      <button onclick="navigateTo('workitems')"
+        class="btn-neutral bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none transition-all glow">
+        Back to Work Items
+      </button>
+    </div>
+
+    <!-- Horizontal Sections -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Summary Section -->
+      <div class="card p-4" onclick="openModal('summary')">
+        <h2 class="text-xl font-semibold text-gray-800 mb-3">Summary</h2>
+        <div id="workitem-details" class="space-y-2 text-xs">
+          <p><span class="font-medium">Ref No:</span> <span id="detail-refnum">Loading...</span></p>
+          <p><span class="font-medium">Name:</span> <span id="detail-name"></span></p>
+          <p><span class="font-medium">Type:</span> <span id="detail-type"></span></p>
+          <p><span class="font-medium">Comment:</span> <span id="detail-comment"></span></p>
+          <p><span class="font-medium">Created By:</span> <span id="detail-createdby"></span></p>
+          <p><span class="font-medium">Created Time:</span> <span id="detail-createdtime"></span></p>
+          <p><span class="font-medium">User ID:</span> <span id="detail-userid"></span></p>
+          <p><span class="font-medium">Status:</span> <span id="detail-status" class="status-badge"></span></p>
+        </div>
+      </div>
+
+      <!-- Policy Section -->
+      <div class="card p-4" onclick="openModal('policy')">
+        <h2 class="text-xl font-semibold text-gray-800 mb-3">Policy</h2>
+        <div class="table-container max-h-32">
+          <table class="w-full text-xs text-left text-gray-600">
+            <thead class="text-xs uppercase">
+              <tr>
+                <th class="px-2 py-2">Policy No.</th>
+                <th class="px-2 py-2">Created</th>
+                <th class="px-2 py-2">Product</th>
+                <th class="px-2 py-2">Company</th>
+                <th class="px-2 py-2">Work Item</th>
+                <th class="px-2 py-2">Cust No.</th>
+                <th class="px-2 py-2">Name</th>
+                <th class="px-2 py-2">Address</th>
+                <th class="px-2 py-2">Contact</th>
+              </tr>
+            </thead>
+            <tbody id="policy-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Interaction-Workitem Section -->
+      <div class="card p-4" onclick="openModal('interaction')">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-xl font-semibold text-gray-800">Interaction-Workitem</h2>
+          <button id="link-workitems-btn"
+            class="btn-neutral bg-blue-500 text-white font-semibold py-1 px-2 rounded-md hover:bg-blue-600 focus:outline-none transition-all glow text-xs"
+            onclick="event.stopPropagation(); openModal('link-workitems')">
+            Link Work Items
+          </button>
+        </div>
+        <p class="text-gray-600 text-xs mb-2">Linked Work Items will appear below.</p>
+        <div id="linked-workitems" class="space-y-1 text-xs">
+          <p class="text-gray-500 italic">No linked work items yet.</p>
+        </div>
+      </div>
+
+      <!-- Activity Section -->
+      <div class="card p-4" onclick="openModal('activity')">
+        <h2 class="text-xl font-semibold text-gray-800 mb-3">Activity (Future Use)</h2>
+        <p class="text-gray-600 text-xs">This section is reserved for future activity-related functionality.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>© 2025 Secure Access Limited</p>
+      <span class="separator">•</span>
+      <p class="secondary-text">Powered by Innovation</p>
+    </div>
+  </footer>
+
+  <!-- Profile Modal -->
+  <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
+        <button id="close-profile-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="text-gray-600 mb-6 space-y-2">
+        <p><span class="font-medium">User ID:</span> <span id="profile-userid">Not available</span></p>
+        <p><span class="font-medium">Email:</span> <span id="profile-email">Not available</span></p>
+      </div>
+      <button onclick="document.getElementById('close-profile-modal').click()"
+        class="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- Contact Modal -->
+  <div id="contact-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800">Contact Us</h3>
+        <button id="close-contact-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p class="text-gray-600 mb-6">Reach out to us at support@example.com or (555) 123-4567.</p>
+      <form class="space-y-5">
+        <div>
+          <label for="contact-name" class="block text-sm font-medium text-gray-700">Name</label>
+          <input type="text" id="contact-name" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Your Name">
+        </div>
+        <div>
+          <label for="contact-email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" id="contact-email" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="you@example.com">
+        </div>
+        <div>
+          <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
+          <textarea id="contact-message" rows="4" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Your message..."></textarea>
+        </div>
+      </form>
+      <button onclick="document.getElementById('close-contact-modal').click()"
+        class="mt-6 w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all">
+        Send Message
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div id="error-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md transform">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-red-600">Error</h3>
+        <button id="close-error-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p id="error-message" class="text-gray-600 mb-6"></p>
+      <button id="error-ok-btn"
+        class="w-full bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 transition-all">
+        OK
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="success-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md transform">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-green-600">Success</h3>
+        <button id="close-success-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p id="success-message" class="text-gray-600 mb-6"></p>
+      <button id="success-ok-btn"
+        class="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 transition-all">
+        OK
+      </button>
+    </div>
+  </div>
+
+  <!-- Link Work Items Modal -->
+  <div id="link-workitems-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800">Link Work Items</h3>
+        <button id="close-link-workitems-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <form id="link-workitems-form" class="space-y-5">
+        <div>
+          <label for="parent-refnum" class="block text-sm font-medium text-gray-700">Parent Work Item Number</label>
+          <input type="text" id="parent-refnum" readonly class="mt-1 block w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-lg shadow-sm sm:text-sm" placeholder="Parent work item number">
+        </div>
+        <div>
+          <label for="child-refnum" class="block text-sm font-medium text-gray-700 required">Child Work Item Number</label>
+          <input type="text" id="child-refnum" required class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter child work item number">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Priority Flag</label>
+          <div class="mt-2">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" id="priority-flag" class="focus:ring-blue-500">
+              <span>High Priority</span>
+            </label>
+          </div>
+        </div>
+        <div>
+          <label for="link-comment" class="block text-sm font-medium text-gray-700">Comment</label>
+          <textarea id="link-comment" rows="4" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter comment"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Work Type</label>
+          <div class="mt-2">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" id="work-type" value="LINK_WFK_WK" checked class="focus:ring-blue-500">
+              <span>LINK_WFK_WK</span>
+            </label>
+          </div>
+        </div>
+      </form>
+      <button id="submit-link-workitems-btn"
+        class="mt-6 w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all">
+        Link Work Item
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Modal -->
+  <div id="summary-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-3xl transform">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-3xl font-semibold text-gray-800">Summary</h3>
+        <button id="close-summary-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div id="summary-details" class="space-y-4 text-base">
+        <p><span class="font-medium">Reference Number:</span> <span id="summary-refnum">Loading...</span></p>
+        <p><span class="font-medium">Name:</span> <span id="summary-name"></span></p>
+        <p><span class="font-medium">Type:</span> <span id="summary-type"></span></p>
+        <p><span class="font-medium">Comment:</span> <span id="summary-comment"></span></p>
+        <p><span class="font-medium">Created By:</span> <span id="summary-createdby"></span></p>
+        <p><span class="font-medium">Created Time:</span> <span id="summary-createdtime"></span></p>
+        <p><span class="font-medium">User ID:</span> <span id="summary-userid"></span></p>
+        <p><span class="font-medium">Status:</span> <span id="summary-status" class="status-badge"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Policy Modal -->
+  <div id="policy-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-3xl transform">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-3xl font-semibold text-gray-800">Policy</h3>
+        <button id="close-policy-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="table-container max-h-96">
+        <table class="w-full text-sm text-left text-gray-600">
+          <thead class="text-xs uppercase">
+            <tr>
+              <th class="px-4 py-3">Policy No.</th>
+              <th class="px-4 py-3">Created Date</th>
+              <th class="px-4 py-3">Product Code</th>
+              <th class="px-4 py-3">Company</th>
+              <th class="px-4 py-3">Work Item No.</th>
+              <th class="px-4 py-3">Customer No.</th>
+              <th class="px-4 py-3">Customer Name</th>
+              <th class="px-4 py-3">Address</th>
+              <th class="px-4 py-3">Contact</th>
+            </tr>
+          </thead>
+          <tbody id="policy-modal-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interaction-Workitem Modal -->
+  <div id="interaction-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-3xl transform">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-3xl font-semibold text-gray-800">Interaction-Workitem</h3>
+        <button id="close-interaction-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="flex justify-between items-center mb-4">
+        <h4 class="text-xl font-semibold text-gray-800">Linked Work Items</h4>
+        <button id="modal-link-workitems-btn"
+          class="btn-neutral bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none transition-all glow"
+          onclick="openModal('link-workitems')">
+          Link Work Items
+        </button>
+      </div>
+      <p class="text-gray-600 mb-4">Linked Work Items will appear below.</p>
+      <div id="modal-linked-workitems" class="space-y-2">
+        <p class="text-gray-500 italic">No linked work items yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Modal -->
+  <div id="activity-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-3xl transform">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-3xl font-semibold text-gray-800">Activity (Future Use)</h3>
+        <button id="close-activity-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p class="text-gray-600 text-base">This section is reserved for future activity-related functionality.</p>
+    </div>
+  </div>
+
+  <div id="nav-popup" class="nav-popup">
+    <div class="nav-popup-content">
+      <div class="spinner"></div>
+      <p id="nav-message" class="text-gray-800 font-medium"></p>
+    </div>
+  </div>
+
+  <div id="loader" class="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <script>
+    const config = {
+      loginUrl: 'login.html',
+      userId: null,
+      email: null,
+      apiBaseUrl: 'http://localhost:8081/workItem_Service'
+    };
+
+    const modals = {
+      profile: document.getElementById('profile-modal'),
+      contact: document.getElementById('contact-modal'),
+      error: document.getElementById('error-modal'),
+      success: document.getElementById('success-modal'),
+      'link-workitems': document.getElementById('link-workitems-modal'),
+      summary: document.getElementById('summary-modal'),
+      policy: document.getElementById('policy-modal'),
+      interaction: document.getElementById('interaction-modal'),
+      activity: document.getElementById('activity-modal')
+    };
+
+    const mockPolicies = [
+      {
+        policyNum: "POL123456",
+        policyCreatedDate: "2025-01-15",
+        productCode: "PRD001",
+        polCompanyName: "Secure Insurance Co.",
+        workItemNo: "WI20256238844240",
+        customerNo: "CUST789",
+        custName: "John Doe",
+        addressDetails: "123 Main St, City, Country",
+        contactDetails: "john.doe@example.com, (555) 123-4567"
+      },
+      {
+        policyNum: "POL789012",
+        policyCreatedDate: "2024-11-20",
+        productCode: "PRD002",
+        polCompanyName: "Global Insurance Ltd.",
+        workItemNo: "WI20256238844240",
+        customerNo: "CUST789",
+        custName: "John Doe",
+        addressDetails: "456 Elm St, City, Country",
+        contactDetails: "john.doe2@example.com, (555) 987-6543"
+      }
+    ];
+
+    function openModal(modalId) {
+      if (modalId === 'profile') {
+        document.getElementById('profile-userid').textContent = config.userId || 'Not available';
+        document.getElementById('profile-email').textContent = config.email || 'Not available';
+      }
+      if (modalId === 'link-workitems') {
+        const workItemRefNum = new URLSearchParams(window.location.search).get('ref');
+        document.getElementById('parent-refnum').value = workItemRefNum || 'N/A';
+      }
+      modals[modalId]?.classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+      modals[modalId]?.classList.add('hidden');
+    }
+
+    function showAlert(type, message, redirectUrl = null) {
+      document.getElementById(`${type}-message`).textContent = message;
+      openModal(type);
+      if (redirectUrl) {
+        setTimeout(() => window.location.href = redirectUrl, 2000);
+      }
+    }
+
+    function showNavPopup(message) {
+      const popup = document.getElementById('nav-popup');
+      document.getElementById('nav-message').textContent = `Navigating to ${message}...`;
+      popup.classList.add('active');
+    }
+
+    function hideNavPopup() {
+      const popup = document.getElementById('nav-popup');
+      popup.classList.remove('active');
+    }
+
+    function showLoader() {
+      document.getElementById('loader').classList.add('active');
+    }
+
+    function hideLoader() {
+      document.getElementById('loader').classList.remove('active');
+    }
+
+    function initializeUserId() {
+      config.userId = sessionStorage.getItem('userId');
+      config.email = sessionStorage.getItem('email');
+      if (!config.userId) {
+        showAlert('error', 'Please log in to continue.', config.loginUrl);
+        return false;
+      }
+      return true;
+    }
+
+    function logout() {
+      sessionStorage.removeItem('userId');
+      sessionStorage.removeItem('email');
+      config.userId = null;
+      config.email = null;
+      showAlert('success', 'Logged out successfully!', config.loginUrl);
+    }
+
+    function navigateTo(page) {
+      if (page !== 'logout' && !config.userId) {
+        showAlert('error', 'Please log in to access this page.', config.loginUrl);
+        return;
+      }
+      const pageUrls = {
+        dashboard: 'dashboard.html',
+        workitems: 'index.html',
+        'create-workitem': 'index.html',
+        logout: 'login.html'
+      };
+      const url = pageUrls[page] || config.loginUrl;
+      showLoader();
+      showNavPopup(page);
+      setTimeout(() => {
+        hideNavPopup();
+        hideLoader();
+        if (page === 'logout') {
+          logout();
+        } else {
+          window.location.href = url;
+        }
+      }, 2000);
+    }
+
+    async function fetchWorkItems(workItemRefNum) {
+      const params = new URLSearchParams();
+      if (workItemRefNum) params.append('workItemRefNum', workItemRefNum);
+      const response = await fetch(`${config.apiBaseUrl}/workitems?${params.toString()}`, {
+        headers: { 'userId': config.userId }
+      });
+      const data = await response.json();
+      if (data.errorMessage) throw new Error(data.errorMessage);
+      return data.data;
+    }
+
+    function populateWorkItemDetails(item) {
+      const fields = ['refnum', 'name', 'type', 'comment', 'createdby', 'createdtime', 'userid', 'status'];
+      fields.forEach(field => {
+        const cardElement = document.getElementById(`detail-${field}`);
+        const modalElement = document.getElementById(`summary-${field}`);
+        let value = item[field.replace('refnum', 'workItemReferenceNumber').replace('type', 'workType')] || 'N/A';
+        if (field === 'createdtime' && value !== 'N/A') {
+          value = new Date(value).toLocaleString();
+        }
+        if (cardElement) cardElement.textContent = value;
+        if (modalElement) modalElement.textContent = value;
+      });
+      const statusElements = [document.getElementById('detail-status'), document.getElementById('summary-status')];
+      statusElements.forEach(el => {
+        if (el) {
+          el.textContent = item.status || 'N/A';
+          el.className = `status-badge status-${item.status?.toLowerCase().replace(' ', '_') || 'unknown'}`;
+        }
+      });
+    }
+
+    function populatePolicyTable(policies, tableId) {
+      const tbody = document.getElementById(tableId);
+      tbody.innerHTML = '';
+      if (policies.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-3 text-center text-gray-500">No policies found.</td></tr>';
+        return;
+      }
+      policies.forEach((policy, index) => {
+        const row = document.createElement('tr');
+        row.style.animationDelay = `${index * 0.05}s`;
+        row.innerHTML = `
+          <td class="px-4 py-3">${policy.policyNum || ''}</td>
+          <td class="px-4 py-3">${policy.policyCreatedDate || ''}</td>
+          <td class="px-4 py-3">${policy.productCode || ''}</td>
+          <td class="px-4 py-3">${policy.polCompanyName || ''}</td>
+          <td class="px-4 py-3">${policy.workItemNo || ''}</td>
+          <td class="px-4 py-3">${policy.customerNo || ''}</td>
+          <td class="px-4 py-3">${policy.custName || ''}</td>
+          <td class="px-4 py-3">${policy.addressDetails || ''}</td>
+          <td class="px-4 py-3">${policy.contactDetails || ''}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    async function initializePage() {
+      if (!initializeUserId()) return;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const workItemRefNum = urlParams.get('ref');
+
+      if (!workItemRefNum) {
+        showAlert('error', 'No work item reference number provided.');
+        return;
+      }
+
+      try {
+        showLoader();
+        const workItems = await fetchWorkItems(workItemRefNum);
+        if (workItems.length === 0) {
+          showAlert('error', `No work item found with reference number: ${workItemRefNum}`);
+          return;
+        }
+        const workItem = workItems[0];
+        populateWorkItemDetails(workItem);
+        populatePolicyTable(mockPolicies.filter(policy => policy.workItemNo === workItemRefNum), 'policy-table');
+        populatePolicyTable(mockPolicies.filter(policy => policy.workItemNo === workItemRefNum), 'policy-modal-table');
+      } catch (error) {
+        showAlert('error', `Failed to load work item details: ${error.message}`);
+      } finally {
+        hideLoader();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initializePage();
+
+      const modalButtons = {
+        'btn-profile': () => openModal('profile'),
+        'btn-contact': () => openModal('contact'),
+        'close-profile-modal': () => closeModal('profile'),
+        'close-contact-modal': () => closeModal('contact'),
+        'close-error-modal': () => closeModal('error'),
+        'close-success-modal': () => closeModal('success'),
+        'close-link-workitems-modal': () => closeModal('link-workitems'),
+        'close-summary-modal': () => closeModal('summary'),
+        'close-policy-modal': () => closeModal('policy'),
+        'close-interaction-modal': () => closeModal('interaction'),
+        'close-activity-modal': () => closeModal('activity'),
+        'error-ok-btn': () => closeModal('error'),
+        'success-ok-btn': () => closeModal('success'),
+        'link-workitems-btn': () => openModal('link-workitems'),
+        'modal-link-workitems-btn': () => openModal('link-workitems'),
+        'submit-link-workitems-btn': () => {
+          const form = document.getElementById('link-workitems-form');
+          if (!form.checkValidity()) {
+            showAlert('error', 'Please fill all required fields.');
+            return;
+          }
+          const linkData = {
+            parentRefNum: document.getElementById('parent-refnum').value,
+            childRefNum: document.getElementById('child-refnum').value.trim(),
+            priorityFlag: document.getElementById('priority-flag').checked,
+            comment: document.getElementById('link-comment').value.trim(),
+            workType: document.getElementById('work-type').checked ? 'LINK_WFK_WK' : ''
+          };
+          console.log('Linking work item:', linkData);
+          closeModal('link-workitems');
+          showAlert('success', `Work item ${linkData.childRefNum} linked to ${linkData.parentRefNum} (placeholder action).`);
+          document.getElementById('link-workitems-form').reset();
+          document.getElementById('work-type').checked = true;
+        }
+      };
+
+      Object.entries(modalButtons).forEach(([id, handler]) => {
+        document.getElementById(id)?.addEventListener('click', handler);
+      });
+
+      window.addEventListener('click', (e) => {
+        Object.keys(modals).forEach((key) => {
+          if (e.target === modals[key]) closeModal(key);
+        });
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          Object.keys(modals).forEach((key) => closeModal(key));
+        }
+      });
+    });
+  </script>
+</body>
+</html>
