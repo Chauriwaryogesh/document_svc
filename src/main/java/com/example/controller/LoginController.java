@@ -7,16 +7,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class LoginController {
     @GetMapping("/login")
     public String login() {
-        return "login";  // This looks for login.html in src/main/resources/templates/
+        return "login";
     }
     @GetMapping("/register")
     public String register() {
-        return "register";  // This looks for login.html in src/main/resources/templates/
+        return "register"; 
     }
     
     @GetMapping("/ServicePage")
-    public String servicePage(String userId) {
+    public String servicePage(String email,String userId) {
         return "ServicePage";
+    }
+    
+    @GetMapping("/workItemServices")
+    public String workItemServices(String email,String userId) {
+        return "workItemServices";
     }
     
 }
