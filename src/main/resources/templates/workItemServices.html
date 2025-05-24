@@ -194,16 +194,76 @@
       height: 100%;
       transition: width 0.5s ease;
     }
+    .team-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid #e5e7eb;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    .team-circle svg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    .team-circle circle {
+      fill: none;
+      stroke-width: 10;
+      r: 55;
+      cx: 60;
+      cy: 60;
+    }
+    .circle-background {
+      stroke: #e6e6e6;
+    }
+    .circle-progress {
+      stroke-linecap: round;
+      stroke-dasharray: 345.58;
+      stroke-dashoffset: 345.58;
+      transition: stroke-dashoffset 1s ease-out;
+    }
+    .team-circle p.percentage {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .team-count {
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 8px;
+      text-align: center;
+    }
+    #complaints-circle { stroke: #3b82f6; }
+    #workflow-circle { stroke: #10b981; }
+    #admin-circle { stroke: #f59e0b; }
+    #team-member-circle { stroke: #ef4444; }
+    #complaints-count { color: #3b82f6; }
+    #workflow-count { color: #10b981; }
+    #admin-count { color: #f59e0b; }
+    #team-member-count { color: #ef4444; }
     .table-container {
       max-height: 600px;
       overflow-y: auto;
       border-radius: 12px;
       border: 1px solid #e5e7eb;
       background: white;
+      position: relative;
+      scroll-behavior: smooth;
     }
     table {
       border-collapse: separate;
       border-spacing: 0;
+      width: 100%;
     }
     th, td {
       border-bottom: 1px solid #e5e7eb;
@@ -217,9 +277,17 @@
     tr:last-child td {
       border-bottom: none;
     }
+    thead {
+      background: #60a5fa;
+    }
     th {
       color: white;
       font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background-clip: padding-box;
+      background: inherit;
     }
     th:nth-child(1) { background: #60a5fa; }
     th:nth-child(2) { background: #2dd4bf; }
@@ -229,6 +297,9 @@
     th:nth-child(6) { background: #818cf8; }
     th:nth-child(7) { background: #9ca3af; }
     th:nth-child(8) { background: #f87171; }
+    tbody {
+      padding-top: 48px; /* Space for sticky header */
+    }
     tr:nth-child(even) {
       background: #f9fafb;
     }
@@ -294,14 +365,32 @@
       top: 0;
       left: 0;
       width: 100%;
-      background: transparent;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      background: linear-gradient(to right, #3b82f6, #60a5fa);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
       z-index: 100;
       padding: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       height: 4rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .logout-button {
+      background: #dc2626;
+      color: white;
+      border: none;
+      font-weight: 600;
+      padding: 0.5rem 1.5rem;
+      border-radius: 8px;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .logout-button:hover {
+      background: #b91c1c;
+      transform: scale(1.05);
+    }
+    .logout-button:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
     }
     footer {
       background: transparent;
@@ -479,7 +568,7 @@
         Contact
       </button>
       <button id="btn-logout" onclick="navigateTo('logout')"
-        class="btn-neutral text-white border border-red-400 font-medium py-1 px-3 text-sm rounded-md hover:bg-red-500 hover:bg-opacity-10 focus:outline-none transition-all glow">
+        class="logout-button">
         Logout
       </button>
     </div>
@@ -498,6 +587,53 @@
   </div>
 
   <main class="w-full max-w-7xl flex flex-col flex-grow p-6 mt-20">
+    <div class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="card glow p-4 text-center">
+        <h3 class="text-sm font-semibold text-blue-600">Complaints Team</h3>
+        <div class="team-circle mx-auto">
+          <svg width="120" height="120">
+            <circle class="circle-background"></circle>
+            <circle class="circle-progress" id="complaints-circle"></circle>
+          </svg>
+          <p class="percentage" id="complaints-percentage">0%</p>
+        </div>
+        <p class="team-count" id="complaints-count">0</p>
+      </div>
+      <div class="card glow p-4 text-center">
+        <h3 class="text-sm font-semibold text-green-600">Workflow Team</h3>
+        <div class="team-circle mx-auto">
+          <svg width="120" height="120">
+            <circle class="circle-background"></circle>
+            <circle class="circle-progress" id="workflow-circle"></circle>
+          </svg>
+          <p class="percentage" id="workflow-percentage">0%</p>
+        </div>
+        <p class="team-count" id="workflow-count">0</p>
+      </div>
+      <div class="card glow p-4 text-center">
+        <h3 class="text-sm font-semibold text-yellow-600">Admin Team</h3>
+        <div class="team-circle mx-auto">
+          <svg width="120" height="120">
+            <circle class="circle-background"></circle>
+            <circle class="circle-progress" id="admin-circle"></circle>
+          </svg>
+          <p class="percentage" id="admin-percentage">0%</p>
+        </div>
+        <p class="team-count" id="admin-count">0</p>
+      </div>
+      <div class="card glow p-4 text-center">
+        <h3 class="text-sm font-semibold text-red-600">Team Member</h3>
+        <div class="team-circle mx-auto">
+          <svg width="120" height="120">
+            <circle class="circle-background"></circle>
+            <circle class="circle-progress" id="team-member-circle"></circle>
+          </svg>
+          <p class="percentage" id="team-member-percentage">0%</p>
+        </div>
+        <p class="team-count" id="team-member-count">0</p>
+      </div>
+    </div>
+
     <div class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="status-card glow" title="Open">
         <h3 class="text-sm font-semibold text-blue-600">Open</h3>
@@ -609,7 +745,7 @@
     <div class="card p-6">
       <div class="table-container">
         <table class="w-full text-base text-left text-gray-600">
-          <thead class="text-sm uppercase sticky top-0">
+          <thead class="text-sm uppercase">
             <tr>
               <th class="px-6 py-4">Reference Number</th>
               <th class="px-6 py-4">Name</th>
@@ -945,7 +1081,15 @@
       }, 2000);
     }
 
-    // API functions
+    function animateCircle(circleId, percentage, percentageTextId) {
+      const circle = document.getElementById(circleId);
+      const circumference = 345.58; // 2 * π * r (r = 55)
+      circle.style.strokeDasharray = circumference;
+      const offset = circumference - (percentage / 100) * circumference;
+      circle.style.strokeDashoffset = offset;
+      document.getElementById(percentageTextId).innerText = `${Math.round(percentage)}%`;
+    }
+
     async function fetchWorkItems(workItemRefNum = null) {
       const params = new URLSearchParams();
       if (workItemRefNum) params.append('workItemRefNum', workItemRefNum);
@@ -1021,7 +1165,7 @@
 
     function updateStatusCards(counts) {
       document.getElementById('total-count').textContent = counts.total || 0;
-      const total = counts.total || ((counts.open || 0) + (counts.close || 0) + (counts.in_progress || 0) + (counts.completed || 0) +
+      const total = counts.total || ((counts.open || 0) + (counts.closed || 0) + (counts.in_progress || 0) + (counts.completed || 0) +
                     (counts.pend_external || 0) + (counts.pent_internal || 0) + (counts.rejected || 0) + (counts.passed || 0));
       const updateCard = (id, count) => {
         const percentage = total ? (count / total) * 100 : 0;
@@ -1029,13 +1173,29 @@
         document.getElementById(`${id}-progress`).style.width = `${percentage}%`;
       };
       updateCard('open', counts.open);
-      updateCard('close', counts.close);
+      updateCard('close', counts.closed);
       updateCard('in-progress', counts.in_progress);
       updateCard('completed', counts.completed);
       updateCard('pend-external', counts.pend_external);
       updateCard('pent-internal', counts.pent_internal);
       updateCard('rejected', counts.rejected);
       updateCard('passed', counts.passed);
+    }
+
+    function updateTeamCircles(counts) {
+      const queue = counts.queue || {};
+      const maxQueueCount = 1000; // Assuming max queue count for scaling
+      const getPercentage = (count) => {
+        return Math.min(100, (parseInt(count) / maxQueueCount) * 100);
+      };
+      const updateCircle = (circleId, percentageId, countId, count) => {
+        animateCircle(circleId, getPercentage(count || 0), percentageId);
+        document.getElementById(countId).textContent = count || 0;
+      };
+      updateCircle('complaints-circle', 'complaints-percentage', 'complaints-count', queue.complaintsTeam);
+      updateCircle('workflow-circle', 'workflow-percentage', 'workflow-count', queue.workflowTeam);
+      updateCircle('admin-circle', 'admin-percentage', 'admin-count', queue.adminTeam);
+      updateCircle('team-member-circle', 'team-member-percentage', 'team-member-count', queue.teamMember);
     }
 
     function updatePagination(filteredItems) {
@@ -1107,6 +1267,7 @@
         allWorkItems = workItems;
         renderPage(1);
         updateStatusCards(statusCounts);
+        updateTeamCircles(statusCounts);
       } catch (error) {
         showAlert('error', `Failed to load data: ${error.message}`);
       } finally {
