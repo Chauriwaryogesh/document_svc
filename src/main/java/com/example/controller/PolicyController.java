@@ -49,11 +49,14 @@ public class PolicyController {
 	@GetMapping("/policy-details")
 	public com.example.service.ResponseEntity<List<PolicyDTO>> getCustomerlDetails(
 			@RequestParam(value = "policyNo", required = false) String policyNo,
+			@RequestParam(value = "allpolSearch", required = false) String allPol,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
 			@RequestHeader String userId) {
-
+		if(allPol == null) {
+			allPol="N";
+		}
 		com.example.service.ResponseEntity<List<PolicyDTO>> emailResp = policyService.getPolicyDetails(policyNo,
-				customerNo, userId);
+				customerNo,allPol, userId);
 
 		return emailResp;
 	}

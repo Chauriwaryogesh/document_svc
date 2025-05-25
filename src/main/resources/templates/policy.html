@@ -650,6 +650,14 @@
       transform: scale(1);
     }
   }
+  @media (max-width: 640px) {
+  .search-container .flex-col.sm\:flex-row {
+    flex-direction: column;
+  }
+  .search-container select#search-all-policies {
+    width: 100%;
+  }
+}
 </style>
 </head>
 <body class="min-h-screen flex flex-col items-center selection:bg-blue-500 selection:text-white relative">
@@ -691,6 +699,11 @@
             <option value="customer">Customer</option>
             <option value="policy">Policy</option>
           </select>
+          <!-- New Search All Policies Dropdown -->
+    <select id="search-all-policies" class="px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm hidden">
+      <option value="N">Search All Policies: No</option>
+      <option value="Y">Search All Policies: Yes</option>
+    </select>
           <button id="search-btn" class="btn-base btn-primary">
             Search
           </button>
@@ -1093,12 +1106,17 @@
 		  },
 		  searchInput: document.getElementById('search-input'),
 		  searchType: document.getElementById('search-type'),
+		  searchAllPolicies: document.getElementById('search-all-policies'), // New element
 		  toggleViewBtn: document.getElementById('toggle-view-btn'),
 		  resultsDiv: document.getElementById('search-results'),
 		  countDiv: document.getElementById('result-count'),
 		  paginationDiv: document.getElementById('pagination')
 		};
-
+		
+		function toggleSearchAllPolicies() {
+			  const searchType = elements.searchType.value;
+			  elements.searchAllPolicies.classList.toggle('hidden', searchType !== 'policy');
+			}
 		async function fetchProductCodes() {
 		  if (!config.userId) {
 		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
@@ -1786,6 +1804,7 @@
 		async function search() {
 			  const query = elements.searchInput.value.trim();
 			  const searchType = elements.searchType.value;
+			  const allpolSearch = elements.searchAllPolicies.value; // Get allpolSearch value
 			  console.log('Search type:', searchType, 'Query:', query); // Debugging
 			  if (!query) {
 			    showAlert('error', 'Please enter a search query.');
@@ -1798,9 +1817,13 @@
 
 			  showLoader();
 			  try {
-			    const endpoint = searchType === 'policy'
-			      ? `http://localhost:8081/policy/policy-details?policyNo=${encodeURIComponent(query)}`
-			      : `http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(query)}`;
+				  let endpoint;
+				    if (searchType === 'policy') {
+				      // Include allpolSearch parameter for policy search
+				      endpoint = `http://localhost:8081/policy/policy-details?policyNo=${encodeURIComponent(query)}&allpolSearch=${allpolSearch}`;
+				    } else {
+				      endpoint = `http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(query)}`;
+				    }
 			    const response = await fetch(endpoint, {
 			      method: 'GET',
 			      headers: { 'userId': config.userId },
@@ -1993,12 +2016,15 @@
 		// Event Listeners
 		document.addEventListener('DOMContentLoaded', () => {
 		  initializeUserId();
+		// Add listener for search-type change to toggle search-all-policies visibility
+		  elements.searchType.addEventListener('change', toggleSearchAllPolicies);
 
 		  elements.searchInput.addEventListener('keypress', e => {
 		    if (e.key === 'Enter') search();
 		  });
 		  document.getElementById('search-btn').addEventListener('click', search);
 		  elements.toggleViewBtn.addEventListener('click', toggleView);
+		  toggleSearchAllPolicies()
 
 		  document.getElementById('btn-profile').addEventListener('click', () => openModal('profile'));
 		  document.getElementById('btn-contact').addEventListener('click', () => openModal('contact'));
