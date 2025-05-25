@@ -1690,7 +1690,7 @@
 		          <tr>
 		            ${searchType === 'policy' ? `
 		              <td class="tooltip" data-tooltip="${item.policyName || 'N/A'}">${item.policyName || 'N/A'}</td>
-		              <td class="tooltip" data-tooltip="${item.policyNumber || 'N/A'}">${item.policyNumber || 'N/A'}</td>
+		              <td class="tooltip" data-tooltip="${item.policyNumber || 'N/A'}">${item.policyList.policyNumber || 'N/A'}</td>
 		              <td class="tooltip" data-tooltip="${item.customerNo || 'N/A'}">${item.customerNo || 'N/A'}</td>
 		              <td class="tooltip" data-tooltip="${item.custName || 'N/A'} ${item.middleName || ''} ${item.surname || ''}">${item.custName || 'N/A'} ${item.middleName || ''} ${item.surname || ''}</td>
 		              <td class="tooltip" data-tooltip="${item.fcuFlag || 'N/A'}">${item.fcuFlag || 'N/A'}</td>
@@ -1760,7 +1760,7 @@
 		async function search() {
 			  const query = elements.searchInput.value.trim();
 			  const searchType = elements.searchType.value;
-			  console.log('Search type:', searchType); // Debugging
+			  console.log('Search type:', searchType, 'Query:', query); // Debugging
 			  if (!query) {
 			    showAlert('error', 'Please enter a search query.');
 			    return;
@@ -1772,12 +1772,12 @@
 
 			  showLoader();
 			  try {
-			    const endpoint = searchType === 'policy' ?
-			      `http://localhost:8081/policy/policy-details?policyNo=${encodeURIComponent(query)}` :
-			      `http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(query)}`;
+			    const endpoint = searchType === 'policy'
+			      ? `http://localhost:8081/policy/policy-details?policyNo=${encodeURIComponent(query)}`
+			      : `http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(query)}`;
 			    const response = await fetch(endpoint, {
 			      method: 'GET',
-			      headers: { 'userId': config.userId }
+			      headers: { 'userId': config.userId },
 			    });
 
 			    if (response.ok) {
@@ -1796,33 +1796,37 @@
 			        renderResults([]);
 			        return;
 			      }
+
+			      let normalizedData = Array.isArray(data) ? data : [data].filter(Boolean);
+
 			      if (searchType === 'policy') {
-			        const normalizedData = Array.isArray(data) ? data : [data].filter(Boolean);
-			        const enrichedData = await Promise.all(normalizedData.map(async policy => {
-			          if (policy.customerNo) {
-			            try {
-			              const customerResponse = await fetch(`http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(policy.customerNo)}`, {
-			                method: 'GET',
-			                headers: { 'userId': config.userId }
-			              });
-			              if (customerResponse.ok) {
-			                const { data: customerData } = await customerResponse.json();
-			                if (customerData && customerData.length > 0) {
-			                  return { ...policy, ...customerData[0], policyList: customerData[0].policyList || [policy] };
-			                }
-			              }
-			            } catch (error) {
-			              console.error('Error fetching customer for policy:', error);
-			            }
-			          }
-			          return { ...policy, policyList: [policy] };
-			        }));
-			        config.currentData = enrichedData;
-			        console.log('Policy search data:', config.currentData); // Debugging
-			        renderResults(enrichedData);
+			        // Normalize policy data to make policy fields top-level
+			        normalizedData = normalizedData
+			          .filter(item => item.policyList && item.policyList.length > 0)
+			          .map(item => {
+			            const policy = item.policyList.find(p => p.policyNumber === query) || item.policyList[0];
+			            return {
+			              ...item,
+			              policyNumber: policy.policyNumber || 'N/A',
+			              policyName: policy.policyName || 'N/A',
+			              productCode: policy.productCode || 'N/A',
+			              polCompanyName: policy.polCompanyName || 'N/A',
+			              fcuFlag: policy.fcuFlag || 'N/A',
+			              customerNo: item.customerNo || 'N/A',
+			              custName: item.custName || 'N/A',
+			              middleName: item.middleName || '',
+			              surname: item.surname || '',
+			              email: item.email || 'N/A',
+			              phoneNum: item.phoneNum || 'N/A',
+			              gender: item.gender || 'N/A',
+			              smokerStatus: item.smokerStatus || 'N/A',
+			              policyList: item.policyList || [],
+			            };
+			          });
+			        console.log('Normalized policy data:', normalizedData); // Debugging
 			      } else {
-			        const normalizedData = Array.isArray(data) ? data : [data].filter(Boolean);
-			        config.currentData = normalizedData.map(item => ({
+			        // Customer search normalization
+			        normalizedData = normalizedData.map(item => ({
 			          ...item,
 			          custName: item.custName || 'N/A',
 			          middleName: item.middleName || '',
@@ -1833,11 +1837,15 @@
 			          smokerStatus: item.smokerStatus || 'N/A',
 			          customerNo: item.customerNo || 'N/A',
 			          policyList: item.policyList || [],
-			          associatedpolicyCount: item.associatedpolicyCount || '0'
+			          associatedpolicyCount: item.associatedpolicyCount || '0',
 			        }));
-			        console.log('Customer search data:', config.currentData); // Debugging
-			        renderResults(config.currentData);
+			        console.log('Customer search data:', normalizedData); // Debugging
 			      }
+
+			      config.current
+
+			Data = normalizedData;
+			      renderResults(normalizedData);
 			    } else {
 			      const errorText = await response.text();
 			      showAlert('error', errorText || `No ${searchType}s found.`);

@@ -88,4 +88,19 @@ public class PolicyController {
 		}
 		return emailResp;
 	}
+	
+	@PostMapping("/policy-details/update")
+	public com.example.service.ResponseEntity<String> getPolicyDetails(
+			@RequestBody CustomerDTO customerDTO, @RequestHeader String userId) {
+		com.example.service.ResponseEntity<String> resp = new com.example.service.ResponseEntity<>();
+
+		String message = otpService.updateCustomerDetails(customerDTO, userId);
+
+		if (message.contains("Success")) {
+			resp.setData(message);
+		} else {
+			resp.setErrorMessage("Error while updating  customerDetails ");
+		}
+		return resp;
+	}
 }
