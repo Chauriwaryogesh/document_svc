@@ -25,6 +25,7 @@ import com.example.dto.ResponseDTO;
 import com.example.dto.WorkItemDTO;
 import com.example.entity.Customer;
 import com.example.entity.Policy;
+import com.example.exception.CustomerNotFoundException;
 import com.example.repo.CustomerRepo;
 import com.example.repo.IPolicyRepo;
 
@@ -110,7 +111,9 @@ public class PolicyService {
 		return newPolicyNumber;
 	}
 
-	public List<PolicyDTO> getPolicyDetails(String policyNo, String customerNo, String userId) {
+	public ResponseEntity<List<PolicyDTO>> getPolicyDetails(String policyNo, String customerNo, String userId) {
+
+		ResponseEntity<List<PolicyDTO>> resp = new ResponseEntity<List<PolicyDTO>>();
 		List<PolicyDTO> response = new ArrayList<>();
 
 		if (policyNo != null) {
@@ -118,7 +121,11 @@ public class PolicyService {
 			if (policy != null) {
 				// Fetch customer details for this policy
 				Optional<Customer> customerDtls = customerRepo.findByCustomerNo(policy.getCustomerNo());
-				if (customerDtls.isPresent()) {
+				if (!customerDtls.isPresent()) {
+					resp.setErrorMessage("No customer found for policy number: " + policyNo);
+					// throw new CustomerNotFoundException("No customer found for policy number: " +
+					// policyNo);
+				} else {
 					Customer customer = customerDtls.get();
 
 					PolicyDTO policyDTO = new PolicyDTO();
@@ -145,82 +152,89 @@ public class PolicyService {
 					policyDTO.setPolicyList(policyList);
 					policyDTO.setAssociatedpolicyCount("1");
 					response.add(policyDTO);
+					resp.setData(response);
 				}
+			}else {
+				resp.setErrorMessage("No customer found for policy number: " + policyNo);
 			}
 		} else if (customerNo != null) {
-			List<Policy> policyList = policyRepository.findByCustomerNo(customerNo);
-			if(policyList != null && !policyList.isEmpty()){
-				response = mapPolciyListDetails(policyList, response, userId);
-			}else {
-				Optional<Customer> customerDtls = customerRepo.findByCustomerNo(customerNo);
-				 Customer customer = customerDtls.get();
-			        PolicyDTO policyDTO = new PolicyDTO();
-			        policyDTO.setAssociatedpolicyCount("0");
-			        policyDTO.setCustomerNo(customerNo);
-			        policyDTO.setUserId(userId);
-			        policyDTO.setPhoneNum(customer.getPhoneNumber());
-			        policyDTO.setCustName(customer.getName());
-			        policyDTO.setSmokerStatus(customer.getSmokerStatus());
-			        policyDTO.setSurname(customer.getSurname());
-			        policyDTO.setGender(customer.getGender());
-			        policyDTO.setMiddleName(customer.getMiddleName());
-			        policyDTO.setDateOfBirth(customer.getDateOfBirth());
-			        policyDTO.setEmail(customer.getEmail());
-			        response.add(policyDTO);
+			// Check if customer exists
+			Optional<Customer> customerDtls = customerRepo.findByCustomerNo(customerNo);
+			if (!customerDtls.isPresent()) {
+				resp.setErrorMessage("No customer found for customer number: " + customerNo);
+				// throw new CustomerNotFoundException("No customer found for customer number: "
+				// + customerNo);
+			} else {
+				Customer customer = customerDtls.get();
+
+				List<Policy> policyList = policyRepository.findByCustomerNo(customerNo);
+				if (policyList != null && !policyList.isEmpty()) {
+					response = mapPolicyListDetails(policyList, response, userId);
+				} else {
+					// Return customer details with no policies
+					PolicyDTO policyDTO = new PolicyDTO();
+					policyDTO.setAssociatedpolicyCount("0");
+					policyDTO.setCustomerNo(customerNo);
+					policyDTO.setUserId(userId);
+					policyDTO.setPhoneNum(customer.getPhoneNumber());
+					policyDTO.setCustName(customer.getName());
+					policyDTO.setSmokerStatus(customer.getSmokerStatus());
+					policyDTO.setSurname(customer.getSurname());
+					policyDTO.setGender(customer.getGender());
+					policyDTO.setMiddleName(customer.getMiddleName());
+					policyDTO.setDateOfBirth(customer.getDateOfBirth());
+					policyDTO.setEmail(customer.getEmail());
+					response.add(policyDTO);
+				}
+				resp.setData(response);
 			}
+
 		} else {
 			List<Policy> policyList = policyRepository.findAll();
-			if(policyList != null && !policyList.isEmpty()){
-				response = mapPolciyListDetails(policyList, response, userId);
+			if (policyList != null && !policyList.isEmpty()) {
+				response = mapPolicyListDetails(policyList, response, userId);
+				resp.setData(response);
 			}
 		}
-		return response;
+
+		return resp;
 	}
 
+    private List<PolicyDTO> mapPolicyListDetails(List<Policy> policies, List<PolicyDTO> response, String userId) {
+        for (Policy policy : policies) {
+            Optional<Customer> customerDtls = customerRepo.findByCustomerNo(policy.getCustomerNo());
+            if (!customerDtls.isPresent()) {
+                throw new CustomerNotFoundException("No customer found for policy number: " + policy.getPolicyNumber());
+            }
+            Customer customer = customerDtls.get();
 
-	private List<PolicyDTO> mapPolciyListDetails(List<Policy> policyListPOl, List<PolicyDTO> response, String userId) {
-	    // Group policies by customer number
-	    Map<String, List<Policy>> customerPolicyMap = policyListPOl.stream()
-	        .collect(Collectors.groupingBy(Policy::getCustomerNo));
-	    response = customerPolicyMap.entrySet().stream().map(entry -> {
-	        String customerNo = entry.getKey();
-	        List<Policy> policies = entry.getValue();
-	        Optional<Customer> customerDtls = customerRepo.findByCustomerNo(customerNo);
-	        if (customerDtls.isEmpty()) {
-	            return null; 
-	        }
-	        Customer customer = customerDtls.get();
-	        PolicyDTO policyDTO = new PolicyDTO();
-	        policyDTO.setAssociatedpolicyCount(String.valueOf(policies.size()));
-	        policyDTO.setCustomerNo(customerNo);
-	        policyDTO.setUserId(userId);
-	        policyDTO.setPhoneNum(customer.getPhoneNumber());
-	        policyDTO.setCustName(customer.getName());
-	        policyDTO.setSmokerStatus(customer.getSmokerStatus());
-	        policyDTO.setSurname(customer.getSurname());
-	        policyDTO.setGender(customer.getGender());
-	        policyDTO.setMiddleName(customer.getMiddleName());
-	        policyDTO.setDateOfBirth(customer.getDateOfBirth());
-	        policyDTO.setEmail(customer.getEmail());
+            PolicyDTO policyDTO = new PolicyDTO();
+            policyDTO.setCustomerNo(customer.getCustomerNo());
+            policyDTO.setUserId(userId);
+            policyDTO.setPhoneNum(customer.getPhoneNumber());
+            policyDTO.setCustName(customer.getName());
+            policyDTO.setSmokerStatus(customer.getSmokerStatus());
+            policyDTO.setSurname(customer.getSurname());
+            policyDTO.setGender(customer.getGender());
+            policyDTO.setMiddleName(customer.getMiddleName());
+            policyDTO.setDateOfBirth(customer.getDateOfBirth());
+            policyDTO.setEmail(customer.getEmail());
 
-	        // Map all associated policies to PolicyList
-	        List<PolicyList> policyList =   policies.stream().map(policy -> {
-	            PolicyList pol = new PolicyList();
-	            pol.setFcuFlag(policy.getFcuFlag());
-	            pol.setPolicyNumber(policy.getPolicyNumber());
-	            pol.setPolCompanyName(policy.getPolCompanyName());
-	            pol.setPolicyName(policy.getPolicyName());
-	            pol.setProductCode(policy.getProductCode());
-	            return pol;
-	        }).collect(Collectors.toList());
+            List<PolicyList> policyList = new ArrayList<>();
+            PolicyList pol = new PolicyList();
+            pol.setFcuFlag(policy.getFcuFlag());
+            pol.setPolicyNumber(policy.getPolicyNumber());
+            pol.setPolCompanyName(policy.getPolCompanyName());
+            pol.setPolicyName(policy.getPolicyName());
+            pol.setProductCode(policy.getProductCode());
+            policyList.add(pol);
+            policyDTO.setPolicyList(policyList);
+            policyDTO.setAssociatedpolicyCount("1");
+            response.add(policyDTO);
+        }
+        return response;
+    }
 
-	        policyDTO.setPolicyList(policyList);
-	        return policyDTO;
-	    })
-	    .filter(Objects::nonNull) 
-	    .collect(Collectors.toList());
-	    return response;
-	}
 
 	public List<String> getDoaminData(String value, String userId) {
 		List<String> productCode = new ArrayList<>();

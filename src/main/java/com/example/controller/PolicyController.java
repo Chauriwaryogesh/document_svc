@@ -51,13 +51,10 @@ public class PolicyController {
 			@RequestParam(value = "policyNo", required = false) String policyNo,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
 			@RequestHeader String userId) {
-		com.example.service.ResponseEntity<List<PolicyDTO>> emailResp = new com.example.service.ResponseEntity<>();
-		List<PolicyDTO> policyDTO = policyService.getPolicyDetails(policyNo,customerNo, userId);
-		if (policyDTO != null && !policyDTO.isEmpty()) {
-			emailResp.setData(policyDTO);
-		} else {
-			emailResp.setErrorMessage("Error while fetching customerDetails ");
-		}
+
+		com.example.service.ResponseEntity<List<PolicyDTO>> emailResp = policyService.getPolicyDetails(policyNo,
+				customerNo, userId);
+
 		return emailResp;
 	}
 	
