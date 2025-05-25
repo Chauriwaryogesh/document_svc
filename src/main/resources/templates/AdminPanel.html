@@ -1135,134 +1135,128 @@
     </div>
 
 <div class="customer-details-modal" id="customerDetailsModal" style="display: none;">
-    <h2>Customer Details</h2>
-    <button class="close-button" onclick="closeCustomerDetailsModal()">×</button>
-    <div class="modal-content">
-        <!-- Tabs at the top -->
-        <div class="tab-container">
-            <div class="tab-buttons">
-                <button class="tab-button active" data-tab="tab1">Customer Details</button>
-                <button class="tab-button" data-tab="tab2">Address</button>
-                <button class="tab-button" data-tab="tab3">Contact Details</button>
-                <button class="tab-button" data-tab="tab4">Tab 4</button>
-            </div>
-            <div class="tab-content active" id="tab1">
-                <!-- Customer Details fields -->
-                <div class="tab-fields">
-                    <div>
-                        <label for="customer-name">Name<span class="required">*</span></label>
-                        <input type="text" id="customer-name" required>
-                    </div>
-                    <div>
-                        <label for="customer-middleName">Middle Name</label>
-                        <input type="text" id="customer-middleName">
-                    </div>
-                    <div>
-                        <label for="customer-surname">Surname<span class="required">*</span></label>
-                        <input type="text" id="customer-surname" required>
-                    </div>
-                    <div>
-                        <label for="customer-age">Age<span class="required">*</span></label>
-                        <input type="number" id="customer-age" min="0" required>
-                    </div>
-                    <div>
-                        <label for="customer-gender">Gender<span class="required">*</span></label>
-                        <select id="customer-gender" required>
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="customer-phoneNumber">Phone Number<span class="required">*</span></label>
-                        <input type="text" id="customer-phoneNumber" required>
-                    </div>
-                    <div>
-                        <label for="customer-email">Email</label>
-                        <input type="text" id="customer-email" readonly>
-                    </div>
-                    <div>
-                        <label for="customer-id">ID</label>
-                        <input type="text" id="customer-id" readonly>
-                    </div>
-                    <div>
-                        <label for="customer-userId">User ID</label>
-                        <input type="text" id="customer-userId" readonly>
-                    </div>
-                    <div>
-                        <label>Smoker Status</label>
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="customer-smokerStatus">
-                            <label for="customer-smokerStatus">Smoker</label>
+        <h2>Customer Details</h2>
+        <button class="close-button" onclick="closeCustomerDetailsModal()">×</button>
+        <div class="modal-content">
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="tab1">Customer Details</button>
+                    <button class="tab-button" data-tab="tab2">Address</button>
+                    <button class="tab-button" data-tab="tab3">Contact Details</button>
+                    <button class="tab-button" data-tab="tab4">Tab 4</button>
+                </div>
+                <div class="tab-content active" id="tab1">
+                    <div class="tab-fields">
+                        <div>
+                            <label for="customer-name">Name<span class="required">*</span></label>
+                            <input type="text" id="customer-name" required>
                         </div>
-                    </div>
-                    <div>
-                        <label>Admin Access</label>
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="customer-adminAccess">
-                            <label for="customer-adminAccess">Yes</label>
+                        <div>
+                            <label for="customer-middleName">Middle Name</label>
+                            <input type="text" id="customer-middleName">
+                        </div>
+                        <div>
+                            <label for="customer-surname">Surname<span class="required">*</span></label>
+                            <input type="text" id="customer-surname" required>
+                        </div>
+                        <div>
+                            <label for="customer-age">Age<span class="required">*</span></label>
+                            <input type="number" id="customer-age" min="0" required>
+                        </div>
+                        <div>
+                            <label for="customer-dateOfBirth">Date of Birth<span class="required">*</span></label>
+                            <input type="date" id="customer-dateOfBirth" required>
+                        </div>
+                        <div>
+                            <label for="customer-gender">Gender<span class="required">*</span></label>
+                            <select id="customer-gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="customer-phoneNumber">Phone Number<span class="required">*</span></label>
+                            <input type="text" id="customer-phoneNumber" required pattern="\d{10}" maxlength="10" placeholder="Enter 10-digit phone number">
+                        </div>
+                        <div>
+                            <label for="customer-email">Email</label>
+                            <input type="text" id="customer-email" readonly>
+                        </div>
+                        <div>
+                            <label for="customer-id">ID</label>
+                            <input type="text" id="customer-id" readonly>
+                        </div>
+                        <div>
+                            <label for="customer-userId">User ID</label>
+                            <input type="text" id="customer-userId" readonly>
+                        </div>
+                        <div>
+                            <label>Smoker Status</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="customer-smokerStatus">
+                                <label for="customer-smokerStatus">Smoker</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label>Admin Access</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="customer-adminAccess">
+                                <label for="customer-adminAccess">Yes</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="tab-content" id="tab2">
-                <!-- Address fields -->
-                <div class="tab-fields">
-                    <div>
-                        <label for="customer-street">Street<span class="required">*</span></label>
-                        <input type="text" id="customer-street" required>
-                    </div>
-                    <div>
-                        <label for="customer-city">City<span class="required">*</span></label>
-                        <input type="text" id="customer-city" required>
-                    </div>
-                    <div>
-                        <label for="customer-state">State<span class="required">*</span></label>
-                        <input type="text" id="customer-state" required>
-                    </div>
-                    <div>
-                        <label for="customer-zipCode">ZIP Code<span class="required">*</span></label>
-                        <input type="text" id="customer-zipCode" required>
-                    </div>
-                    <div>
-                        <label for="customer-country">Country<span class="required">*</span></label>
-                        <input type="text" id="customer-country" required>
+                <div class="tab-content" id="tab2">
+                    <div class="tab-fields">
+                        <div>
+                            <label for="customer-street">Street<span class="required">*</span></label>
+                            <input type="text" id="customer-street" required>
+                        </div>
+                        <div>
+                            <label for="customer-city">City<span class="required">*</span></label>
+                            <input type="text" id="customer-city" required>
+                        </div>
+                        <div>
+                            <label for="customer-state">State<span class="required">*</span></label>
+                            <input type="text" id="customer-state" required>
+                        </div>
+                        <div>
+                            <label for="customer-zipCode">ZIP Code<span class="required">*</span></label>
+                            <input type="text" id="customer-zipCode" required>
+                        </div>
+                        <div>
+                            <label for="customer-country">Country<span class="required">*</span></label>
+                            <input type="text" id="customer-country" required>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="tab-content" id="tab3">
-                <!-- Contact Details fields -->
-                <div class="tab-fields">
-                    <div>
-                        <label for="customer-alternateEmail">Alternate Email</label>
-                        <input type="email" id="customer-alternateEmail">
-                    </div>
-                    <div class="phone-group">
+                <div class="tab-content" id="tab3">
+                    <div class="tab-fields">
+                        <div>
+                            <label for="customer-alternateEmail">Alternate Email</label>
+                            <input type="email" id="customer-alternateEmail">
+                        </div>
                         <div>
                             <label for="customer-phoneCountryCode">Phone Country Code<span class="required">*</span></label>
-                            <input type="text" id="customer-phoneCountryCode" required style="width: 80px;">
+                            <input type="text" id="customer-phoneCountryCode" required style="width: 80px;" placeholder="+91">
                         </div>
                         <div>
-                            <label for="customer-contactPhoneNumber">Phone Number<span class="required">*</span></label>
-                            <input type="text" id="customer-contactPhoneNumber" required>
+                            <label for="customer-emergencyContactName">Emergency Contact Name<span class="required">*</span></label>
+                            <input type="text" id="customer-emergencyContactName" required>
+                        </div>
+                        <div>
+                            <label for="customer-emergencyContactPhone">Emergency Contact Phone<span class="required">*</span></label>
+                            <input type="text" id="customer-emergencyContactPhone" required pattern="\d{10}" maxlength="10" placeholder="Enter 10-digit phone number">
                         </div>
                     </div>
-                    <div>
-                        <label for="customer-emergencyContactName">Emergency Contact Name<span class="required">*</span></label>
-                        <input type="text" id="customer-emergencyContactName" required>
-                    </div>
-                    <div>
-                        <label for="customer-emergencyContactPhone">Emergency Contact Phone<span class="required">*</span></label>
-                        <input type="text" id="customer-emergencyContactPhone" required>
-                    </div>
+                </div>
+                <div class="tab-content" id="tab4">
+                    <p>Placeholder content for Tab 4. Add future content here.</p>
                 </div>
             </div>
-            <div class="tab-content" id="tab4">
-                <p>Placeholder content for Tab 4. Add future content here.</p>
-            </div>
         </div>
-    </div>
     <div class="modal-buttons">
         <button class="update-button" onclick="updateCustomerDetails()">Update Details</button>
         <button class="cancel-button" onclick="closeCustomerDetailsModal()">Cancel</button>
@@ -1563,34 +1557,41 @@ async function showCustomerDetails(emailId, userId) {
 
         const basicData = await basicResponse.json();
         console.log("basicData", basicData);
-        if (!basicData.data) {
+        if (!basicData.data || !Array.isArray(basicData.data) || basicData.data.length === 0) {
             throw new Error('No customer data found');
         }
 
-        document.getElementById('customer-name').value = basicData.data.name || '';
-        document.getElementById('customer-middleName').value = basicData.data.middleName || '';
-        document.getElementById('customer-surname').value = basicData.data.surname || '';
-        document.getElementById('customer-age').value = basicData.data.age || '';
-        document.getElementById('customer-gender').value = basicData.data.gender || '';
-        document.getElementById('customer-phoneNumber').value = basicData.data.phoneNumber || '';
-        document.getElementById('customer-email').value = basicData.data.email || emailId;
-        document.getElementById('customer-id').value = basicData.data.customerNo || '';
-        document.getElementById('customer-userId').value = basicData.data.userId || userId || '';
-        document.getElementById('customer-smokerStatus').checked = basicData.data.smokerStatus === 'Y';
-        document.getElementById('customer-adminAccess').checked = basicData.data.adminAccess === 'Y';
+        // Access the first item in the data array
+        const customer = basicData.data[0];
 
-        document.getElementById('customer-street').value = basicData.data.address?.street || '';
-        document.getElementById('customer-city').value = basicData.data.address?.city || '';
-        document.getElementById('customer-state').value = basicData.data.address?.state || '';
-        document.getElementById('customer-zipCode').value = basicData.data.address?.zipCode || '';
-        document.getElementById('customer-country').value = basicData.data.address?.country || '';
+        // Populate Customer Details tab
+        document.getElementById('customer-name').value = customer.name || '';
+        document.getElementById('customer-middleName').value = customer.middleName || '';
+        document.getElementById('customer-surname').value = customer.surname || '';
+        document.getElementById('customer-age').value = customer.age || '';
+        document.getElementById('customer-dateOfBirth').value = customer.dateOfBirth || ''; // Add this
+        document.getElementById('customer-gender').value = customer.gender || '';
+        document.getElementById('customer-phoneNumber').value = customer.phoneNumber || '';
+        document.getElementById('customer-email').value = customer.email || emailId;
+        document.getElementById('customer-id').value = customer.customerNo || '';
+        document.getElementById('customer-userId').value = customer.userId || userId || '';
+        document.getElementById('customer-smokerStatus').checked = customer.smokerStatus === 'Smoker';
+        document.getElementById('customer-adminAccess').checked = customer.adminAccess === '1' || customer.adminAccess === 'Y';
 
-        document.getElementById('customer-alternateEmail').value = basicData.data.contactDetails?.alternateEmail || '';
-        document.getElementById('customer-phoneCountryCode').value = basicData.data.contactDetails?.phoneCountryCode || '';
-        document.getElementById('customer-contactPhoneNumber').value = basicData.data.contactDetails?.phoneNumber || '';
-        document.getElementById('customer-emergencyContactName').value = basicData.data.contactDetails?.emergencyContactName || '';
-        document.getElementById('customer-emergencyContactPhone').value = basicData.data.contactDetails?.emergencyContactPhone || '';
-console.log("contactdetail",basicData.data.contactDetails);
+        // Populate Address tab
+        document.getElementById('customer-street').value = customer.address?.street || '';
+        document.getElementById('customer-city').value = customer.address?.city || '';
+        document.getElementById('customer-state').value = customer.address?.state || '';
+        document.getElementById('customer-zipCode').value = customer.address?.zipCode || '';
+        document.getElementById('customer-country').value = customer.address?.country || '';
+
+        // Populate Contact Details tab
+        document.getElementById('customer-alternateEmail').value = customer.contactDetails?.alternateEmail || '';
+        document.getElementById('customer-phoneCountryCode').value = customer.contactDetails?.phoneCountryCode || '';
+       // document.getElementById('customer-contactPhoneNumber').value = customer.contactDetails?.phoneNumber || '';
+        document.getElementById('customer-emergencyContactName').value = customer.contactDetails?.emergencyContactName || '';
+        document.getElementById('customer-emergencyContactPhone').value = customer.contactDetails?.emergencyContactPhone || '';
+
         openCustomerDetailsModal();
     } catch (error) {
         console.error('Error fetching customer details:', error.message);
@@ -1639,13 +1640,14 @@ async function updateCustomerDetails() {
     const name = document.getElementById('customer-name').value.trim();
     const surname = document.getElementById('customer-surname').value.trim();
     const age = document.getElementById('customer-age').value;
+    const dateOfBirth = document.getElementById('customer-dateOfBirth').value;
     const gender = document.getElementById('customer-gender').value;
     const phoneNumber = document.getElementById('customer-phoneNumber').value.trim();
     const middleName = document.getElementById('customer-middleName').value.trim();
-    const email = document.getElementById('customer-email').value;
+    const email = document.getElementById('customer-email').value.trim();
     const customerNo = document.getElementById('customer-id').value;
     const userId = document.getElementById('customer-userId').value;
-    const smokerStatus = document.getElementById('customer-smokerStatus').checked ? 'Y' : 'N';
+    const smokerStatus = document.getElementById('customer-smokerStatus').checked ? 'Smoker' : 'Non-Smoker';
     const adminAccess = document.getElementById('customer-adminAccess').checked ? 'Y' : 'N';
     const street = document.getElementById('customer-street').value.trim();
     const city = document.getElementById('customer-city').value.trim();
@@ -1654,24 +1656,41 @@ async function updateCustomerDetails() {
     const country = document.getElementById('customer-country').value.trim();
     const alternateEmail = document.getElementById('customer-alternateEmail').value.trim();
     const phoneCountryCode = document.getElementById('customer-phoneCountryCode').value.trim();
-    const contactPhoneNumber = document.getElementById('customer-contactPhoneNumber').value.trim();
+    //const contactPhoneNumber = document.getElementById('customer-contactPhoneNumber').value.trim();
     const emergencyContactName = document.getElementById('customer-emergencyContactName').value.trim();
     const emergencyContactPhone = document.getElementById('customer-emergencyContactPhone').value.trim();
 
+    // Frontend validations to match backend
     if (!name) { showErrorAlert('Name is required.'); return; }
+    if (!name.match(/^[A-Za-z\s]+$/)) { showErrorAlert('Name must contain only letters and spaces.'); return; }
+    if (name.toLowerCase() === 'xxxx') { showErrorAlert("Name 'xxxx' is not allowed."); return; }
+
     if (!surname) { showErrorAlert('Surname is required.'); return; }
+    if (!surname.match(/^[A-Za-z\s]+$/)) { showErrorAlert('Surname must contain only letters and spaces.'); return; }
+    if (surname.toLowerCase() === 'xxxx') { showErrorAlert("Surname 'xxxx' is not allowed."); return; }
+
     if (!age || age < 0) { showErrorAlert('Valid age is required.'); return; }
+    if (!dateOfBirth) { showErrorAlert('Date of Birth is required.'); return; }
     if (!gender) { showErrorAlert('Gender is required.'); return; }
+
     if (!phoneNumber) { showErrorAlert('Phone Number is required.'); return; }
+    if (!phoneNumber.match(/^\d{10}$/)) { showErrorAlert('Phone Number must be exactly 10 digits.'); return; }
+
+    if (!email) { showErrorAlert('Email is required.'); return; }
+    if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) { showErrorAlert('Email must be valid (e.g., example@domain.com).'); return; }
+
     if (!street) { showErrorAlert('Street is required.'); return; }
     if (!city) { showErrorAlert('City is required.'); return; }
     if (!state) { showErrorAlert('State is required.'); return; }
     if (!zipCode) { showErrorAlert('ZIP Code is required.'); return; }
+    if (!zipCode.match(/^\d{5,6}$/)) { showErrorAlert('Zip code must contain only numbers and be 5 or 6 digits.'); return; }
     if (!country) { showErrorAlert('Country is required.'); return; }
     if (!phoneCountryCode) { showErrorAlert('Phone Country Code is required.'); return; }
-    if (!contactPhoneNumber) { showErrorAlert('Contact Phone Number is required.'); return; }
+   // if (!contactPhoneNumber) { showErrorAlert('Contact Phone Number is required.'); return; }
+    //if (!contactPhoneNumber.match(/^\d{10}$/)) { showErrorAlert('Contact Phone Number must be exactly 10 digits.'); return; }
     if (!emergencyContactName) { showErrorAlert('Emergency Contact Name is required.'); return; }
     if (!emergencyContactPhone) { showErrorAlert('Emergency Contact Phone is required.'); return; }
+    if (!emergencyContactPhone.match(/^\d{10}$/)) { showErrorAlert('Emergency Contact Phone must be exactly 10 digits.'); return; }
 
     const updatedCustomer = {
         customerNo,
@@ -1679,6 +1698,7 @@ async function updateCustomerDetails() {
         middleName,
         surname,
         age: parseInt(age),
+        dateOfBirth,
         gender,
         phoneNumber,
         email,
@@ -1686,7 +1706,7 @@ async function updateCustomerDetails() {
         smokerStatus,
         adminAccess,
         address: { street, city, state, zipCode, country },
-        contactDetails: { alternateEmail, phoneCountryCode, phoneNumber: contactPhoneNumber, emergencyContactName, emergencyContactPhone }
+        contactDetails: { alternateEmail, phoneCountryCode, phoneNumber: phoneNumber, emergencyContactName, emergencyContactPhone }
     };
 
     const authUserId = getUserId();
@@ -1703,21 +1723,51 @@ async function updateCustomerDetails() {
         });
 
         if (response.ok) {
-            showCustomAlert('Success', 'Customer details updated successfully', () => {
+            const responseData = await response.json();
+            console.log('Success response:', responseData);
+            let successMessage = 'Customer details updated successfully';
+            let customerId = customerNo || 'Unknown';
+
+            // Check for new response format
+            if (responseData.data && responseData.data.customerId) {
+                customerId = responseData.data.customerId;
+                successMessage = `Customer details for ID ${customerId} updated successfully`;
+                console.log('Extracted customer ID from response:', customerId);
+            } else if (responseData.data && typeof responseData.data === 'string') {
+                // Fallback for old format
+                const match = responseData.data.match(/person\s*[,:]?\s*(\w+)/i);
+                if (match && match[1]) {
+                    customerId = match[1];
+                    successMessage = `Customer details for ID ${customerId} updated successfully`;
+                    console.log('Extracted customer ID from string:', customerId);
+                } else {
+                    console.warn('No customer ID found in string data:', responseData.data);
+                }
+            } else {
+                console.warn('No valid data field in response:', responseData);
+            }
+
+            // Fallback to customerNo if no ID was extracted
+            if (customerId === 'Unknown' && customerNo) {
+                customerId = customerNo;
+                successMessage = `Customer details for ID ${customerId} updated successfully`;
+                console.log('Falling back to customerNo:', customerNo);
+            }
+
+            showCustomAlert('Success', successMessage, () => {
                 closeCustomerDetailsModal();
                 fetchWorkItems();
             });
         } else {
             const errorData = await response.json();
             console.error('Error updating customer details:', errorData);
-            showErrorAlert('Error updating customer details. Please try again.');
+            showErrorAlert(errorData.errorMessage || 'Error updating customer details. Please try again.');
         }
     } catch (error) {
         console.error('Error sending customer update:', error);
-        showErrorAlert('Error updating customer details. Please try again.');
+        showErrorAlert('Error updating customer details: ' + error.message);
     }
 }
-
 function toggleSettingPopup(force = true) {
     const settingPopup = document.getElementById('settingPopup');
     const settingOverlay = document.getElementById('settingOverlay');

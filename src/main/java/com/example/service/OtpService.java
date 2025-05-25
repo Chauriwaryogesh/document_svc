@@ -38,6 +38,8 @@ import com.example.repo.IOtpServiceDB;
 import com.example.repo.ISecurityRepo;
 
 import jakarta.mail.internet.InternetAddress;
+import java.time.LocalDateTime;
+import java.util.regex.Pattern;
 
 @Service
 public class OtpService {
@@ -606,61 +608,99 @@ public class OtpService {
 	}
 	
 	
-	public String updateCustomerDetails(CustomerDTO cust, String userId) {
-		String message="";
-		String lastCustNum=generateCustomerNumber();
-		try {
-		if (cust != null ) {
-			Customer custDTO = new Customer();;
-			custDTO.setAdminAccess(cust.getAdminAccess());
-			custDTO.setAge(cust.getAge());
-			custDTO.setEmail(cust.getEmail());
-			custDTO.setGender(cust.getGender());
-			custDTO.setDateOfBirth(cust.getDateOfBirth());
-			// implement logiv to generate customer no.
-			if(cust.getCustomerNo() != null) {
-				custDTO.setCustomerNo(cust.getCustomerNo());
-			}else {
-				custDTO.setCustomerNo(lastCustNum);
-			}
-			
-			custDTO.setMiddleName(cust.getMiddleName());
-			custDTO.setName(cust.getName());
-			custDTO.setPhoneNumber(cust.getPhoneNumber());
-			custDTO.setSurname(cust.getSurname());
-			custDTO.setUserId(userId);
-			custDTO.setSmokerStatus(cust.getSmokerStatus());
-			
-			custDTO.setCreatedBy(userId);
-			custDTO.setCreatedTime(String.valueOf(LocalDateTime.now()));
-			//mapping for address
-			Address address= cust.getAddress();
-			if(address != null) {
-				custDTO.setCity(address.getCity());
-				custDTO.setCountry(address.getCountry());
-				custDTO.setState(address.getState());
-				custDTO.setStreet(address.getStreet());
-				custDTO.setZipCode(address.getZipCode());
+	
 
-			}
-			ContactDetails contact= cust.getContactDetails();
-			if(contact != null) {
-				custDTO.setAlternateEmail(contact.getAlternateEmail());
-				custDTO.setEmergencyContactName(contact.getEmergencyContactName());
-				custDTO.setEmergencyContactPhone(contact.getEmergencyContactPhone());
-				custDTO.setPhoneCountryCode(contact.getPhoneCountryCode());
-				custDTO.setPhoneNumber(cust.getPhoneNumber());
-			}
-			customerRepo.save(custDTO);
-			message="Success, person "+ lastCustNum +" created/updated Successfully";
-		}else {
-			message="failed, to update  details ";
-		}
-		}catch(Exception e) {
-			e.printStackTrace();
-			e.getMessage();
-		}
-		return message;
+	public String updateCustomerDetails(CustomerDTO cust, String userId) {
+	    String message = "";
+	    try {
+	    	
+	        if (cust == null) {
+	            return "Failed, customer details cannot be null";
+	        }
+	        if (cust.getName() == null || cust.getName().trim().isEmpty()) {
+	            return "Failed, name is required";
+	        }
+	        if (!Pattern.matches("^[A-Za-z\\s]+$", cust.getName()) || cust.getName().trim().toLowerCase().equals("xxxx")) {
+	            return "Failed, name must contain only letters and spaces, and 'xxxx' is not allowed";
+	        }
+	        if (cust.getPhoneNumber() == null || cust.getPhoneNumber().trim().isEmpty()) {
+	            return "Failed, phone number is required";
+	        }
+	        if (!Pattern.matches("^\\d{10}$", cust.getPhoneNumber())) {
+	            return "Failed, phone number must be exactly 10 digits";
+	        }       
+	        if (cust.getEmail() == null || cust.getEmail().trim().isEmpty()) {
+	            return "Failed, email is required";
+	        }
+	        if (!Pattern.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", cust.getEmail())) {
+	            return "Failed, email must contain '@' and follow a valid format (e.g., example@domain.com)";
+	        }
+	        Address address = cust.getAddress();
+	        if (address != null && address.getZipCode() != null && !address.getZipCode().trim().isEmpty()) {
+	            if (!Pattern.matches("^\\d{5,6}$", address.getZipCode())) {
+	                return "Failed, zip code must contain only numbers and be 5 or 6 digits";
+	            }
+	        }
+
+	        Customer existingCustomer = null;
+	        if (cust.getCustomerNo() != null && !cust.getCustomerNo().isEmpty()) {
+	            existingCustomer = customerRepo.findByCustomerNoNew(cust.getCustomerNo());
+	        }
+
+	        Customer custDTO;
+	        if (existingCustomer != null) {
+	            custDTO = existingCustomer;
+	        } else {
+	            custDTO = new Customer();
+	            custDTO.setCustomerNo(generateCustomerNumber());
+	        }
+	        custDTO.setAdminAccess(cust.getAdminAccess());
+	        custDTO.setAge(cust.getAge());
+	        custDTO.setEmail(cust.getEmail());
+	        custDTO.setGender(cust.getGender());
+	        custDTO.setDateOfBirth(cust.getDateOfBirth());
+	        custDTO.setMiddleName(cust.getMiddleName());
+	        custDTO.setName(cust.getName());
+	        custDTO.setPhoneNumber(cust.getPhoneNumber());
+	        custDTO.setSurname(cust.getSurname());
+	        custDTO.setUserId(userId);
+	        custDTO.setSmokerStatus(cust.getSmokerStatus());
+	        custDTO.setCreatedBy(userId);
+	        custDTO.setCreatedTime(String.valueOf(LocalDateTime.now()));
+
+	        // Map address
+	        if (address != null) {
+	            custDTO.setCity(address.getCity());
+	            custDTO.setCountry(address.getCountry());
+	            custDTO.setState(address.getState());
+	            custDTO.setStreet(address.getStreet());
+	            custDTO.setZipCode(address.getZipCode());
+	        }
+
+	        // Map contact details
+	        ContactDetails contact = cust.getContactDetails();
+	        if (contact != null) {
+	            custDTO.setAlternateEmail(contact.getAlternateEmail());
+	            custDTO.setEmergencyContactName(contact.getEmergencyContactName());
+	            custDTO.setEmergencyContactPhone(contact.getEmergencyContactPhone());
+	            custDTO.setPhoneCountryCode(contact.getPhoneCountryCode());
+	            custDTO.setPhoneNumber(cust.getPhoneNumber());
+	        }
+
+	        // Save or update the customer
+	        try {
+	        customerRepo.save(custDTO);
+	        message = "Success, person " + custDTO.getCustomerNo() + " created/updated successfully";
+	        }catch (Exception e) {
+		        e.printStackTrace();
+		        message = "Failed to update/create customer details: " + e.getMessage();
+		    }
+	    }
+	    catch (Exception e) {
+	        e.printStackTrace();
+	        message = "Failed to update/create customer details: " + e.getMessage();
+	    }
+	    return message;
 	}
 
 	public String generateCustomerNumber() {

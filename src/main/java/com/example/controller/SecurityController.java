@@ -311,7 +311,7 @@ public class SecurityController {
 		if (message.contains("Success")) {
 			resp.setData(message);
 		} else {
-			resp.setErrorMessage("Error while updating  customerDetails ");
+			resp.setErrorMessage(message);
 		}
 		return resp;
 	}

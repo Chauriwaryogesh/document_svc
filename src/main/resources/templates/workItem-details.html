@@ -682,7 +682,7 @@
 
   <script>
     const config = {
-      loginUrl: 'login.html',
+      loginUrl: 'login',
       userId: null,
       email: null,
       apiBaseUrl: 'http://localhost:8081/workItem_Service'
@@ -792,10 +792,10 @@
         return;
       }
       const pageUrls = {
-        dashboard: 'dashboard.html',
-        workitems: 'index.html',
-        'create-workitem': 'index.html',
-        logout: 'login.html'
+        dashboard: 'dashboard',
+        workitems: 'index',
+        'create-workitem': 'index',
+        logout: 'login'
       };
       const url = pageUrls[page] || config.loginUrl;
       showLoader();

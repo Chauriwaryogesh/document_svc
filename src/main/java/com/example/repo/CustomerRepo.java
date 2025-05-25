@@ -17,6 +17,9 @@ public interface CustomerRepo extends JpaRepository<Customer, String> {
 
 		@Query(value= "Select * from  customer c where c.customerNo=?1", nativeQuery = true)
 		Optional<Customer> findByCustomerNo(String customerNo);
+		
+		@Query(value= "Select * from  customer c where c.customerNo=?1", nativeQuery = true)
+		Customer findByCustomerNoNew(String customerNo);
 
 
 }

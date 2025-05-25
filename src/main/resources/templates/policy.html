@@ -1070,7 +1070,7 @@
 
  <script>
  const config = {
-		  loginUrl: 'login.html',
+		  loginUrl: 'login',
 		  userId: null,
 		  email: null,
 		  itemsPerPage: 5,
@@ -1301,11 +1301,11 @@
 		    return;
 		  }
 		  const pageUrls = {
-		    dashboard: 'dashboard.html',
-		    workitems: 'workItemServices.html',
-		    policy: 'wholelife.html',
-		    annuity: 'annuity.html',
-		    logout: 'login.html'
+		    dashboard: 'dashboard',
+		    workitems: 'workItemServices',
+		    policy: 'wholelife',
+		    annuity: 'annuity',
+		    logout: 'login'
 		  };
 		  const url = pageUrls[page] || config.loginUrl;
 		  showLoader();
