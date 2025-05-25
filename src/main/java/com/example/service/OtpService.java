@@ -1,7 +1,9 @@
 package com.example.service;
 
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -490,7 +492,7 @@ public class OtpService {
 	}
 
 	public String sendEmailtoUser(String to, String subject, String body, MultipartFile attachment) {
-		// TODO Auto-generated method stub
+		
 		String messageResp="";
 		try {
             jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
@@ -498,7 +500,7 @@ public class OtpService {
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(body);
-            helper.setFrom("your-gmail@gmail.com"); // Must match spring.mail.username
+            helper.setFrom("your-gmail@gmail.com"); 
             if (attachment != null && !attachment.isEmpty()) {
                 helper.addAttachment(
                         attachment.getOriginalFilename(),
@@ -512,12 +514,26 @@ public class OtpService {
             messageResp="Failed to send email: ";
         }
 		return messageResp;
-
-	
 	}
 
-	public CustomerDTO getCustomerDetails(String email, String userId) {
-		Optional<Customer> customer = customerRepo.findById(email);
+	public List<CustomerDTO> getCustomerDetails(String email, String customerNo, String userId) {
+		List<CustomerDTO> customerList = new ArrayList<>();
+		if (customerNo != null) {
+			Optional<Customer> customer = customerRepo.findByCustomerNo(customerNo);
+			customerList = mappingForCustomerOptional(customer);
+		} else if (email != null) {
+			Optional<Customer> customer = customerRepo.findByEmail(email);
+			customerList = mappingForCustomerOptional(customer);
+
+		} else {
+			List<Customer> customer = customerRepo.findAll();
+			customerList = mappingForCustomerList(customer);
+		}
+		return customerList;
+	}
+	
+	private List<CustomerDTO> mappingForCustomerOptional(Optional<Customer> customer) {
+		List<CustomerDTO> customerList = new ArrayList<>();
 		CustomerDTO custDTO = new CustomerDTO();
 		if (customer != null && !customer.isEmpty()) {
 			Customer cust = customer.get();
@@ -525,25 +541,22 @@ public class OtpService {
 			custDTO.setAge(cust.getAge());
 			custDTO.setEmail(cust.getEmail());
 			custDTO.setGender(cust.getGender());
-			custDTO.setId(cust.getId());
+			custDTO.setCustomerNo(cust.getCustomerNo());
 			custDTO.setMiddleName(cust.getMiddleName());
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
 			custDTO.setUserId(cust.getUserId());
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
-			
-			//mapping for address
-			Address address= new Address();
+			custDTO.setDateOfBirth(cust.getDateOfBirth());
+			// mapping for address
+			Address address = new Address();
 			address.setCity(cust.getCity());
 			address.setCountry(cust.getCountry());
 			address.setState(cust.getState());
 			address.setStreet(cust.getStreet());
 			address.setZipCode(cust.getZipCode());
-
-			
-			ContactDetails contact= new ContactDetails();
-			
+			ContactDetails contact = new ContactDetails();
 			contact.setAlternateEmail(cust.getAlternateEmail());
 			contact.setEmergencyContactName(cust.getEmergencyContactName());
 			contact.setEmergencyContactPhone(cust.getEmergencyContactPhone());
@@ -551,12 +564,51 @@ public class OtpService {
 			contact.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setAddress(address);
 			custDTO.setContactDetails(contact);
+			customerList.add(custDTO);
 		}
-		return custDTO;
+			return  customerList;
 	}
+		
 
+	public List<CustomerDTO> mappingForCustomerList(List<Customer> customer){
+		List<CustomerDTO>	customerList=	customer.stream().map(cust -> {
+			CustomerDTO custDTO = new CustomerDTO();
+			custDTO.setAdminAccess(cust.getAdminAccess());
+			custDTO.setAge(cust.getAge());
+			custDTO.setEmail(cust.getEmail());
+			custDTO.setGender(cust.getGender());
+			custDTO.setCustomerNo(cust.getCustomerNo());
+			custDTO.setMiddleName(cust.getMiddleName());
+			custDTO.setName(cust.getName());
+			custDTO.setPhoneNumber(cust.getPhoneNumber());
+			custDTO.setSurname(cust.getSurname());
+			custDTO.setUserId(cust.getUserId());
+			custDTO.setSmokerStatus(cust.getSmokerStatus());
+			custDTO.setDateOfBirth(cust.getDateOfBirth());
+			// mapping for address
+			Address address = new Address();
+			address.setCity(cust.getCity());
+			address.setCountry(cust.getCountry());
+			address.setState(cust.getState());
+			address.setStreet(cust.getStreet());
+			address.setZipCode(cust.getZipCode());
+			ContactDetails contact = new ContactDetails();
+			contact.setAlternateEmail(cust.getAlternateEmail());
+			contact.setEmergencyContactName(cust.getEmergencyContactName());
+			contact.setEmergencyContactPhone(cust.getEmergencyContactPhone());
+			contact.setPhoneCountryCode(cust.getPhoneCountryCode());
+			contact.setPhoneNumber(cust.getPhoneNumber());
+			custDTO.setAddress(address);
+			custDTO.setContactDetails(contact);
+			return custDTO;
+		}).collect(Collectors.toList());
+		return customerList;
+	}
+	
+	
 	public String updateCustomerDetails(CustomerDTO cust, String userId) {
 		String message="";
+		String lastCustNum=generateCustomerNumber();
 		try {
 		if (cust != null ) {
 			Customer custDTO = new Customer();;
@@ -564,41 +616,70 @@ public class OtpService {
 			custDTO.setAge(cust.getAge());
 			custDTO.setEmail(cust.getEmail());
 			custDTO.setGender(cust.getGender());
-			custDTO.setId(cust.getId());
+			custDTO.setDateOfBirth(cust.getDateOfBirth());
+			// implement logiv to generate customer no.
+			if(cust.getCustomerNo() != null) {
+				custDTO.setCustomerNo(cust.getCustomerNo());
+			}else {
+				custDTO.setCustomerNo(lastCustNum);
+			}
+			
 			custDTO.setMiddleName(cust.getMiddleName());
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
-			custDTO.setUserId(cust.getUserId());
+			custDTO.setUserId(userId);
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
 			
+			custDTO.setCreatedBy(userId);
+			custDTO.setCreatedTime(String.valueOf(LocalDateTime.now()));
 			//mapping for address
 			Address address= cust.getAddress();
-			custDTO.setCity(address.getCity());
-			custDTO.setCountry(address.getCountry());
-			custDTO.setState(address.getState());
-			custDTO.setStreet(address.getStreet());
-			custDTO.setZipCode(address.getZipCode());
+			if(address != null) {
+				custDTO.setCity(address.getCity());
+				custDTO.setCountry(address.getCountry());
+				custDTO.setState(address.getState());
+				custDTO.setStreet(address.getStreet());
+				custDTO.setZipCode(address.getZipCode());
 
-			
+			}
 			ContactDetails contact= cust.getContactDetails();
-			
-			custDTO.setAlternateEmail(contact.getAlternateEmail());
-			custDTO.setEmergencyContactName(contact.getEmergencyContactName());
-			custDTO.setEmergencyContactPhone(contact.getEmergencyContactPhone());
-			custDTO.setPhoneCountryCode(contact.getPhoneCountryCode());
-			custDTO.setPhoneNumber(cust.getPhoneNumber());
-			
+			if(contact != null) {
+				custDTO.setAlternateEmail(contact.getAlternateEmail());
+				custDTO.setEmergencyContactName(contact.getEmergencyContactName());
+				custDTO.setEmergencyContactPhone(contact.getEmergencyContactPhone());
+				custDTO.setPhoneCountryCode(contact.getPhoneCountryCode());
+				custDTO.setPhoneNumber(cust.getPhoneNumber());
+			}
 			customerRepo.save(custDTO);
-			message="Success, details updated ";
+			message="Success, person "+ lastCustNum +" created/updated Successfully";
 		}else {
 			message="failed, to update  details ";
 		}
 		}catch(Exception e) {
+			e.printStackTrace();
 			e.getMessage();
 		}
 		return message;
 	}
-	
+
+	public String generateCustomerNumber() {
+		String numberFormatted="";
+		try {
+		String currentYear = String.valueOf(Year.now().getValue());
+		String lastCustomerNo = customerRepo.findTopCustomerNo(); // custom method
+		int nextNumber = 1;
+		logger.info(lastCustomerNo);
+		if (lastCustomerNo != null && lastCustomerNo.startsWith("T") && lastCustomerNo.endsWith(currentYear)) {
+			String numberPart = lastCustomerNo.substring(1, 7); // Extract the 6-digit number
+			nextNumber = Integer.parseInt(numberPart) + 1;
+		}
+		 numberFormatted = String.format("T%06d%s", nextNumber, currentYear);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		logger.info("new generated{}",numberFormatted);
+		return numberFormatted;
+	}
 
 }

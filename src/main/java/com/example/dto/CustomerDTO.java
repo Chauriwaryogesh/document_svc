@@ -6,14 +6,21 @@ public class CustomerDTO {
 	private String middleName;
 	private String surname;
 	private String age;
+	private String dateOfBirth;
 	private String gender;
 	private String phoneNumber;
 	private String email;
-	private String id;
+	private String customerNo;
 	private String userId;
 	private String smokerStatus;
 	private String adminAccess;
 	private Address address;
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
 	private ContactDetails  contactDetails;
 	public Address getAddress() {
 		return address;
@@ -70,11 +77,18 @@ public class CustomerDTO {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getId() {
-		return id;
+	
+	/**
+	 * @return the customerNo
+	 */
+	public String getCustomerNo() {
+		return customerNo;
 	}
-	public void setId(String id) {
-		this.id = id;
+	/**
+	 * @param customerNo the customerNo to set
+	 */
+	public void setCustomerNo(String customerNo) {
+		this.customerNo = customerNo;
 	}
 	public String getUserId() {
 		return userId;

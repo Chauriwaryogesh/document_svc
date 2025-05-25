@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dto.EmpRequestforUpdate;
 import com.example.dto.EmployeeDTO;
-import com.example.dto.MyRequest;
 import com.example.jwtutil.JwtUtil;
 import com.example.service.IEmployeeService;
 import com.example.service.ResponseEntity;
@@ -83,12 +81,6 @@ public class EmployeeController {
 		employeeDTO = empService.updateEmployee(employeeRequest,userId);
 		serviceResponce.setData(employeeDTO);
 		return serviceResponce;
-	}
-
-	@PostMapping(value = "/test", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String getTestDAta(@RequestBody MyRequest myrequest) {
-		return myrequest + "request received";
-
 	}
 
 	//@Cacheable("employees")

@@ -1574,7 +1574,7 @@ async function showCustomerDetails(emailId, userId) {
         document.getElementById('customer-gender').value = basicData.data.gender || '';
         document.getElementById('customer-phoneNumber').value = basicData.data.phoneNumber || '';
         document.getElementById('customer-email').value = basicData.data.email || emailId;
-        document.getElementById('customer-id').value = basicData.data.id || '';
+        document.getElementById('customer-id').value = basicData.data.customerNo || '';
         document.getElementById('customer-userId').value = basicData.data.userId || userId || '';
         document.getElementById('customer-smokerStatus').checked = basicData.data.smokerStatus === 'Y';
         document.getElementById('customer-adminAccess').checked = basicData.data.adminAccess === 'Y';
@@ -1643,7 +1643,7 @@ async function updateCustomerDetails() {
     const phoneNumber = document.getElementById('customer-phoneNumber').value.trim();
     const middleName = document.getElementById('customer-middleName').value.trim();
     const email = document.getElementById('customer-email').value;
-    const id = document.getElementById('customer-id').value;
+    const customerNo = document.getElementById('customer-id').value;
     const userId = document.getElementById('customer-userId').value;
     const smokerStatus = document.getElementById('customer-smokerStatus').checked ? 'Y' : 'N';
     const adminAccess = document.getElementById('customer-adminAccess').checked ? 'Y' : 'N';
@@ -1674,7 +1674,7 @@ async function updateCustomerDetails() {
     if (!emergencyContactPhone) { showErrorAlert('Emergency Contact Phone is required.'); return; }
 
     const updatedCustomer = {
-        id,
+        customerNo,
         name,
         middleName,
         surname,

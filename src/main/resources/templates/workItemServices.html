@@ -956,7 +956,7 @@
 
   <script>
     const config = {
-      loginUrl: 'login.html',
+      loginUrl: 'login',
       userId: null,
       email: null,
       itemsPerPage: 30,
@@ -1055,9 +1055,9 @@
         return;
       }
       const pageUrls = {
-        dashboard: 'dashboard.html',
-        workitems: 'workItemServices.html',
-        logout: 'login.html'
+        dashboard: 'dashboard',
+        workitems: 'workItemServices',
+        logout: 'login'
       };
       const url = pageUrls[page] || config.loginUrl;
       showLoader();

@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policy Services - Dashboard Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #e0e7ff 0%, #f9fafb 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow-x: hidden;
+  }
+  #particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .text-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .text-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  .button-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .button-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  .btn-base {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .btn-base::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, currentColor, transparent);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+  }
+  .btn-base:hover::after {
+    transform: scaleX(1);
+  }
+  .btn-base:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+  .btn-gradient {
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  }
+  .btn-gradient:hover {
+    background: linear-gradient(to right, #2563eb, #7c3aed);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+  }
+  .btn-secondary {
+    background: linear-gradient(to right, #6b7280, #4b5563);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
+  }
+  .btn-secondary:hover {
+    background: linear-gradient(to right, #4b5563, #374151);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(107, 114, 128, 0.6);
+  }
+  .modal-base {
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 0;
+  }
+  .modal-base.hidden {
+    opacity: 0;
+    transform: scale(0.98);
+    pointer-events: none;
+  }
+  .modal-content-fullscreen {
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease-out;
+  }
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(to right, #3b82f6, #8b5cf6) 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(248, 250, 252, 0.9);
+  }
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+    scrollbar-width: thin;
+    scrollbar-color: #3b82f6 #e5e7eb;
+  }
+  .modal-body::-webkit-scrollbar {
+    width: 8px;
+  }
+  .modal-body::-webkit-scrollbar-track {
+    background: #e5e7eb;
+    border-radius: 4px;
+  }
+  .modal-body::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 4px;
+  }
+  .modal-footer {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    background: rgba(248, 250, 252, 0.9);
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+  .modern-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid transparent;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+  }
+  .modern-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    border-color: #3b82f6;
+  }
+  .modern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .modern-card:hover::before {
+    opacity: 1;
+  }
+  .gradient-text {
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    position: relative;
+  }
+  .gradient-text::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    animation: pulse 2s infinite;
+  }
+  .loader {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    display: none;
+  }
+  .loader.active {
+    display: flex;
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 5px solid #e5e7eb;
+    border-top: 5px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  .nav-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 60;
+    display: none;
+  }
+  .nav-popup.active {
+    display: flex;
+  }
+  .nav-popup-content {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .glow:hover {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+  }
+  .mandatory::after {
+    content: '*';
+    color: #ef4444;
+    margin-left: 2px;
+  }
+  .modern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 2.5rem;
+    margin-top: 2rem;
+  }
+  .modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+  .modern-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(to bottom, #f8fafc, #e5e7eb);
+  }
+  .modern-table th {
+    padding: 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1f2937;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+  }
+  .modern-table td {
+    padding: 12px;
+    font-size: 0.85rem;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .modern-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 5;
+    font-weight: 500;
+  }
+  .modern-table tr:hover {
+    background: linear-gradient(to right, #eff6ff, #dbeafe);
+  }
+  .tooltip {
+    position: relative;
+  }
+  .tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 20;
+  }
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+  .pagination-btn {
+    padding: 0.75rem 1.25rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    color: #374151;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .pagination-btn:hover:not(:disabled) {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+  .pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .pagination-btn-number {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid #e5e7eb;
+    background: white;
+    color: #374151;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .pagination-btn-number:hover:not(.active) {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+  .pagination-btn-number.active {
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    color: white;
+    border-color: transparent;
+  }
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+    color: #6b7280;
+    font-weight: 500;
+  }
+  .tab.active {
+    border-bottom: 2px solid #3b82f6;
+    color: #3b82f6;
+    font-weight: 600;
+    background: rgba(59, 130, 246, 0.1);
+  }
+  .tab:hover:not(.active) {
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+  }
+  .modal-close {
+    color: #6b7280;
+    transition: all 0.3s ease;
+  }
+  .modal-close:hover {
+    color: #374151;
+    transform: rotate(90deg);
+  }
+  .input-group {
+    position: relative;
+    margin-bottom: 1.25rem;
+  }
+  .input-group input,
+  .input-group select {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    width: 100%;
+    transition: all 0.3s ease;
+    background: white;
+  }
+  .input-group input:focus,
+  .input-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+  }
+  .input-group label {
+    position: absolute;
+    top: 0.75rem;
+    left: 1rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    background: white;
+    padding: 0 0.25rem;
+  }
+  .input-group input:not(:placeholder-shown) + label,
+  .input-group select:not([value=""]) + label,
+  .input-group input:focus + label,
+  .input-group select:focus + label {
+    top: -0.75rem;
+    font-size: 0.75rem;
+    color: #3b82f6;
+  }
+  .input-group input[readonly],
+  .input-group input:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+  }
+  .highlight {
+    background-color: #dbeafe;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  /* Updated Search and Button Container */
+  .search-container {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+  }
+  .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+  }
+  #btn-create-party,
+  #btn-create-policy {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+  #btn-create-party {
+    background: linear-gradient(to right, #7c3aed, #db2777);
+    border: none;
+  }
+  #btn-create-party:hover {
+    background: linear-gradient(to right, #6d28d9, #be185d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+  }
+  #btn-create-policy {
+    background: linear-gradient(to right, #3b82f6, #10b981);
+    border: none;
+  }
+  #btn-create-policy:hover {
+    background: linear-gradient(to right, #2563eb, #059669);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+  }
+  /* Enhanced Grid View for Search Results */
+  #search-results.modern-grid {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 3rem;
+    margin-top: 3rem;
+    padding: 1rem;
+  }
+  #search-results .modern-card {
+    padding: 2.5rem;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: cardFadeIn 0.4s ease-out;
+  }
+  #search-results .modern-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+  }
+  #search-results .modern-card .space-y-4 > div {
+    margin-bottom: 1.5rem;
+  }
+  #search-results .modern-card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 1rem;
+  }
+  #search-results .modern-card p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  #search-results .modern-card svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  #search-results .modern-card .btn-gradient {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    width: 100%;
+    text-align: center;
+  }
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    #search-results.modern-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      padding: 0.5rem;
+    }
+    #search-results .modern-card {
+      padding: 2rem;
+      min-height: 280px;
+    }
+    #search-results .modern-card h3 {
+      font-size: 1.25rem;
+    }
+    #search-results .modern-card h4 {
+      font-size: 0.9rem;
+    }
+    #search-results .modern-card p {
+      font-size: 0.9rem;
+    }
+  }
+  @media (max-width: 640px) {
+    .modal-body {
+      padding: 1rem;
+    }
+    .search-container {
+      padding: 1rem;
+    }
+    .button-group {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    #btn-create-party,
+    #btn-create-policy {
+      min-width: 100%;
+    }
+    #search-results .modern-card {
+      padding: 1.5rem;
+      min-height: 260px;
+    }
+  }
+  /* Animation for Cards */
+  @keyframes cardFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>
+</head>
+<body class="min-h-screen flex flex-col items-center selection:bg-blue-500 selection:text-white relative">
+  <canvas id="particles"></canvas>
+
+  <div class="absolute top-4 right-4 flex items-center space-x-3 sm:space-x-4 z-50">
+    <button id="btn-profile" title="Profile" class="btn-base bg-white text-blue-600 py-2 px-4 text-sm rounded-lg shadow-md border border-blue-200 hover:bg-blue-50 hover:border-blue-300 glow flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 sm:mr-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+      <span class="sm:hidden">Profile</span>
+    </button>
+    <button id="btn-contact" class="btn-base bg-white text-blue-600 py-2 px-4 text-sm rounded-lg shadow-md border border-blue-200 hover:bg-blue-50 hover:border-blue-300 glow">
+      Contact Us
+    </button>
+    <button id="btn-logout" onclick="navigateTo('logout')" class="btn-base bg-red-500 text-white py-2 px-4 text-sm rounded-lg shadow-md border border-red-400 hover:bg-red-600 hover:border-red-500 glow">
+      Logout
+    </button>
+  </div>
+
+  <main class="w-full max-w-6xl flex flex-col flex-grow p-6 mt-16">
+    <div class="flex-1 flex flex-col items-center gap-6">
+      <div class="w-full flex flex-col items-center justify-center p-8 text-center card">
+        <h1 id="header-title" class="text-hidden text-4xl sm:text-5xl font-extrabold gradient-text mb-4">Policy Services</h1>
+        <p id="header-subtitle" class="text-hidden text-lg sm:text-xl text-gray-600">Manage your policies and customers efficiently.</p>
+      </div>
+
+      <div class="w-full max-w-4xl search-container">
+  <!-- Search Bar -->
+  <div class="flex flex-col sm:flex-row gap-4">
+    <div class="relative flex-1">
+      <input type="text" id="search-input" placeholder="Enter customer or policy number..." class="w-full px-4 py-3 pl-10 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+    <select id="search-type" class="px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+      <option value="customer">Customer</option>
+      <option value="policy">Policy</option>
+    </select>
+    <button id="search-btn" class="btn-gradient btn-base py-3 px-6 rounded-lg shadow-lg border border-blue-700 glow">
+      Search
+    </button>
+  </div>
+
+       <!-- View Toggle and Result Count -->
+  <div class="flex justify-between items-center mt-4">
+    <div id="result-count" class="text-gray-600 text-sm hidden"></div>
+    <button id="toggle-view-btn" class="btn-base bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300">
+      Switch to List View
+    </button>
+  </div>
+
+  <!-- Results Container -->
+  <div id="search-results" class="hidden mt-6"></div>
+
+  <!-- Pagination -->
+  <div id="pagination" class="pagination hidden"></div>
+
+  <!-- Buttons -->
+  <div class="button-group">
+    <button id="btn-create-party" onclick="openModal('create-party')" class="btn-gradient btn-base glow">
+      Create Party/Customer
+    </button>
+    <button id="btn-create-policy" onclick="openModal('create-policy')" class="btn-gradient btn-base glow">
+      Create Policy
+    </button>
+  </div>
+</div>
+    </div>
+  </main>
+
+  <footer class="text-gray-600 text-center py-8 w-full">
+    <p class="text-sm">© Secure Access Limited 2025 • Made with ❤️</p>
+  </footer>
+
+  <!-- Modals -->
+  <div id="profile-modal" class="modal-base hidden">
+    <div class="modal-content p-6 max-w-md">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
+        <button id="close-profile-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="text-gray-600 mb-6 space-y-2">
+        <p><span class="font-medium">User ID:</span> <span id="profile-userid">Not available</span></p>
+        <p><span class="font-medium">Email:</span> <span id="profile-email">Not available</span></p>
+      </div>
+      <button onclick="document.getElementById('close-profile-modal').click()" class="btn-gradient btn-base w-full py-3 px-4 rounded-lg">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <div id="contact-modal" class="modal-base hidden">
+    <div class="modal-content p-6 max-w-md">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800">Contact Us</h3>
+        <button id="close-contact-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p class="text-gray-600 mb-6">Reach out to us at support@example.com or (555) 123-4567.</p>
+      <form class="space-y-5">
+        <div>
+          <label for="contact-name" class="block text-sm font-medium text-gray-700">Name</label>
+          <input type="text" id="contact-name" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Your Name">
+        </div>
+        <div>
+          <label for="contact-email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" id="contact-email" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="you@example.com">
+        </div>
+        <div>
+          <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
+          <textarea id="contact-message" rows="4" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Your message..."></textarea>
+        </div>
+      </form>
+      <button onclick="document.getElementById('close-contact-modal').click()" class="btn-gradient btn-base w-full py-3 px-4 rounded-lg mt-6">
+        Send Message
+      </button>
+    </div>
+  </div>
+
+  <div id="create-party-modal" class="modal-base hidden">
+    <div class="modal-content-fullscreen">
+      <div class="modal-header">
+        <h3 class="text-2xl font-bold text-gray-800 gradient-text">Create Party/Customer</h3>
+        <button id="close-create-party-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="flex border-b px-4 bg-white/80">
+        <button class="tab flex-1 text-center active" data-tab="personal">Personal Details</button>
+        <button class="tab flex-1 text-center" data-tab="contact">Contact Details</button>
+        <button class="tab flex-1 text-center" data-tab="address">Address Details</button>
+      </div>
+      <div class="modal-body">
+        <form id="create-party-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input type="hidden" id="party-userId" value="">
+          
+          <!-- Personal Details -->
+          <div id="personal-section" class="tab-content col-span-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="input-group">
+                <input type="text" id="party-name" placeholder=" " required>
+                <label for="party-name" class="mandatory">Customer Name</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-middleName" placeholder=" ">
+                <label for="party-middleName">Middle Name</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-surname" placeholder=" ">
+                <label for="party-surname">Surname</label>
+              </div>
+              <div class="input-group">
+                <input type="number" id="party-age" placeholder=" ">
+                <label for="party-age">Age</label>
+              </div>
+              <div class="input-group">
+                <input type="date" id="party-dob" placeholder=" " required>
+                <label for="party-dob" class="mandatory">Date of Birth</label>
+              </div>
+              <div class="input-group">
+                <select id="party-gender" required>
+                  <option value="">Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+                <label for="party-gender" class="mandatory">Gender</label>
+              </div>
+              <div class="input-group">
+                <select id="party-smokerStatus">
+                  <option value="">Select smoker status</option>
+                  <option value="Smoker">Smoker</option>
+                  <option value="Non-Smoker">Non-Smoker</option>
+                  <option value="Unknown">Unknown</option>
+                </select>
+                <label for="party-smokerStatus">Smoker Status</label>
+              </div>
+              <div class="input-group">
+                <select id="party-adminAccess">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+                <label for="party-adminAccess">Admin Access</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Details -->
+          <div id="contact-section" class="tab-content col-span-2 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="input-group">
+                <input type="tel" id="party-phone" placeholder=" " required>
+                <label for="party-phone" class="mandatory">Phone Number</label>
+              </div>
+              <div class="input-group">
+                <input type="email" id="party-email" placeholder=" " required>
+                <label for="party-email" class="mandatory">Email</label>
+              </div>
+              <div class="input-group">
+                <input type="email" id="party-alternateEmail" placeholder=" ">
+                <label for="party-alternateEmail">Alternate Email</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-phoneCountryCode" placeholder=" ">
+                <label for="party-phoneCountryCode">Phone Country Code</label>
+              </div>
+              <div class="input-group">
+                <input type="tel" id="party-secondaryPhone" placeholder=" ">
+                <label for="party-secondaryPhone">Secondary Phone</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-emergencyContactName" placeholder=" ">
+                <label for="party-emergencyContactName">Emergency Contact Name</label>
+              </div>
+              <div class="input-group">
+                <input type="tel" id="party-emergencyContactPhone" placeholder=" ">
+                <label for="party-emergencyContactPhone">Emergency Contact Phone</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address Details -->
+          <div id="address-section" class="tab-content col-span-2 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="input-group">
+                <input type="text" id="party-street" placeholder=" ">
+                <label for="party-street">Street</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-city" placeholder=" ">
+                <label for="party-city">City</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-state" placeholder=" ">
+                <label for="party-state">State</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-zipCode" placeholder=" ">
+                <label for="party-zipCode">Zip Code</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-country" placeholder=" ">
+                <label for="party-country">Country</label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer" id="party-btn-container">
+        <button id="reset-party-btn" class="btn-secondary btn-base py-2 px-4 rounded-lg min-w-[100px]">Reset</button>
+        <button id="prev-tab-btn" class="btn-base bg-gray-200 text-gray-700 py-2 px-4 rounded-lg min-w-[100px]" disabled>Previous</button>
+        <button id="next-tab-btn" class="btn-gradient btn-base py-2 px-4 rounded-lg min-w-[100px] hidden">Next</button>
+        <button id="submit-party-btn" class="btn-gradient btn-base py-2 px-4 rounded-lg min-w-[100px] hidden" onclick="createParty()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="create-policy-modal" class="modal-base hidden">
+    <div class="modal-content-fullscreen">
+      <div class="modal-header">
+        <h3 class="text-2xl font-bold text-gray-800 gradient-text">Create Policy</h3>
+        <button id="close-create-policy-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="create-policy-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input type="hidden" id="policy-userId" value="">
+          <div class="input-group">
+            <select id="policy-productCode" required>
+              <option value="">Select product code</option>
+            </select>
+            <label for="policy-productCode" class="mandatory">Product Code</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-polCompanyName" value="Secure Life Limited" readonly required>
+            <label for="policy-polCompanyName" class="mandatory">Policy Company Name</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-policyName" required>
+              <option value="">Select policy name</option>
+            </select>
+            <label for="policy-policyName" class="mandatory">Policy Name</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-customerNo" placeholder=" " oninput="validateCustomerNo(this.value)" required>
+            <label for="policy-customerNo" class="mandatory">Customer Number</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-custName" readonly required>
+            <label for="policy-custName" class="mandatory">Customer Name</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-middleName" readonly>
+            <label for="policy-middleName">Middle Name</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-surname" readonly>
+            <label for="policy-surname">Surname</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-fcuFlag" required>
+              <option value="">Select FCU flag</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+            <label for="policy-fcuFlag" class="mandatory">FCU Flag</label>
+          </div>
+          <div class="input-group">
+            <input type="tel" id="policy-phoneNum" readonly>
+            <label for="policy-phoneNum">Phone Number</label>
+          </div>
+          <div class="input-group">
+            <input type="email" id="policy-email" readonly>
+            <label for="policy-email">Email</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-smokerStatus" readonly>
+            <label for="policy-smokerStatus">Smoker Status</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-dateOfBirth" readonly>
+            <label for="policy-dateOfBirth">Date of Birth</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-gender" required>
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Can't Say">Can't Say</option>
+            </select>
+            <label for="policy-gender" class="mandatory">Gender</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="reset-policy-btn" class="btn-secondary btn-base py-2 px-4 rounded-lg">Reset</button>
+        <button id="submit-policy-btn" onclick="createPolicy()" class="btn-gradient btn-base py-2 px-4 rounded-lg">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="success-modal" class="modal-base hidden">
+    <div class="modal-content p-6 max-w-md">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-green-600">Success</h3>
+        <button id="close-success-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p id="success-message" class="text-gray-600 mb-6"></p>
+      <div id="customer-number-container" class="hidden mb-4">
+        <label class="block text-sm font-medium text-gray-700">Customer Number</label>
+        <div class="flex items-center mt-1">
+          <input type="text" id="customer-number" class="block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm bg-gray-100 sm:text-sm" readonly>
+          <button id="copy-customer-number" class="ml-2 btn-gradient btn-base py-2 px-4 rounded-lg">
+            Copy
+          </button>
+        </div>
+      </div>
+      <button id="success-ok-btn" class="btn-gradient btn-base w-full py-3 px-4 rounded-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800">
+        OK
+      </button>
+    </div>
+  </div>
+
+  <div id="error-modal" class="modal-base hidden">
+    <div class="modal-content p-6 max-w-md">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-red-600">Error</h3>
+        <button id="close-error-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p id="error-message" class="text-gray-600 mb-6"></p>
+      <button id="error-ok-btn" class="btn-gradient btn-base w-full py-3 px-4 rounded-lg bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800">
+        OK
+      </button>
+    </div>
+  </div>
+
+  <div id="nav-popup" class="nav-popup">
+    <div class="nav-popup-content">
+      <div class="spinner"></div>
+      <p id="nav-message" class="text-gray-800 font-medium"></p>
+    </div>
+  </div>
+
+  <div id="loader" class="loader">
+    <div class="spinner"></div>
+  </div>
+  <div id="policy-list-modal" class="modal-base hidden">
+  <div class="modal-content-fullscreen">
+    <div class="modal-header">
+      <h3 class="text-2xl font-bold text-gray-800 gradient-text">Policy List</h3>
+      <button id="close-policy-list-modal" class="modal-close">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="policy-list-content" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+    <div class="modal-footer">
+      <button id="close-policy-list-btn" class="btn-gradient btn-base py-2 px-4 rounded-lg">Close</button>
+    </div>
+  </div>
+</div>
+
+ <script>
+ const config = {
+		  loginUrl: 'login.html',
+		  userId: null,
+		  email: null,
+		  itemsPerPage: 5,
+		  currentPage: 1,
+		  currentData: [],
+		  currentView: 'grid',
+		  currentTab: 'personal',
+		  customerValidated: false
+		};
+
+		const elements = {
+		  modals: {
+		    profile: document.getElementById('profile-modal'),
+		    contact: document.getElementById('contact-modal'),
+		    'create-party': document.getElementById('create-party-modal'),
+		    'create-policy': document.getElementById('create-policy-modal'),
+		    error: document.getElementById('error-modal'),
+		    success: document.getElementById('success-modal'),
+		    'policy-list': document.getElementById('policy-list-modal')
+		  },
+		  searchInput: document.getElementById('search-input'),
+		  searchType: document.getElementById('search-type'),
+		  toggleViewBtn: document.getElementById('toggle-view-btn'),
+		  resultsDiv: document.getElementById('search-results'),
+		  countDiv: document.getElementById('result-count'),
+		  paginationDiv: document.getElementById('pagination')
+		};
+
+		async function fetchProductCodes() {
+		  if (!config.userId) {
+		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
+		    return;
+		  }
+		  showLoader();
+		  try {
+		    const response = await fetch('http://localhost:8081/policy/policy-domain?value=PRODUCT', {
+		      method: 'GET',
+		      headers: { 'userId': config.userId }
+		    });
+		    if (response.ok) {
+		      const { data } = await response.json();
+		      const productCodeSelect = document.getElementById('policy-productCode');
+		      productCodeSelect.innerHTML = '<option value="">Select product code</option>';
+		      if (data && data.length > 0) {
+		        data.forEach(code => {
+		          const option = document.createElement('option');
+		          option.value = code;
+		          option.textContent = code;
+		          productCodeSelect.appendChild(option);
+		        });
+		      } else {
+		        showAlert('error', 'No product codes available.');
+		      }
+		    } else {
+		      const errorText = await response.text();
+		      showAlert('error', errorText || 'Failed to fetch product codes.');
+		    }
+		  } catch (error) {
+		    showAlert('error', 'An error occurred while fetching product codes.');
+		    console.error('Product code fetch error:', error);
+		  } finally {
+		    hideLoader();
+		  }
+		}
+
+		async function fetchPolicyNames() {
+		  if (!config.userId) {
+		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
+		    return;
+		  }
+		  showLoader();
+		  try {
+		    const response = await fetch('http://localhost:8081/policy/policy-domain?value=POLICY', {
+		      method: 'GET',
+		      headers: { 'userId': config.userId }
+		    });
+		    if (response.ok) {
+		      const { data } = await response.json();
+		      const policyNameSelect = document.getElementById('policy-policyName');
+		      policyNameSelect.innerHTML = '<option value="">Select policy name</option>';
+		      if (data && data.length > 0) {
+		        data.forEach(name => {
+		          const option = document.createElement('option');
+		          option.value = name;
+		          option.textContent = name;
+		          policyNameSelect.appendChild(option);
+		        });
+		      } else {
+		        showAlert('error', 'No policy names available.');
+		      }
+		    } else {
+		      const errorText = await response.text();
+		      showAlert('error', errorText || 'Failed to fetch policy names.');
+		    }
+		  } catch (error) {
+		    showAlert('error', 'An error occurred while fetching policy names.');
+		    console.error('Policy name fetch error:', error);
+		  } finally {
+		    hideLoader();
+		  }
+		}
+
+		function openModal(modalId) {
+		  if (modalId === 'profile') {
+		    document.getElementById('profile-userid').textContent = config.userId || 'Not available';
+		    document.getElementById('profile-email').textContent = config.email || 'Not available';
+		  }
+		  if (modalId === 'create-party') {
+		    initializeUserId();
+		    document.getElementById('party-userId').value = config.userId;
+		    resetPartyForm();
+		    switchTab('personal');
+		  }
+		  if (modalId === 'create-policy') {
+		    initializeUserId();
+		    document.getElementById('policy-userId').value = config.userId;
+		    resetPolicyForm();
+		    fetchProductCodes();
+		    fetchPolicyNames();
+		  }
+		  elements.modals[modalId]?.classList.remove('hidden');
+		}
+
+		function closeModal(modalId) {
+		  elements.modals[modalId]?.classList.add('hidden');
+		  if (modalId === 'create-party') {
+		    resetPartyForm();
+		    switchTab('personal');
+		  }
+		  if (modalId === 'create-policy') {
+		    resetPolicyForm();
+		  }
+		}
+
+		function resetPolicyForm() {
+		  document.getElementById('create-policy-form').reset();
+		  document.getElementById('policy-polCompanyName').value = 'Secure Life Limited';
+		  document.getElementById('policy-userId').value = config.userId || '';
+		  const fields = ['productCode', 'policyName', 'customerNo', 'custName', 'middleName', 'surname', 'phoneNum', 'email', 'smokerStatus', 'dateOfBirth', 'fcuFlag', 'gender'];
+		  fields.forEach(field => {
+		    const element = document.getElementById(`policy-${field}`);
+		    element.removeAttribute('readonly');
+		    element.classList.remove('bg-gray-100');
+		    if (field === 'polCompanyName') {
+		      element.setAttribute('readonly', 'true');
+		      element.classList.add('bg-gray-100');
+		    }
+		    if (element.tagName === 'SELECT') {
+		      element.disabled = false;
+		      element.value = '';
+		    }
+		  });
+		  config.customerValidated = false;
+		}
+
+		function resetPartyForm() {
+		  document.getElementById('create-party-form').reset();
+		  document.getElementById('party-userId').value = config.userId || '';
+		  const fields = [
+		    'name', 'middleName', 'surname', 'age', 'dob', 'gender', 'smokerStatus', 'adminAccess',
+		    'phone', 'email', 'alternateEmail', 'phoneCountryCode', 'secondaryPhone', 'emergencyContactName', 'emergencyContactPhone',
+		    'street', 'city', 'state', 'zipCode', 'country'
+		  ];
+		  fields.forEach(field => {
+		    const element = document.getElementById(`party-${field}`);
+		    if (element.tagName === 'SELECT') {
+		      element.value = '';
+		    }
+		  });
+		  switchTab('personal');
+		}
+
+		function showAlert(type, message, redirectUrl = null, customerNumber = null, policyNumber = null) {
+		  document.getElementById(`${type}-message`).textContent = message;
+		  const numberContainer = document.getElementById('customer-number-container');
+		  const numberInput = document.getElementById('customer-number');
+		  const copyButton = document.getElementById('copy-customer-number');
+		  
+		  if ((customerNumber || policyNumber) && type === 'success') {
+		    numberInput.value = customerNumber || policyNumber;
+		    numberInput.dataset.type = customerNumber ? 'customer' : 'policy';
+		    numberContainer.classList.remove('hidden');
+		    copyButton.textContent = 'Copy';
+		  } else {
+		    numberContainer.classList.add('hidden');
+		  }
+		  openModal(type);
+		  if (redirectUrl) {
+		    setTimeout(() => window.location.href = redirectUrl, 2000);
+		  }
+		}
+
+		function showNavPopup(message) {
+		  const popup = document.getElementById('nav-popup');
+		  document.getElementById('nav-message').textContent = `Navigating to ${message}...`;
+		  popup.classList.add('active');
+		}
+
+		function hideNavPopup() {
+		  document.getElementById('nav-popup').classList.remove('active');
+		}
+
+		function showLoader() {
+		  document.getElementById('loader').classList.add('active');
+		}
+
+		function hideLoader() {
+		  document.getElementById('loader').classList.remove('active');
+		}
+
+		function initializeUserId() {
+		  config.userId = sessionStorage.getItem('userId') || 'default-user-id';
+		  config.email = sessionStorage.getItem('email') || 'default-email@example.com';
+		  return true;
+		}
+
+		function logout() {
+		  sessionStorage.removeItem('userId');
+		  sessionStorage.removeItem('email');
+		  config.userId = null;
+		  config.email = null;
+		  showAlert('success', 'Logged out successfully!', config.loginUrl);
+		}
+
+		function navigateTo(page) {
+		  if (page !== 'logout' && !config.userId) {
+		    showAlert('error', 'Please log in to access this page.', config.loginUrl);
+		    return;
+		  }
+		  const pageUrls = {
+		    dashboard: 'dashboard.html',
+		    workitems: 'workItemServices.html',
+		    policy: 'wholelife.html',
+		    annuity: 'annuity.html',
+		    logout: 'login.html'
+		  };
+		  const url = pageUrls[page] || config.loginUrl;
+		  showLoader();
+		  showNavPopup(page);
+		  setTimeout(() => {
+		    hideNavPopup();
+		    hideLoader();
+		    if (page === 'logout') {
+		      logout();
+		    } else {
+		      window.location.href = url;
+		    }
+		  }, 2000);
+		}
+
+		function switchTab(tabName) {
+		  config.currentTab = tabName;
+		  const tabs = document.querySelectorAll('.tab');
+		  const sections = document.querySelectorAll('.tab-content');
+		  const prevBtn = document.getElementById('prev-tab-btn');
+		  const nextBtn = document.getElementById('next-tab-btn');
+		  const submitBtn = document.getElementById('submit-party-btn');
+
+		  tabs.forEach(tab => {
+		    tab.classList.toggle('active', tab.dataset.tab === tabName);
+		  });
+
+		  sections.forEach(section => {
+		    section.classList.toggle('hidden', section.id !== `${tabName}-section`);
+		  });
+
+		  prevBtn.disabled = tabName === 'personal';
+		  nextBtn.classList.toggle('hidden', tabName === 'address');
+		  submitBtn.classList.toggle('hidden', tabName !== 'address');
+		}
+
+		async function validateCustomerNo(customerNo) {
+		  if (!customerNo.trim()) {
+		    config.customerValidated = false;
+		    resetPolicyForm();
+		    return;
+		  }
+
+		  showLoader();
+		  try {
+		    const response = await fetch(`http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(customerNo)}`, {
+		      method: 'GET',
+		      headers: { 'userId': config.userId }
+		    });
+
+		    if (response.ok) {
+		      const { data } = await response.json();
+		      if (data && data.length > 0) {
+		        const customer = data[0];
+		        config.customerValidated = true;
+
+		        document.getElementById('policy-custName').value = customer.custName || '';
+		        document.getElementById('policy-middleName').value = customer.middleName || '';
+		        document.getElementById('policy-surname').value = customer.surname || '';
+		        document.getElementById('policy-phoneNum').value = customer.phoneNum || '';
+		        document.getElementById('policy-email').value = customer.email || '';
+		        document.getElementById('policy-smokerStatus').value = customer.smokerStatus || '';
+		        document.getElementById('policy-dateOfBirth').value = customer.dateOfBirth || '';
+
+		        const fields = ['custName', 'middleName', 'surname', 'phoneNum', 'email', 'smokerStatus', 'dateOfBirth'];
+		        fields.forEach(field => {
+		          const element = document.getElementById(`policy-${field}`);
+		          element.setAttribute('readonly', 'true');
+		          element.classList.add('bg-gray-100');
+		        });
+		      } else {
+		        config.customerValidated = false;
+		        resetPolicyForm();
+		        showAlert('error', 'Customer number not found.');
+		      }
+		    } else {
+		      const errorText = await response.text();
+		      config.customerValidated = false;
+		      resetPolicyForm();
+		      showAlert('error', errorText || 'Failed to validate customer number.');
+		    }
+		  } catch (error) {
+		    config.customerValidated = false;
+		    resetPolicyForm();
+		    showAlert('error', 'An error occurred while validating customer number.');
+		    console.error('Customer validation error:', error);
+		  } finally {
+		    hideLoader();
+		  }
+		}
+
+		async function createParty() {
+		  const userId = document.getElementById('party-userId').value;
+		  const name = document.getElementById('party-name').value.trim();
+		  const middleName = document.getElementById('party-middleName').value.trim();
+		  const surname = document.getElementById('party-surname').value.trim();
+		  const age = document.getElementById('party-age').value.trim();
+		  const dateOfBirth = document.getElementById('party-dob').value;
+		  const gender = document.getElementById('party-gender').value;
+		  const phoneNumber = document.getElementById('party-phone').value.trim();
+		  const email = document.getElementById('party-email').value.trim();
+		  const smokerStatus = document.getElementById('party-smokerStatus').value;
+		  const adminAccess = document.getElementById('party-adminAccess').value;
+		  const alternateEmail = document.getElementById('party-alternateEmail').value.trim();
+		  const phoneCountryCode = document.getElementById('party-phoneCountryCode').value.trim();
+		  const secondaryPhone = document.getElementById('party-secondaryPhone').value.trim();
+		  const emergencyContactName = document.getElementById('party-emergencyContactName').value.trim();
+		  const emergencyContactPhone = document.getElementById('party-emergencyContactPhone').value.trim();
+		  const street = document.getElementById('party-street').value.trim();
+		  const city = document.getElementById('party-city').value.trim();
+		  const state = document.getElementById('party-state').value.trim();
+		  const zipCode = document.getElementById('party-zipCode').value.trim();
+		  const country = document.getElementById('party-country').value.trim();
+
+		  if (!userId) {
+		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
+		    return;
+		  }
+		  if (!name) {
+		    showAlert('error', 'Customer Name is required.');
+		    return;
+		  }
+		  if (!email) {
+		    showAlert('error', 'Email is required.');
+		    return;
+		  }
+		  if (!gender) {
+		    showAlert('error', 'Gender is required.');
+		    return;
+		  }
+		  if (!phoneNumber) {
+		    showAlert('error', 'Phone Number is required.');
+		    return;
+		  }
+		  if (!dateOfBirth) {
+		    showAlert('error', 'Date of Birth is required.');
+		    return;
+		  }
+
+		  const payload = {
+		    userId,
+		    name,
+		    middleName,
+		    surname,
+		    age,
+		    dateOfBirth,
+		    gender,
+		    phoneNumber,
+		    email,
+		    smokerStatus,
+		    adminAccess,
+		    address: { street, city, state, zipCode, country },
+		    contactDetails: { alternateEmail, phoneCountryCode, phoneNumber: secondaryPhone, emergencyContactName, emergencyContactPhone }
+		  };
+
+		  showLoader();
+		  try {
+		    const response = await fetch('http://localhost:8081/policy/customer-details/update', {
+		      method: 'POST',
+		      headers: {
+		        'Content-Type': 'application/json',
+		        'userId': config.userId
+		      },
+		      body: JSON.stringify(payload)
+		    });
+
+		    if (response.ok) {
+		      const { data } = await response.json();
+		      const customerNumberMatch = data.match(/Customer Number: (\d+)/);
+		      const customerNumber = customerNumberMatch ? customerNumberMatch[1] : null;
+		      showAlert('success', data || 'Party/Customer created successfully!', null, customerNumber);
+		      closeModal('create-party');
+		      resetPartyForm();
+		    } else {
+		      const errorText = await response.text();
+		      showAlert('error', errorText || 'Failed to create party/customer.');
+		    }
+		  } catch (error) {
+		    showAlert('error', 'An error occurred. Please try again.');
+		    console.error('API error:', error);
+		  } finally {
+		    hideLoader();
+		  }
+		}
+
+		async function createPolicy() {
+		  const userId = document.getElementById('policy-userId').value;
+		  const productCode = document.getElementById('policy-productCode').value;
+		  const polCompanyName = document.getElementById('policy-polCompanyName').value;
+		  const policyName = document.getElementById('policy-policyName').value;
+		  const customerNo = document.getElementById('policy-customerNo').value.trim();
+		  const custName = document.getElementById('policy-custName').value;
+		  const middleName = document.getElementById('policy-middleName').value;
+		  const surname = document.getElementById('policy-surname').value;
+		  const fcuFlag = document.getElementById('policy-fcuFlag').value;
+		  const phoneNum = document.getElementById('policy-phoneNum').value;
+		  const email = document.getElementById('policy-email').value;
+		  const smokerStatus = document.getElementById('policy-smokerStatus').value;
+		  const dateOfBirth = document.getElementById('policy-dateOfBirth').value;
+		  const gender = document.getElementById('policy-gender').value;
+
+		  if (!userId) {
+		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
+		    return;
+		  }
+		  if (!productCode) {
+		    showAlert('error', 'Product Code is required.');
+		    return;
+		  }
+		  if (!polCompanyName) {
+		    showAlert('error', 'Policy Company Name is required.');
+		    return;
+		  }
+		  if (!policyName) {
+		    showAlert('error', 'Policy Name is required.');
+		    return;
+		  }
+		  if (!customerNo) {
+		    showAlert('error', 'Customer Number is required.');
+		    return;
+		  }
+		  if (!custName) {
+		    showAlert('error', 'Customer Name is required.');
+		    return;
+		  }
+		  if (!fcuFlag) {
+		    showAlert('error', 'FCU Flag is required.');
+		    return;
+		  }
+		  if (!gender) {
+		    showAlert('error', 'Gender is required.');
+		    return;
+		  }
+		  if (!config.customerValidated) {
+		    showAlert('error', 'Please validate the Customer Number.');
+		    return;
+		  }
+
+		  const payload = {
+		    userId,
+		    productCode,
+		    polCompanyName,
+		    policyName,
+		    customerNo,
+		    custName,
+		    middleName,
+		    surname,
+		    fcuFlag,
+		    phoneNum,
+		    email,
+		    smokerStatus,
+		    dateOfBirth,
+		    gender
+		  };
+
+		  showLoader();
+		  try {
+		    const response = await fetch('http://localhost:8081/policy/policy-create', {
+		      method: 'POST',
+		      headers: {
+		        'Content-Type': 'application/json',
+		        'userId': config.userId
+		      },
+		      body: JSON.stringify(payload)
+		    });
+
+		    if (response.ok) {
+		      const { data, errorMessage } = await response.json();
+		      if (errorMessage) {
+		        showAlert('error', errorMessage);
+		        return;
+		      }
+		      const message = data.policyNo ? `Policy ${data.policyNo} created successfully!` : 'Policy created successfully!';
+		      showAlert('success', message, null, null, data.policyNo);
+		      closeModal('create-policy');
+		      resetPolicyForm();
+		    } else {
+		      const errorText = await response.text();
+		      showAlert('error', errorText || 'Failed to create policy.');
+		    }
+		  } catch (error) {
+		    showAlert('error', 'An error occurred. Please try again.');
+		    console.error('Policy creation error:', error);
+		  } finally {
+		    hideLoader();
+		  }
+		}
+
+		function copyCustomerNumber() {
+		  const numberInput = document.getElementById('customer-number');
+		  const numberType = numberInput.dataset.type === 'policy' ? 'Policy Number' : 'Customer Number';
+		  const numberValue = numberInput.value;
+		  navigator.clipboard.writeText(numberValue).then(() => {
+		    const copyBtn = document.getElementById('copy-customer-number');
+		    copyBtn.textContent = 'Copied!';
+		    setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+		  }).catch(err => {
+		    showAlert('error', `Failed to copy ${numberType.toLowerCase()}.`);
+		    console.error('Copy error:', err);
+		  });
+		}
+
+		function renderResults(data, page = 1) {
+		  const { resultsDiv, countDiv, paginationDiv } = elements;
+		  const searchType = elements.searchType.value;
+
+		  config.currentData = data;
+		  config.currentPage = page;
+
+		  if (!data || data.length === 0) {
+		    countDiv.textContent = `No ${searchType}s found.`;
+		    countDiv.classList.remove('hidden');
+		    resultsDiv.classList.add('hidden');
+		    paginationDiv.classList.add('hidden');
+		    return;
+		  }
+
+		  countDiv.textContent = `Found ${data.length} ${searchType}${data.length > 1 ? 's' : ''}`;
+		  countDiv.classList.remove('hidden');
+
+		  const start = (page - 1) * config.itemsPerPage;
+		  const end = start + config.itemsPerPage;
+		  const paginatedData = data.slice(start, end);
+
+		  resultsDiv.innerHTML = '';
+		  resultsDiv.classList.remove('hidden');
+
+		  if (config.currentView === 'grid') {
+		    resultsDiv.className = 'modern-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+		    paginatedData.forEach(item => {
+		      const card = document.createElement('div');
+		      card.className = 'modern-card p-6 bg-white rounded-lg shadow-lg';
+		      card.innerHTML = `
+		        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+		          ${searchType === 'policy' ? `<span class="highlight">${item.policyName || 'N/A'}</span>` : `<span class="highlight">${item.custName || 'N/A'} ${item.middleName || ''} ${item.surname || ''}</span>`}
+		        </h3>
+		        <div class="space-y-4">
+		          <div>
+		            <h4 class="text-sm font-medium text-gray-500 mb-2">${searchType === 'policy' ? 'Policy Info' : 'Customer Info'}</h4>
+		            <div class="grid grid-cols-1 gap-4">
+		              <p class="text-sm text-gray-600 flex items-center truncate">
+		                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+		                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${searchType === 'policy' ? 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' : 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'}" />
+		                </svg>
+		                <span class="font-medium">${searchType === 'policy' ? 'Policy No:' : 'Email:'}</span>
+		                <span class="tooltip truncate ml-2" data-tooltip="${searchType === 'policy' ? item.policyNumber || 'N/A' : item.email || 'N/A'}">${searchType === 'policy' ? `<span class="highlight">${item.policyNumber || 'N/A'}</span>` : item.email || 'N/A'}</span>
+		              </p>
+		              <p class="text-sm text-gray-600 flex items-center truncate">
+		                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+		                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${searchType === 'policy' ? 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' : 'M3 5h18M9 3v2m6-2v2M9 19v-2m6 2v-2m-6 0h6M3 9h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9z'}" />
+		                </svg>
+		                <span class="font-medium">${searchType === 'policy' ? 'Customer No:' : 'Customer No:'}</span>
+		                <span class="tooltip truncate ml-2" data-tooltip="${item.customerNo || 'N/A'}">${item.customerNo || 'N/A'}</span>
+		              </p>
+		              ${searchType === 'policy' ? `
+		                <p class="text-sm text-gray-600 flex items-center truncate">
+		                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+		                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+		                  </svg>
+		                  <span class="font-medium">FCU Flag:</span>
+		                  <span class="tooltip truncate ml-2" data-tooltip="${item.fcuFlag || 'N/A'}">${item.fcuFlag || 'N/A'}</span>
+		                </p>
+		              ` : `
+		                <p class="text-sm text-gray-600 flex items-center truncate">
+		                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+		                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m0 0v14m-6-6h12M3 15h12" />
+		                  </svg>
+		                  <span class="font-medium">Phone:</span>
+		                  <span class="tooltip truncate ml-2" data-tooltip="${item.phoneNum || 'N/A'}">${item.phoneNum || 'N/A'}</span>
+		                </p>
+		              `}
+		            </div>
+		          </div>
+		          <button class="btn-gradient btn-base w-full py-2 px-4 rounded-lg" onclick="showCustomerPolicies('${item.customerNo}')">
+		            ${searchType === 'customer' && item.policyList?.length ? `View Policies (${item.policyList.length})` : 'View Policies'}
+		          </button>
+		        </div>
+		      `;
+		      resultsDiv.appendChild(card);
+		    });
+		  } else {
+		    resultsDiv.className = 'modern-table-container';
+		    const table = document.createElement('table');
+		    table.className = 'modern-table';
+		    table.innerHTML = `
+		      <thead>
+		        <tr>
+		          ${searchType === 'policy' ? `
+		            <th>Policy Name</th>
+		            <th>Policy Number</th>
+		            <th>Customer No</th>
+		            <th>Customer Name</th>
+		            <th>FCU Flag</th>
+		            <th>Actions</th>
+		          ` : `
+		            <th>Customer Name</th>
+		            <th>Customer No</th>
+		            <th>Email</th>
+		            <th>Phone</th>
+		            <th>Gender</th>
+		            <th>Smoker Status</th>
+		            <th>Policies</th>
+		          `}
+		        </tr>
+		      </thead>
+		      <tbody>
+		        ${paginatedData.map(item => `
+		          <tr>
+		            ${searchType === 'policy' ? `
+		              <td class="tooltip" data-tooltip="${item.policyName || 'N/A'}">${item.policyName || 'N/A'}</td>
+		              <td class="tooltip" data-tooltip="${item.policyNumber || 'N/A'}">${item.policyNumber || 'N/A'}</td>
+		              <td class="tooltip" data-tooltip="${item.customerNo || 'N/A'}">${item.customerNo || 'N/A'}</td>
+		              <td class="tooltip" data-tooltip="${item.custName || 'N/A'} ${item.middleName || ''} ${item.surname || ''}">${item.custName || 'N/A'} ${item.middleName || ''} ${item.surname || ''}</td>
+		              <td class="tooltip" data-tooltip="${item.fcuFlag || 'N/A'}">${item.fcuFlag || 'N/A'}</td>
+		              <td>
+		                <button class="btn-gradient btn-base py-1 px-3 rounded-lg text-sm" onclick="showCustomerPolicies('${item.customerNo}')">View</button>
+		              </td>
+		            ` : `
+		              <td class="tooltip" data-tooltip="${item.custName || 'N/A'} ${item.middleName || ''} ${item.surname || ''}">${item.custName || 'N/A'} ${item.middleName || ''} ${item.surname || ''}</td>
+		              <td class="tooltip" data-tooltip="${item.customerNo || 'N/A'}">${item.customerNo || 'N/A'}</td>
+		              <td class="tooltip" data-tooltip="${item.email || 'N/A'}">${item.email || 'N/A'}</td>
+		              <td class="tooltip" data-tooltip="${item.phoneNum || 'N/A'}">${item.phoneNum || 'N/A'}</td>
+		              <td class="tooltip" data-tooltip="${item.gender || 'N/A'}">${item.gender || 'N/A'}</td>
+		              <td class="tooltip" data-tooltip="${item.smokerStatus || 'N/A'}">${item.smokerStatus || 'N/A'}</td>
+		              <td>
+		                ${item.policyList?.length ? `
+		                  <button class="btn-gradient btn-base py-1 px-3 rounded-lg text-sm" onclick="showCustomerPolicies('${item.customerNo}')">View (${item.policyList.length})</button>
+		                ` : 'None'}
+		              </td>
+		            `}
+		          </tr>
+		        `).join('')}
+		      </tbody>
+		    `;
+		    resultsDiv.appendChild(table);
+		  }
+
+		  renderPagination(data.length);
+		}
+
+		function renderPagination(totalItems) {
+		  const { paginationDiv } = elements;
+		  const totalPages = Math.ceil(totalItems / config.itemsPerPage);
+		  paginationDiv.innerHTML = '';
+		  paginationDiv.classList.remove('hidden');
+
+		  const prevBtn = document.createElement('button');
+		  prevBtn.className = 'pagination-btn';
+		  prevBtn.textContent = 'Previous';
+		  prevBtn.disabled = config.currentPage === 1;
+		  prevBtn.onclick = () => renderResults(config.currentData, config.currentPage - 1);
+		  paginationDiv.appendChild(prevBtn);
+
+		  const maxVisiblePages = 5;
+		  let startPage = Math.max(1, config.currentPage - Math.floor(maxVisiblePages / 2));
+		  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+		  if (endPage - startPage + 1 < maxVisiblePages) {
+		    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+		  }
+
+		  for (let i = startPage; i <= endPage; i++) {
+		    const pageBtn = document.createElement('button');
+		    pageBtn.className = `pagination-btn-number ${i === config.currentPage ? 'active' : ''}`;
+		    pageBtn.textContent = i;
+		    pageBtn.onclick = () => renderResults(config.currentData, i);
+		    paginationDiv.appendChild(pageBtn);
+		  }
+
+		  const nextBtn = document.createElement('button');
+		  nextBtn.className = 'pagination-btn';
+		  nextBtn.textContent = 'Next';
+		  nextBtn.disabled = config.currentPage === totalPages;
+		  nextBtn.onclick = () => renderResults(config.currentData, config.currentPage + 1);
+		  paginationDiv.appendChild(nextBtn);
+		}
+
+		async function search() {
+			  const query = elements.searchInput.value.trim();
+			  const searchType = elements.searchType.value;
+			  console.log('Search type:', searchType); // Debugging
+			  if (!query) {
+			    showAlert('error', 'Please enter a search query.');
+			    return;
+			  }
+			  if (!config.userId) {
+			    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
+			    return;
+			  }
+
+			  showLoader();
+			  try {
+			    const endpoint = searchType === 'policy' ?
+			      `http://localhost:8081/policy/policy-details?policyNo=${encodeURIComponent(query)}` :
+			      `http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(query)}`;
+			    const response = await fetch(endpoint, {
+			      method: 'GET',
+			      headers: { 'userId': config.userId }
+			    });
+
+			    if (response.ok) {
+			      let jsonResponse;
+			      try {
+			        jsonResponse = await response.json();
+			      } catch (error) {
+			        console.error('JSON parsing error:', error);
+			        showAlert('error', 'Invalid response format from server.');
+			        renderResults([]);
+			        return;
+			      }
+			      const { data, errorMessage } = jsonResponse;
+			      if (errorMessage) {
+			        showAlert('error', errorMessage);
+			        renderResults([]);
+			        return;
+			      }
+			      if (searchType === 'policy') {
+			        const normalizedData = Array.isArray(data) ? data : [data].filter(Boolean);
+			        const enrichedData = await Promise.all(normalizedData.map(async policy => {
+			          if (policy.customerNo) {
+			            try {
+			              const customerResponse = await fetch(`http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(policy.customerNo)}`, {
+			                method: 'GET',
+			                headers: { 'userId': config.userId }
+			              });
+			              if (customerResponse.ok) {
+			                const { data: customerData } = await customerResponse.json();
+			                if (customerData && customerData.length > 0) {
+			                  return { ...policy, ...customerData[0], policyList: customerData[0].policyList || [policy] };
+			                }
+			              }
+			            } catch (error) {
+			              console.error('Error fetching customer for policy:', error);
+			            }
+			          }
+			          return { ...policy, policyList: [policy] };
+			        }));
+			        config.currentData = enrichedData;
+			        console.log('Policy search data:', config.currentData); // Debugging
+			        renderResults(enrichedData);
+			      } else {
+			        const normalizedData = Array.isArray(data) ? data : [data].filter(Boolean);
+			        config.currentData = normalizedData.map(item => ({
+			          ...item,
+			          custName: item.custName || 'N/A',
+			          middleName: item.middleName || '',
+			          surname: item.surname || '',
+			          email: item.email || 'N/A',
+			          phoneNum: item.phoneNum || 'N/A',
+			          gender: item.gender || 'N/A',
+			          smokerStatus: item.smokerStatus || 'N/A',
+			          customerNo: item.customerNo || 'N/A',
+			          policyList: item.policyList || [],
+			          associatedpolicyCount: item.associatedpolicyCount || '0'
+			        }));
+			        console.log('Customer search data:', config.currentData); // Debugging
+			        renderResults(config.currentData);
+			      }
+			    } else {
+			      const errorText = await response.text();
+			      showAlert('error', errorText || `No ${searchType}s found.`);
+			      renderResults([]);
+			    }
+			  } catch (error) {
+			    showAlert('error', 'An error occurred during search.');
+			    console.error('Search error:', error);
+			    renderResults([]);
+			  } finally {
+			    hideLoader();
+			  }
+			}
+
+		function showCustomerPolicies(customerNo) {
+			  if (!config.userId) {
+			    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
+			    return;
+			  }
+
+			  // Find the customer data in config.currentData
+			  const customer = config.currentData.find(item => item.customerNo === customerNo);
+			  const contentDiv = document.getElementById('policy-list-content');
+			  contentDiv.innerHTML = '';
+
+			  if (customer && customer.policyList && customer.policyList.length > 0) {
+			    const policies = customer.policyList;
+			    const maxDisplay = 5;
+			    policies.slice(0, maxDisplay).forEach((policy, index) => {
+			      const card = document.createElement('div');
+			      card.className = 'modern-card p-6 mb-4';
+			      card.innerHTML = `
+			        <div class="flex justify-between items-center mb-4">
+			          <h3 class="text-lg font-semibold text-gray-800"><span class="highlight">${policy.policyName || 'N/A'}</span></h3>
+			          <button class="toggle-details text-blue-500 hover:text-blue-700 text-sm" data-index="${index}">
+			            Show Details
+			          </button>
+			        </div>
+			        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 policy-details policy-details-${index} hidden">
+			          <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.custName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNum || 'N/A'}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
+			        </div>
+			      `;
+			      contentDiv.appendChild(card);
+			    });
+
+			    if (policies.length > maxDisplay) {
+			      const moreText = document.createElement('p');
+			      moreText.className = 'text-sm text-blue-500 cursor-pointer mt-2';
+			      moreText.textContent = `+${policies.length - maxDisplay} more policies`;
+			      moreText.onclick = () => {
+			        contentDiv.innerHTML = '';
+			        policies.forEach((policy, index) => {
+			          const card = document.createElement('div');
+			          card.className = 'modern-card p-6 mb-4';
+			          card.innerHTML = `
+			            <div class="flex justify-between items-center mb-4">
+			              <h3 class="text-lg font-semibold text-gray-800"><span class="highlight">${policy.policyName || 'N/A'}</span></h3>
+			              <button class="toggle-details text-blue-500 hover:text-blue-700 text-sm" data-index="${index}">
+			                Show Details
+			              </button>
+			            </div>
+			            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 policy-details policy-details-${index} hidden">
+			              <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.custName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNum || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
+			            </div>
+			          `;
+			          contentDiv.appendChild(card);
+			        });
+			        addToggleListeners();
+			      };
+			      contentDiv.appendChild(moreText);
+			    }
+
+			    addToggleListeners();
+			    openModal('policy-list');
+			  } else {
+			    contentDiv.innerHTML = '<p class="text-gray-600 text-center">No policies found for this customer.</p>';
+			    openModal('policy-list');
+			  }
+			}
+		function addToggleListeners() {
+		  document.querySelectorAll('.toggle-details').forEach(button => {
+		    button.addEventListener('click', () => {
+		      const index = button.dataset.index;
+		      const details = document.querySelector(`.policy-details-${index}`);
+		      details.classList.toggle('hidden');
+		      button.textContent = details.classList.contains('hidden') ? 'Show Details' : 'Hide Details';
+		    });
+		  });
+		}
+
+		function toggleView() {
+		  config.currentView = config.currentView === 'grid' ? 'table' : 'grid';
+		  elements.toggleViewBtn.textContent = `Switch to ${config.currentView === 'grid' ? 'List' : 'Grid'} View`;
+		  if (config.currentData.length > 0) {
+		    renderResults(config.currentData, config.currentPage);
+		  }
+		}
+
+		// Event Listeners
+		document.addEventListener('DOMContentLoaded', () => {
+		  initializeUserId();
+
+		  elements.searchInput.addEventListener('keypress', e => {
+		    if (e.key === 'Enter') search();
+		  });
+		  document.getElementById('search-btn').addEventListener('click', search);
+		  elements.toggleViewBtn.addEventListener('click', toggleView);
+
+		  document.getElementById('btn-profile').addEventListener('click', () => openModal('profile'));
+		  document.getElementById('btn-contact').addEventListener('click', () => openModal('contact'));
+		  document.getElementById('close-profile-modal').addEventListener('click', () => closeModal('profile'));
+		  document.getElementById('close-contact-modal').addEventListener('click', () => closeModal('contact'));
+		  document.getElementById('close-create-party-modal').addEventListener('click', () => closeModal('create-party'));
+		  document.getElementById('close-create-policy-modal').addEventListener('click', () => closeModal('create-policy'));
+		  document.getElementById('close-success-modal').addEventListener('click', () => closeModal('success'));
+		  document.getElementById('close-error-modal').addEventListener('click', () => closeModal('error'));
+		  document.getElementById('success-ok-btn').addEventListener('click', () => closeModal('success'));
+		  document.getElementById('error-ok-btn').addEventListener('click', () => closeModal('error'));
+		  document.getElementById('copy-customer-number').addEventListener('click', copyCustomerNumber);
+		  document.getElementById('reset-party-btn').addEventListener('click', resetPartyForm);
+		  document.getElementById('reset-policy-btn').addEventListener('click', resetPolicyForm);
+		  document.getElementById('prev-tab-btn').addEventListener('click', () => {
+		    const tabs = ['personal', 'contact', 'address'];
+		    const currentIndex = tabs.indexOf(config.currentTab);
+		    if (currentIndex > 0) switchTab(tabs[currentIndex - 1]);
+		  });
+		  document.getElementById('next-tab-btn').addEventListener('click', () => {
+		    const tabs = ['personal', 'contact', 'address'];
+		    const currentIndex = tabs.indexOf(config.currentTab);
+		    if (currentIndex < tabs.length - 1) switchTab(tabs[currentIndex + 1]);
+		  });
+		  document.querySelectorAll('.tab').forEach(tab => {
+		    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+		  });
+		  document.getElementById('close-policy-list-modal').addEventListener('click', () => closeModal('policy-list'));
+		  document.getElementById('close-policy-list-btn').addEventListener('click', () => closeModal('policy-list'));
+
+		  // Animations
+		  const animateElements = () => {
+		    const elements = document.querySelectorAll('.text-hidden, .button-hidden');
+		    elements.forEach((el, index) => {
+		      setTimeout(() => {
+		        el.classList.remove('text-hidden', 'button-hidden');
+		        el.classList.add('text-visible', 'button-visible');
+		      }, index * 100);
+		    });
+		  };
+		  animateElements();
+
+		  // Particles
+		  const canvas = document.getElementById('particles');
+		  const ctx = canvas.getContext('2d');
+		  canvas.width = window.innerWidth;
+		  canvas.height = window.innerHeight;
+
+		  const particlesArray = [];
+		  const numberOfParticles = 50;
+
+		  class Particle {
+		    constructor() {
+		      this.x = Math.random() * canvas.width;
+		      this.y = Math.random() * canvas.height;
+		      this.size = Math.random() * 5 + 1;
+		      this.speedX = Math.random() * 1 - 0.5;
+		      this.speedY = Math.random() * 1 - 0.5;
+		    }
+		    update() {
+		      this.x += this.speedX;
+		      this.y += this.speedY;
+		      if (this.size > 0.2) this.size -= 0.01;
+		      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+		      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+		    }
+		    draw() {
+		      ctx.fillStyle = 'rgba(59, 130, 246, 0.5)';
+		      ctx.beginPath();
+		      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+		      ctx.fill();
+		    }
+		  }
+
+		  function initParticles() {
+		    for (let i = 0; i < numberOfParticles; i++) {
+		      particlesArray.push(new Particle());
+		    }
+		  }
+
+		  function animateParticles() {
+		    ctx.clearRect(0, 0, canvas.width, canvas.height);
+		    for (let i = 0; i < particlesArray.length; i++) {
+		      particlesArray[i].update();
+		      particlesArray[i].draw();
+		      if (particlesArray[i].size <= 0.2) {
+		        particlesArray.splice(i, 1);
+		        particlesArray.push(new Particle());
+		        i--;
+		      }
+		    }
+		    requestAnimationFrame(animateParticles);
+		  }
+
+		  initParticles();
+		  animateParticles();
+
+		  window.addEventListener('resize', () => {
+		    canvas.width = window.innerWidth;
+		    canvas.height = window.innerHeight;
+		  });
+		});
+</script>
+</body>
+</html>
