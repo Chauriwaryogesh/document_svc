@@ -287,13 +287,14 @@ public class SecurityController {
 	}
 	
 	@GetMapping("/customer-details")
-	public com.example.service.ResponseEntity<CustomerDTO> getCustomerlDetails(
-			@RequestParam(value = "email", required = false) String email, @RequestHeader String userId) {
-		com.example.service.ResponseEntity<CustomerDTO> emailResp = new com.example.service.ResponseEntity<>();
+	public com.example.service.ResponseEntity<List<CustomerDTO>> getCustomerlDetails(
+			@RequestParam(value = "email", required = false) String email,
+			@RequestParam(value = "customerNo", required = false) String customerNo, @RequestHeader String userId) {
+		com.example.service.ResponseEntity<List<CustomerDTO>> emailResp = new com.example.service.ResponseEntity<>();
 
-		CustomerDTO customerDTO = otpService.getCustomerDetails(email, userId);
+		List<CustomerDTO> customerDTO = otpService.getCustomerDetails(email,customerNo, userId);
 
-		if (email != null && !email.isEmpty()) {
+		if (customerDTO != null && !customerDTO.isEmpty()) {
 			emailResp.setData(customerDTO);
 		} else {
 			emailResp.setErrorMessage("Error while fetching customerDetails ");
@@ -310,7 +311,7 @@ public class SecurityController {
 		if (message.contains("Success")) {
 			resp.setData(message);
 		} else {
-			resp.setErrorMessage("Error while updating  customerDetails ");
+			resp.setErrorMessage(message);
 		}
 		return resp;
 	}

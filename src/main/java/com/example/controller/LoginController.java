@@ -30,5 +30,10 @@ public class LoginController {
         return "workitem-details";
     }
     
+    @GetMapping("/policy")
+    public String policy(String userId) {
+        return "policy";
+    }
+    
 }
 
