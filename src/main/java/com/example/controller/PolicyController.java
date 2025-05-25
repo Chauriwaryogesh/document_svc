@@ -51,12 +51,13 @@ public class PolicyController {
 			@RequestParam(value = "policyNo", required = false) String policyNo,
 			@RequestParam(value = "allpolSearch", required = false) String allPol,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
+			@RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
 			@RequestHeader String userId) {
 		if(allPol == null) {
 			allPol="N";
 		}
 		com.example.service.ResponseEntity<List<PolicyDTO>> emailResp = policyService.getPolicyDetails(policyNo,
-				customerNo,allPol, userId);
+				customerNo,allPol,workItemRefNo, userId);
 
 		return emailResp;
 	}

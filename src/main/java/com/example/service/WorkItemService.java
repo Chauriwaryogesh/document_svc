@@ -50,7 +50,7 @@ public class WorkItemService implements IWorkItemService {
 				workItem.setUserId(workItemRequest.getCreatedBy());
 			}
 			workItem.setWorkItemName(workItemRequest.getWorkItemName());
-			workItem.setWorkType(userId);
+			workItem.setWorkType(workItemRequest.getWorkType());
 
 			String refNo = generateRandomWorkItemRefNumber();
 			workItem.setWorkItemRefNumber(refNo);
@@ -161,7 +161,8 @@ public class WorkItemService implements IWorkItemService {
 
 		Queue queue = new Queue();
 		List<WorkItem> workItemsList = repository.findAll();
-
+        //add pending
+		// hold 1 week
 		long pendExternal = workItemsList.stream().filter(sttus -> sttus.getStatus().equalsIgnoreCase("PEND_EXTERNAL"))
 				.count();
 		long pendInternal = workItemsList.stream().filter(sttus -> sttus.getStatus().equalsIgnoreCase("PEND_INTERNAL"))

@@ -112,7 +112,7 @@ public class PolicyService {
 	}
 
 	public ResponseEntity<List<PolicyDTO>> getPolicyDetails(String policyNo, String customerNo, String allpol,
-			String userId) {
+			String workItemRefNo, String userId) {
 
 		ResponseEntity<List<PolicyDTO>> resp = new ResponseEntity<List<PolicyDTO>>();
 		List<PolicyDTO> response = new ArrayList<>();
@@ -190,6 +190,20 @@ public class PolicyService {
 				resp.setData(response);
 			}
 
+		}else if(workItemRefNo != null) {
+			List<Policy> policy = policyRepository.findByWorkItemRefNum(workItemRefNo);
+			if (policy != null &&  !policy.isEmpty()) {
+				String custNo = policy.get(0).getCustomerNo();
+				List<Policy> customerPolicies = policyRepository.findByCustomerNo(custNo);
+				if (customerPolicies.isEmpty()) {
+					resp.setErrorMessage("No customer found for policy number: " + policyNo);
+				} else {
+					response = mapPolciyListDetails(customerPolicies, response, userId);
+				}
+				resp.setData(response);
+			}else {
+				resp.setErrorMessage("No customer and Policy found for give "+ workItemRefNo +" number ");
+			}
 		}
 //		else {
 //			List<Policy> policyList = policyRepository.findAll();
@@ -240,6 +254,9 @@ public class PolicyService {
 	            pol.setPolCompanyName(policy.getPolCompanyName());
 	            pol.setPolicyName(policy.getPolicyName());
 	            pol.setProductCode(policy.getProductCode());
+	            pol.setCreatedBy(policy.getCreatedBy());
+	            pol.setCreatedDate(String.valueOf(policy.getCreatedDate()));
+	            pol.setWorkItemRefNo(policy.getWorkItemRefNo());
 	            return pol;
 	        }).collect(Collectors.toList());
 
