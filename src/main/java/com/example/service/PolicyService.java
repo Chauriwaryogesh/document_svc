@@ -18,14 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.example.CommonConstants.CommonConstant;
+import com.example.dto.BankAccountDTO;
 import com.example.dto.PolicyDTO;
 import com.example.dto.PolicyList;
 import com.example.dto.PolicyRequest;
 import com.example.dto.ResponseDTO;
 import com.example.dto.WorkItemDTO;
+import com.example.entity.BankAccount;
 import com.example.entity.Customer;
 import com.example.entity.Policy;
-import com.example.exception.CustomerNotFoundException;
+import com.example.repo.BankAccountRepo;
 import com.example.repo.CustomerRepo;
 import com.example.repo.IPolicyRepo;
 
@@ -38,12 +40,15 @@ public class PolicyService {
 
 	@Autowired
 	private IPolicyRepo policyRepository;
-	
+
 	@Autowired
 	private IWorkItemService workItemService;
-	
+
 	@Autowired
 	private CustomerRepo customerRepo;
+
+	@Autowired
+	private BankAccountRepo bankAccountRepository;
 
 	public ResponseDTO createPolicy(PolicyRequest policyDTO, String userId) {
 		ResponseDTO response = new ResponseDTO();
@@ -113,9 +118,9 @@ public class PolicyService {
 
 	public ResponseEntity<List<PolicyDTO>> getPolicyDetails(String policyNo, String customerNo, String allpol,
 			String workItemRefNo, String userId) {
-
-		ResponseEntity<List<PolicyDTO>> resp = new ResponseEntity<List<PolicyDTO>>();
+		ResponseEntity<List<PolicyDTO>> resp = new ResponseEntity<>();
 		List<PolicyDTO> response = new ArrayList<>();
+
 		if (policyNo != null) {
 			Policy policy = policyRepository.findByPolicyNum(policyNo);
 			if (policy != null && allpol.equalsIgnoreCase("Y")) {
@@ -134,8 +139,8 @@ public class PolicyService {
 					PolicyDTO policyDTO = new PolicyDTO();
 					policyDTO.setCustomerNo(customer.getCustomerNo());
 					policyDTO.setUserId(policy.getUserId());
-					policyDTO.setPhoneNum(customer.getPhoneNumber());
-					policyDTO.setCustName(customer.getName());
+					policyDTO.setPhoneNumber(customer.getPhoneNumber());
+					policyDTO.setCustomerName(customer.getName());
 					policyDTO.setSmokerStatus(customer.getSmokerStatus());
 					policyDTO.setSurname(customer.getSurname());
 					policyDTO.setGender(customer.getGender());
@@ -143,7 +148,6 @@ public class PolicyService {
 					policyDTO.setDateOfBirth(customer.getDateOfBirth());
 					policyDTO.setEmail(customer.getEmail());
 
-					// Add only the searched policy
 					List<PolicyList> policyList = new ArrayList<>();
 					PolicyList pol = new PolicyList();
 					pol.setFcuFlag(policy.getFcuFlag());
@@ -151,9 +155,18 @@ public class PolicyService {
 					pol.setPolCompanyName(policy.getPolCompanyName());
 					pol.setPolicyName(policy.getPolicyName());
 					pol.setProductCode(policy.getProductCode());
+					pol.setCreatedBy(policy.getCreatedBy());
+					pol.setCreatedDate(String.valueOf(policy.getCreatedDate()));
+					pol.setWorkItemRefNo(policy.getWorkItemRefNo());
+
+					List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber());
+					List<BankAccountDTO> bankAccountDTOs = bankAccounts.stream().map(this::mapToBankAccountDTO)
+							.collect(Collectors.toList());
+					pol.setBankAccounts(bankAccountDTOs);
+
 					policyList.add(pol);
 					policyDTO.setPolicyList(policyList);
-					policyDTO.setAssociatedpolicyCount("1");
+					policyDTO.setAssociatedPolicyCount("1");
 
 					response.add(policyDTO);
 					resp.setData(response);
@@ -172,103 +185,116 @@ public class PolicyService {
 				if (policyList != null && !policyList.isEmpty()) {
 					response = mapPolciyListDetails(policyList, response, userId);
 				} else {
-					// Return customer details with no policies
+// Return customer details with no policies
 					PolicyDTO policyDTO = new PolicyDTO();
-					policyDTO.setAssociatedpolicyCount("0");
+					policyDTO.setAssociatedPolicyCount("0");
 					policyDTO.setCustomerNo(customerNo);
 					policyDTO.setUserId(userId);
-					policyDTO.setPhoneNum(customer.getPhoneNumber());
-					policyDTO.setCustName(customer.getName());
+					policyDTO.setPhoneNumber(customer.getPhoneNumber());
+					policyDTO.setCustomerName(customer.getName());
 					policyDTO.setSmokerStatus(customer.getSmokerStatus());
 					policyDTO.setSurname(customer.getSurname());
 					policyDTO.setGender(customer.getGender());
 					policyDTO.setMiddleName(customer.getMiddleName());
 					policyDTO.setDateOfBirth(customer.getDateOfBirth());
 					policyDTO.setEmail(customer.getEmail());
+					policyDTO.setPolicyList(new ArrayList<>()); // Empty policy list
 					response.add(policyDTO);
 				}
 				resp.setData(response);
 			}
 
-		}else if(workItemRefNo != null) {
+		} else if (workItemRefNo != null) {
 			List<Policy> policy = policyRepository.findByWorkItemRefNum(workItemRefNo);
-			if (policy != null &&  !policy.isEmpty()) {
+			if (policy != null && !policy.isEmpty()) {
 				String custNo = policy.get(0).getCustomerNo();
 				List<Policy> customerPolicies = policyRepository.findByCustomerNo(custNo);
 				if (customerPolicies.isEmpty()) {
-					resp.setErrorMessage("No customer found for policy number: " + policyNo);
+					resp.setErrorMessage("No customer found for work item reference number: " + workItemRefNo);
 				} else {
 					response = mapPolciyListDetails(customerPolicies, response, userId);
 				}
 				resp.setData(response);
-			}else {
-				resp.setErrorMessage("No customer and Policy found for give "+ workItemRefNo +" number ");
+			} else {
+				resp.setErrorMessage(
+						"No customer and policy found for given work item reference number: " + workItemRefNo);
 			}
 		}
-//		else {
-//			List<Policy> policyList = policyRepository.findAll();
-//			if (policyList != null && !policyList.isEmpty()) {
-//				response = mapPolicyListDetails(policyList, response, userId);
-//				resp.setData(response);
-//			}
-//		}
-
 		return resp;
 	}
 
 	private List<PolicyDTO> mapPolciyListDetails(List<Policy> policyListPOl, List<PolicyDTO> response, String userId) {
-	    // Group policies by customer number
-	    Map<String, List<Policy>> customerPolicyMap = policyListPOl.stream()
-	        .collect(Collectors.groupingBy(Policy::getCustomerNo));
+// Group policies by customer number
+		Map<String, List<Policy>> customerPolicyMap = policyListPOl.stream()
+				.collect(Collectors.groupingBy(Policy::getCustomerNo));
 
-	    response = customerPolicyMap.entrySet().stream().map(entry -> {
-	        String customerNo = entry.getKey();
-	        List<Policy> policies = entry.getValue();
+		response = customerPolicyMap.entrySet().stream().map(entry -> {
+			String customerNo = entry.getKey();
+			List<Policy> policies = entry.getValue();
 
-	        // Fetch customer details once
-	        Optional<Customer> customerDtls = customerRepo.findByCustomerNo(customerNo);
-	        if (customerDtls.isEmpty()) {
-	            return null; // or skip, or throw an exception based on your business logic
-	        }
-	        Customer customer = customerDtls.get();
+// Fetch customer details once
+			Optional<Customer> customerDtls = customerRepo.findByCustomerNo(customerNo);
+			if (customerDtls.isEmpty()) {
+				return null; // Skip if customer not found
+			}
+			Customer customer = customerDtls.get();
 
-	        // Create DTO and set customer details
-	        PolicyDTO policyDTO = new PolicyDTO();
-	        policyDTO.setAssociatedpolicyCount(String.valueOf(policies.size()));
-	        policyDTO.setCustomerNo(customerNo);
-	        policyDTO.setUserId(userId); // You might want to use policies.get(0).getUserId() if it varies
-	        policyDTO.setPhoneNum(customer.getPhoneNumber());
-	        policyDTO.setCustName(customer.getName());
-	        policyDTO.setSmokerStatus(customer.getSmokerStatus());
-	        policyDTO.setSurname(customer.getSurname());
-	        policyDTO.setGender(customer.getGender());
-	        policyDTO.setMiddleName(customer.getMiddleName());
-	        policyDTO.setDateOfBirth(customer.getDateOfBirth());
-	        policyDTO.setEmail(customer.getEmail());
+// Create DTO and set customer details
+			PolicyDTO policyDTO = new PolicyDTO();
+			policyDTO.setAssociatedPolicyCount(String.valueOf(policies.size()));
+			policyDTO.setCustomerNo(customerNo);
+			policyDTO.setUserId(userId);
+			policyDTO.setPhoneNumber(customer.getPhoneNumber());
+			policyDTO.setCustomerName(customer.getName());
+			policyDTO.setSmokerStatus(customer.getSmokerStatus());
+			policyDTO.setSurname(customer.getSurname());
+			policyDTO.setGender(customer.getGender());
+			policyDTO.setMiddleName(customer.getMiddleName());
+			policyDTO.setDateOfBirth(customer.getDateOfBirth());
+			policyDTO.setEmail(customer.getEmail());
 
-	        // Map all associated policies to PolicyList
-	        List<PolicyList> policyList = policies.stream().map(policy -> {
-	            PolicyList pol = new PolicyList();
-	            pol.setFcuFlag(policy.getFcuFlag());
-	            pol.setPolicyNumber(policy.getPolicyNumber());
-	            pol.setPolCompanyName(policy.getPolCompanyName());
-	            pol.setPolicyName(policy.getPolicyName());
-	            pol.setProductCode(policy.getProductCode());
-	            pol.setCreatedBy(policy.getCreatedBy());
-	            pol.setCreatedDate(String.valueOf(policy.getCreatedDate()));
-	            pol.setWorkItemRefNo(policy.getWorkItemRefNo());
-	            return pol;
-	        }).collect(Collectors.toList());
+// Map all associated policies to PolicyList
+			List<PolicyList> policyList = policies.stream().map(policy -> {
+				PolicyList pol = new PolicyList();
+				pol.setFcuFlag(policy.getFcuFlag());
+				pol.setPolicyNumber(policy.getPolicyNumber());
+				pol.setPolCompanyName(policy.getPolCompanyName());
+				pol.setPolicyName(policy.getPolicyName());
+				pol.setProductCode(policy.getProductCode());
+				pol.setCreatedBy(policy.getCreatedBy());
+				pol.setCreatedDate(String.valueOf(policy.getCreatedDate()));
+				pol.setWorkItemRefNo(policy.getWorkItemRefNo());
 
-	        policyDTO.setPolicyList(policyList);
-	        return policyDTO;
-	    })
-	    .filter(Objects::nonNull) // in case of missing customers
-	    .collect(Collectors.toList());
+// Fetch and map bank accounts for this policy
+				List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber());
+				List<BankAccountDTO> bankAccountDTOs = bankAccounts.stream().map(this::mapToBankAccountDTO)
+						.collect(Collectors.toList());
+				pol.setBankAccounts(bankAccountDTOs);
 
-	    return response;
+				return pol;
+			}).collect(Collectors.toList());
+
+			policyDTO.setPolicyList(policyList);
+			return policyDTO;
+		}).filter(Objects::nonNull).collect(Collectors.toList());
+
+		return response;
 	}
 
+	private BankAccountDTO mapToBankAccountDTO(BankAccount bankAccount) {
+		BankAccountDTO dto = new BankAccountDTO();
+		dto.setAccountNumber(bankAccount.getAccountNo()); // Adjust based on your BankAccount entity field
+		dto.setAccountType(bankAccount.getAccountType());
+		dto.setBankName(bankAccount.getBankName());
+		dto.setIfscCode(bankAccount.getIfscCode());
+		dto.setAccountHolderType(bankAccount.getAccountHolderType());
+		dto.setAmlStatus(bankAccount.getAmlStatus());
+		dto.setPaymentMethodStatus(bankAccount.getPaymentMethodStatus());
+		dto.setStatus(bankAccount.getStatus());
+		dto.setSwiftCode(bankAccount.getSwiftCode());
+		dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
+		return dto;
+	}
 
 	public List<String> getDoaminData(String value, String userId) {
 		List<String> productCode = new ArrayList<>();

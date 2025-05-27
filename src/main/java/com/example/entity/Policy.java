@@ -1,193 +1,305 @@
 package com.example.entity;
 
-import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Policy")
 public class Policy {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Long id;
-	// This is the field that will store your generated policy number
-	
-	@Column(name = "policyNumber",unique = true, nullable = false, length = 12) // POLC (4) + 00001 (5) + 25 (2) = 11 characters, 12 for
-	private String policyNumber;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-	@Column(name = "created_date")
-	private LocalDateTime createdDate;
+    @Column(name = "policyNumber", unique = true, nullable = false, length = 12)
+    private String policyNumber;
 
-	@Column(name = "product_code")
-	private String productCode;
+    @OneToMany(mappedBy = "policy", fetch = FetchType.LAZY)
+    private List<BankAccount> bankAccounts = new ArrayList<>(); // Initialized to avoid null issues
 
-	@Column(name = "policy_company_name")
-	private String polCompanyName;
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
 
-	@Column(name = "created_by")
-	private String createdBy;
+    @Column(name = "product_code")
+    private String productCode;
 
-	@Column(name = "updated_by")
-	private String updatedBy;
+    @Column(name = "policy_company_name")
+    private String polCompanyName;
 
-	@Column(name = "user_id")
-	private String userId;
+    @Column(name = "created_by")
+    private String createdBy;
 
-	@Column(name = "deleted_flag")
-	private String deletedFlag;
+    @Column(name = "updated_by")
+    private String updatedBy;
 
-	@Column(name = "policy_name")
-	private String policyName;
+    @Column(name = "user_id")
+    private String userId;
 
-	@Column(name = "customerNo")
-	private String customerNo;
+    @Column(name = "deleted_flag")
+    private String deletedFlag;
 
-	@Column(name = "workItemRefNo")
-	private String workItemRefNo;
-	
-	@Column(name = "fcu_details")
-	private String fcuFlag;
+    @Column(name = "policy_name")
+    private String policyName;
 
-	/**
-	 * @return the fcuFlag
-	 */
-	public String getFcuFlag() {
-		return fcuFlag;
-	}
+    @Column(name = "customerNo")
+    private String customerNo;
 
-	/**
-	 * @param fcuFlag the fcuFlag to set
-	 */
-	public void setFcuFlag(String fcuFlag) {
-		this.fcuFlag = fcuFlag;
-	}
+    @Column(name = "work_item_ref_no")
+    private String workItemRefNo;
 
-	/**
-	 * @return the workItemRefNo
-	 */
-	public String getWorkItemRefNo() {
-		return workItemRefNo;
-	}
+    @Column(name = "fcu_details")
+    private String fcuFlag;
 
-	/**
-	 * @param workItemRefNo the workItemRefNo to set
-	 */
-	public void setWorkItemRefNo(String workItemRefNo) {
-		this.workItemRefNo = workItemRefNo;
-	}
+    @Column(name = "policy_type")
+    private String policyType;
 
-	/**
-	 * @return the customerNo
-	 */
-	public String getCustomerNo() {
-		return customerNo;
-	}
+    @Column(name = "policy_premium")
+    private BigDecimal policyPremium; // Changed to BigDecimal for currency precision
 
-	/**
-	 * @param customerNo the customerNo to set
-	 */
-	public void setCustomerNo(String customerNo) {
-		this.customerNo = customerNo;
-	}
+    @Column(name = "policy_status")
+    private String policyStatus;
 
-	
+    @Column(name = "premium_due_date")
+    private LocalDate premiumDueDate;
 
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
+    @Column(name = "coverage_amount")
+    private BigDecimal coverageAmount;
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "renewal_date")
+    private LocalDate renewalDate;
 
-	/**
-	 * @return the policyNumber
-	 */
-	public String getPolicyNumber() {
-		return policyNumber;
-	}
+    @Column(name = "beneficiary_name")
+    private String beneficiaryName;
 
-	/**
-	 * @param policyNumber the policyNumber to set
-	 */
-	public void setPolicyNumber(String policyNumber) {
-		this.policyNumber = policyNumber;
-	}
+    @Column(name = "beneficiary_relationship")
+    private String beneficiaryRelationship;
 
-	public LocalDateTime getCreatedDate() {
-		return createdDate;
-	}
+    @Column(name = "policy_term")
+    private Integer policyTerm; // Changed to Integer for consistency
 
-	public void setCreatedDate(LocalDateTime createdDate) {
-		this.createdDate = createdDate;
-	}
+    @Column(name = "compliance_flag")
+    private String complianceFlag;
 
-	public String getProductCode() {
-		return productCode;
-	}
+    @Column(name = "payment_frequency")
+    private String paymentFrequency;
 
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
-	}
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
 
-	public String getPolCompanyName() {
-		return polCompanyName;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setPolCompanyName(String polCompanyName) {
-		this.polCompanyName = polCompanyName;
-	}
+    public String getPolicyNumber() {
+        return policyNumber;
+    }
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
+    public void setPolicyNumber(String policyNumber) {
+        this.policyNumber = policyNumber;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public List<BankAccount> getBankAccounts() {
+        return bankAccounts;
+    }
 
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
+    public void setBankAccounts(List<BankAccount> bankAccounts) {
+        this.bankAccounts = bankAccounts;
+    }
 
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
 
-	public String getUserId() {
-		return userId;
-	}
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public String getProductCode() {
+        return productCode;
+    }
 
-	/**
-	 * @return the deletedFlag
-	 */
-	public String getDeletedFlag() {
-		return deletedFlag;
-	}
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
 
-	/**
-	 * @param deletedFlag the deletedFlag to set
-	 */
-	public void setDeletedFlag(String deletedFlag) {
-		this.deletedFlag = deletedFlag;
-	}
+    public String getPolCompanyName() {
+        return polCompanyName;
+    }
 
-	public String getPolicyName() {
-		return policyName;
-	}
+    public void setPolCompanyName(String polCompanyName) {
+        this.polCompanyName = polCompanyName;
+    }
 
-	public void setPolicyName(String policyName) {
-		this.policyName = policyName;
-	}
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getDeletedFlag() {
+        return deletedFlag;
+    }
+
+    public void setDeletedFlag(String deletedFlag) {
+        this.deletedFlag = deletedFlag;
+    }
+
+    public String getPolicyName() {
+        return policyName;
+    }
+
+    public void setPolicyName(String policyName) {
+        this.policyName = policyName;
+    }
+
+    public String getCustomerNo() {
+        return customerNo;
+    }
+
+    public void setCustomerNo(String customerNo) {
+        this.customerNo = customerNo;
+    }
+
+    public String getWorkItemRefNo() {
+        return workItemRefNo;
+    }
+
+    public void setWorkItemRefNo(String workItemRefNo) {
+        this.workItemRefNo = workItemRefNo;
+    }
+
+    public String getFcuFlag() {
+        return fcuFlag;
+    }
+
+    public void setFcuFlag(String fcuFlag) {
+        this.fcuFlag = fcuFlag;
+    }
+
+    public String getPolicyType() {
+        return policyType;
+    }
+
+    public void setPolicyType(String policyType) {
+        this.policyType = policyType;
+    }
+
+    public BigDecimal getPolicyPremium() {
+        return policyPremium;
+    }
+
+    public void setPolicyPremium(BigDecimal policyPremium) {
+        this.policyPremium = policyPremium;
+    }
+
+    public String getPolicyStatus() {
+        return policyStatus;
+    }
+
+    public void setPolicyStatus(String policyStatus) {
+        this.policyStatus = policyStatus;
+    }
+
+    public LocalDate getPremiumDueDate() {
+        return premiumDueDate;
+    }
+
+    public void setPremiumDueDate(LocalDate premiumDueDate) {
+        this.premiumDueDate = premiumDueDate;
+    }
+
+    public BigDecimal getCoverageAmount() {
+        return coverageAmount;
+    }
+
+    public void setCoverageAmount(BigDecimal coverageAmount) {
+        this.coverageAmount = coverageAmount;
+    }
+
+    public LocalDate getRenewalDate() {
+        return renewalDate;
+    }
+
+    public void setRenewalDate(LocalDate renewalDate) {
+        this.renewalDate = renewalDate;
+    }
+
+    public String getBeneficiaryName() {
+        return beneficiaryName;
+    }
+
+    public void setBeneficiaryName(String beneficiaryName) {
+        this.beneficiaryName = beneficiaryName;
+    }
+
+    public String getBeneficiaryRelationship() {
+        return beneficiaryRelationship;
+    }
+
+    public void setBeneficiaryRelationship(String beneficiaryRelationship) {
+        this.beneficiaryRelationship = beneficiaryRelationship;
+    }
+
+    public Integer getPolicyTerm() {
+        return policyTerm;
+    }
+
+    public void setPolicyTerm(Integer policyTerm) {
+        this.policyTerm = policyTerm;
+    }
+
+    public String getComplianceFlag() {
+        return complianceFlag;
+    }
+
+    public void setComplianceFlag(String complianceFlag) {
+        this.complianceFlag = complianceFlag;
+    }
+
+    public String getPaymentFrequency() {
+        return paymentFrequency;
+    }
+
+    public void setPaymentFrequency(String paymentFrequency) {
+        this.paymentFrequency = paymentFrequency;
+    }
+
+    // Helper method to maintain bidirectional relationship
+    public void addBankAccount(BankAccount bankAccount) {
+        bankAccounts.add(bankAccount);
+        bankAccount.setPolicy(this);
+    }
 }

@@ -666,7 +666,7 @@ public class OtpService {
 	        custDTO.setUserId(userId);
 	        custDTO.setSmokerStatus(cust.getSmokerStatus());
 	        custDTO.setCreatedBy(userId);
-	        custDTO.setCreatedTime(String.valueOf(LocalDateTime.now()));
+	        custDTO.setCreatedTime(LocalDateTime.now());
 
 	        // Map address
 	        if (address != null) {

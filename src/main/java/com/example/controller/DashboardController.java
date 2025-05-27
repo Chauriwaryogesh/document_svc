@@ -62,4 +62,9 @@ public class DashboardController {
     public String mailService(String userId) {
         return "MailServices"; 
     }
+    
+    @GetMapping("/payment")
+    public String payment(String userId) {
+        return "payment"; 
+    }
 }
