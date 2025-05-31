@@ -9,11 +9,11 @@
 		<version>3.3.4</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example.PostalCode</groupId>
-	<artifactId>DOCUMENT_SVC</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>DOCUMENT_SVC</name>
-	<description>Demo project for Spring Boot</description>
+	<groupId>SecureAccessPortal</groupId>
+	<artifactId>SecureAccessPortal</artifactId>
+	<version>v1</version>
+	<name>SecureAccessPortal</name>
+	<description>SecureAccessPortal</description>
 	<url />
 	<licenses>
 		<license />

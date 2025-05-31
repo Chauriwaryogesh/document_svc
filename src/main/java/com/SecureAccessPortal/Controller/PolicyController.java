@@ -1,0 +1,107 @@
+package com.SecureAccessPortal.Controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.SecureAccessPortal.Modal.CustomerDTO;
+import com.SecureAccessPortal.Modal.PolicyDTO;
+import com.SecureAccessPortal.Modal.PolicyRequest;
+import com.SecureAccessPortal.Modal.ResponseDTO;
+import com.SecureAccessPortal.Service.EmailService;
+import com.SecureAccessPortal.Service.PolicyService;
+import com.SecureAccessPortal.Service.ResponseEntity;
+
+@RestController
+@RequestMapping("/policy")
+public class PolicyController {
+	
+	@Autowired
+	private  PolicyService policyService;
+	
+	@Autowired
+	private EmailService otpService;
+
+	@PostMapping(value = "/policy-create", consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseDTO> fetchVideofromDir(@RequestBody PolicyRequest policyDTO,
+			@RequestHeader String userId) {
+		ResponseEntity<ResponseDTO> response = new ResponseEntity<ResponseDTO>();
+		ResponseDTO responseDTO = new ResponseDTO();
+
+		responseDTO = policyService.createPolicy(policyDTO, userId);
+
+		if (responseDTO.getStatus().equalsIgnoreCase("Success")) {
+			response.setData(responseDTO);
+		} else {
+			response.setErrorMessage("Failed to create policy");
+		}
+		return response;
+	}
+	@GetMapping("/policy-details")
+	public com.SecureAccessPortal.Service.ResponseEntity<List<PolicyDTO>> getCustomerlDetails(
+			@RequestParam(value = "policyNo", required = false) String policyNo,
+			@RequestParam(value = "allpolSearch", required = false) String allPol,
+			@RequestParam(value = "customerNo", required = false) String customerNo,
+			@RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
+			@RequestHeader String userId) {
+		if (allPol == null) {
+			allPol = "N";
+		}
+		com.SecureAccessPortal.Service.ResponseEntity<List<PolicyDTO>> emailResp = policyService.getPolicyDetails(policyNo,
+				customerNo, allPol, workItemRefNo, userId);
+
+		return emailResp;
+	}
+	
+	@PostMapping("/customer-details/update")
+	public com.SecureAccessPortal.Service.ResponseEntity<String> getCustomerlDetails(
+			@RequestBody CustomerDTO customerDTO, @RequestHeader String userId) {
+		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
+
+		String message = otpService.updateCustomerDetails(customerDTO, userId);
+
+		if (message.contains("Success")) {
+			resp.setData(message);
+		} else {
+			resp.setErrorMessage(message);
+		}
+		return resp;
+	}
+	@GetMapping("/policy-domain")
+	public com.SecureAccessPortal.Service.ResponseEntity<List<String>> getPolicyDomain(
+			@RequestParam(value = "value", required = true) String value,
+			@RequestHeader String userId) {
+		com.SecureAccessPortal.Service.ResponseEntity<List<String>> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		List<String> policyDTO = policyService.getDoaminData(value, userId);
+		if (policyDTO != null && !policyDTO.isEmpty()) {
+			emailResp.setData(policyDTO);
+		} else {
+			emailResp.setErrorMessage("Error while fetching damin data ");
+		}
+		return emailResp;
+	}
+	
+	@PostMapping("/policy-details/update")
+	public com.SecureAccessPortal.Service.ResponseEntity<String> getPolicyDetails(
+			@RequestBody CustomerDTO customerDTO, @RequestHeader String userId) {
+		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
+
+		String message = otpService.updateCustomerDetails(customerDTO, userId);
+
+		if (message.contains("Success")) {
+			resp.setData(message);
+		} else {
+			resp.setErrorMessage("Error while updating  customerDetails ");
+		}
+		return resp;
+	}
+}
