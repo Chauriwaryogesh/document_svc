@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.management.RuntimeErrorException;
@@ -22,6 +23,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.ws.mime.MimeMessage;
 
 import com.example.CommonConstants.CommonConstant;
 import com.example.dto.Address;
@@ -32,14 +34,13 @@ import com.example.dto.WorkItemDTO;
 import com.example.entity.Customer;
 import com.example.entity.Email;
 import com.example.entity.OtpStore;
+import com.example.entity.Security;
 import com.example.repo.CustomerRepo;
 import com.example.repo.IEmailRepo;
 import com.example.repo.IOtpServiceDB;
 import com.example.repo.ISecurityRepo;
 
 import jakarta.mail.internet.InternetAddress;
-import java.time.LocalDateTime;
-import java.util.regex.Pattern;
 
 @Service
 public class OtpService {
@@ -74,233 +75,234 @@ public class OtpService {
         otpStore.put(email, otp);
 
         email = verifyEmail(email);
+        /*
+        try {
+            // Check email status is Verified Y
+            Security security = securityRepo.findByEmail(email, "N");
+            if (security != null) {
+                if (security.getEmail().equalsIgnoreCase(email) &&
+                        security.getUserCode().equalsIgnoreCase(userId) &&
+                        security.getIsEmailVerified().equals("Y") &&
+                        security.getIsUserCodeVerified().equals("Y")) {
 
-//        try {
-//            // Check email status is Verified Y
-//            Security security = securityRepo.findByEmail(email, "N");
-//            if (security != null) {
-//                if (security.getEmail().equalsIgnoreCase(email) &&
-//                        security.getUserCode().equalsIgnoreCase(userId) &&
-//                        security.getIsEmailVerified().equals("Y") &&
-//                        security.getIsUserCodeVerified().equals("Y")) {
-//
-//                    MimeMessage message = mailSender.createMimeMessage();
-//                    MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8"); // Enable multipart for HTML
-//                    helper.setFrom(new InternetAddress("SecureAccessPortal@myCompany.com", "Secure Access Portal"));
-//                    helper.setTo(email);
-//                    helper.setSubject("🔒 Your One-Time Password (OTP) for Secure Login");
-//
-//                    // HTML email template
-//                    String htmlContent = "<!DOCTYPE html>\n" +
-//                            "<html lang=\"en\">\n" +
-//                            "<head>\n" +
-//                            "    <meta charset=\"UTF-8\">\n" +
-//                            "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-//                            "    <title>Your One-Time Password (OTP)</title>\n" +
-//                            "    <style>\n" +
-//                            "        body {\n" +
-//                            "            margin: 0;\n" +
-//                            "            padding: 0;\n" +
-//                            "            font-family: 'Arial', sans-serif;\n" +
-//                            "            background-color: #f4f4f9;\n" +
-//                            "            color: #333;\n" +
-//                            "        }\n" +
-//                            "        .container {\n" +
-//                            "            max-width: 600px;\n" +
-//                            "            margin: 20px auto;\n" +
-//                            "            background-color: #ffffff;\n" +
-//                            "            border-radius: 10px;\n" +
-//                            "            overflow: hidden;\n" +
-//                            "            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n" +
-//                            "        }\n" +
-//                            "        .header {\n" +
-//                            "            background: linear-gradient(to right, #007bff, #0056b3);\n" +
-//                            "            padding: 20px;\n" +
-//                            "            text-align: center;\n" +
-//                            "            color: white;\n" +
-//                            "        }\n" +
-//                            "        .header img {\n" +
-//                            "            max-width: 150px;\n" +
-//                            "            height: auto;\n" +
-//                            "        }\n" +
-//                            "        .content {\n" +
-//                            "            padding: 30px;\n" +
-//                            "            text-align: center;\n" +
-//                            "        }\n" +
-//                            "        .otp-box {\n" +
-//                            "            background-color: #e9f7ff;\n" +
-//                            "            border: 2px dashed #007bff;\n" +
-//                            "            border-radius: 8px;\n" +
-//                            "            padding: 20px;\n" +
-//                            "            margin: 20px 0;\n" +
-//                            "            font-size: 28px;\n" +
-//                            "            font-weight: bold;\n" +
-//                            "            color: #007bff;\n" +
-//                            "            letter-spacing: 5px;\n" +
-//                            "        }\n" +
-//                            "        .copy-button {\n" +
-//                            "            background-color: #28a745;\n" +
-//                            "            color: white;\n" +
-//                            "            border: none;\n" +
-//                            "            padding: 10px 20px;\n" +
-//                            "            border-radius: 5px;\n" +
-//                            "            cursor: pointer;\n" +
-//                            "            font-size: 16px;\n" +
-//                            "            margin-top: 10px;\n" +
-//                            "            text-decoration: none;\n" +
-//                            "            display: inline-block;\n" +
-//                            "        }\n" +
-//                            "        .copy-button:hover {\n" +
-//                            "            background-color: #1e7e34;\n" +
-//                            "        }\n" +
-//                            "        .clock {\n" +
-//                            "            display: inline-flex;\n" +
-//                            "            align-items: center;\n" +
-//                            "            background-color: #fff3e0;\n" +
-//                            "            border-radius: 50px;\n" +
-//                            "            padding: 10px 20px;\n" +
-//                            "            margin: 15px 0;\n" +
-//                            "            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n" +
-//                            "        }\n" +
-//                            "        .clock img {\n" +
-//                            "            width: 20px;\n" +
-//                            "            height: 20px;\n" +
-//                            "            margin-right: 10px;\n" +
-//                            "        }\n" +
-//                            "        .clock span {\n" +
-//                            "            font-weight: bold;\n" +
-//                            "            color: #ff9800;\n" +
-//                            "        }\n" +
-//                            "        .contact-info, .unsubscribe {\n" +
-//                            "            background-color: #f9f9f9;\n" +
-//                            "            padding: 20px;\n" +
-//                            "            text-align: center;\n" +
-//                            "            font-size: 14px;\n" +
-//                            "            color: #555;\n" +
-//                            "        }\n" +
-//                            "        .contact-info a, .unsubscribe a {\n" +
-//                            "            color: #007bff;\n" +
-//                            "            text-decoration: none;\n" +
-//                            "        }\n" +
-//                            "        .contact-info a:hover, .unsubscribe a:hover {\n" +
-//                            "            text-decoration: underline;\n" +
-//                            "        }\n" +
-//                            "        .footer {\n" +
-//                            "            background-color: #e9ecef;\n" +
-//                            "            padding: 15px;\n" +
-//                            "            text-align: center;\n" +
-//                            "            font-size: 12px;\n" +
-//                            "            color: #555;\n" +
-//                            "        }\n" +
-//                            "        .footer img {\n" +
-//                            "            width: 24px;\n" +
-//                            "            height: 24px;\n" +
-//                            "            margin: 0 10px;\n" +
-//                            "            vertical-align: middle;\n" +
-//                            "        }\n" +
-//                            "        @media only screen and (max-width: 600px) {\n" +
-//                            "            .container {\n" +
-//                            "                margin: 10px;\n" +
-//                            "            }\n" +
-//                            "            .otp-box {\n" +
-//                            "                font-size: 24px;\n" +
-//                            "            }\n" +
-//                            "        }\n" +
-//                            "    </style>\n" +
-//                            "</head>\n" +
-//                            "<body>\n" +
-//                            "    <div class=\"container\">\n" +
-//                            "        <div class=\"header\">\n" +
-//                            "            <img src=\"https://via.placeholder.com/150x50?text=Secure+Access+Portal\" alt=\"Secure Access Portal Logo\">\n" +
-//                            "            <h1>Secure OTP Login</h1>\n" +
-//                            "        </div>\n" +
-//                            "        <div class=\"content\">\n" +
-//                            "            <h2>Dear Customer,</h2>\n" +
-//                            "            <p>Your One-Time Password (OTP) for secure login is:</p>\n" +
-//                            "            <div class=\"otp-box\" id=\"otpValue\">" + otp + "</div>\n" +
-//                            "            <button class=\"copy-button\" onclick=\"navigator.clipboard.writeText(&quot;" + otp + "&quot;)\">Copy OTP</button>\n" +
-//                            "            <p>If the button doesn't work, manually copy the OTP: <strong>" + otp + "</strong></p>\n" +
-//                            "            <div class=\"clock\">\n" +
-//                            "                <img src=\"https://img.icons8.com/ios-filled/20/ff9800/clock.png\" alt=\"Clock\">\n" +
-//                            "                <span>Expires in 30 minutes</span>\n" +
-//                            "            </div>\n" +
-//                            "            <p>Keep this OTP confidential and do not share it with anyone.</p>\n" +
-//                            "        </div>\n" +
-//                            "        <div class=\"contact-info\">\n" +
-//                            "            <h3>Contact Us</h3>\n" +
-//                            "            <p>\n" +
-//                            "                <img src=\"https://img.icons8.com/ios-filled/16/007bff/email.png\" alt=\"Email\">\n" +
-//                            "                <a href=\"mailto:support@mycompany.com\">support@mycompany.com</a>\n" +
-//                            "            </p>\n" +
-//                            "            <p>\n" +
-//                            "                <img src=\"https://img.icons8.com/ios-filled/16/007bff/phone.png\" alt=\"Phone\">\n" +
-//                            "                <a href=\"tel:+918208247944\">+91-820-824-7944</a> (24/7, Mon-Fri)\n" +
-//                            "            </p>\n" +
-//                            "        </div>\n" +
-//                            "        <div class=\"unsubscribe\">\n" +
-//                            "            <p>\n" +
-//                            "                To stop receiving these emails, please\n" +
-//                            "                <a href=\"https://mycompany.com/unsubscribe?email=" + email + "\">unsubscribe</a>\n" +
-//                            "                or contact our support team.\n" +
-//                            "            </p>\n" +
-//                            "        </div>\n" +
-//                            "        <div class=\"footer\">\n" +
-//                            "            <p>Your Security, Our Priority - Secure Access Portal © 2025</p>\n" +
-//                            "            <p>\n" +
-//                            "                <a href=\"https://facebook.com/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/facebook.png\" alt=\"Facebook\"></a>\n" +
-//                            "                <a href=\"https://twitter.com/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/twitter.png\" alt=\"Twitter\"></a>\n" +
-//                            "                <a href=\"https://linkedin.com/company/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/linkedin.png\" alt=\"LinkedIn\"></a>\n" +
-//                            "            </p>\n" +
-//                            "        </div>\n" +
-//                            "    </div>\n" +
-//                            "</body>\n" +
-//                            "</html>";
-//
-//                    // Plain text fallback for clients that don't support HTML
-//                    String plainTextContent =
-//                            "Dear Customer,\n\n" +
-//                                    "Your One-Time Password (OTP) for secure login is: " + otp + "\n\n" +
-//                                    "This OTP is valid for 30 minutes. Keep it confidential and do not share it with anyone.\n\n" +
-//                                    "Contact Us:\n" +
-//                                    "Email: support@mycompany.com\n" +
-//                                    "Phone: +91-820-824-7944 (24/7, Mon-Fri)\n\n" +
-//                                    "To unsubscribe, reply with 'UNSUBSCRIBE' or contact support@mycompany.com.\n\n" +
-//                                    "Your Security, Our Priority - Secure Access Portal";
-//
-//                    helper.setText(plainTextContent, htmlContent); // Set plain text and HTML content
-//
-//                    // Call repo to store OTP in DB
-//                    OtpStore otpStore = new OtpStore();
-//                    otpStore.setId(nextcount());
-//                    otpStore.setOtp(otp);
-//                    otpStore.setEmail(email);
-//
-//                    LocalDateTime dateTime = LocalDateTime.now();
-//                    long epochMillis = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-//                    otpStore.setCreatedTime(epochMillis);
-//                    otpStore.setCreatedBy(userId);
-//
-//                    LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(30);
-//                    long exp = expiryTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-//                    otpStore.setExpiryTime(exp);
-//                    IOtpServiceDB.save(otpStore);
-//
-//                    mailSender.send(message);
-//                    logger.info("OTP email sent successfully to {}", email);
-//                    response = "Success,Otp send SuccessFully";
-//                } else {
-//                    logger.warn("Email verification failed for {}: Not verified or user code mismatch", email);
-//                    response = "Email is Not verified please connect with admin";
-//                }
-//            } else {
-//                logger.warn("Email {} not registered in system", email);
-//                response = "Email is Not Registered in System please connect with admin";
-//            }
-//        } catch (Exception e) {
-//            logger.error("Failed to send OTP email to {}: {}", email, e.getMessage());
-//            e.printStackTrace();
-//            response = "Otp send faild";
-//        }
+                    jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+                    MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8"); // Enable multipart for HTML
+                    helper.setFrom(new InternetAddress("SecureAccessPortal@myCompany.com", "Secure Access Portal"));
+                    helper.setTo(email);
+                    helper.setSubject("🔒 Your One-Time Password (OTP) for Secure Login");
+
+                    // HTML email template
+                    String htmlContent = "<!DOCTYPE html>\n" +
+                            "<html lang=\"en\">\n" +
+                            "<head>\n" +
+                            "    <meta charset=\"UTF-8\">\n" +
+                            "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                            "    <title>Your One-Time Password (OTP)</title>\n" +
+                            "    <style>\n" +
+                            "        body {\n" +
+                            "            margin: 0;\n" +
+                            "            padding: 0;\n" +
+                            "            font-family: 'Arial', sans-serif;\n" +
+                            "            background-color: #f4f4f9;\n" +
+                            "            color: #333;\n" +
+                            "        }\n" +
+                            "        .container {\n" +
+                            "            max-width: 600px;\n" +
+                            "            margin: 20px auto;\n" +
+                            "            background-color: #ffffff;\n" +
+                            "            border-radius: 10px;\n" +
+                            "            overflow: hidden;\n" +
+                            "            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n" +
+                            "        }\n" +
+                            "        .header {\n" +
+                            "            background: linear-gradient(to right, #007bff, #0056b3);\n" +
+                            "            padding: 20px;\n" +
+                            "            text-align: center;\n" +
+                            "            color: white;\n" +
+                            "        }\n" +
+                            "        .header img {\n" +
+                            "            max-width: 150px;\n" +
+                            "            height: auto;\n" +
+                            "        }\n" +
+                            "        .content {\n" +
+                            "            padding: 30px;\n" +
+                            "            text-align: center;\n" +
+                            "        }\n" +
+                            "        .otp-box {\n" +
+                            "            background-color: #e9f7ff;\n" +
+                            "            border: 2px dashed #007bff;\n" +
+                            "            border-radius: 8px;\n" +
+                            "            padding: 20px;\n" +
+                            "            margin: 20px 0;\n" +
+                            "            font-size: 28px;\n" +
+                            "            font-weight: bold;\n" +
+                            "            color: #007bff;\n" +
+                            "            letter-spacing: 5px;\n" +
+                            "        }\n" +
+                            "        .copy-button {\n" +
+                            "            background-color: #28a745;\n" +
+                            "            color: white;\n" +
+                            "            border: none;\n" +
+                            "            padding: 10px 20px;\n" +
+                            "            border-radius: 5px;\n" +
+                            "            cursor: pointer;\n" +
+                            "            font-size: 16px;\n" +
+                            "            margin-top: 10px;\n" +
+                            "            text-decoration: none;\n" +
+                            "            display: inline-block;\n" +
+                            "        }\n" +
+                            "        .copy-button:hover {\n" +
+                            "            background-color: #1e7e34;\n" +
+                            "        }\n" +
+                            "        .clock {\n" +
+                            "            display: inline-flex;\n" +
+                            "            align-items: center;\n" +
+                            "            background-color: #fff3e0;\n" +
+                            "            border-radius: 50px;\n" +
+                            "            padding: 10px 20px;\n" +
+                            "            margin: 15px 0;\n" +
+                            "            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n" +
+                            "        }\n" +
+                            "        .clock img {\n" +
+                            "            width: 20px;\n" +
+                            "            height: 20px;\n" +
+                            "            margin-right: 10px;\n" +
+                            "        }\n" +
+                            "        .clock span {\n" +
+                            "            font-weight: bold;\n" +
+                            "            color: #ff9800;\n" +
+                            "        }\n" +
+                            "        .contact-info, .unsubscribe {\n" +
+                            "            background-color: #f9f9f9;\n" +
+                            "            padding: 20px;\n" +
+                            "            text-align: center;\n" +
+                            "            font-size: 14px;\n" +
+                            "            color: #555;\n" +
+                            "        }\n" +
+                            "        .contact-info a, .unsubscribe a {\n" +
+                            "            color: #007bff;\n" +
+                            "            text-decoration: none;\n" +
+                            "        }\n" +
+                            "        .contact-info a:hover, .unsubscribe a:hover {\n" +
+                            "            text-decoration: underline;\n" +
+                            "        }\n" +
+                            "        .footer {\n" +
+                            "            background-color: #e9ecef;\n" +
+                            "            padding: 15px;\n" +
+                            "            text-align: center;\n" +
+                            "            font-size: 12px;\n" +
+                            "            color: #555;\n" +
+                            "        }\n" +
+                            "        .footer img {\n" +
+                            "            width: 24px;\n" +
+                            "            height: 24px;\n" +
+                            "            margin: 0 10px;\n" +
+                            "            vertical-align: middle;\n" +
+                            "        }\n" +
+                            "        @media only screen and (max-width: 600px) {\n" +
+                            "            .container {\n" +
+                            "                margin: 10px;\n" +
+                            "            }\n" +
+                            "            .otp-box {\n" +
+                            "                font-size: 24px;\n" +
+                            "            }\n" +
+                            "        }\n" +
+                            "    </style>\n" +
+                            "</head>\n" +
+                            "<body>\n" +
+                            "    <div class=\"container\">\n" +
+                            "        <div class=\"header\">\n" +
+                            "            <img src=\"https://via.placeholder.com/150x50?text=Secure+Access+Portal\" alt=\"Secure Access Portal Logo\">\n" +
+                            "            <h1>Secure OTP Login</h1>\n" +
+                            "        </div>\n" +
+                            "        <div class=\"content\">\n" +
+                            "            <h2>Dear Customer,</h2>\n" +
+                            "            <p>Your One-Time Password (OTP) for secure login is:</p>\n" +
+                            "            <div class=\"otp-box\" id=\"otpValue\">" + otp + "</div>\n" +
+                            "            <button class=\"copy-button\" onclick=\"navigator.clipboard.writeText(&quot;" + otp + "&quot;)\">Copy OTP</button>\n" +
+                            "            <p>If the button doesn't work, manually copy the OTP: <strong>" + otp + "</strong></p>\n" +
+                            "            <div class=\"clock\">\n" +
+                            "                <img src=\"https://img.icons8.com/ios-filled/20/ff9800/clock.png\" alt=\"Clock\">\n" +
+                            "                <span>Expires in 30 minutes</span>\n" +
+                            "            </div>\n" +
+                            "            <p>Keep this OTP confidential and do not share it with anyone.</p>\n" +
+                            "        </div>\n" +
+                            "        <div class=\"contact-info\">\n" +
+                            "            <h3>Contact Us</h3>\n" +
+                            "            <p>\n" +
+                            "                <img src=\"https://img.icons8.com/ios-filled/16/007bff/email.png\" alt=\"Email\">\n" +
+                            "                <a href=\"mailto:support@mycompany.com\">support@mycompany.com</a>\n" +
+                            "            </p>\n" +
+                            "            <p>\n" +
+                            "                <img src=\"https://img.icons8.com/ios-filled/16/007bff/phone.png\" alt=\"Phone\">\n" +
+                            "                <a href=\"tel:+918208247944\">+91-820-824-7944</a> (24/7, Mon-Fri)\n" +
+                            "            </p>\n" +
+                            "        </div>\n" +
+                            "        <div class=\"unsubscribe\">\n" +
+                            "            <p>\n" +
+                            "                To stop receiving these emails, please\n" +
+                            "                <a href=\"https://mycompany.com/unsubscribe?email=" + email + "\">unsubscribe</a>\n" +
+                            "                or contact our support team.\n" +
+                            "            </p>\n" +
+                            "        </div>\n" +
+                            "        <div class=\"footer\">\n" +
+                            "            <p>Your Security, Our Priority - Secure Access Portal © 2025</p>\n" +
+                            "            <p>\n" +
+                            "                <a href=\"https://facebook.com/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/facebook.png\" alt=\"Facebook\"></a>\n" +
+                            "                <a href=\"https://twitter.com/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/twitter.png\" alt=\"Twitter\"></a>\n" +
+                            "                <a href=\"https://linkedin.com/company/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/linkedin.png\" alt=\"LinkedIn\"></a>\n" +
+                            "            </p>\n" +
+                            "        </div>\n" +
+                            "    </div>\n" +
+                            "</body>\n" +
+                            "</html>";
+
+                    // Plain text fallback for clients that don't support HTML
+                    String plainTextContent =
+                            "Dear Customer,\n\n" +
+                                    "Your One-Time Password (OTP) for secure login is: " + otp + "\n\n" +
+                                    "This OTP is valid for 30 minutes. Keep it confidential and do not share it with anyone.\n\n" +
+                                    "Contact Us:\n" +
+                                    "Email: support@mycompany.com\n" +
+                                    "Phone: +91-820-824-7944 (24/7, Mon-Fri)\n\n" +
+                                    "To unsubscribe, reply with 'UNSUBSCRIBE' or contact support@mycompany.com.\n\n" +
+                                    "Your Security, Our Priority - Secure Access Portal";
+
+                    helper.setText(plainTextContent, htmlContent); // Set plain text and HTML content
+
+                    // Call repo to store OTP in DB
+                    OtpStore otpStore = new OtpStore();
+                    otpStore.setId(nextcount());
+                    otpStore.setOtp(otp);
+                    otpStore.setEmail(email);
+
+                    LocalDateTime dateTime = LocalDateTime.now();
+                    long epochMillis = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                    otpStore.setCreatedTime(epochMillis);
+                    otpStore.setCreatedBy(userId);
+
+                    LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(30);
+                    long exp = expiryTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                    otpStore.setExpiryTime(exp);
+                    IOtpServiceDB.save(otpStore);
+
+                    mailSender.send(message);
+                    logger.info("OTP email sent successfully to {}", email);
+                    response = "Success,Otp send SuccessFully";
+                } else {
+                    logger.warn("Email verification failed for {}: Not verified or user code mismatch", email);
+                    response = "Email is Not verified please connect with admin";
+                }
+            } else {
+                logger.warn("Email {} not registered in system", email);
+                response = "Email is Not Registered in System please connect with admin";
+            }
+        } catch (Exception e) {
+            logger.error("Failed to send OTP email to {}: {}", email, e.getMessage());
+            e.printStackTrace();
+            response = "Otp send faild";
+        }
+        */
         response = "Success,Otp send SuccessFully";
         return response;
     }

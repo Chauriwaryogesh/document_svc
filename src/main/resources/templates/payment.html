@@ -716,7 +716,7 @@
         let accountNotes = new Map();
         let activityLogs = [];
         let visibleColumns = {
-          accountSelect: true, // Added for the selection checkbox column
+          accountSelect: true,
           accountNumber: true,
           policyNumber: true,
           holderName: true,
@@ -726,7 +726,7 @@
           policyStatus: true,
           progress: true,
           notes: true,
-          actions: true // Added for the actions button column
+          actions: true
         };
 
         function initializeModals() {
@@ -751,31 +751,32 @@
         }
 
         const modalInitializers = {
-          'bank-verification': (data, modalElement) => {
-            const form = modalElement.querySelector('#bank-verification-form');
-            if(form) form.reset();
-            const errorDiv = modalElement.querySelector('#bank-verification-error');
-            if(errorDiv) errorDiv.classList.add('hidden');
-            const resultDiv = modalElement.querySelector('#bank-verification-result');
-            if(resultDiv) resultDiv.textContent = '';
-            const manualBtn = modalElement.querySelector('#bank-manual-verification');
-            if(manualBtn) manualBtn.classList.add('hidden');
+        		'bank-verification': (data, modalElement) => {
+        		    const form = modalElement.querySelector('#bank-verification-form');
+        		    if (form) form.reset();
+        		    const errorDiv = modalElement.querySelector('#bank-verification-error');
+        		    if (errorDiv) errorDiv.classList.add('hidden');
+        		    const resultDiv = modalElement.querySelector('#bank-verification-result');
+        		    if (resultDiv) resultDiv.textContent = '';
+        		    const manualBtn = modalElement.querySelector('#bank-manual-verification');
+        		    if (manualBtn) manualBtn.classList.add('hidden');
 
-            if (data.accountNumber) {
-              const accNumInput = modalElement.querySelector('#bank-account-number');
-              if(accNumInput) accNumInput.value = data.accountNumber;
-              const reAccNumInput = modalElement.querySelector('#re-enter-account-number');
-              if(reAccNumInput) reAccNumInput.value = data.accountNumber;
-
-              const [name, ...surnameParts] = (data.holderName || '').split(' ');
-              const nameInput = modalElement.querySelector('#name');
-              if(nameInput) nameInput.value = name || '';
-              const surnameInput = modalElement.querySelector('#surname');
-              if(surnameInput) surnameInput.value = surnameParts.join(' ') || '';
-              const bankNameSelect = modalElement.querySelector('#bank-name');
-              if(bankNameSelect) bankNameSelect.value = data.bankName || '';
-            }
-          },
+        		    if (data.accountNumber) {
+        		        const accNumInput = modalElement.querySelector('#bank-account-number');
+        		        if (accNumInput) accNumInput.value = data.accountNumber;
+        		        const reAccNumInput = modalElement.querySelector('#re-enter-account-number');
+        		        if (reAccNumInput) reAccNumInput.value = data.accountNumber;
+        		        const ifscInput = modalElement.querySelector('#ifsc-code');
+        		        if (ifscInput) ifscInput.value = data.ifscCode || '';
+        		        const [name, ...surnameParts] = (data.holderName || '').split(' ');
+        		        const nameInput = modalElement.querySelector('#name');
+        		        if (nameInput) nameInput.value = name || '';
+        		        const surnameInput = modalElement.querySelector('#surname');
+        		        if (surnameInput) surnameInput.value = surnameParts.join(' ') || '';
+        		        const bankNameSelect = modalElement.querySelector('#bank-name');
+        		        if (bankNameSelect) bankNameSelect.value = data.bankName || '';
+        		    }
+        		},
           'policy-details': (data, modalElement) => {
             const policyNumEl = modalElement.querySelector('#policy-number');
             if(policyNumEl) policyNumEl.textContent = data.policyNumber || 'N/A';
@@ -813,11 +814,11 @@
             });
           },
           'account-notes': (data, modalElement) => {
-            const noteTextarea = modalElement.querySelector('#account-note');
-            if(noteTextarea) noteTextarea.value = accountNotes.get(data.accountNumber) || '';
-            const noteForm = modalElement.querySelector('#account-notes-form');
-            if(noteForm) noteForm.dataset.accountNumber = data.accountNumber;
-          },
+        	    const noteTextarea = modalElement.querySelector('#account-note');
+        	    if (noteTextarea) noteTextarea.value = accountNotes.get(data.accountNumber) || data.notes || '';
+        	    const noteForm = modalElement.querySelector('#account-notes-form');
+        	    if (noteForm) noteForm.dataset.accountNumber = data.accountNumber;
+        	},
           'activity-log': (data, modalElement) => {
             updateActivityLog(modalElement);
           },
@@ -992,14 +993,24 @@
         };
 
         async function fetchPolicyDetails(policyNumber) {
-          return withRetry(() => new Promise(resolve => setTimeout(() => resolve({
-            policyNumber,
-            policyType: 'Term Life Insurance',
-            policyPremium: '$' + (Math.floor(Math.random()*500)+100) + '/year',
-            policyStatus: Math.random() > 0.3 ? 'Active' : 'Lapsed'
-          }), 500)));
+            try {
+                const response = await fetch(`${config.apiBaseUrl}/policy/${policyNumber}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const policyData = await response.json();
+                return {
+                    policyNumber,
+                    policyType: policyData.policyType || 'Term Life Insurance',
+                    policyPremium: policyData.policyPremium || `$${Math.floor(Math.random() * 500) + 100}/year`,
+                    policyStatus: policyData.policyStatus || 'Active'
+                };
+            } catch (error) {
+                console.error('Error fetching policy details:', error);
+                return { policyNumber, policyType: 'N/A', policyPremium: 'N/A', policyStatus: 'N/A' };
+            }
         }
-
         async function manualVerification(type, data) {
           return withRetry(() => new Promise(resolve => setTimeout(() => resolve({
             status: 'manual_initiated',
@@ -1327,92 +1338,98 @@
         }
 
         function populateBankAccountsTable(accountsToDisplay, page = 1) {
-          const tbody = document.getElementById('bank-accounts-table');
-          if(!tbody) return;
-          tbody.innerHTML = ''; // Clear existing rows
+            const tbody = document.getElementById('bank-accounts-table');
+            if (!tbody) return;
+            tbody.innerHTML = '';
 
-          if (!Array.isArray(accountsToDisplay) || accountsToDisplay.length === 0) {
-            const colCount = Object.values(visibleColumns).filter(Boolean).length;
-            tbody.innerHTML = `<tr><td colspan="${colCount || 11}" class="w-full text-center px-4 py-3 text-gray-600">No bank accounts match your criteria.</td></tr>`;
-            updatePaginationControls(0, page);
-            return;
-          }
+            if (!Array.isArray(accountsToDisplay) || accountsToDisplay.length === 0) {
+                const colCount = Object.values(visibleColumns).filter(Boolean).length;
+                tbody.innerHTML = `<tr><td colspan="${colCount || 11}" class="w-full text-center px-4 py-3 text-gray-600">No bank accounts match your criteria.</td></tr>`;
+                updatePaginationControls(0, page);
+                return;
+            }
 
-          const start = (page - 1) * config.pageSize;
-          const end = start + config.pageSize;
-          const paginatedAccounts = accountsToDisplay.slice(start, end);
+            const start = (page - 1) * config.pageSize;
+            const end = start + config.pageSize;
+            const paginatedAccounts = accountsToDisplay.slice(start, end);
 
-          paginatedAccounts.forEach((account, index) => {
-            const maskedAccount = account.accountNumber ? `****${account.accountNumber.slice(-4)}` : 'N/A';
-            // Simplified progress based on status for demo
-            const progressSteps = {
-              bank: account.status === 'Active' ? 'completed' : (Math.random() > 0.5 ? 'pending' : ''),
-              id: account.status === 'Active' ? 'completed' : (Math.random() > 0.7 ? 'completed' : ''),
-              sanction: account.status === 'Active' ? 'completed' : (Math.random() > 0.8 ? 'completed' : '')
-            };
+            paginatedAccounts.forEach((account, index) => {
+                // Initialize notes in accountNotes Map if present
+                if (account.notes && !accountNotes.has(account.accountNumber)) {
+                    accountNotes.set(account.accountNumber, account.notes);
+                }
 
-            const row = document.createElement('tr');
-            row.className = `hover:bg-gray-50 transition-colors duration-150 ${(index % 2 === 0) ? '' : 'bg-gray-50/50'}`; // Subtle hover and striping
-            row.style.animation = `fadeIn 0.5s ease-out ${index * 0.03}s forwards`;
-            row.style.opacity = '0';
+                const maskedAccount = account.accountNumber ? `****${account.accountNumber.slice(-4)}` : 'N/A';
+                // Simplified progress logic based on status and verificationAttempts
+                const progressSteps = {
+                    bank: account.status === 'Active' || account.verificationAttempts > 0 ? 'completed' : 'pending',
+                    id: account.status === 'Active' || account.verificationAttempts > 1 ? 'completed' : 'pending',
+                    sanction: account.amlStatus === 'Cleared' ? 'completed' : 'pending'
+                };
 
+                const row = document.createElement('tr');
+                row.className = `hover:bg-gray-50 transition-colors duration-150 ${(index % 2 === 0) ? '' : 'bg-gray-50/50'}`;
+                row.style.animation = `fadeIn 0.5s ease-out ${index * 0.03}s forwards`;
+                row.style.opacity = '0';
 
-            let cellsHTML = '';
-            if (visibleColumns.accountSelect) cellsHTML += `<td class="px-4 py-3"><input type="checkbox" class="account-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" data-account-number="${account.accountNumber}" aria-label="Select account ${maskedAccount}"></td>`;
-            if (visibleColumns.accountNumber) cellsHTML += `<td class="px-4 py-3 masked-account-table">${maskedAccount}</td>`;
-            if (visibleColumns.policyNumber) cellsHTML += `
-                <td class="px-4 py-3 flex items-center">
-                  ${account.policyNumber || 'N/A'}
-                  ${account.policyNumber ? `<button class="btn-copy text-blue-500 hover:text-blue-700 ml-2 p-1 rounded hover:bg-blue-100" data-text="${account.policyNumber}" aria-label="Copy policy number"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></button>` : ''}
-                </td>`;
-            if (visibleColumns.holderName) cellsHTML += `<td class="px-4 py-3">${account.holderName || 'N/A'}</td>`;
-            if (visibleColumns.bankName) cellsHTML += `<td class="px-4 py-3">${account.bankName || 'N/A'}</td>`;
-            if (visibleColumns.accountType) cellsHTML += `<td class="px-4 py-3">${account.accountType || 'N/A'}</td>`;
-            if (visibleColumns.status) cellsHTML += `<td class="px-4 py-3"><span class="status-${(account.status || 'unknown').toLowerCase()} font-medium" title="${account.status}">${account.status || 'N/A'}</span></td>`;
-            if (visibleColumns.policyStatus) cellsHTML += `<td class="px-4 py-3">${account.policyStatus || 'N/A'}</td>`;
-            if (visibleColumns.progress) cellsHTML += `
-                <td class="px-4 py-3">
-                  <div class="progress-bar" aria-label="Verification progress">
-                    <div class="progress-step ${progressSteps.bank}" title="Bank Verification ${progressSteps.bank}"></div>
-                    <div class="progress-step ${progressSteps.id}" title="ID Verification ${progressSteps.id}"></div>
-                    <div class="progress-step ${progressSteps.sanction}" title="Sanctions Check ${progressSteps.sanction}"></div>
-                  </div>
-                </td>`;
-            if (visibleColumns.notes) cellsHTML += `
-                <td class="px-4 py-3 text-center">
-                  <button class="btn-notes text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-100" data-account="${account.accountNumber}" aria-label="View or add notes for account ${maskedAccount}">
-                    ${accountNotes.has(account.accountNumber) ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>'}
-                  </button>
-                </td>`;
-            if (visibleColumns.actions) cellsHTML += `
-                <td class="px-4 py-3">
-                  <div class="actions-container">
-                    <button class="btn-neutral btn-toggle-details text-blue-500 hover:bg-blue-100 text-sm py-1 px-2" aria-label="Toggle details" data-account='${JSON.stringify(account)}'>▼</button>
-                    <button class="btn-neutral btn-bank-verification bg-blue-500 text-white text-xs py-1 px-2 hover:bg-blue-600" data-account='${JSON.stringify(account)}' aria-label="Verify bank account">Bank</button>
-                    <button class="btn-neutral btn-id-verification bg-green-500 text-white text-xs py-1 px-2 hover:bg-green-600" data-account='${JSON.stringify(account)}' aria-label="Verify ID">ID</button>
-                    <button class="btn-neutral btn-death-verification bg-yellow-500 text-white text-xs py-1 px-2 hover:bg-yellow-600" data-account='${JSON.stringify(account)}' aria-label="Verify death">Death</button>
-                    <button class="btn-neutral btn-sanctions-verification bg-red-500 text-white text-xs py-1 px-2 hover:bg-red-600" data-account='${JSON.stringify(account)}' aria-label="Check sanctions">Sanctions</button>
-                    <button class="btn-neutral btn-policy-details bg-teal-500 text-white text-xs py-1 px-2 hover:bg-teal-600" data-account='${JSON.stringify(account)}' aria-label="View policy details">Policy</button>
-                    <button class="btn-neutral btn-history-verification bg-purple-500 text-white text-xs py-1 px-2 hover:bg-purple-600" data-account='${JSON.stringify(account)}' aria-label="View verification history">History</button>
-                  </div>
-                </td>`;
-            row.innerHTML = cellsHTML;
-            tbody.appendChild(row);
+                let cellsHTML = '';
+                if (visibleColumns.accountSelect) cellsHTML += `<td class="px-4 py-3"><input type="checkbox" class="account-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" data-account-number="${account.accountNumber}" aria-label="Select account ${maskedAccount}"></td>`;
+                if (visibleColumns.accountNumber) cellsHTML += `<td class="px-4 py-3 masked-account-table">${maskedAccount}</td>`;
+                if (visibleColumns.policyNumber) cellsHTML += `
+                    <td class="px-4 py-3 flex items-center">
+                      ${account.policyNumber || 'N/A'}
+                      ${account.policyNumber ? `<button class="btn-copy text-blue-500 hover:text-blue-700 ml-2 p-1 rounded hover:bg-blue-100" data-text="${account.policyNumber}" aria-label="Copy policy number"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></button>` : ''}
+                    </td>`;
+                if (visibleColumns.holderName) cellsHTML += `<td class="px-4 py-3">${account.holderName || 'N/A'}</td>`;
+                if (visibleColumns.bankName) cellsHTML += `<td class="px-4 py-3">${account.bankName || 'N/A'}</td>`;
+                if (visibleColumns.accountType) cellsHTML += `<td class="px-4 py-3">${account.accountType || 'N/A'}</td>`;
+                if (visibleColumns.status) cellsHTML += `<td class="px-4 py-3"><span class="status-${(account.status || 'unknown').toLowerCase()} font-medium" title="${account.status}">${account.status || 'N/A'}</span></td>`;
+                if (visibleColumns.policyStatus) cellsHTML += `<td class="px-4 py-3">${account.policyStatus || 'N/A'}</td>`;
+                if (visibleColumns.progress) cellsHTML += `
+                    <td class="px-4 py-3">
+                      <div class="progress-bar" aria-label="Verification progress">
+                        <div class="progress-step ${progressSteps.bank}" title="Bank Verification ${progressSteps.bank}"></div>
+                        <div class="progress-step ${progressSteps.id}" title="ID Verification ${progressSteps.id}"></div>
+                        <div class="progress-step ${progressSteps.sanction}" title="Sanctions Check ${progressSteps.sanction}"></div>
+                      </div>
+                    </td>`;
+                if (visibleColumns.notes) cellsHTML += `
+                    <td class="px-4 py-3 text-center">
+                      <button class="btn-notes text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-100" data-account="${account.accountNumber}" aria-label="View or add notes for account ${maskedAccount}">
+                        ${accountNotes.has(account.accountNumber) ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>'}
+                      </button>
+                    </td>`;
+                if (visibleColumns.actions) cellsHTML += `
+                    <td class="px-4 py-3">
+                      <div class="actions-container">
+                        <button class="btn-neutral btn-toggle-details text-blue-500 hover:bg-blue-100 text-sm py-1 px-2" aria-label="Toggle details" data-account='${JSON.stringify(account)}'>▼</button>
+                        <button class="btn-neutral btn-bank-verification bg-blue-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-blue-800" data-account='${JSON.stringify(account)}' aria-label="Verify bank account">Bank</button>
+                        <button class="btn" class="btn-neutral btn-id-verification bg-green-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-green-800" data-account='${JSON.stringify(account)}' aria-label="Verify ID">ID</button>
+                        <button class="btn btn-neutral btn-death-verification bg-yellow-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-yellow-800" data-account='${JSON.stringify(account)}' aria-label="Verify death">Death</button>
+                        <button class="btn btn-neutral btn-sanctions-verification bg-red-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-red-800" data-account='${JSON.stringify(account)}' aria-label="Check sanctions">Sanctions</button>
+                        <button class="btn btn-neutral btn-policy-details bg-teal-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-teal-800" data-account='${JSON.stringify(account)}' aria-label="View policy details">Policy</button>
+                        <button class="btn btn-neutral btn-history-verification bg-purple-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-purple-800" data-account='${JSON.stringify(account)}' aria-label="View verification history">History</button>
+                      </div>
+                    </td>`;
+                row.innerHTML = cellsHTML;
+                tbody.appendChild(row);
 
-            const detailsRow = document.createElement('tr');
-            detailsRow.className = 'details-row';
-            const detailsColspan = Object.values(visibleColumns).filter(Boolean).length;
-            detailsRow.innerHTML = `
-              <td colspan="${detailsColspan}" class="px-8 py-4 bg-slate-50">
-                <div class="flex flex-col space-y-1 text-xs">
-                  <p><strong>Full Account Number:</strong> ${account.accountNumber || 'N/A'} <button class="btn-copy-details text-blue-500 hover:text-blue-700 ml-1 p-0.5 rounded hover:bg-blue-100" data-text="${account.accountNumber}" aria-label="Copy account number"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></button></p>
-                  <p><strong>Customer Number:</strong> ${account.customerNumber || 'N/A'} <button class="btn-copy-details text-blue-500 hover:text-blue-700 ml-1 p-0.5 rounded hover:bg-blue-100" data-text="${account.customerNumber}" aria-label="Copy customer number"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></button></p>
-                  <p><strong>Last Verification Date:</strong> ${account.lastVerification ? new Date(account.lastVerification).toLocaleDateString() : 'None'}</p>
-                </div>
-              </td>`;
-            tbody.appendChild(detailsRow);
-          });
-          updatePaginationControls(accountsToDisplay.length, page);
+                const detailsRow = document.createElement('tr');
+                detailsRow.className = 'details-row';
+                const detailsColspan = Object.values(visibleColumns).filter(Boolean).length;
+                detailsRow.innerHTML = `
+                    <td colspan="${detailsColspan}" class="px-8 py-4 bg-slate-50">
+                      <div class="flex flex-col space-y-1 text-xs">
+                        <p><strong>Full Account Number:</strong> ${account.accountNumber || 'N/A'} <button class="btn-copy-details text-blue-500 hover:text-blue-700 ml-1 p-0.5 rounded hover:bg-blue-100" data-text="${account.accountNumber}" aria-label="Copy account number"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></button></p>
+                        <p><strong>Customer Number:</strong> ${account.customerNumber || 'N/A'} <button class="btn-copy-details text-blue-500 hover:text-blue-700 ml-1 p-0.5 rounded hover:bg-blue-100" data-text="${account.customerNumber}" aria-label="Copy customer number"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></button></p>
+                        <p><strong>Last Verification Date:</strong> ${account.lastVerificationDate ? new Date(account.lastVerificationDate).toLocaleDateString() : 'None'}</p>
+                        <p><strong>Account Balance:</strong> ${account.accountBalance ? `$${account.accountBalance}` : 'N/A'}</p>
+                        <p><strong>Swift Code:</strong> ${account.swiftCode || 'N/A'}</p>
+                        </div>
+                    </td>`;
+                tbody.appendChild(detailsRow);
+            });
+            updatePaginationControls(accountsToDisplay.length, page);
         }
 
         function updatePaginationControls(totalItems, currentPage) {
@@ -1429,88 +1446,110 @@
 
 
         function updateDashboardWidgets() {
-          const totalAccEl = document.getElementById('total-accounts');
-          const verifiedAccEl = document.getElementById('verified-accounts');
-          const pendingVerEl = document.getElementById('pending-verifications');
+            const totalAccEl = document.getElementById('total-accounts');
+            const verifiedAccEl = document.getElementById('verified-accounts');
+            const pendingVerEl = document.getElementById('pending-verifications');
 
-          if(totalAccEl) totalAccEl.textContent = allAccounts.length;
-          if(verifiedAccEl) verifiedAccEl.textContent = allAccounts.filter(a => a.status === 'Active').length;
-          if(pendingVerEl) pendingVerEl.textContent = allAccounts.filter(a => a.status === 'Pending').length;
+            if (totalAccEl) totalAccEl.textContent = allAccounts.length;
+            if (verifiedAccEl) verifiedAccEl.textContent = allAccounts.filter(a => a.status === 'Active').length;
+            if (pendingVerEl) pendingVerEl.textContent = allAccounts.filter(a => a.status === 'Pending').length;
         }
 
-        function exportToPDF() {
-          try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFont('Poppins', 'normal'); // Ensure Poppins is loaded or use default
-            doc.setFontSize(18);
-            doc.text('Bank Accounts Report', 14, 20);
-            doc.setFontSize(10);
-            
+        function exportToCSV() {
             const accountsToExport = filterAndSortAccounts();
-            let y = 30;
-            const lineHeight = 7;
-            const pageHeight = doc.internal.pageSize.height - 20; // Margin bottom
-
-            accountsToExport.forEach((account, i) => {
-                if (y > pageHeight) {
-                doc.addPage();
-                y = 20; // Reset Y for new page
-                }
-                const maskedAccount = account.accountNumber ? `****${account.accountNumber.slice(-4)}` : 'N/A';
-                const text = `${i + 1}. Account: ${maskedAccount}, Holder: ${account.holderName || 'N/A'}, Status: ${account.status || 'N/A'}, Policy: ${account.policyNumber || 'N/A'}`;
-                doc.text(text, 14, y);
-                y += lineHeight;
-            });
-            doc.save(`bank_accounts_report_${new Date().toISOString().slice(0,10)}.pdf`);
-            logActivity('Exported table to PDF');
-            showToast('PDF export started.', 'success');
-          } catch (error) {
-            console.error("PDF Export Error: ", error);
-            showToast('PDF export failed.', 'error');
-          }
+            if (accountsToExport.length === 0) {
+                showToast("No data to export.", "error");
+                return;
+            }
+            const headers = Object.keys(visibleColumns)
+                .filter(colKey => visibleColumns[colKey] && colKey !== 'accountSelect' && colKey !== 'progress' && colKey !== 'actions')
+                .map(colKey => colKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()))
+                .join(',');
+            const csvRows = accountsToExport.map(account =>
+                Object.keys(visibleColumns)
+                    .filter(colKey => visibleColumns[colKey] && colKey !== 'accountSelect' && colKey !== 'progress' && colKey !== 'actions')
+                    .map(colKey => `"${String(account[colKey] || 'N/A').replace(/"/g, '""')}"`)
+                    .join(',')
+            );
+            const csvString = `${headers}\n${csvRows.join('\n')}`;
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `bank_accounts_${new Date().toISOString().slice(0,10)}.csv`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            logActivity('Exported table to CSV');
+            showToast('CSV export started.', 'success');
         }
+        function exportToPDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFont('Poppins', 'normal');
+                doc.setFontSize(18);
+                doc.text('Bank Accounts Report', 14, 20);
+                doc.setFontSize(10);
+
+                const accountsToExport = filterAndSortAccounts();
+                let y = 30;
+                const lineHeight = 7;
+                const pageHeight = doc.internal.pageSize.height - 20;
+
+                accountsToExport.forEach((account, i) => {
+                    if (y > pageHeight) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    const maskedAccount = account.accountNumber ? `****${account.accountNumber.slice(-4)}` : 'N/A';
+                    const text = `${i + 1}. Account: ${maskedAccount}, Holder: ${account.holderName || 'N/A'}, Status: ${account.status || 'N/A'}, Policy: ${account.policyNumber || 'N/A'}, Bank: ${account.bankName || 'N/A'}`;
+                    doc.text(text, 14, y);
+                    y += lineHeight;
+                });
+                doc.save(`bank_accounts_report_${new Date().toISOString().slice(0,10)}.pdf`);
+                logActivity('Exported table to PDF');
+                showToast('PDF export started.', 'success');
+            } catch (error) {
+                console.error("PDF Export Error: ", error);
+                showToast('PDF export failed.', 'error');
+            }
+        }
+
+        async function fetchBankDetails() {
+            try {
+              const response = await fetch(`${config.apiBaseUrl}/bank-details`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  // Add authentication headers if required, e.g., Authorization: `Bearer ${token}`
+                }
+              });
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+              const data = await response.json();
+              return data; // Array of BankDetailsDTO objects
+            } catch (error) {
+              console.error('Error fetching bank details:', error);
+              throw error;
+            }
+          }
 
         async function initializePage() {
-          if (!initializeUserId()) return;
+            if (!initializeUserId()) return;
 
-          showLoader();
-          try {
-            // Simulate API call for initial data
-            await new Promise(resolve => setTimeout(resolve, 500)); 
-            allAccounts = [
-              {
-                accountNumber: '123456789012', policyNumber: 'POL123', customerNumber: 'CUST001',
-                holderName: 'Yogesh Gangadhar', bankName: 'HDFC Bank', accountType: 'Savings',
-                status: 'Active', policyStatus: 'Active', lastVerification: '2025-05-25'
-              },
-              {
-                accountNumber: '987654321098', policyNumber: 'POL456', customerNumber: 'CUST002',
-                holderName: 'Priya Sharma', bankName: 'ICICI Bank', accountType: 'Checking',
-                status: 'Pending', policyStatus: 'Pending', lastVerification: '2025-03-10'
-              },
-              // Add more diverse sample data
-              ...Array(15).fill(null).map((_, i) => ({
-                accountNumber: `111222333${String(i).padStart(3, '0')}`,
-                policyNumber: `POL${String(100 + i).padStart(3, '0')}`,
-                customerNumber: `CUST${String(100 + i).padStart(3, '0')}`,
-                holderName: `Test User ${i + 1}`,
-                bankName: ['Axis Bank', 'SBI', 'Kotak Bank', 'Yes Bank'][i % 4],
-                accountType: i % 2 === 0 ? 'Savings' : 'Current',
-                status: i % 3 === 0 ? 'Active' : 'Pending',
-                policyStatus: i % 2 === 0 ? 'Active' : (i % 5 == 0 ? 'Lapsed' : 'Pending Review'),
-                lastVerification: `2024-1${i % 2 === 0 ? '1' : '2'}-${String(10 + i % 15).padStart(2, '0')}`
-              }))
-            ];
-
-            updateDashboardWidgets();
-            populateBankAccountsTable(filterAndSortAccounts(), currentPage);
-          } catch (error) {
-            console.error('Error initializing page:', error);
-            showToast(`Failed to load page data: ${error.message}`, 'error');
-          } finally {
-            hideLoader();
-          }
+            showLoader();
+            try {
+                allAccounts = await fetchBankDetails();
+                updateDashboardWidgets();
+                populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+            } catch (error) {
+                console.error('Error initializing page:', error);
+            } finally {
+                hideLoader();
+            }
         }
 
         function debounce(func, wait) {
@@ -1522,21 +1561,9 @@
           };
         }
 
-        // --- DOMContentLoaded ---
         document.addEventListener('DOMContentLoaded', () => {
-          initializeModals();
-          initializePage();
-
-          // Bind close buttons for all modals
-          Object.keys(modals).forEach(modalId => {
-            const modalElement = modals[modalId];
-            if (modalElement) {
-                const closeBtn = modalElement.querySelector(`#close-${modalId}-modal`); // More specific selector
-                if (closeBtn) {
-                    closeBtn.addEventListener('click', () => closeModal(modalId));
-                }
-            }
-          });
+            initializeModals();
+            initializePage();
 
           // Overlay click and Escape key for modals
           Object.values(modals).forEach(modal => {

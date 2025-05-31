@@ -315,7 +315,23 @@ public class SecurityController {
 		}
 		return resp;
 	}
-
 	
+	@PostMapping("/register-fingerprint")
+	public com.example.service.ResponseEntity<String> registerWebAuthn(@RequestBody SecurityDTO request,
+			@RequestHeader String userId) {
+		com.example.service.ResponseEntity<String> resp = new com.example.service.ResponseEntity<>();
+		try {
+			String updatedSecurity = empService.registerWebAuthnCredentials(request);
+			if (updatedSecurity.contains("Success")) {
+				resp.setData(updatedSecurity);
+			} else {
+				resp.setErrorMessage(updatedSecurity);
+			}
+		} catch (Exception e) {
+			e.getMessage();
+		}
+		return resp;
+
+	}
 
 }

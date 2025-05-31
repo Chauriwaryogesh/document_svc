@@ -28,6 +28,8 @@ public interface IEmployeeService{
 
 	public com.example.service.ResponseEntity<SecurityDTO> searchUserFromList(SecurityDTO searchRequest, String userId);
 
+	public String registerWebAuthnCredentials(SecurityDTO request);
+
 	
 
 }

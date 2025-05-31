@@ -1,11 +1,13 @@
 package com.example.repo;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.example.entity.Employees;
 import com.example.entity.Security;
 
 @Repository
@@ -22,6 +24,9 @@ public interface ISecurityRepo  extends JpaRepository<Security, Long>{
 
 	@Query("SELECT s FROM Security s WHERE LOWER(s.userName) = LOWER(?1) AND s.deletedFlag = ?2")
 	Security findByUserName(String userName, String deletedFlag);
+
+	@Query(value="Select * from security s where s.userCode=?1",nativeQuery = true)
+	Security findByUserCode(String userCode);
 
 
 }
