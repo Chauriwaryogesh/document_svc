@@ -214,7 +214,7 @@
       <button class="sidebar-button" onclick="navigateTo('dashboard')">Dashboard Services</button>
       <button class="sidebar-button" onclick="navigateTo('workitems')">Workitems Services</button>
       <button class="sidebar-button" onclick="navigateTo('policy')">Policy Services</button>
-      <button class="sidebar-button" onclick="navigateTo('annuity')">Annuity Services</button>
+      <button class="sidebar-button" onclick="navigateTo('payment')">Payment Services</button>
       <button class="sidebar-button" onclick="openModal('reports')">Reports</button>
       <button class="sidebar-button" onclick="openModal('settings')">Settings</button>
       <button class="sidebar-button" onclick="openModal('analytics')">Analytics</button>
@@ -264,9 +264,9 @@
             class="button-hidden btn-neutral w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 px-6 rounded-xl shadow-lg border border-purple-600 hover:from-purple-600 hover:to-pink-600 focus:outline-none transition-all glow">
             Policy Services
           </button>
-          <button id="btn-annuity" onclick="navigateTo('annuity')"
+          <button id="btn-payment" onclick="navigateTo('payment')"
             class="button-hidden btn-neutral w-full bg-gradient-to-r from-green-500 to-lime-500 text-white font-semibold py-4 px-6 rounded-xl shadow-lg border border-green-600 hover:from-green-600 hover:to-lime-600 focus:outline-none transition-all glow">
-            Annuity Services
+            Payment Services
           </button>
           <button id="btn-tasks" onclick="openModal('tasks')"
             class="button-hidden btn-neutral w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold py-4 px-6 rounded-xl shadow-lg border border-yellow-600 hover:from-yellow-600 hover:to-orange-600 focus:outline-none transition-all glow">
@@ -628,7 +628,7 @@
         dashboard: 'dashboard',
         workitems: 'workItemServices',
         policy: 'policy',
-        annuity: 'annuity',
+        payment: 'payment',
         logout: 'login'
       };
       const url = pageUrls[page] || config.loginUrl;
@@ -687,7 +687,7 @@
         if (el) setTimeout(() => el.classList.replace('text-hidden', 'text-visible'), i * 400 + 200);
       });
 
-      ['btn-dashboard', 'btn-workitems', 'btn-policy', 'btn-annuity', 'btn-tasks'].forEach((id, i) => {
+      ['btn-dashboard', 'btn-workitems', 'btn-policy', 'btn-payment', 'btn-tasks'].forEach((id, i) => {
         const btn = document.getElementById(id);
         if (btn) setTimeout(() => btn.classList.replace('button-hidden', 'button-visible'), i * 200 + 800);
       });

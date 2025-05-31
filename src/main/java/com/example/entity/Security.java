@@ -8,119 +8,169 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="security")
+@Table(name = "security")
 public class Security {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="id")
-	private long id;
-	@Column(name="email")
-	private String email;
-	@Column(name="isEmailVerified")
-	private String isEmailVerified;
-	@Column(name="userName")
-	String userName;
-	@Column (name="userCode")
-	String userCode;
-	@Column (name="isUserCodeVerified")
-	private String isUserCodeVerified;
-	@Column(name="updateBy")
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "isEmailVerified")
+    private String isEmailVerified;
+
+    @Column(name = "userName")
+    private String userName;
+
+    @Column(name = "userCode")
+    private String userCode;
+
+    @Column(name = "isUserCodeVerified")
+    private String isUserCodeVerified;
+
+    @Column(name = "updateBy")
     private String updateBy;
-	@Column(name="updateTime")
+
+    @Column(name = "updateTime")
     private String updateTime;
-	@Column(name="endTime")
+
+    @Column(name = "endTime")
     private String endTime;
-	@Column(name="deletedFlag")
+
+    @Column(name = "deletedFlag")
     private String deletedFlag;
-	
-	
-	public String getDeletedFlag() {
-		return deletedFlag;
-	}
 
-	public void setDeletedFlag(String deletedFlag) {
-		this.deletedFlag = deletedFlag;
-	}
+    // WebAuthn fields
+    @Column(name = "credentialId", length = 255)
+    private String credentialId; // Base64-encoded credential ID
 
-	public String getEmail() {
-		return email;
-	}
+    @Column(name = "publicKey", columnDefinition = "TEXT")
+    private String publicKey; // Base64-encoded COSE public key
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    @Column(name = "userHandle", length = 255)
+    private String userHandle; // Base64-encoded user handle
 
-	public String getIsEmailVerified() {
-		return isEmailVerified;
-	}
+    @Column(name = "signatureCounter")
+    private Long signatureCounter; // Signature counter for anti-replay
 
-	public void setIsEmailVerified(String isEmailVerified) {
-		this.isEmailVerified = isEmailVerified;
-	}
-	
-	public String getIsUserCodeVerified() {
-		return isUserCodeVerified;
-	}
+    // Getters and Setters
+    public String getCredentialId() {
+        return credentialId;
+    }
 
-	public void setIsUserCodeVerified(String isUserCodeVerified) {
-		this.isUserCodeVerified = isUserCodeVerified;
-	}
+    public void setCredentialId(String credentialId) {
+        this.credentialId = credentialId;
+    }
 
+    public String getPublicKey() {
+        return publicKey;
+    }
 
-	public String getUpdateBy() {
-		return updateBy;
-	}
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
 
-	public void setUpdateBy(String updateBy) {
-		this.updateBy = updateBy;
-	}
+    public String getUserHandle() {
+        return userHandle;
+    }
 
-	public String getUpdateTime() {
-		return updateTime;
-	}
+    public void setUserHandle(String userHandle) {
+        this.userHandle = userHandle;
+    }
 
-	public void setUpdateTime(String updateTime) {
-		this.updateTime = updateTime;
-	}
+    public Long getSignatureCounter() {
+        return signatureCounter;
+    }
 
-	public String getEndTime() {
-		return endTime;
-	}
+    public void setSignatureCounter(Long signatureCounter) {
+        this.signatureCounter = signatureCounter;
+    }
 
-	public void setEndTime(String endTime) {
-		this.endTime = endTime;
-	}
+    public String getDeletedFlag() {
+        return deletedFlag;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public void setDeletedFlag(String deletedFlag) {
+        this.deletedFlag = deletedFlag;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public String getIsEmailVerified() {
+        return isEmailVerified;
+    }
 
-	public String getUserCode() {
-		return userCode;
-	}
+    public void setIsEmailVerified(String isEmailVerified) {
+        this.isEmailVerified = isEmailVerified;
+    }
 
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
-	}
+    public String getIsUserCodeVerified() {
+        return isUserCodeVerified;
+    }
 
-	@Override
-	public String toString() {
-		return "Security [id=" + id + ", userName=" + userName + ", userCode=" + userCode + "]";
-	}
-	
-	
+    public void setIsUserCodeVerified(String isUserCodeVerified) {
+        this.isUserCodeVerified = isUserCodeVerified;
+    }
 
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
+    }
+
+    @Override
+    public String toString() {
+        return "Security [id=" + id + ", userName=" + userName + ", userCode=" + userCode + ", credentialId=" + credentialId + "]";
+    }
 }

@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Details & Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;900&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-gradient-start: #e6f0fa;
+        --bg-gradient-end: #d1e0ff;
+        --card-bg: #ffffff;
+        --text-primary: #1a2c; /* Assuming a darker text color like #1a2c50 or similar */
+        --btn-bg: #1d4ed8;
+        --btn-hover: #1e40af;
+        --accent-blue: #3b82f6;
+        --accent-green: #10b981;
+        --accent-yellow: #f59e0b;
+        --accent-red: #ef4444;
+        --accent-teal: #14b8a6;
+        --accent-purple: #8b5cf6;
+      }
+      body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        overflow-x: hidden;
+        color: var(--text-primary);
+      }
+      .card {
+        background: var(--card-bg);
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-radius: 16px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      }
+      .btn-neutral {
+        transition: all 0.3s ease;
+        position: relative;
+        border-radius: 8px;
+        font-weight: 600;
+        min-width: 80px;
+        text-align: center;
+        padding: 8px 12px;
+      }
+      .btn-neutral:hover {
+        transform: translateY(-1px);
+      }
+      .modal {
+        transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+      }
+      .modal.hidden {
+        opacity: 0;
+        transform: scale(0.95);
+        pointer-events: none;
+      }
+      .modal-content {
+        background: var(--card-bg);
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 2rem;
+      }
+      @media (max-width: 640px) {
+        .modal-content {
+          width: 95%;
+          margin: 0 auto;
+        }
+      }
+      .loader {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.7); /* Darker overlay for better visibility */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100; /* Ensure loader is on top of modals */
+        display: none; /* Initially hidden */
+      }
+      .loader.active {
+        display: flex;
+      }
+      .spinner {
+        width: 36px;
+        height: 36px;
+        border: 4px solid #e5e7eb;
+        border-top: 4px solid var(--btn-bg);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .table-container {
+        max-height: 400px; /* Or adjust as needed */
+        overflow-y: auto;
+      }
+      thead th {
+        position: sticky;
+        top: 0;
+        background: #f1f5f9; /* Lighter grey for header */
+        z-index: 10;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      tbody tr:nth-child(even) {
+        background: #f9fafb; /* Slightly off-white for even rows */
+      }
+      .masked-account-table { /* Assuming this class is for the account number cell text */
+        font-family: 'Courier New', monospace;
+        font-weight: 500;
+      }
+      .error-text {
+        color: var(--accent-red);
+        font-size: 0.875rem; /* 14px */
+        font-weight: 500;
+      }
+      .form-input {
+        border: 1px solid #d1d5db; /* Tailwind gray-300 */
+        border-radius: 8px;
+        padding: 10px 14px;
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 0.95rem;
+        font-weight: 500;
+      }
+      .form-input:focus {
+        outline: none;
+        border-color: var(--btn-bg);
+        box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.2);
+      }
+      .success-tick {
+        color: var(--accent-green);
+        font-size: 1.5rem; /* 24px */
+        margin-right: 8px;
+      }
+      .status-active::before {
+        content: '✔';
+        color: var(--accent-green);
+        margin-right: 4px;
+      }
+      .status-pending::before {
+        content: '⏳'; /* Using a more common pending icon */
+        color: var(--accent-yellow);
+        margin-right: 4px;
+      }
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: white;
+        z-index: 110; /* Ensure toast is above loader and modals */
+        font-weight: 500;
+        animation: slide-up 0.3s ease-out, slide-down 0.0s ease-in 2.7s forwards; /* Use forwards to keep last state */
+      }
+      .toast-success {
+        background: var(--accent-green);
+      }
+      .toast-error {
+        background: var(--accent-red);
+      }
+      @keyframes slide-up {
+        from { transform: translateY(100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      @keyframes slide-down {
+        from { transform: translateY(0); opacity: 1; }
+        to { transform: translateY(100%); opacity: 0; }
+      }
+      .details-row {
+        display: none;
+        background: #f1f5f9; /* Consistent with sticky header */
+      }
+      .details-row.open {
+        display: table-row;
+      }
+      .sort-icon {
+        display: inline-block;
+        margin-left: 4px;
+        transition: transform 0.2s;
+      }
+      .sort-icon.asc { /* Rotated up for ascending */
+        transform: rotate(180deg);
+      }
+      nav {
+        background: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-radius: 0 0 12px 12px; /* Rounded bottom corners */
+      }
+      .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .actions-container {
+        display: flex;
+        flex-wrap: nowrap; /* Prevent wrapping by default */
+        gap: 8px; /* Space between action buttons */
+        align-items: center;
+        justify-content: flex-start; /* Align to the start */
+      }
+      @media (max-width: 1024px) { /* Adjust breakpoint as needed */
+        .actions-container {
+          flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+      }
+      .progress-bar {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
+      .progress-step {
+        width: 20px;
+        height: 8px;
+        border-radius: 4px;
+        background: #e5e7eb; /* Default/incomplete step color */
+      }
+      .progress-step.completed {
+        background: var(--accent-green);
+      }
+      .progress-step.pending { /* If you want a specific pending color different from default */
+        background: var(--accent-yellow);
+      }
+      .notification-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--accent-red);
+        border-radius: 50%;
+        position: absolute;
+        top: -2px;
+        right: -2px;
+      }
+      .sidebar {
+        transition: transform 0.3s ease;
+        transform: translateX(-100%); /* Initially hidden */
+      }
+      .sidebar.open {
+        transform: translateX(0); /* Slides in */
+      }
+      .timeline {
+        position: relative;
+        padding-left: 20px; /* Space for the line and dots */
+      }
+      .timeline-item {
+        position: relative;
+        padding-bottom: 20px; /* Space between items */
+      }
+      .timeline-item::before { /* The vertical line */
+        content: '';
+        position: absolute;
+        left: -12px; /* Aligns with the center of the dot */
+        top: 0;
+        width: 2px;
+        height: 100%;
+        background: #e5e7eb; /* Line color */
+      }
+      .timeline-dot {
+        position: absolute;
+        left: -16px; /* Adjust to center on the line */
+        top: 4px; /* Align with text */
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent-blue); /* Dot color */
+      }
+      .shortcut-help { /* Class for the content div inside shortcut help modal */
+        max-height: 80vh; /* ensure it's scrollable if content is long */
+        overflow-y: auto;
+      }
+    </style>
+</head>
+<body>
+    <nav class="w-full fixed top-0 z-40" aria-label="Main navigation">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="text-2xl font-bold">Banking App</div>
+        <div class="flex items-center space-x-4">
+          <button id="sidebar-toggle" class="btn-neutral text-gray-700 hover:text-blue-600" aria-label="Toggle sidebar">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+          </button>
+          <div class="relative">
+            <button id="notifications-toggle" class="btn-neutral text-gray-700 hover:text-blue-600" aria-label="View notifications">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+              </svg>
+              <span id="notification-dot" class="notification-dot hidden"></span>
+            </button>
+          </div>
+          <button id="btn-profile" class="btn-neutral text-gray-700 hover:text-blue-600 font-semibold">Profile</button>
+          <button id="btn-logout" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700" aria-label="Logout">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <div id="sidebar" class="sidebar fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 p-6 flex flex-col space-y-4">
+      <button id="sidebar-close" class="btn-neutral text-gray-700 hover:text-blue-600 self-end" aria-label="Close sidebar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+      <h3 class="text-lg font-bold">Quick Actions</h3>
+      <input type="text" id="sidebar-search" class="form-input" placeholder="Search accounts or actions" aria-label="Quick search">
+      <button id="new-verification" class="btn-neutral bg-blue-600 text-white py-2 px-4 rounded-lg w-full">New Verification</button>
+      <button id="export-table" class="btn-neutral bg-green-500 text-white py-2 px-4 rounded-lg w-full">Export Table</button>
+      <button id="view-activity" class="btn-neutral bg-purple-500 text-white py-2 px-4 rounded-lg w-full">Recent Activity</button>
+    </div>
+
+    <main class="w-full max-w-7xl flex flex-col flex-grow p-6 mt-20" aria-label="Main content">
+      <div class="mb-6 flex flex-wrap gap-2 sm:space-x-4">
+        <button onclick="navigateTo('dashboard')" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700" aria-label="Back to dashboard">
+          Back to Dashboard
+        </button>
+        <button id="bulk-verify" class="btn-neutral bg-green-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-green-600 hidden" aria-label="Verify selected accounts">Verify Selected</button>
+        <button id="table-settings" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-5 rounded-lg" aria-label="Table settings">Table Settings</button>
+        <button id="export-csv" class="btn-neutral bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg" aria-label="Export as CSV">Export CSV</button>
+        <button id="export-pdf" class="btn-neutral bg-red-500 text-white font-semibold py-2 px-5 rounded-lg" aria-label="Export as PDF">Export PDF</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        <div id="total-accounts-widget" class="card p-6 text-center cursor-pointer hover:bg-blue-50" role="button" aria-label="View all accounts">
+          <h3 class="text-lg font-semibold">Total Accounts</h3>
+          <p id="total-accounts" class="text-3xl font-bold text-gray-800">0</p>
+        </div>
+        <div id="verified-accounts-widget" class="card p-6 text-center cursor-pointer hover:bg-green-50" role="button" aria-label="View verified accounts">
+          <h3 class="text-lg font-semibold">Verified Accounts</h3>
+          <p id="verified-accounts" class="text-3xl font-bold text-gray-800">0</p>
+        </div>
+        <div id="pending-verifications-widget" class="card p-6 text-center cursor-pointer hover:bg-yellow-50" role="button" aria-label="View pending verifications">
+          <h3 class="text-lg font-semibold">Pending Verifications</h3>
+          <p id="pending-verifications" class="text-3xl font-bold text-gray-800">0</p>
+        </div>
+      </div>
+
+      <div class="card p-8">
+        <h2 class="text-2xl font-bold mb-6">Bank Accounts & Verification</h2>
+        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+          <input type="text" id="table-search" class="form-input w-full sm:w-64" placeholder="Search by policy, account, or name" aria-label="Search accounts">
+          <select id="status-filter" class="form-input w-full sm:w-40" aria-label="Filter by status">
+            <option value="">All Statuses</option>
+            <option value="Active">Active</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
+        <div class="table-container">
+          <table class="w-full text-left text-gray-700 text-sm" aria-label="Bank accounts table">
+            <thead class="text-xs uppercase bg-gray-100">
+              <tr>
+                <th scope="col" class="px-4 py-3"><input type="checkbox" id="select-all" aria-label="Select all accounts"></th>
+                <th scope="col" class="px-4 py-3 cursor-pointer" data-sort="accountNumber">Account Number <span class="sort-icon">↓</span></th>
+                <th scope="col" class="px-4 py-3">Policy Number</th>
+                <th scope="col" class="px-4 py-3 cursor-pointer" data-sort="holderName">Holder Name <span class="sort-icon">↓</span></th>
+                <th scope="col" class="px-4 py-3">Bank Name</th>
+                <th scope="col" class="px-4 py-3">Account Type</th>
+                <th scope="col" class="px-4 py-3">Status</th>
+                <th scope="col" class="px-4 py-3">Policy Status</th>
+                <th scope="col" class="px-4 py-3">Progress</th>
+                <th scope="col" class="px-4 py-3">Notes</th>
+                <th scope="col" class="px-4 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="bank-accounts-table"></tbody>
+          </table>
+        </div>
+        <div class="flex justify-between items-center mt-6">
+          <div>
+            <button id="prev-page" class="btn-neutral bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 disabled:opacity-50" disabled aria-label="Previous page">Previous</button>
+            <button id="next-page" class="btn-neutral bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Next page">Next</button>
+          </div>
+          <span id="page-info" class="text-sm font-semibold text-gray-700">Page 1</span>
+        </div>
+      </div>
+
+      <div id="bank-verification-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="bank-verification-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-lg">
+          <h3 id="bank-verification-title" class="text-xl font-bold mb-4">Bank Account Verification</h3>
+          <form id="bank-verification-form" class="space-y-4">
+            <div>
+              <label for="bank-account-number" class="form-label block text-sm">Bank Account Number</label>
+              <input type="text" id="bank-account-number" class="form-input mt-1" placeholder="Enter account number" required aria-required="true">
+            </div>
+            <div>
+              <label for="re-enter-account-number" class="form-label block text-sm">Re-enter Bank Account Number</label>
+              <input type="text" id="re-enter-account-number" class="form-input mt-1" placeholder="Re-enter account number" required aria-required="true">
+            </div>
+            <div>
+              <label for="ifsc-code" class="form-label block text-sm">IFSC Code</label>
+              <div class="flex space-x-2 mt-1">
+                <input type="text" id="ifsc-code" class="form-input" placeholder="e.g., HDFC0001234" required aria-required="true">
+                <button type="button" id="search-ifsc" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Search IFSC code">
+                  Search IFSC
+                </button>
+              </div>
+            </div>
+            <div>
+              <label for="name" class="form-label block text-sm">Name</label>
+              <input type="text" id="name" class="form-input mt-1" placeholder="Enter first name" required aria-required="true">
+            </div>
+            <div>
+              <label for="surname" class="form-label block text-sm">Surname</label>
+              <input type="text" id="surname" class="form-input mt-1" placeholder="Enter surname" required aria-required="true">
+            </div>
+            <div>
+              <label for="bank-name" class="form-label block text-sm">Bank Name</label>
+              <select id="bank-name" class="form-input mt-1" required aria-required="true">
+                <option value="" disabled selected>Select a bank</option>
+                <option value="HDFC Bank">HDFC Bank</option>
+                <option value="ICICI Bank">ICICI Bank</option>
+                <option value="Bank of Baroda">Bank of Baroda</option>
+                <option value="State Bank of India">State Bank of India</option>
+                <option value="Axis Bank">Axis Bank</option>
+              </select>
+            </div>
+            <div id="bank-verification-error" class="error-text hidden" aria-live="polite"></div>
+            <div id="bank-verification-result" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
+          </form>
+          <div class="flex justify-end space-x-2 mt-6">
+            <button id="bank-verification-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Submit bank verification">
+              Verify
+            </button>
+            <button id="bank-manual-verification" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 hidden" aria-label="Manual verification">
+              Manual Verification
+            </button>
+            <button id="close-bank-verification-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="id-verification-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="id-verification-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+          <h3 id="id-verification-title" class="text-xl font-bold mb-4">ID Verification</h3>
+          <form id="id-verification-form" class="space-y-4">
+            <div>
+              <label for="id-customer-number" class="form-label block text-sm">Customer Number</label>
+              <input type="text" id="id-customer-number" class="form-input mt-1" placeholder="Enter customer number" required aria-required="true">
+            </div>
+            <div id="id-verification-error" class="error-text hidden" aria-live="polite"></div>
+            <div id="id-verification-result-text" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
+          </form>
+          <div class="flex justify-end space-x-2 mt-6">
+            <button id="id-verification-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Submit ID verification">
+              Verify
+            </button>
+            <button id="id-manual-verification" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 hidden" aria-label="Manual verification">
+              Manual Verification
+            </button>
+            <button id="close-id-verification-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="death-verification-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="death-verification-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+          <h3 id="death-verification-title" class="text-xl font-bold mb-4">Death Verification</h3>
+          <form id="death-verification-form" class="space-y-4">
+            <div>
+              <label for="death-customer-number" class="form-label block text-sm">Customer Number</label>
+              <input type="text" id="death-customer-number" class="form-input mt-1" placeholder="Enter customer number" required aria-required="true">
+            </div>
+            <div id="death-verification-error" class="error-text hidden" aria-live="polite"></div>
+            <div id="death-verification-result" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
+          </form>
+          <div class="flex justify-end space-x-2 mt-6">
+            <button id="death-verification-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Submit death verification">
+              Verify
+            </button>
+            <button id="death-manual-verification" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 hidden" aria-label="Manual verification">
+              Manual Verification
+            </button>
+            <button id="close-death-verification-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="sanctions-check-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="sanctions-check-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+          <h3 id="sanctions-check-title" class="text-xl font-bold mb-4">Sanctions Check</h3>
+          <form id="sanctions-verification-form" class="space-y-4"> <div>
+              <label for="sanctions-customer-number" class="form-label block text-sm">Customer Number</label>
+              <input type="text" id="sanctions-customer-number" class="form-input mt-1" placeholder="Enter customer number" required aria-required="true">
+            </div>
+            <div id="sanctions-verification-error" class="error-text hidden" aria-live="polite"></div>
+            <div id="sanctions-verification-result" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
+          </form>
+          <div class="flex justify-end space-x-2 mt-6">
+            <button id="sanctions-verification-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Submit sanctions check">
+              Verify
+            </button>
+            <button id="sanctions-manual-verification" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 hidden" aria-label="Manual verification">
+              Manual Verification
+            </button>
+            <button id="close-sanctions-check-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="policy-details-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="policy-details-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+          <h3 id="policy-details-title" class="text-xl font-bold mb-4">Policy Details</h3>
+          <div id="policy-details-content" class="space-y-2 text-gray-600">
+            <p><strong>Policy Number:</strong> <span id="policy-number"></span></p>
+            <p><strong>Type:</strong> <span id="policy-type"></span></p>
+            <p><strong>Premium:</strong> <span id="policy-premium"></span></p>
+            <p><strong>Status:</strong> <span id="policy-status"></span></p>
+          </div>
+          <div class="flex justify-end mt-6">
+            <button id="close-policy-details-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="verification-history-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="history-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-lg">
+          <h3 id="history-title" class="text-xl font-bold mb-4">Verification History</h3>
+          <div id="history-content" class="timeline"></div>
+          <div class="flex justify-end mt-6">
+            <button id="close-verification-history-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="bulk-verification-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="bulk-verification-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+          <h3 id="bulk-verification-title" class="text-xl font-bold mb-4">Bulk Verification</h3>
+          <div id="bulk-progress" class="text-gray-600 mb-4"></div>
+          <div id="bulk-results" class="text-sm text-gray-600 space-y-2 max-h-60 overflow-y-auto" aria-live="polite"></div>
+          <div class="flex justify-end mt-6">
+            <button id="close-bulk-verification-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="notifications-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="notifications-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+          <h3 id="notifications-title" class="text-xl font-bold mb-4">Notifications</h3>
+          <div id="notifications-content" class="space-y-2 max-h-80 overflow-y-auto"></div>
+          <div class="flex justify-end space-x-2 mt-6">
+            <button id="clear-notifications" class="btn-neutral bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600" aria-label="Clear notifications">
+              Clear All
+            </button>
+            <button id="close-notifications-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="table-settings-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="settings-modal-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+          <h3 id="settings-modal-title" class="text-xl font-bold mb-4">Table Settings</h3>
+          <div id="settings-content" class="space-y-4">
+            <div class="flex flex-col space-y-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="col-accountSelect" checked class="mr-2"> Select Row
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="col-accountNumber" checked class="mr-2">
+                Account Number
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="col-policyNumber" checked class="mr-2">
+                Policy Number
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="col-holderName" checked class="mr-2">
+                Holder Name
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="col-bankName" checked class="mr-2">
+                Bank Name
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="col-accountType" checked class="mr-2">
+                Account Type
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="col-status" checked class="mr-2">
+                Status
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="col-policyStatus" checked class="mr-2">
+                Policy Status
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="col-progress" checked class="mr-2">
+                Progress
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="col-notes" checked class="mr-2">
+                Notes
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="col-actions" checked class="mr-2"> Actions
+              </label>
+            </div>
+          </div>
+          <div class="flex justify-end space-x-2 mt-6">
+            <button id="save-table-settings" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Save table settings">
+              Save
+            </button>
+            <button id="close-table-settings-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="account-notes-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="notes-modal-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+          <h3 id="notes-modal-title" class="text-xl font-bold mb-4">Account Notes</h3> <form id="account-notes-form" class="space-y-4">
+            <div>
+              <label for="account-note" class="form-label block text-sm">Notes</label>
+              <textarea id="account-note" class="form-input mt-1 h-32" placeholder="Enter notes for this account" required aria-required="true"></textarea>
+            </div>
+            <div id="notes-error" class="error-text hidden" aria-live="polite"></div>
+             <div class="flex justify-end space-x-2 mt-6">
+                <button type="button" id="save-note" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Save note">
+                Save Note
+                </button>
+                <button type="button" id="close-account-notes-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+                Close
+                </button>
+            </div>
+          </form>
+        </div> </div>
+
+      <div id="activity-log-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="activity-log-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-lg">
+          <h3 id="activity-log-title" class="text-xl font-bold mb-4">Activity Log</h3> <div id="activity-log-content" class="space-y-2 max-h-80 overflow-y-auto"></div>
+          <div class="flex justify-end mt-6">
+            <button id="close-activity-log-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="shortcut-help-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="shortcut-help-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md shortcut-content"> <h3 id="shortcut-help-title" class="text-xl font-bold mb-4">Keyboard Shortcuts</h3>
+          <div id="shortcut-help-content" class="space-y-2 shortcut-help"> <p><strong>Ctrl+B</strong>: Bulk verification</p>
+            <p><strong>F</strong>: Focus search input</p>
+            <p><strong>P</strong>: Open previous page</p>
+            <p><strong>N</strong>: Open next page</p>
+            <p><strong>S</strong>: Toggle sidebar</p>
+            <p><strong>K</strong>: Open this help modal</p>
+          </div>
+          <div class="flex justify-end mt-6">
+            <button id="close-shortcut-help-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="widget-stats-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="widget-stats-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+          <h3 id="widget-stats-title" class="text-xl font-bold mb-4">Account Statistics</h3>
+          <canvas id="stats-chart" class="mb-4"></canvas>
+          <div class="flex justify-end mt-6">
+            <button id="close-widget-stats-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="loader" class="loader">
+        <div class="spinner"></div>
+      </div>
+
+    <script>
+        const config = {
+          loginUrl: 'login.html', // Assuming a login page
+          userId: null,
+          apiBaseUrl: 'http://localhost:8081/bankService', // Mock API
+          policyUrl: 'policy.html',
+          pageSize: 10
+        };
+
+        let modals = {};
+        let verificationHistory = [];
+        let allAccounts = [];
+        let currentPage = 1;
+        let sortKey = 'accountNumber';
+        let sortAsc = true;
+        let notifications = [];
+        let accountNotes = new Map();
+        let activityLogs = [];
+        let visibleColumns = {
+          accountSelect: true,
+          accountNumber: true,
+          policyNumber: true,
+          holderName: true,
+          bankName: true,
+          accountType: true,
+          status: true,
+          policyStatus: true,
+          progress: true,
+          notes: true,
+          actions: true
+        };
+
+        function initializeModals() {
+          modals = {
+            'bank-verification': document.getElementById('bank-verification-modal'),
+            'id-verification': document.getElementById('id-verification-modal'),
+            'death-verification': document.getElementById('death-verification-modal'),
+            'sanctions-check': document.getElementById('sanctions-check-modal'),
+            'policy-details': document.getElementById('policy-details-modal'),
+            'verification-history': document.getElementById('verification-history-modal'),
+            'bulk-verification': document.getElementById('bulk-verification-modal'),
+            'notifications': document.getElementById('notifications-modal'),
+            'table-settings': document.getElementById('table-settings-modal'),
+            'account-notes': document.getElementById('account-notes-modal'),
+            'activity-log': document.getElementById('activity-log-modal'),
+            'shortcut-help': document.getElementById('shortcut-help-modal'),
+            'widget-stats': document.getElementById('widget-stats-modal')
+          };
+          Object.entries(modals).forEach(([key, value]) => {
+            if (!value) console.error(`Modal element for ${key} not found`);
+          });
+        }
+
+        const modalInitializers = {
+        		'bank-verification': (data, modalElement) => {
+        		    const form = modalElement.querySelector('#bank-verification-form');
+        		    if (form) form.reset();
+        		    const errorDiv = modalElement.querySelector('#bank-verification-error');
+        		    if (errorDiv) errorDiv.classList.add('hidden');
+        		    const resultDiv = modalElement.querySelector('#bank-verification-result');
+        		    if (resultDiv) resultDiv.textContent = '';
+        		    const manualBtn = modalElement.querySelector('#bank-manual-verification');
+        		    if (manualBtn) manualBtn.classList.add('hidden');
+
+        		    if (data.accountNumber) {
+        		        const accNumInput = modalElement.querySelector('#bank-account-number');
+        		        if (accNumInput) accNumInput.value = data.accountNumber;
+        		        const reAccNumInput = modalElement.querySelector('#re-enter-account-number');
+        		        if (reAccNumInput) reAccNumInput.value = data.accountNumber;
+        		        const ifscInput = modalElement.querySelector('#ifsc-code');
+        		        if (ifscInput) ifscInput.value = data.ifscCode || '';
+        		        const [name, ...surnameParts] = (data.holderName || '').split(' ');
+        		        const nameInput = modalElement.querySelector('#name');
+        		        if (nameInput) nameInput.value = name || '';
+        		        const surnameInput = modalElement.querySelector('#surname');
+        		        if (surnameInput) surnameInput.value = surnameParts.join(' ') || '';
+        		        const bankNameSelect = modalElement.querySelector('#bank-name');
+        		        if (bankNameSelect) bankNameSelect.value = data.bankName || '';
+        		    }
+        		},
+          'policy-details': (data, modalElement) => {
+            const policyNumEl = modalElement.querySelector('#policy-number');
+            if(policyNumEl) policyNumEl.textContent = data.policyNumber || 'N/A';
+            const policyTypeEl = modalElement.querySelector('#policy-type');
+            if(policyTypeEl) policyTypeEl.textContent = data.policyType || 'N/A';
+            const policyPremiumEl = modalElement.querySelector('#policy-premium');
+            if(policyPremiumEl) policyPremiumEl.textContent = data.policyPremium || 'N/A';
+            const policyStatusEl = modalElement.querySelector('#policy-status');
+            if(policyStatusEl) policyStatusEl.textContent = data.policyStatus || 'N/A';
+          },
+          'verification-history': (data, modalElement) => {
+            const history = verificationHistory.filter(h => h.accountNumber === data.accountNumber);
+            const content = modalElement.querySelector('#history-content');
+            if(content) {
+                content.innerHTML = history.length
+                ? history.map(h => `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <p class="text-sm"><strong>${new Date(h.date).toLocaleString()}</strong>: ${h.type} - ${h.status} (${h.message})</p>
+                    </div>
+                    `).join('')
+                : '<p>No verification history found.</p>';
+            }
+          },
+          'bulk-verification': (data, modalElement) => {
+            processBulkVerification(data.accounts, modalElement);
+          },
+          'notifications': (data, modalElement) => {
+            updateNotifications(modalElement);
+          },
+          'table-settings': (data, modalElement) => {
+            Object.keys(visibleColumns).forEach(col => {
+              const checkbox = modalElement.querySelector(`#col-${col}`);
+              if (checkbox) checkbox.checked = visibleColumns[col];
+            });
+          },
+          'account-notes': (data, modalElement) => {
+        	    const noteTextarea = modalElement.querySelector('#account-note');
+        	    if (noteTextarea) noteTextarea.value = accountNotes.get(data.accountNumber) || data.notes || '';
+        	    const noteForm = modalElement.querySelector('#account-notes-form');
+        	    if (noteForm) noteForm.dataset.accountNumber = data.accountNumber;
+        	},
+          'activity-log': (data, modalElement) => {
+            updateActivityLog(modalElement);
+          },
+          'widget-stats': (data, modalElement) => {
+            const chartCanvas = modalElement.querySelector('#stats-chart');
+            if(chartCanvas) renderStatsChart(data.filter, chartCanvas);
+          },
+          _genericVerificationModal: (modalId, data, modalElement) => {
+            const form = modalElement.querySelector(`#${modalId}-form`);
+            if (form) form.reset();
+            const errorDiv = modalElement.querySelector(`#${modalId}-error`);
+            if (errorDiv) errorDiv.classList.add('hidden');
+            
+            let resultDivId = `${modalId}-result`;
+            if (modalId === 'id-verification') resultDivId = 'id-verification-result-text';
+            const resultTextEl = modalElement.querySelector(`#${resultDivId}`);
+            if (resultTextEl) resultTextEl.textContent = '';
+
+            const manualBtn = modalElement.querySelector(`#${modalId}-manual-verification`);
+            if (manualBtn) manualBtn.classList.add('hidden');
+            const customerNumInput = modalElement.querySelector(`#${modalId}-customer-number`);
+            if (customerNumInput) customerNumInput.value = data.customerNumber || '';
+          }
+        };
+
+        function openModal(modalId, data = {}) {
+          if (!modals[modalId]) {
+            console.error(`Invalid modal ID: ${modalId}`);
+            showToast('Cannot open modal', 'error');
+            return;
+          }
+          const modalElement = modals[modalId];
+
+          if (modalInitializers[modalId]) {
+            modalInitializers[modalId](data, modalElement);
+          } else if (['id-verification', 'death-verification', 'sanctions-check'].includes(modalId)) {
+            modalInitializers._genericVerificationModal(modalId, data, modalElement);
+          }
+
+          modalElement.classList.remove('hidden');
+          const focusable = modalElement.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+          if (focusable) focusable.focus();
+          logActivity(`Opened ${modalId} modal`);
+        }
+
+        function closeModal(modalId) {
+          if (!modals[modalId]) {
+            console.error(`Invalid modal ID: ${modalId}`);
+            return;
+          }
+          modals[modalId].classList.add('hidden');
+          logActivity(`Closed ${modalId} modal`);
+        }
+
+        function showLoader() {
+          const loader = document.getElementById('loader');
+          if (loader) loader.classList.add('active');
+        }
+
+        function hideLoader() {
+          const loader = document.getElementById('loader');
+          if(loader) loader.classList.remove('active');
+        }
+
+        function showToast(message, type = 'success') {
+          const toast = document.createElement('div');
+          toast.className = `toast toast-${type}`;
+          toast.textContent = message;
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 3000);
+          addNotification(type === 'error' ? 'Error' : 'Success', message); // Ensure type matches notification types
+        }
+
+        function initializeUserId() {
+          config.userId = sessionStorage.getItem('userId');
+          if (!config.userId) {
+            // For a real app, redirect. For this demo, maybe set a default or show a message.
+            // alert('Please log in to continue.');
+            // window.location.href = config.loginUrl;
+            // return false;
+            console.warn("User not logged in. Proceeding in demo mode.");
+            config.userId = "demoUser"; // Fallback for demo
+          }
+          return true;
+        }
+
+        function logout() {
+          sessionStorage.removeItem('userId');
+          config.userId = null;
+          showToast('Logged out successfully.');
+          // window.location.href = config.loginUrl;
+          logActivity('Logged out');
+        }
+
+        function navigateTo(page) {
+          if (!config.userId) {
+            alert('Please log in to access this page.');
+            // window.location.href = config.loginUrl;
+            return;
+          }
+          const pageUrls = { dashboard: 'dashboard.html', workitems: 'workItemServices.html' }; // Example actual html files
+          const url = pageUrls[page] || config.loginUrl;
+          showLoader();
+          setTimeout(() => {
+            hideLoader();
+            // window.location.href = url;
+            showToast(`Navigating to ${page}... (simulated)`);
+          }, 1000);
+          logActivity(`Mapsd to ${page}`);
+        }
+
+        async function withRetry(fn, retries = 3, delay = 1000) {
+          for (let i = 0; i < retries; i++) {
+            try {
+              return await fn();
+            } catch (error) {
+              if (i === retries - 1) throw error;
+              await new Promise(resolve => setTimeout(resolve, delay));
+            }
+          }
+        }
+
+        // Mock API calls
+        async function verifyBankAccount(data) {
+          return withRetry(() => new Promise((resolve, reject) => {
+            setTimeout(() => {
+              if (Math.random() > 0.2) { // Higher success rate
+                resolve({ status: 'success', message: `Account ${data.accountNumber} verified successfully.` });
+              } else {
+                reject({ status: 'failed', message: `Verification failed for account ${data.accountNumber}. Network issue.` });
+              }
+            }, 800);
+          }));
+        }
+
+        async function searchIFSC(ifscCode) { // Assume it takes ifscCode for a real search
+          return withRetry(() => new Promise(resolve => setTimeout(() => resolve('HDFC0001234'), 500)));
+        }
+
+        async function verifyIdentity(customerNumber) {
+          return withRetry(() => new Promise((resolve, reject) => {
+            setTimeout(() => {
+              if (Math.random() > 0.2) {
+                resolve({ status: 'success', message: `Identity successfully verified for customer ${customerNumber}.` });
+              } else {
+                reject({ status: 'failed', message: `Identity verification failed for customer ${customerNumber}.` });
+              }
+            }, 700)}));
+          };
+        
+
+        async function verifyDeath(customerNumber) {
+          return withRetry(() => new Promise((resolve, reject) => {
+            setTimeout(() => {
+              if (Math.random() > 0.2) {
+                resolve({ status: 'success', message: `No death record found for customer ${customerNumber}. Verified.` });
+              } else {
+                reject({ status: 'failed', message: `Death verification failed for customer ${customerNumber}.` });
+              }
+            }, 700)}));
+        };
+
+        async function checkSanctions(customerNumber) {
+          return withRetry(() => new Promise((resolve, reject) => {
+            setTimeout(() => {
+              if (Math.random() > 0.2) {
+                resolve({ status: 'success', message: `Customer ${customerNumber} cleared sanctions check.` });
+              } else {
+                reject({ status: 'failed', message: `Sanctions check indicated potential match for ${customerNumber}. Review required.` });
+              }
+            }, 700)}));
+        };
+
+        async function fetchPolicyDetails(policyNumber) {
+            try {
+                const response = await fetch(`${config.apiBaseUrl}/policy/${policyNumber}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const policyData = await response.json();
+                return {
+                    policyNumber,
+                    policyType: policyData.policyType || 'Term Life Insurance',
+                    policyPremium: policyData.policyPremium || `$${Math.floor(Math.random() * 500) + 100}/year`,
+                    policyStatus: policyData.policyStatus || 'Active'
+                };
+            } catch (error) {
+                console.error('Error fetching policy details:', error);
+                return { policyNumber, policyType: 'N/A', policyPremium: 'N/A', policyStatus: 'N/A' };
+            }
+        }
+        async function manualVerification(type, data) {
+          return withRetry(() => new Promise(resolve => setTimeout(() => resolve({
+            status: 'manual_initiated',
+            message: `Manual ${type} verification process initiated for ${data.accountNumber || data.customerNumber}. A support agent will review.`
+          }), 500)));
+        }
+
+        async function logAudit(actionType, details) {
+          verificationHistory.push({
+            date: new Date().toISOString(), // Use ISOString for easier sorting/parsing
+            type: actionType, // e.g., 'bank-verification', 'id-verification'
+            ...details // e.g., accountNumber, customerNumber, status, message
+          });
+          // In a real app, this would be an API call:
+          // return withRetry(() => fetch(`${config.apiBaseUrl}/audit`, { method: 'POST', body: JSON.stringify(logEntry) }));
+          return Promise.resolve({ status: 'success' }); // Mock success
+        }
+
+        function validateBankForm() {
+          const accountNumber = document.getElementById('bank-account-number').value.trim();
+          const reEnterAccountNumber = document.getElementById('re-enter-account-number').value.trim();
+          const ifscCode = document.getElementById('ifsc-code').value.trim();
+          const name = document.getElementById('name').value.trim();
+          const surname = document.getElementById('surname').value.trim();
+          const bankName = document.getElementById('bank-name').value;
+          const errorDiv = document.getElementById('bank-verification-error');
+          
+          errorDiv.textContent = ''; // Clear previous errors
+          errorDiv.classList.add('hidden');
+
+          if (!accountNumber || !reEnterAccountNumber || !ifscCode || !name || !surname || !bankName) {
+            errorDiv.textContent = 'All fields are required for bank verification.';
+            errorDiv.classList.remove('hidden');
+            return null;
+          }
+          if (accountNumber !== reEnterAccountNumber) {
+            errorDiv.textContent = 'Account numbers do not match.';
+            errorDiv.classList.remove('hidden');
+            return null;
+          }
+          if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifscCode.toUpperCase())) { // Common IFSC pattern, case-insensitive for input
+            errorDiv.textContent = 'Invalid IFSC code format. Example: HDFC0001234';
+            errorDiv.classList.remove('hidden');
+            return null;
+          }
+          return { accountNumber, ifscCode: ifscCode.toUpperCase(), name, surname, bankName}; // Standardize IFSC to uppercase
+        }
+
+        function validateCustomerNumber(modalIdPrefix) {
+          const customerNumberInput = document.getElementById(`${modalIdPrefix}-customer-number`);
+          const errorDiv = document.getElementById(`${modalIdPrefix}-error`);
+          if (!customerNumberInput || !errorDiv) return null;
+
+          const customerNumber = customerNumberInput.value.trim();
+          errorDiv.textContent = '';
+          errorDiv.classList.add('hidden');
+
+          if (!customerNumber) {
+            errorDiv.textContent = 'Customer number is required.';
+            errorDiv.classList.remove('hidden');
+            return null;
+          }
+          if (!/^[A-Z0-9]{5,15}$/.test(customerNumber.toUpperCase())) { // Example: alphanumeric, 5-15 chars
+            errorDiv.textContent = 'Invalid customer number. Must be alphanumeric, 5-15 characters.';
+            errorDiv.classList.remove('hidden');
+            return null;
+          }
+          return customerNumber.toUpperCase(); // Standardize
+        }
+        
+        async function handleGenericVerification(modalId, verifyFn, associatedAccountNumber = null) {
+            const customerNumber = validateCustomerNumber(modalId); // e.g., 'id-verification'
+            if (!customerNumber) return;
+
+            const submitButtonId = `${modalId}-submit`;
+            const resultDivId = modalId === 'id-verification' ? 'id-verification-result-text' : `${modalId}-result`;
+            const manualButtonId = `${modalId}-manual-verification`;
+
+            const button = document.getElementById(submitButtonId);
+            const resultDiv = document.getElementById(resultDivId);
+            const manualButton = document.getElementById(manualButtonId);
+
+            if (!button || !resultDiv || !manualButton) {
+                console.error("Required elements not found for modal:", modalId);
+                return;
+            }
+            const originalButtonText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Verifying...';
+            manualButton.classList.add('hidden');
+            resultDiv.textContent = ''; // Clear previous result
+
+            try {
+                const result = await verifyFn(customerNumber);
+                resultDiv.innerHTML = `<span class="success-tick">✔️</span>${result.message}`;
+                showToast('Verification successful', 'success');
+                await logAudit(modalId, { // Use modalId as actionType
+                    customerNumber: customerNumber,
+                    ...(associatedAccountNumber && { accountNumber: associatedAccountNumber }), // Log associated account if available
+                    status: result.status,
+                    message: result.message
+                });
+            } catch (error) {
+                resultDiv.textContent = error.message || 'An unknown error occurred.';
+                manualButton.classList.remove('hidden');
+                showToast(error.message || 'Verification failed', 'error');
+                await logAudit(modalId, {
+                    customerNumber: customerNumber,
+                    ...(associatedAccountNumber && { accountNumber: associatedAccountNumber }),
+                    status: error.status || 'failed',
+                    message: error.message || 'Verification failed'
+                });
+            } finally {
+                button.disabled = false;
+                button.textContent = originalButtonText;
+            }
+        }
+
+
+        async function processBulkVerification(accounts, modalElement) {
+          const progressDiv = modalElement ? modalElement.querySelector('#bulk-progress') : document.getElementById('bulk-progress');
+          const resultsDiv = modalElement ? modalElement.querySelector('#bulk-results') : document.getElementById('bulk-results');
+          
+          if(!progressDiv || !resultsDiv) return;
+
+          resultsDiv.innerHTML = '';
+          progressDiv.classList.add('text-gray-700'); // Ensure it's visible
+          progressDiv.textContent = `Processing 0/${accounts.length} accounts...`;
+
+          let completed = 0;
+          let successful = 0;
+          for (const account of accounts) {
+            try {
+              const data = { // Assuming bank verification for bulk
+                accountNumber: account.accountNumber,
+                ifscCode: 'HDFC0001234', // Placeholder, real app might need this per account or smarter logic
+                name: account.holderName.split(' ')[0],
+                surname: account.holderName.split(' ').slice(1).join(' '),
+                bankName: account.bankName
+              };
+              const result = await verifyBankAccount(data);
+              resultsDiv.innerHTML += `<p class="text-green-600">✔ ${account.accountNumber}: ${result.message}</p>`;
+              successful++;
+              await logAudit('bulk-bank-verification-success', {
+                type: 'bank-verification', // Consistent type
+                accountNumber: account.accountNumber,
+                status: result.status,
+                message: result.message
+              });
+              // Update status in allAccounts and re-render - this part can be complex
+              const targetAccount = allAccounts.find(a => a.accountNumber === account.accountNumber);
+              if (targetAccount) targetAccount.status = 'Active';
+
+            } catch (error) {
+              resultsDiv.innerHTML += `<p class="text-red-600">❌ ${account.accountNumber}: ${error.message}</p>`;
+              await logAudit('bulk-bank-verification-failed', {
+                type: 'bank-verification',
+                accountNumber: account.accountNumber,
+                status: error.status || 'failed',
+                message: error.message
+              });
+            }
+            completed++;
+            progressDiv.textContent = `Processing ${completed}/${accounts.length} accounts...`;
+          }
+          progressDiv.textContent = `Bulk verification complete. ${successful} of ${completed} succeeded.`;
+          populateBankAccountsTable(filterAndSortAccounts(), currentPage); // Re-render table
+          updateDashboardWidgets(); // Update widgets
+          logActivity(`Processed bulk verification for ${accounts.length} accounts`);
+        }
+
+        function copyToClipboard(text) {
+            if (!text) {
+                showToast('Nothing to copy', 'error');
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                showToast('Failed to copy to clipboard.', 'error');
+            });
+            logActivity(`Copied text: ${text.substring(0,20)}...`);
+        }
+
+        function addNotification(type, message) { // type can be 'Success', 'Error', 'Info'
+          notifications.unshift({
+            id: Date.now(),
+            type, // e.g., 'Success', 'Error'
+            message,
+            date: new Date().toISOString(),
+            read: false
+          });
+          const dot = document.getElementById('notification-dot');
+          if(dot) dot.classList.toggle('hidden', notifications.filter(n => !n.read).length === 0);
+          // updateNotifications() might be called if modal is open, otherwise it's on demand
+        }
+
+        function updateNotifications(modalElement) {
+          const content = modalElement ? modalElement.querySelector('#notifications-content') : document.getElementById('notifications-content');
+          if(!content) return;
+
+          content.innerHTML = notifications.length
+            ? notifications.map(n => `
+                <div class="flex justify-between items-center p-2 rounded ${n.read ? 'bg-gray-100' : (n.type === 'Error' ? 'bg-red-50 hover:bg-red-100' : 'bg-blue-50 hover:bg-blue-100')}">
+                  <p class="text-sm ${n.type === 'Error' ? 'text-red-700' : (n.type === 'Success' ? 'text-green-700' : 'text-blue-700')}">
+                    <strong>${n.type}</strong> (${new Date(n.date).toLocaleTimeString()}): ${n.message}
+                  </p>
+                  ${!n.read ? `<button class="mark-read text-xs text-blue-500 hover:text-blue-700 font-semibold" data-id="${n.id}" aria-label="Mark as read">Mark Read</button>` : ''}
+                </div>
+              `).join('')
+            : '<p>No notifications.</p>';
+        }
+
+        function logActivity(action) {
+          activityLogs.unshift({
+            id: Date.now(),
+            action,
+            date: new Date().toISOString(),
+            // Example: Mark specific actions as undoable
+            undoable: ['bulk-verify-start', 'settings-changed'].includes(action) 
+          });
+          if (activityLogs.length > 50) activityLogs.pop(); // Limit log size
+        }
+
+        function updateActivityLog(modalElement) {
+          const content = modalElement ? modalElement.querySelector('#activity-log-content') : document.getElementById('activity-log-content');
+          if(!content) return;
+          content.innerHTML = activityLogs.length
+            ? activityLogs.map(log => `
+                <div class="flex justify-between items-center p-2 bg-gray-50 rounded hover:bg-gray-100">
+                  <p class="text-sm">${new Date(log.date).toLocaleString()}: ${log.action}</p>
+                  ${log.undoable ? `<button class="undo-log text-xs text-blue-500 hover:text-blue-700 font-semibold" data-id="${log.id}" aria-label="Undo action">Undo</button>` : ''}
+                </div>
+              `).join('')
+            : '<p>No recent activity.</p>';
+        }
+
+        let statsChartInstance = null; // To keep track of the chart instance
+        function renderStatsChart(filter, chartCanvasElement) {
+            const ctx = chartCanvasElement ? chartCanvasElement.getContext('2d') : document.getElementById('stats-chart').getContext('2d');
+            if (!ctx) return;
+
+            const filteredAccounts = filter === 'all' ? allAccounts
+                                : filter === 'active' ? allAccounts.filter(a => a.status === 'Active')
+                                : allAccounts.filter(a => a.status === 'Pending');
+            const statusCounts = {
+                Active: filteredAccounts.filter(a => a.status === 'Active').length,
+                Pending: filteredAccounts.filter(a => a.status === 'Pending').length
+            };
+
+            if (statsChartInstance) {
+                statsChartInstance.destroy(); // Destroy existing chart
+            }
+
+            statsChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                labels: ['Active', 'Pending'],
+                datasets: [{
+                    data: [statusCounts.Active, statusCounts.Pending],
+                    backgroundColor: ['#10b981', '#f59e0b'], // Green, Yellow
+                    borderColor: ['#ffffff', '#ffffff'],
+                    borderWidth: 2
+                }]
+                },
+                options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        position: 'top',
+                        labels: { color: '#1a2c50', font: { size: 12, family: 'Poppins' } }
+                    },
+                    title: { 
+                        display: true, 
+                        text: `${filter.charAt(0).toUpperCase() + filter.slice(1)} Accounts Status`,
+                        color: '#1a2c50',
+                        font: { size: 16, family: 'Poppins', weight: '600' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += context.parsed;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+                }
+            });
+        }
+
+
+        function filterAndSortAccounts() {
+          const queryInput = document.getElementById('table-search');
+          const statusFilterSelect = document.getElementById('status-filter');
+          const query = queryInput ? queryInput.value.toLowerCase() : "";
+          const status = statusFilterSelect ? statusFilterSelect.value : "";
+
+
+          let filtered = allAccounts.filter(account =>
+            (!query ||
+              (account.accountNumber && account.accountNumber.toLowerCase().includes(query)) ||
+              (account.policyNumber && account.policyNumber.toLowerCase().includes(query)) ||
+              (account.holderName && account.holderName.toLowerCase().includes(query)) ||
+              (account.bankName && account.bankName.toLowerCase().includes(query))) &&
+            (!status || account.status === status)
+          );
+
+          filtered.sort((a, b) => {
+            const valA = a[sortKey] ? String(a[sortKey]).toLowerCase() : '';
+            const valB = b[sortKey] ? String(b[sortKey]).toLowerCase() : '';
+            if (valA < valB) return sortAsc ? -1 : 1;
+            if (valA > valB) return sortAsc ? 1 : -1;
+            return 0;
+          });
+
+          return filtered;
+        }
+
+        function populateBankAccountsTable(accountsToDisplay, page = 1) {
+            const tbody = document.getElementById('bank-accounts-table');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (!Array.isArray(accountsToDisplay) || accountsToDisplay.length === 0) {
+                const colCount = Object.values(visibleColumns).filter(Boolean).length;
+                tbody.innerHTML = `<tr><td colspan="${colCount || 11}" class="w-full text-center px-4 py-3 text-gray-600">No bank accounts match your criteria.</td></tr>`;
+                updatePaginationControls(0, page);
+                return;
+            }
+
+            const start = (page - 1) * config.pageSize;
+            const end = start + config.pageSize;
+            const paginatedAccounts = accountsToDisplay.slice(start, end);
+
+            paginatedAccounts.forEach((account, index) => {
+                // Initialize notes in accountNotes Map if present
+                if (account.notes && !accountNotes.has(account.accountNumber)) {
+                    accountNotes.set(account.accountNumber, account.notes);
+                }
+
+                const maskedAccount = account.accountNumber ? `****${account.accountNumber.slice(-4)}` : 'N/A';
+                // Simplified progress logic based on status and verificationAttempts
+                const progressSteps = {
+                    bank: account.status === 'Active' || account.verificationAttempts > 0 ? 'completed' : 'pending',
+                    id: account.status === 'Active' || account.verificationAttempts > 1 ? 'completed' : 'pending',
+                    sanction: account.amlStatus === 'Cleared' ? 'completed' : 'pending'
+                };
+
+                const row = document.createElement('tr');
+                row.className = `hover:bg-gray-50 transition-colors duration-150 ${(index % 2 === 0) ? '' : 'bg-gray-50/50'}`;
+                row.style.animation = `fadeIn 0.5s ease-out ${index * 0.03}s forwards`;
+                row.style.opacity = '0';
+
+                let cellsHTML = '';
+                if (visibleColumns.accountSelect) cellsHTML += `<td class="px-4 py-3"><input type="checkbox" class="account-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" data-account-number="${account.accountNumber}" aria-label="Select account ${maskedAccount}"></td>`;
+                if (visibleColumns.accountNumber) cellsHTML += `<td class="px-4 py-3 masked-account-table">${maskedAccount}</td>`;
+                if (visibleColumns.policyNumber) cellsHTML += `
+                    <td class="px-4 py-3 flex items-center">
+                      ${account.policyNumber || 'N/A'}
+                      ${account.policyNumber ? `<button class="btn-copy text-blue-500 hover:text-blue-700 ml-2 p-1 rounded hover:bg-blue-100" data-text="${account.policyNumber}" aria-label="Copy policy number"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></button>` : ''}
+                    </td>`;
+                if (visibleColumns.holderName) cellsHTML += `<td class="px-4 py-3">${account.holderName || 'N/A'}</td>`;
+                if (visibleColumns.bankName) cellsHTML += `<td class="px-4 py-3">${account.bankName || 'N/A'}</td>`;
+                if (visibleColumns.accountType) cellsHTML += `<td class="px-4 py-3">${account.accountType || 'N/A'}</td>`;
+                if (visibleColumns.status) cellsHTML += `<td class="px-4 py-3"><span class="status-${(account.status || 'unknown').toLowerCase()} font-medium" title="${account.status}">${account.status || 'N/A'}</span></td>`;
+                if (visibleColumns.policyStatus) cellsHTML += `<td class="px-4 py-3">${account.policyStatus || 'N/A'}</td>`;
+                if (visibleColumns.progress) cellsHTML += `
+                    <td class="px-4 py-3">
+                      <div class="progress-bar" aria-label="Verification progress">
+                        <div class="progress-step ${progressSteps.bank}" title="Bank Verification ${progressSteps.bank}"></div>
+                        <div class="progress-step ${progressSteps.id}" title="ID Verification ${progressSteps.id}"></div>
+                        <div class="progress-step ${progressSteps.sanction}" title="Sanctions Check ${progressSteps.sanction}"></div>
+                      </div>
+                    </td>`;
+                if (visibleColumns.notes) cellsHTML += `
+                    <td class="px-4 py-3 text-center">
+                      <button class="btn-notes text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-100" data-account="${account.accountNumber}" aria-label="View or add notes for account ${maskedAccount}">
+                        ${accountNotes.has(account.accountNumber) ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>'}
+                      </button>
+                    </td>`;
+                if (visibleColumns.actions) cellsHTML += `
+                    <td class="px-4 py-3">
+                      <div class="actions-container">
+                        <button class="btn-neutral btn-toggle-details text-blue-500 hover:bg-blue-100 text-sm py-1 px-2" aria-label="Toggle details" data-account='${JSON.stringify(account)}'>▼</button>
+                        <button class="btn-neutral btn-bank-verification bg-blue-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-blue-800" data-account='${JSON.stringify(account)}' aria-label="Verify bank account">Bank</button>
+                        <button class="btn" class="btn-neutral btn-id-verification bg-green-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-green-800" data-account='${JSON.stringify(account)}' aria-label="Verify ID">ID</button>
+                        <button class="btn btn-neutral btn-death-verification bg-yellow-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-yellow-800" data-account='${JSON.stringify(account)}' aria-label="Verify death">Death</button>
+                        <button class="btn btn-neutral btn-sanctions-verification bg-red-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-red-800" data-account='${JSON.stringify(account)}' aria-label="Check sanctions">Sanctions</button>
+                        <button class="btn btn-neutral btn-policy-details bg-teal-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-teal-800" data-account='${JSON.stringify(account)}' aria-label="View policy details">Policy</button>
+                        <button class="btn btn-neutral btn-history-verification bg-purple-500 text-white text-xs py-1 px-4 rounded-lg hover:bg-purple-800" data-account='${JSON.stringify(account)}' aria-label="View verification history">History</button>
+                      </div>
+                    </td>`;
+                row.innerHTML = cellsHTML;
+                tbody.appendChild(row);
+
+                const detailsRow = document.createElement('tr');
+                detailsRow.className = 'details-row';
+                const detailsColspan = Object.values(visibleColumns).filter(Boolean).length;
+                detailsRow.innerHTML = `
+                    <td colspan="${detailsColspan}" class="px-8 py-4 bg-slate-50">
+                      <div class="flex flex-col space-y-1 text-xs">
+                        <p><strong>Full Account Number:</strong> ${account.accountNumber || 'N/A'} <button class="btn-copy-details text-blue-500 hover:text-blue-700 ml-1 p-0.5 rounded hover:bg-blue-100" data-text="${account.accountNumber}" aria-label="Copy account number"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></button></p>
+                        <p><strong>Customer Number:</strong> ${account.customerNumber || 'N/A'} <button class="btn-copy-details text-blue-500 hover:text-blue-700 ml-1 p-0.5 rounded hover:bg-blue-100" data-text="${account.customerNumber}" aria-label="Copy customer number"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></button></p>
+                        <p><strong>Last Verification Date:</strong> ${account.lastVerificationDate ? new Date(account.lastVerificationDate).toLocaleDateString() : 'None'}</p>
+                        <p><strong>Account Balance:</strong> ${account.accountBalance ? `$${account.accountBalance}` : 'N/A'}</p>
+                        <p><strong>Swift Code:</strong> ${account.swiftCode || 'N/A'}</p>
+                        </div>
+                    </td>`;
+                tbody.appendChild(detailsRow);
+            });
+            updatePaginationControls(accountsToDisplay.length, page);
+        }
+
+        function updatePaginationControls(totalItems, currentPage) {
+            const pageInfo = document.getElementById('page-info');
+            const prevButton = document.getElementById('prev-page');
+            const nextButton = document.getElementById('next-page');
+            if (!pageInfo || !prevButton || !nextButton) return;
+
+            const totalPages = Math.ceil(totalItems / config.pageSize);
+            pageInfo.textContent = totalItems > 0 ? `Page ${currentPage} of ${totalPages}` : 'Page 0 of 0';
+            prevButton.disabled = currentPage === 1;
+            nextButton.disabled = currentPage >= totalPages;
+        }
+
+
+        function updateDashboardWidgets() {
+            const totalAccEl = document.getElementById('total-accounts');
+            const verifiedAccEl = document.getElementById('verified-accounts');
+            const pendingVerEl = document.getElementById('pending-verifications');
+
+            if (totalAccEl) totalAccEl.textContent = allAccounts.length;
+            if (verifiedAccEl) verifiedAccEl.textContent = allAccounts.filter(a => a.status === 'Active').length;
+            if (pendingVerEl) pendingVerEl.textContent = allAccounts.filter(a => a.status === 'Pending').length;
+        }
+
+        function exportToCSV() {
+            const accountsToExport = filterAndSortAccounts();
+            if (accountsToExport.length === 0) {
+                showToast("No data to export.", "error");
+                return;
+            }
+            const headers = Object.keys(visibleColumns)
+                .filter(colKey => visibleColumns[colKey] && colKey !== 'accountSelect' && colKey !== 'progress' && colKey !== 'actions')
+                .map(colKey => colKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()))
+                .join(',');
+            const csvRows = accountsToExport.map(account =>
+                Object.keys(visibleColumns)
+                    .filter(colKey => visibleColumns[colKey] && colKey !== 'accountSelect' && colKey !== 'progress' && colKey !== 'actions')
+                    .map(colKey => `"${String(account[colKey] || 'N/A').replace(/"/g, '""')}"`)
+                    .join(',')
+            );
+            const csvString = `${headers}\n${csvRows.join('\n')}`;
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `bank_accounts_${new Date().toISOString().slice(0,10)}.csv`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            logActivity('Exported table to CSV');
+            showToast('CSV export started.', 'success');
+        }
+        function exportToPDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFont('Poppins', 'normal');
+                doc.setFontSize(18);
+                doc.text('Bank Accounts Report', 14, 20);
+                doc.setFontSize(10);
+
+                const accountsToExport = filterAndSortAccounts();
+                let y = 30;
+                const lineHeight = 7;
+                const pageHeight = doc.internal.pageSize.height - 20;
+
+                accountsToExport.forEach((account, i) => {
+                    if (y > pageHeight) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    const maskedAccount = account.accountNumber ? `****${account.accountNumber.slice(-4)}` : 'N/A';
+                    const text = `${i + 1}. Account: ${maskedAccount}, Holder: ${account.holderName || 'N/A'}, Status: ${account.status || 'N/A'}, Policy: ${account.policyNumber || 'N/A'}, Bank: ${account.bankName || 'N/A'}`;
+                    doc.text(text, 14, y);
+                    y += lineHeight;
+                });
+                doc.save(`bank_accounts_report_${new Date().toISOString().slice(0,10)}.pdf`);
+                logActivity('Exported table to PDF');
+                showToast('PDF export started.', 'success');
+            } catch (error) {
+                console.error("PDF Export Error: ", error);
+                showToast('PDF export failed.', 'error');
+            }
+        }
+
+        async function fetchBankDetails() {
+            try {
+              const response = await fetch(`${config.apiBaseUrl}/bank-details`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  // Add authentication headers if required, e.g., Authorization: `Bearer ${token}`
+                }
+              });
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+              const data = await response.json();
+              return data; // Array of BankDetailsDTO objects
+            } catch (error) {
+              console.error('Error fetching bank details:', error);
+              throw error;
+            }
+          }
+
+        async function initializePage() {
+            if (!initializeUserId()) return;
+
+            showLoader();
+            try {
+                allAccounts = await fetchBankDetails();
+                updateDashboardWidgets();
+                populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+            } catch (error) {
+                console.error('Error initializing page:', error);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function debounce(func, wait) {
+          let timeout;
+          return function (...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+          };
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeModals();
+            initializePage();
+
+          // Overlay click and Escape key for modals
+          Object.values(modals).forEach(modal => {
+            if (modal) { // Ensure modal element exists
+                modal.addEventListener('click', e => {
+                    if (e.target === modal) closeModal(modal.id.replace('-modal', ''));
+                });
+            }
+          });
+          document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+              const openModalKey = Object.keys(modals).find(key => modals[key] && !modals[key].classList.contains('hidden'));
+              if (openModalKey) {
+                closeModal(openModalKey);
+              }
+            }
+          });
+
+          // Sidebar
+          const sidebarToggle = document.getElementById('sidebar-toggle');
+          const sidebarClose = document.getElementById('sidebar-close');
+          const sidebarSearch = document.getElementById('sidebar-search');
+          const sidebarEl = document.getElementById('sidebar');
+
+          if (sidebarToggle && sidebarEl) sidebarToggle.addEventListener('click', () => { sidebarEl.classList.toggle('open'); logActivity('Toggled sidebar'); });
+          if (sidebarClose && sidebarEl) sidebarClose.addEventListener('click', () => { sidebarEl.classList.remove('open'); logActivity('Closed sidebar'); });
+          if (sidebarSearch) sidebarSearch.addEventListener('input', debounce(e => {
+            const tableSearch = document.getElementById('table-search');
+            if(tableSearch) tableSearch.value = e.target.value;
+            currentPage = 1;
+            populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+            logActivity(`Sidebar searched: ${e.target.value}`);
+          }, 300));
+          
+          const newVerificationBtn = document.getElementById('new-verification');
+          if(newVerificationBtn && sidebarEl) newVerificationBtn.addEventListener('click', () => { openModal('bank-verification'); sidebarEl.classList.remove('open');});
+          const exportTableBtnSide = document.getElementById('export-table');
+          const exportCsvMainBtn = document.getElementById('export-csv');
+          if(exportTableBtnSide && exportCsvMainBtn && sidebarEl) exportTableBtnSide.addEventListener('click', () => { exportCsvMainBtn.click(); sidebarEl.classList.remove('open'); });
+          const viewActivityBtn = document.getElementById('view-activity');
+          if(viewActivityBtn && sidebarEl) viewActivityBtn.addEventListener('click', () => { openModal('activity-log'); sidebarEl.classList.remove('open'); });
+
+
+          // Notifications
+          const notificationsToggle = document.getElementById('notifications-toggle');
+          if(notificationsToggle) notificationsToggle.addEventListener('click', () => openModal('notifications'));
+          const clearNotificationsBtn = document.getElementById('clear-notifications');
+          if(clearNotificationsBtn) clearNotificationsBtn.addEventListener('click', () => {
+            notifications = [];
+            updateNotifications(modals['notifications']); // Pass modal element if needed
+            const dot = document.getElementById('notification-dot');
+            if(dot) dot.classList.add('hidden');
+            logActivity('Cleared notifications');
+            closeModal('notifications');
+          });
+          const notificationsContent = document.getElementById('notifications-content');
+          if(notificationsContent) notificationsContent.addEventListener('click', e => {
+            if (e.target.classList.contains('mark-read')) {
+              const id = parseInt(e.target.dataset.id);
+              const notif = notifications.find(n => n.id === id);
+              if (notif) notif.read = true;
+              updateNotifications(modals['notifications']);
+              const dot = document.getElementById('notification-dot');
+              if(dot) dot.classList.toggle('hidden', notifications.filter(n => !n.read).length === 0);
+              logActivity(`Marked notification ${id} as read`);
+            }
+          });
+
+          // Widget Clicks
+          const totalWidget = document.getElementById('total-accounts-widget');
+          const verifiedWidget = document.getElementById('verified-accounts-widget');
+          const pendingWidget = document.getElementById('pending-verifications-widget');
+          const statusFilterSelect = document.getElementById('status-filter');
+
+          if(totalWidget && statusFilterSelect) totalWidget.addEventListener('click', () => {
+            statusFilterSelect.value = ''; currentPage = 1;
+            populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+            openModal('widget-stats', { filter: 'all' }); logActivity('Viewed total accounts stats');
+          });
+          if(verifiedWidget && statusFilterSelect) verifiedWidget.addEventListener('click', () => {
+            statusFilterSelect.value = 'Active'; currentPage = 1;
+            populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+            openModal('widget-stats', { filter: 'active' }); logActivity('Viewed verified accounts stats');
+          });
+          if(pendingWidget && statusFilterSelect) pendingWidget.addEventListener('click', () => {
+            statusFilterSelect.value = 'Pending'; currentPage = 1;
+            populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+            openModal('widget-stats', { filter: 'pending' }); logActivity('Viewed pending verifications stats');
+          });
+
+          // Table Search and Filter
+          const tableSearchInput = document.getElementById('table-search');
+          if(tableSearchInput) tableSearchInput.addEventListener('input', debounce(() => {
+            currentPage = 1; populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+            logActivity(`Table searched: ${tableSearchInput.value}`);
+          }, 300));
+          if(statusFilterSelect) statusFilterSelect.addEventListener('change', () => {
+            currentPage = 1; populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+            logActivity(`Filtered by status: ${statusFilterSelect.value}`);
+          });
+
+          // Sorting
+          document.querySelectorAll('thead th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+              const key = th.dataset.sort;
+              if (sortKey === key) { sortAsc = !sortAsc; } else { sortKey = key; sortAsc = true;}
+              // Update all sort icons
+              document.querySelectorAll('thead th[data-sort] .sort-icon').forEach(icon => {
+                  icon.innerHTML = '↓'; // Reset to default
+                  icon.classList.remove('asc');
+              });
+              const currentSortIcon = th.querySelector('.sort-icon');
+              if(currentSortIcon) {
+                currentSortIcon.innerHTML = sortAsc ? '↑' : '↓';
+                if(sortAsc) currentSortIcon.classList.add('asc'); else currentSortIcon.classList.remove('asc');
+              }
+              populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+              logActivity(`Sorted by ${key} (${sortAsc ? 'ascending' : 'descending'})`);
+            });
+          });
+
+          // Pagination
+          const prevPageBtn = document.getElementById('prev-page');
+          const nextPageBtn = document.getElementById('next-page');
+          if(prevPageBtn) prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) { currentPage--; populateBankAccountsTable(filterAndSortAccounts(), currentPage); logActivity('Navigated to previous page');}
+          });
+          if(nextPageBtn) nextPageBtn.addEventListener('click', () => {
+            const maxPage = Math.ceil(filterAndSortAccounts().length / config.pageSize);
+            if (currentPage < maxPage) { currentPage++; populateBankAccountsTable(filterAndSortAccounts(), currentPage); logActivity('Navigated to next page');}
+          });
+          
+          // Bulk Verify and Select All
+          const bulkVerifyBtn = document.getElementById('bulk-verify');
+          const selectAllCheckbox = document.getElementById('select-all');
+          if(bulkVerifyBtn) bulkVerifyBtn.addEventListener('click', () => {
+            const selectedAccounts = Array.from(document.querySelectorAll('.account-checkbox:checked'))
+                                     .map(cb => allAccounts.find(acc => acc.accountNumber === cb.dataset.accountNumber))
+                                     .filter(Boolean); // Filter out undefined if any account not found
+            if (selectedAccounts.length === 0) { showToast('No accounts selected for bulk verification.', 'error'); return; }
+            openModal('bulk-verification', { accounts: selectedAccounts });
+          });
+          if(selectAllCheckbox) selectAllCheckbox.addEventListener('change', e => {
+            document.querySelectorAll('.account-checkbox').forEach(cb => cb.checked = e.target.checked);
+            if(bulkVerifyBtn) bulkVerifyBtn.classList.toggle('hidden', !e.target.checked || document.querySelectorAll('.account-checkbox:checked').length === 0);
+            logActivity(`${e.target.checked ? 'Selected' : 'Deselected'} all accounts`);
+          });
+
+          // Table Actions (delegated)
+          const bankAccountsTable = document.getElementById('bank-accounts-table');
+          if(bankAccountsTable) {
+            bankAccountsTable.addEventListener('change', e => { // For checkboxes inside table
+                if (e.target.classList.contains('account-checkbox')) {
+                    if(selectAllCheckbox) selectAllCheckbox.checked = (document.querySelectorAll('.account-checkbox:checked').length === document.querySelectorAll('.account-checkbox').length && document.querySelectorAll('.account-checkbox').length > 0);
+                    if(bulkVerifyBtn) bulkVerifyBtn.classList.toggle('hidden', document.querySelectorAll('.account-checkbox:checked').length === 0);
+                    logActivity('Toggled account selection');
+                }
+            });
+
+            bankAccountsTable.addEventListener('click', async e => {
+                const targetButton = e.target.closest('button'); // Get the button element if click was on icon/text inside
+                if (!targetButton) return;
+
+                const accountJson = targetButton.dataset.account || (targetButton.parentElement.dataset.account? targetButton.parentElement.dataset.account : null) || (targetButton.closest('[data-account]') ? targetButton.closest('[data-account]').dataset.account : null) ;
+                const account = accountJson ? JSON.parse(accountJson) : null;
+                const accountNumberFromNotes = targetButton.dataset.account; // for notes button specifically
+
+                if (targetButton.classList.contains('btn-toggle-details') && account) {
+                    const row = targetButton.closest('tr').nextElementSibling;
+                    if (row && row.classList.contains('details-row')) {
+                        row.classList.toggle('open');
+                        targetButton.innerHTML = row.classList.contains('open') ? '▲' : '▼';
+                    }
+                    logActivity('Toggled row details');
+                } else if (targetButton.classList.contains('btn-copy') || targetButton.classList.contains('btn-copy-details')) {
+                    copyToClipboard(targetButton.dataset.text);
+                } else if (targetButton.classList.contains('btn-bank-verification') && account) {
+                    openModal('bank-verification', account);
+                } else if (targetButton.classList.contains('btn-id-verification') && account) {
+                    openModal('id-verification', { customerNumber: account.customerNumber, accountNumber: account.accountNumber });
+                } else if (targetButton.classList.contains('btn-death-verification') && account) {
+                    openModal('death-verification', { customerNumber: account.customerNumber, accountNumber: account.accountNumber });
+                } else if (targetButton.classList.contains('btn-sanctions-verification') && account) {
+                    openModal('sanctions-check', { customerNumber: account.customerNumber, accountNumber: account.accountNumber });
+                } else if (targetButton.classList.contains('btn-policy-details') && account) {
+                    showLoader();
+                    try { const policyData = await fetchPolicyDetails(account.policyNumber); openModal('policy-details', policyData); } 
+                    catch (err) { showToast('Failed to load policy details.', 'error'); console.error(err); } 
+                    finally { hideLoader(); }
+                } else if (targetButton.classList.contains('btn-history-verification') && account) {
+                    openModal('verification-history', { accountNumber: account.accountNumber });
+                } else if (targetButton.classList.contains('btn-notes') && accountNumberFromNotes) {
+                    openModal('account-notes', { accountNumber: accountNumberFromNotes });
+                }
+            });
+          }
+
+          // Table Settings Modal
+          const tableSettingsBtn = document.getElementById('table-settings');
+          if(tableSettingsBtn) tableSettingsBtn.addEventListener('click', () => openModal('table-settings'));
+          const saveTableSettingsBtn = document.getElementById('save-table-settings');
+          if(saveTableSettingsBtn) saveTableSettingsBtn.addEventListener('click', () => {
+            Object.keys(visibleColumns).forEach(col => {
+              const checkbox = document.getElementById(`col-${col}`);
+              if (checkbox) { // Only update if checkbox exists in modal
+                visibleColumns[col] = checkbox.checked;
+              }
+            });
+            populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+            closeModal('table-settings');
+            logActivity('Updated table settings');
+          });
+
+          // Export Buttons
+          const exportCsvBtn = document.getElementById('export-csv');
+          if(exportCsvBtn) exportCsvBtn.addEventListener('click', () => {
+            const accountsToExport = filterAndSortAccounts();
+            if(accountsToExport.length === 0) { showToast("No data to export.", "error"); return; }
+            const headers = Object.keys(visibleColumns).filter(colKey => visibleColumns[colKey] && account.hasOwnProperty(colKey)).map(colKey => colKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())).join(',');
+            const csvRows = accountsToExport.map(account => 
+                Object.keys(visibleColumns).filter(colKey => visibleColumns[colKey] && account.hasOwnProperty(colKey)).map(colKey => `"${String(account[colKey] || 'N/A').replace(/"/g, '""')}"`).join(',') // Handle N/A and quotes
+            );
+            const csvString = `${headers}\n${csvRows.join('\n')}`;
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `bank_accounts_${new Date().toISOString().slice(0,10)}.csv`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            logActivity('Exported table to CSV');
+            showToast('CSV Export started.', 'success');
+          });
+          const exportPdfBtn = document.getElementById('export-pdf');
+          if(exportPdfBtn) exportPdfBtn.addEventListener('click', exportToPDF);
+
+          // Account Notes Modal
+          const saveNoteBtn = document.getElementById('save-note');
+          if(saveNoteBtn) saveNoteBtn.addEventListener('click', () => {
+            const notesForm = document.getElementById('account-notes-form');
+            const noteTextarea = document.getElementById('account-note');
+            const notesErrorDiv = document.getElementById('notes-error');
+            if(!notesForm || !noteTextarea || !notesErrorDiv) return;
+
+            const accountNumber = notesForm.dataset.accountNumber;
+            const note = noteTextarea.value.trim();
+            if (note) {
+              accountNotes.set(accountNumber, note);
+              showToast('Note saved successfully!', 'success');
+              populateBankAccountsTable(filterAndSortAccounts(), currentPage); // Re-render to update icon
+              closeModal('account-notes');
+              logActivity(`Saved note for account ${accountNumber}`);
+              notesErrorDiv.classList.add('hidden');
+            } else {
+              notesErrorDiv.textContent = 'Note cannot be empty.';
+              notesErrorDiv.classList.remove('hidden');
+            }
+          });
+          
+          // Activity Log Modal Undo
+          const activityLogContent = document.getElementById('activity-log-content');
+          if(activityLogContent) activityLogContent.addEventListener('click', e => {
+            if (e.target.classList.contains('undo-log')) {
+              const id = parseInt(e.target.dataset.id);
+              // const logEntry = activityLogs.find(l => l.id === id);
+              showToast('Undo action placeholder - not implemented.', 'error');
+              // logActivity(`Attempted to undo action ID: ${id}`);
+            }
+          });
+
+          // Keyboard Shortcuts Listener
+          document.addEventListener('keydown', e => {
+            // Check if focus is on an input/textarea to avoid conflicts
+            const activeEl = document.activeElement;
+            const isInputFocused = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
+
+            if (e.ctrlKey && e.key.toLowerCase() === 'b' && !isInputFocused) {
+              e.preventDefault(); if(bulkVerifyBtn && !bulkVerifyBtn.classList.contains('hidden')) bulkVerifyBtn.click();
+            } else if (e.key.toLowerCase() === 'f' && !isInputFocused) {
+              e.preventDefault(); if(tableSearchInput) tableSearchInput.focus(); logActivity('Focused search input via shortcut');
+            } else if (e.key.toLowerCase() === 'p' && !isInputFocused) {
+              e.preventDefault(); if(prevPageBtn && !prevPageBtn.disabled) prevPageBtn.click();
+            } else if (e.key.toLowerCase() === 'n' && !isInputFocused) {
+              e.preventDefault(); if(nextPageBtn && !nextPageBtn.disabled) nextPageBtn.click();
+            } else if (e.key.toLowerCase() === 's' && !isInputFocused) {
+              e.preventDefault(); if(sidebarToggle) sidebarToggle.click();
+            } else if (e.key.toLowerCase() === 'k' && !isInputFocused) {
+              e.preventDefault(); openModal('shortcut-help');
+            }
+          });
+
+          // Bank Verification Modal Form
+          const bankVerificationSubmitBtn = document.getElementById('bank-verification-submit');
+          if(bankVerificationSubmitBtn) bankVerificationSubmitBtn.addEventListener('click', async () => {
+            const data = validateBankForm();
+            if (!data) return;
+
+            const button = bankVerificationSubmitBtn;
+            const resultDiv = document.getElementById('bank-verification-result');
+            const manualButton = document.getElementById('bank-manual-verification');
+            if(!resultDiv || !manualButton) return;
+
+            const originalButtonText = button.textContent;
+            button.disabled = true; button.textContent = 'Verifying...';
+            manualButton.classList.add('hidden');
+            resultDiv.textContent = '';
+
+            try {
+              const result = await verifyBankAccount(data);
+              resultDiv.innerHTML = `<span class="success-tick">✔️</span>${result.message}`;
+              showToast('Bank verification successful!', 'success');
+              await logAudit('bank-verification', { accountNumber: data.accountNumber, status: result.status, message: result.message });
+              // Optionally update table if status changes
+              const targetAcc = allAccounts.find(a => a.accountNumber === data.accountNumber);
+              if (targetAcc) { targetAcc.status = 'Active'; targetAcc.lastVerification = new Date().toISOString().slice(0,10); }
+              populateBankAccountsTable(filterAndSortAccounts(), currentPage);
+              updateDashboardWidgets();
+            } catch (error) {
+              resultDiv.textContent = error.message || 'An unknown error occurred.';
+              manualButton.classList.remove('hidden');
+              showToast(error.message || 'Bank verification failed.', 'error');
+              await logAudit('bank-verification-failed', { accountNumber: data.accountNumber, status: error.status || 'failed', message: error.message });
+            } finally {
+              button.disabled = false; button.textContent = originalButtonText;
+            }
+          });
+          const searchIfscBtn = document.getElementById('search-ifsc');
+          const ifscInput = document.getElementById('ifsc-code');
+          if(searchIfscBtn && ifscInput) searchIfscBtn.addEventListener('click', async () => {
+            showLoader();
+            try { const ifscResult = await searchIFSC(ifscInput.value); ifscInput.value = ifscResult; showToast('IFSC code populated.', 'success'); logActivity('Searched IFSC');}
+            catch (error) { showToast('Failed to fetch IFSC code.', 'error'); console.error(error); }
+            finally { hideLoader(); }
+          });
+          const bankManualVerifyBtn = document.getElementById('bank-manual-verification');
+          if(bankManualVerifyBtn) bankManualVerifyBtn.addEventListener('click', async () => {
+            const data = validateBankForm(); if (!data) return;
+            const resultDiv = document.getElementById('bank-verification-result'); if(!resultDiv) return;
+            try { const result = await manualVerification('bank', data); resultDiv.textContent = result.message; showToast('Manual bank verification initiated.', 'success'); logActivity('Manual bank verification initiated');}
+            catch (error) { showToast('Manual verification initiation failed.', 'error'); console.error(error); }
+          });
+          
+          // Other Verification Modals (ID, Death, Sanctions)
+          ['id-verification', 'death-verification', 'sanctions-check'].forEach(modalIdPrefix => {
+            const submitBtn = document.getElementById(`${modalIdPrefix}-submit`);
+            const manualBtn = document.getElementById(`${modalIdPrefix}-manual-verification`);
+            const modalElement = modals[modalIdPrefix]; // Get the modal element
+
+            if(submitBtn && modalElement) {
+                submitBtn.addEventListener('click', async () => {
+                    // Try to find associated account number if modal was opened from a row action
+                    const customerNumberInput = modalElement.querySelector(`#${modalIdPrefix}-customer-number`);
+                    let associatedAccountNumber = null;
+                    if (customerNumberInput && customerNumberInput.dataset.accountNumber) { // Assume we can store it if needed
+                        associatedAccountNumber = customerNumberInput.dataset.accountNumber;
+                    }
+                    await handleGenericVerification(modalIdPrefix,
+                        modalIdPrefix === 'id-verification' ? verifyIdentity :
+                        modalIdPrefix === 'death-verification' ? verifyDeath :
+                        checkSanctions,
+                        associatedAccountNumber // Pass it here
+                    );
+                });
+            }
+            if(manualBtn && modalElement) {
+                manualBtn.addEventListener('click', async () => {
+                    const customerNumber = validateCustomerNumber(modalIdPrefix); if (!customerNumber) return;
+                    const resultDivId = modalIdPrefix === 'id-verification' ? 'id-verification-result-text' : `${modalIdPrefix}-result`;
+                    const resultDiv = modalElement.querySelector(`#${resultDivId}`); if(!resultDiv) return;
+                    try {
+                        const result = await manualVerification(modalIdPrefix.split('-')[0], { customerNumber }); // 'id', 'death', 'sanctions'
+                        resultDiv.textContent = result.message;
+                        showToast(`Manual ${modalIdPrefix.split('-')[0]} verification initiated.`, 'success');
+                        logActivity(`Manual ${modalIdPrefix} initiated`);
+                    } catch (error) {
+                        showToast(`Manual ${modalIdPrefix.split('-')[0]} verification failed.`, 'error'); console.error(error);
+                    }
+                });
+            }
+          });
+
+          // Profile and Logout Buttons
+          const profileBtn = document.getElementById('btn-profile');
+          const logoutBtn = document.getElementById('btn-logout');
+          if(profileBtn) profileBtn.addEventListener('click', () => { showToast('Profile page is not yet implemented.', 'error'); logActivity('Clicked profile button');});
+          if(logoutBtn) logoutBtn.addEventListener('click', logout);
+        }); // End of DOMContentLoaded
+    </script>
+</body>
+</html>

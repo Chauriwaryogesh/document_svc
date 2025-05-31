@@ -426,7 +426,7 @@
             background-color: #0056b3;
         }
 
-        .qr-popup, .security-tips-popup, .forgot-credentials-popup {
+        .qr-popup, .security-tips-popup, .forgot-credentials-popup, .fingerprint-popup {
             position: fixed;
             top: 0;
             left: 0;
@@ -439,11 +439,11 @@
             z-index: 10001;
         }
 
-        .qr-popup.active, .security-tips-popup.active, .forgot-credentials-popup.active {
+        .qr-popup.active, .security-tips-popup.active, .forgot-credentials-popup.active, .fingerprint-popup.active {
             display: flex;
         }
 
-        .qr-popup-box, .security-tips-popup-box, .forgot-credentials-popup-box {
+        .qr-popup-box, .security-tips-popup-box, .forgot-credentials-popup-box, .fingerprint-popup-box {
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -453,12 +453,12 @@
             max-width: 80%;
         }
 
-        .qr-popup-box h3, .security-tips-popup-box h3, .forgot-credentials-popup-box h3 {
+        .qr-popup-box h3, .security-tips-popup-box h3, .forgot-credentials-popup-box h3, .fingerprint-popup-box h3 {
             color: #007bff;
             margin-bottom: 15px;
         }
 
-        .qr-popup-box p, .security-tips-popup-box p, .forgot-credentials-popup-box p {
+        .qr-popup-box p, .security-tips-popup-box p, .forgot-credentials-popup-box p, .fingerprint-popup-box p {
             color: #555;
             margin-bottom: 15px;
             font-size: 0.9rem;
@@ -476,11 +476,11 @@
             font-size: 0.9rem;
         }
 
-        .forgot-credentials-popup-box .input-group {
+        .forgot-credentials-popup-box .input-group, .fingerprint-popup-box .input-group {
             margin-bottom: 15px;
         }
 
-        .qr-popup-box button {
+        .qr-popup-box button, .fingerprint-popup-box button {
             display: block;
             width: 100%;
             margin: 0.6rem 0;
@@ -495,7 +495,7 @@
             transition: background-color 0.3s, box-shadow 0.3s;
         }
 
-        .qr-popup-box button:hover, .security-tips-popup-box button:hover, .forgot-credentials-popup-box button:hover {
+        .qr-popup-box button:hover, .security-tips-popup-box button:hover, .forgot-credentials-popup-box button:hover, .fingerprint-popup-box button:hover {
             background-color: #0056b3;
         }
 
@@ -586,121 +586,195 @@
                 padding: 1.5rem;
             }
         }
-         /* Popper Button Styles */
-    .popper-btn {
-        display: block;
-        width: 100%;
-        margin: 0.6主体;
-        padding: 0.7rem;
-        border-radius: 7px;
-        font-size: 1rem;
-        border: 1px solid rgba(0, 123, 255, 0.3);
-        background-color: #007bff;
-        color: white;
-        cursor: pointer;
-        font-weight: bold;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-        position: relative;
-    }
-    .popper-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        background-color: #0056b3;
-    }
-    .popper-btn:active {
-        transform: scale(0.95);
-    }
-    .popper-btn.cancel {
-        background-color: #6c757d;
-        border-color: #6c757d;
-    }
-    .popper-btn.cancel:hover {
-        background-color: #5a6268;
-    }
-    .popper-btn .btn-loader {
-        border: 3px solid #f3f3f3;
-        border-top: 3px solid #fff;
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        animation: spin 1s linear infinite;
-        margin-left: 8px;
-        display: inline-block;
-    }
-    .popper-btn .btn-loader.hidden {
-        display: none;
-    }
-    /* Popup Animation */
-    @keyframes popupFadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.8);
+
+        /* Popper Button Styles */
+        .popper-btn {
+            display: block;
+            width: 100%;
+            margin: 0.6rem 0;
+            padding: 0.7rem;
+            border-radius: 7px;
+            font-size: 1rem;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            position: relative;
         }
-        to {
-            opacity: 1;
-            transform: scale(1);
+
+        .popper-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background-color: #0056b3;
         }
-    }
-        /* Enhanced Input for Forgot Credentials */
-    .enhanced-input {
-        width: 90%;
-        padding: 0.8rem;
-        border-radius: 8px;
-        border: 1px solid rgba(0, 123, 255, 0.3);
-        background-color: rgba(255, 255, 255, 0.9);
-        font-size: 1rem;
-        color: #333;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    .enhanced-input:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
-        outline: none;
-    }
-     /* Contact Support Popup */
-    .contact-support-popup {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 10001;
-    }
-    .contact-support-popup.active {
-        display: flex;
-    }
-    .contact-support-popup-box {
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        padding: 20px;
-        text-align: center;
-        min-width: 300px;
-        max-width: 80%;
-        animation: popupFadeIn 0.3s ease-out;
-    }
-    .contact-support-popup-box h3 {
-        color: #007bff;
-        margin-bottom: 15px;
-    }
-    .contact-support-popup-box .contact-info p {
-        color: #555;
-        margin-bottom: 10px;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .contact-support-popup-box .contact-info i {
-        margin-right: 8px;
-    }
-    
-    
+
+        .popper-btn:active {
+            transform: scale(0.95);
+        }
+
+        .popper-btn.cancel {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .popper-btn.cancel:hover {
+            background-color: #5a6268;
+        }
+
+        .popper-btn .btn-loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+            display: inline-block;
+        }
+
+        .popper-btn .btn-loader.hidden {
+            display: none;
+        }
+
+        /* Popup Animation */
+        @keyframes popupFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Enhanced Input for Forgot Credentials and Fingerprint */
+        .enhanced-input {
+            width: 90%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .enhanced-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        /* Contact Support Popup */
+        .contact-support-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .contact-support-popup.active {
+            display: flex;
+        }
+
+        .contact-support-popup-box {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            min-width: 300px;
+            max-width: 80%;
+            animation: popupFadeIn 0.3s ease-out;
+        }
+
+        .contact-support-popup-box h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .contact-support-popup-box .contact-info p {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-support-popup-box .contact-info i {
+            margin-right: 8px;
+        }
+        /* Fingerprint Verification */
+.fingerprint-verification {
+  text-align: center;
+}
+
+.fingerprint-animation {
+  position: relative;
+  margin: 20px auto;
+  width: 100px;
+  height: 100px;
+}
+
+.fingerprint-icon i {
+  font-size: 60px;
+  color: #007bff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.fingerprint-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: translate(-50%, -50%);
+  height: 80px;
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 123, 255, 0.3);
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.fingerprint-popup-box p {
+  color: #555;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.fingerprint-popup-box .popper-btn.verify {
+  background-color: #28a745;
+}
+
+.fingerprint-popup-box .popper-btn.verify:hover {
+  background-color: #218838;
+}
     </style>
 </head>
 
@@ -729,7 +803,7 @@
         <div class="otp-popup-box">
             <h3>Enter OTP</h3>
             <div class="input-group">
-                <input type="password" id="otp" placeholder="Enter OTP" required />
+                <input type="password" id="otp" placeholder="Enter OTP" required class="enhanced-input" />
                 <span class="toggle-visibility" onclick="toggleVisibility('otp', this)">🙈</span>
             </div>
             <button onclick="verifyOtp()">Verify OTP</button>
@@ -758,32 +832,57 @@
             <button onclick="closeSecurityTipsPopup()">Close</button>
         </div>
     </div>
-    <!-- New Contact Support Popup -->
-<div id="contactSupportPopup" class="contact-support-popup">
-    <div class="contact-support-popup-box">
-        <h3>Contact Support</h3>
-        <div class="contact-info">
-            <p><i class="fas fa-envelope"></i> <a href="mailto:chauriwaryogesh@gmail.com" style="color: #007bff;">chauriwaryogesh@gmail.com</a></p>
-            <p><i class="fas fa-phone" style="color: #28a745;"></i> 8208247944</p>
-        </div>
-        <button class="popper-btn cancel" onclick="closeContactSupportPopup()">Close</button>
-    </div>
-</div>
-    
 
-    <!-- Updated Forgot Credentials Popup -->
-<div id="forgotCredentialsPopup" class="forgot-credentials-popup">
-    <div class="forgot-credentials-popup-box">
-        <h3>Forgot User ID/Email</h3>
-        <p>Enter your email to receive recovery instructions.</p>
-        <div class="input-group">
-            <input type="email" id="recoveryEmail" placeholder="Enter Email" required class="enhanced-input" />
+    <div id="contactSupportPopup" class="contact-support-popup">
+        <div class="contact-support-popup-box">
+            <h3>Contact Support</h3>
+            <div class="contact-info">
+                <p><i class="fas fa-envelope"></i> <a href="mailto:chauriwaryogesh@gmail.com" style="color: #007bff;">chauriwaryogesh@gmail.com</a></p>
+                <p><i class="fas fa-phone" style="color: #28a745;"></i> 8208247944</p>
+            </div>
+            <button class="popper-btn cancel" onclick="closeContactSupportPopup()">Close</button>
         </div>
-        <button class="popper-btn" id="submitForgotBtn" onclick="submitForgotCredentials()">
-            <span class="btn-text">Submit</span>
-            <span class="btn-loader hidden"></span>
-        </button>
-        <button class="popper-btn cancel" onclick="closeForgotCredentialsPopup()">Cancel</button>
+    </div>
+
+    <div id="forgotCredentialsPopup" class="forgot-credentials-popup">
+        <div class="forgot-credentials-popup-box">
+            <h3>Forgot User ID/Email</h3>
+            <p>Enter your email to receive recovery instructions.</p>
+            <div class="input-group">
+                <input type="email" id="recoveryEmail" placeholder="Enter Email" required class="enhanced-input" />
+            </div>
+            <button class="popper-btn" id="submitForgotBtn" onclick="submitForgotCredentials()">
+                <span class="btn-text">Submit</span>
+                <span class="btn-loader hidden"></span>
+            </button>
+            <button class="popper-btn cancel" onclick="closeForgotCredentialsPopup()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Fingerprint Verification Popup -->
+<div id="fingerprintPopup" class="fingerprint-popup">
+    <div class="fingerprint-popup-box">
+        <h3><i class="fas fa-fingerprint"></i> Login with Fingerprint</h3>
+        <p id="fingerprintMessage">Enter your User ID to start verification.</p>
+        <div id="userIdInput" class="input-group">
+            <input type="text" id="fingerprintUserId" placeholder="Enter User ID" required class="enhanced-input" />
+            <button class="popper-btn" onclick="startFingerprintVerification()">
+                <span class="btn-text">Start Verification</span>
+            </button>
+            <button class="popper-btn cancel" onclick="closeFingerprintPopup()">Cancel</button>
+        </div>
+        <div id="fingerprintVerification" class="fingerprint-verification" style="display: none;">
+            <div class="fingerprint-animation">
+                <i class="fas fa-fingerprint fingerprint-icon"></i>
+                <div class="fingerprint-pulse"></div>
+            </div>
+            <p>Click the fingerprint icon to simulate touching the sensor.</p>
+            <button class="popper-btn verify" onclick="verifyFingerprint()">
+                <span class="btn-text">Verify Fingerprint</span>
+                <span class="btn-loader hidden"></span>
+            </button>
+            <button class="popper-btn cancel" onclick="closeFingerprintPopup()">Cancel</button>
+        </div>
     </div>
 </div>
 
@@ -808,6 +907,9 @@
                 <span class="toggle-visibility" onclick="toggleVisibility('userId', this)">🙈</span>
             </div>
             <button onclick="sendOtp()">Send OTP</button>
+            <button class="popper-btn" onclick="showFingerprintPopup()">
+                <i class="fas fa-fingerprint"></i> Login with Fingerprint
+            </button>
             <div class="social-login">
                 <button><i class="fab fa-facebook-f"></i> Facebook</button>
                 <button class="google"><i class="fab fa-google"></i> Google</button>
@@ -853,22 +955,23 @@
     </footer>
 
     <script>
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const customAlertOverlay = document.getElementById('customAlertOverlay');
-    const customAlertHeader = document.getElementById('customAlertHeader');
-    const customAlertMessage = document.getElementById('customAlertMessage');
-    const customAlertOkBtn = document.getElementById('customAlertOkBtn');
-    const customErrorOverlay = document.getElementById('customErrorOverlay');
-    const customErrorMessage = document.getElementById('customErrorMessage');
-    const customErrorOkBtn = document.getElementById('customErrorOkBtn');
-    const otpPopup = document.getElementById('otpPopup');
-    const qrPopup = document.getElementById('qrPopup');
-    const securityTipsPopup = document.getElementById('securityTipsPopup');
-    const forgotCredentialsPopup = document.getElementById('forgotCredentialsPopup');
-    const actionMenu = document.getElementById('actionMenu');
-    const contactSupportPopup = document.getElementById('contactSupportPopup');
-    let ws = null;
-    let sessionId = null;
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const customAlertOverlay = document.getElementById('customAlertOverlay');
+        const customAlertHeader = document.getElementById('customAlertHeader');
+        const customAlertMessage = document.getElementById('customAlertMessage');
+        const customAlertOkBtn = document.getElementById('customAlertOkBtn');
+        const customErrorOverlay = document.getElementById('customErrorOverlay');
+        const customErrorMessage = document.getElementById('customErrorMessage');
+        const customErrorOkBtn = document.getElementById('customErrorOkBtn');
+        const otpPopup = document.getElementById('otpPopup');
+        const qrPopup = document.getElementById('qrPopup');
+        const securityTipsPopup = document.getElementById('securityTipsPopup');
+        const forgotCredentialsPopup = document.getElementById('forgotCredentialsPopup');
+        const fingerprintPopup = document.getElementById('fingerprintPopup');
+        const actionMenu = document.getElementById('actionMenu');
+        const contactSupportPopup = document.getElementById('contactSupportPopup');
+        let ws = null;
+        let sessionId = null;
 
         function showLoading() {
             loadingOverlay.classList.add('active');
@@ -879,8 +982,8 @@
         }
 
         function showCustomAlert(header, message, callback) {
-            customAlertHeader.textContent = header;
-            customAlertMessage.textContent = message;
+            customAlertHeader.innerHTML = header;
+            customAlertMessage.innerHTML = message;
             customAlertOverlay.classList.add('active');
             customAlertOkBtn.onclick = () => {
                 customAlertOverlay.classList.remove('active');
@@ -893,10 +996,12 @@
             customErrorOverlay.classList.add('active');
             otpPopup.classList.remove('active');
             qrPopup.classList.remove('active');
+            fingerprintPopup.classList.remove('active');
             customErrorOkBtn.onclick = () => {
                 customErrorOverlay.classList.remove('active');
                 document.getElementById('email').value = '';
                 document.getElementById('userId').value = '';
+                document.getElementById('fingerprintUserId').value = '';
             };
         }
 
@@ -943,6 +1048,8 @@
             forgotCredentialsPopup.classList.remove('active');
         }
 
+        
+
         function toggleActionMenu() {
             actionMenu.classList.toggle('active');
         }
@@ -961,7 +1068,7 @@
                     if (data.status === 'success') {
                         closeQrPopup();
                         showCustomAlert('Success', `Logged in as ${data.userId}`, () => {
-                            window.location.href = '/ServiePage';
+                            window.location.href = '/ServicePage';
                         });
                     } else {
                         showErrorAlert('QR code authentication failed.');
@@ -1048,7 +1155,6 @@
         function redirectToHome() {
             actionMenu.classList.remove('active');
             window.location.href = '/home';
-
         }
 
         function redirectToGuest() {
@@ -1058,7 +1164,11 @@
 
         function contactSupport() {
             actionMenu.classList.remove('active');
-            window.location.href = 'mailto:support@secureportal.com?subject=Login%20Assistance';
+            contactSupportPopup.classList.add('active');
+        }
+
+        function closeContactSupportPopup() {
+            contactSupportPopup.classList.remove('active');
         }
 
         function sendOtp() {
@@ -1128,7 +1238,6 @@
                 if (data && data.errorMessage) {
                     showErrorAlert(data.errorMessage);
                 } else if (data && !data.errorMessage) {
-                    // Store userId in sessionStorage
                     sessionStorage.setItem('userId', userId);
                     hideOtpPopup();
                     showCustomAlert("Success", "OTP Verified Successfully", () => {
@@ -1145,20 +1254,100 @@
                 showErrorAlert("Error verifying OTP. Please try again.");
             });
         }
-        
+
+     // Show Fingerprint Popup
+        function showFingerprintPopup() {
+            console.log('showFingerprintPopup called');
+            otpPopup.classList.remove('active');
+            qrPopup.classList.remove('active');
+            securityTipsPopup.classList.remove('active');
+            forgotCredentialsPopup.classList.remove('active');
+            contactSupportPopup.classList.remove('active');
+            fingerprintPopup.classList.add('active');
+            document.getElementById('fingerprintUserId').value = '';
+            document.getElementById('userIdInput').style.display = 'block';
+            document.getElementById('fingerprintVerification').style.display = 'none';
+            document.getElementById('fingerprintMessage').textContent = 'Enter your User ID to start verification.';
+        }
+
+        // Start Fingerprint Verification
+        function startFingerprintVerification() {
+            const userId = document.getElementById('fingerprintUserId').value;
+            if (!userId) {
+                showErrorAlert('Please enter your User ID.');
+                return;
+            }
+            document.getElementById('userIdInput').style.display = 'none';
+            document.getElementById('fingerprintVerification').style.display = 'block';
+            document.getElementById('fingerprintMessage').textContent = 'Click the fingerprint to simulate touching the sensor.';
+        }
+
+        // Verify Fingerprint
+        async function verifyFingerprint() {
+            const userId = document.getElementById('fingerprintUserId').value;
+            if (!userId) {
+                showErrorAlert('User ID is required.');
+                return;
+            }
+            showLoading();
+            try {
+                const response = await fetch('http://localhost:8081/Security/login-fingerprint', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'userId': userId
+                    }
+                });
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.errorMessage || `HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                hideLoading();
+                handleFingerprintResponse(result, userId);
+            } catch (error) {
+                hideLoading();
+                console.error('Error during fingerprint verification:', error);
+                showErrorAlert('Failed to verify fingerprint: ' + error.message);
+            }
+        }
+
+        // Handle Fingerprint Response
+        function handleFingerprintResponse(data, userId) {
+            if (data.message === 'Fingerprint login successful') {
+                sessionStorage.setItem('userId', userId);
+                closeFingerprintPopup();
+                showCustomAlert('Success', '<i class="fas fa-check-circle" style="color: #28a745;"></i> Verification Successful', () => {
+                    window.location.href = '/ServicePage';
+                });
+            } else {
+                showErrorAlert(data.errorMessage || 'Fingerprint verification failed.');
+                document.getElementById('userIdInput').style.display = 'block';
+                document.getElementById('fingerprintVerification').style.display = 'none';
+                document.getElementById('fingerprintMessage').textContent = 'Enter your User ID to start verification.';
+            }
+        }
+
+        // Close Fingerprint Popup
+        function closeFingerprintPopup() {
+            fingerprintPopup.classList.remove('active');
+            document.getElementById('fingerprintUserId').value = '';
+            document.getElementById('userIdInput').style.display = 'block';
+            document.getElementById('fingerprintVerification').style.display = 'none';
+        }
         function redirectToRegister() {
             actionMenu.classList.remove('active');
-            window.location.href = "register";
+            window.location.href = 'register';
         }
 
         function toggleVisibility(id, icon) {
             const field = document.getElementById(id);
-            if (field.type === "password") {
-                field.type = "text";
-                icon.textContent = "🙈";
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.textContent = '🙈';
             } else {
-                field.type = "password";
-                icon.textContent = "👁️";
+                field.type = 'password';
+                icon.textContent = '👁️';
             }
         }
 
@@ -1179,22 +1368,12 @@
             createBubbles();
         }
 
-        // Check if QRCode.js loaded
         window.onload = function() {
             if (typeof QRCode === 'undefined') {
                 console.error('QRCode.js failed to load');
                 showErrorAlert('QR code functionality is unavailable. Please check your network and try again.');
             }
         };
-
-        // New Contact Support Functions
-        function contactSupport() {
-            actionMenu.classList.remove('active');
-            contactSupportPopup.classList.add('active');
-        }
-        function closeContactSupportPopup() {
-            contactSupportPopup.classList.remove('active');
-        }
     </script>
 </body>
 </html>

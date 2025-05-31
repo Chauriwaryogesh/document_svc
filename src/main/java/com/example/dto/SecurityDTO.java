@@ -10,7 +10,73 @@ public class SecurityDTO {
 	private String createdTime;
 	private String remainingTime;
 	
-	
+	// WebAuthn fields
+    private String credentialId;
+    private String publicKey;
+    private String userHandle;
+    private Long signatureCounter;
+    private String authenticatorData;
+    
+	/**
+	 * @return the authenticatorData
+	 */
+	public String getAuthenticatorData() {
+		return authenticatorData;
+	}
+	/**
+	 * @param authenticatorData the authenticatorData to set
+	 */
+	public void setAuthenticatorData(String authenticatorData) {
+		this.authenticatorData = authenticatorData;
+	}
+	/**
+	 * @return the credentialId
+	 */
+	public String getCredentialId() {
+		return credentialId;
+	}
+	/**
+	 * @param credentialId the credentialId to set
+	 */
+	public void setCredentialId(String credentialId) {
+		this.credentialId = credentialId;
+	}
+	/**
+	 * @return the publicKey
+	 */
+	public String getPublicKey() {
+		return publicKey;
+	}
+	/**
+	 * @param publicKey the publicKey to set
+	 */
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
+	}
+	/**
+	 * @return the userHandle
+	 */
+	public String getUserHandle() {
+		return userHandle;
+	}
+	/**
+	 * @param userHandle the userHandle to set
+	 */
+	public void setUserHandle(String userHandle) {
+		this.userHandle = userHandle;
+	}
+	/**
+	 * @return the signatureCounter
+	 */
+	public Long getSignatureCounter() {
+		return signatureCounter;
+	}
+	/**
+	 * @param signatureCounter the signatureCounter to set
+	 */
+	public void setSignatureCounter(Long signatureCounter) {
+		this.signatureCounter = signatureCounter;
+	}
 	public String getCreatedTime() {
 		return createdTime;
 	}

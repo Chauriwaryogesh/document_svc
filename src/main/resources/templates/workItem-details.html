@@ -6,322 +6,337 @@
   <title>Work Item Details - Dashboard Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      overflow-x: hidden;
-    }
-    .text-hidden {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    .text-visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    .button-hidden {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    .button-visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    .btn-neutral {
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-neutral::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(to right, transparent, currentColor, transparent);
-      transform: scaleX(0);
-      transform-origin: center;
-      transition: transform 0.3s ease;
-    }
-    .btn-neutral:hover::after {
-      transform: scaleX(1);
-    }
-    .btn-neutral:focus-visible {
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
-    }
-    .modal {
-      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-    }
-    .modal.hidden {
-      opacity: 0;
-      transform: scale(0.95);
-      pointer-events: none;
-    }
-    .modal-content {
-      transition: transform 0.4s ease-out;
-      background: white;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
-      max-height: 90vh;
-      overflow-y: auto;
-      animation: fadeInModal 0.3s ease-out;
-    }
-    .modal.hidden .modal-content {
-      transform: translateY(-20px);
-    }
-    .card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      animation: fadeIn 0.5s ease-out forwards;
-      cursor: pointer;
-    }
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    }
-    .gradient-text {
-      color: #ffffff;
-      -webkit-background-clip: initial;
-      background-clip: initial;
-      background: none;
-      position: relative;
-    }
-    .loader {
-      position: fixed;
-      inset: 0;
-      background: rgba(17, 24, 39, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      display: none;
-    }
-    .loader.active {
-      display: flex;
-    }
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 4px solid #e5e7eb;
-      border-top: 4px solid #3b82f6;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    .nav-popup {
-      position: fixed;
-      inset: 0;
-      background: rgba(17, 24, 39, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 60;
-      display: none;
-    }
-    .nav-popup.active {
-      display: flex;
-    }
-    .nav-popup-content {
-      background: white;
-      border-radius: 12px;
-      padding: 16px 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .glow:hover {
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
-      transform: scale(1.05);
-    }
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: linear-gradient(to right, #3b82f6, #60a5fa);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-      z-index: 100;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 4rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .logout-button {
-      background: #dc2626;
-      color: white;
-      border: none;
-      font-weight: 600;
-      padding: 0.5rem 1.5rem;
-      border-radius: 8px;
-      transition: background 0.3s ease, transform 0.3s ease;
-    }
-    .logout-button:hover {
-      background: #b91c1c;
-      transform: scale(1.05);
-    }
-    .logout-button:focus-visible {
-      outline: 2px solid #ffffff;
-      outline-offset: 2px;
-    }
-    footer {
-      background: transparent;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-      color: #1f2937;
-      padding: 1.5rem 0;
-      width: 100%;
-      position: relative;
-    }
-    footer .footer-content {
-      max-width: 1280px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-    }
-    footer p {
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: transform 0.3s ease, color 0.3s ease;
-    }
-    footer p:hover {
-      transform: scale(1.02);
-      color: #3b82f6;
-    }
-    footer .separator {
-      font-size: 1rem;
-      color: #6b7280;
-    }
-    footer .secondary-text {
-      color: #6b7280;
-    }
-    .status-badge {
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      display: inline-block;
-    }
-    .status-open { background: #dbeafe; color: #1e40af; }
-    .status-close { background: #e5e7eb; color: #4b5563; }
-    .status-in_progress { background: #ffedd5; color: #c2410c; }
-    .status-completed { background: #dcfce7; color: #15803d; }
-    .status-pend_external { background: #f3e8ff; color: #6b21a8; }
-    .status-pent_internal { background: #ccfbf1; color: #0f766e; }
-    .status-rejected { background: #fee2e2; color: #b91c1c; }
-    .status-passed { background: #e0e7ff; color: #3730a3; }
-    .table-container {
-      max-height: 400px;
-      overflow-y: auto;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      background: white;
-      position: relative;
-      scroll-behavior: smooth;
-    }
-    table {
-      border-collapse: separate;
-      border-spacing: 0;
-      width: 100%;
-    }
-    th, td {
-      border-bottom: 1px solid #e5e7eb;
-      border-right: 1px solid #e5e7eb;
-      padding: 12px 16px;
-      font-size: 0.875rem;
-      white-space: nowrap;
-    }
-    th:last-child, td:last-child {
-      border-right: none;
-    }
-    tr:last-child td {
-      border-bottom: none;
-    }
-    thead {
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      background: #60a5fa;
-    }
-    th {
-      color: white;
-      font-weight: 600;
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      background-clip: padding-box;
-      background: inherit;
-    }
-    th:nth-child(1) { background: #60a5fa; }
-    th:nth-child(2) { background: #2dd4bf; }
-    th:nth-child(3) { background: #a78bfa; }
-    th:nth-child(4) { background: #fb923c; }
-    th:nth-child(5) { background: #4ade80; }
-    th:nth-child(6) { background: #818cf8; }
-    th:nth-child(7) { background: #9ca3af; }
-    th:nth-child(8) { background: #f87171; }
-    th:nth-child(9) { background: #f472b6; }
-    tbody {
-      padding-top: 0;
-    }
-    tr:nth-child(even) {
-      background: #f9fafb;
-    }
-    tr:hover {
-      background: #f0f9ff;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      transition: background 0.2s ease, box-shadow 0.2s ease;
-    }
-    tr {
-      opacity: 0;
-      transform: translateY(10px);
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-    .required::after {
-      content: ' *';
-      color: #ef4444;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInModal {
-      0% { opacity: 0; transform: scale(0.95); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-    @media (max-width: 640px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-        height: auto;
-        padding: 0.75rem;
-      }
-      header .left-section {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-    }
+  <style>body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow-x: hidden;
+}
+.text-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.text-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.button-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.button-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.btn-neutral {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn-neutral::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, currentColor, transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+.btn-neutral:hover::after {
+  transform: scaleX(1);
+}
+.btn-neutral:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+.modal {
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+.modal.hidden {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
+}
+.modal-content {
+  transition: transform 0.4s ease-out;
+  background: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: fadeInModal 0.3s ease-out;
+}
+.modal.hidden .modal-content {
+  transform: translateY(-20px);
+}
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeIn 0.5s ease-out forwards;
+  cursor: pointer;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+.gradient-text {
+  color: #ffffff;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  background: none;
+  position: relative;
+}
+.loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  display: none;
+}
+.loader.active {
+  display: flex;
+}
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+.nav-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  display: none;
+}
+.nav-popup.active {
+  display: flex;
+}
+.nav-popup-content {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.glow:hover {
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  transform: scale(1.05);
+}
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to right, #3b82f6, #60a5fa);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 100;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.logout-button {
+  background: #dc2626;
+  color: white;
+  border: none;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+.logout-button:hover {
+  background: #b91c1c;
+  transform: scale(1.05);
+}
+.logout-button:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+footer {
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: #1f2937;
+  padding: 1.5rem 0;
+  width: 100%;
+  position: relative;
+}
+footer .footer-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+footer p {
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+footer p:hover {
+  transform: scale(1.02);
+  color: #3b82f6;
+}
+footer .separator {
+  font-size: 1rem;
+  color: #6b7280;
+}
+footer .secondary-text {
+  color: #6b7280;
+}
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-block;
+}
+.status-open { background: #dbeafe; color: #1e40af; }
+.status-close { background: #e5e7eb; color: #4b5563; }
+.status-in_progress { background: #ffedd5; color: #c2410c; }
+.status-completed { background: #dcfce7; color: #15803d; }
+.status-pend_external { background: #f3e8ff; color: #6b21a8; }
+.status-pent_internal { background: #ccfbf1; color: #0f766e; }
+.status-rejected { background: #fee2e2; color: #b91c1c; }
+.status-passed { background: #e0e7ff; color: #3730a3; }
+.table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  position: relative;
+  scroll-behavior: smooth;
+}
+.policy-card .table-container {
+  max-height: 256px;
+}
+.policy-card table {
+  font-size: 0.875rem;
+}
+.policy-card th, .policy-card td {
+  white-space: normal;
+  word-break: break-word;
+  padding: 8px 12px;
+}
+@media (min-width: 1024px) {
+  .policy-card {
+    grid-column: span 2 / span 2;
+  }
+}
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+th, td {
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+th:last-child, td:last-child {
+  border-right: none;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: #60a5fa;
+}
+th {
+  color: white;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-clip: padding-box;
+  background: inherit;
+}
+th:nth-child(1) { background: #60a5fa; }
+th:nth-child(2) { background: #2dd4bf; }
+th:nth-child(3) { background: #a78bfa; }
+th:nth-child(4) { background: #fb923c; }
+th:nth-child(5) { background: #4ade80; }
+th:nth-child(6) { background: #818cf8; }
+th:nth-child(7) { background: #9ca3af; }
+th:nth-child(8) { background: #f87171; }
+th:nth-child(9) { background: #f472b6; }
+tbody {
+  padding-top: 0;
+}
+tr:nth-child(even) {
+  background: #f9fafb;
+}
+tr:hover {
+  background: #f0f9ff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+tr {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeIn 0.5s ease-out forwards;
+}
+.required::after {
+  content: ' *';
+  color: #ef4444;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInModal {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@media (max-width: 640px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 0.75rem;
+  }
+  header .left-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center selection:bg-blue-500 selection:text-white relative">
@@ -349,77 +364,79 @@
   </header>
 
   <main class="w-full max-w-7xl flex flex-col flex-grow p-6 mt-20">
-    <!-- Back Button -->
-    <div class="mb-6">
-      <button onclick="navigateTo('workitems')"
-        class="btn-neutral bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none transition-all glow">
-        Back to Work Items
-      </button>
-    </div>
+  <!-- Back Button -->
+  <div class="mb-6">
+    <button onclick="navigateTo('workitems')"
+      class="btn-neutral bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none transition-all glow">
+      Back to Work Items
+    </button>
+  </div>
 
-    <!-- Horizontal Sections -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <!-- Summary Section -->
-      <div class="card p-4" onclick="openModal('summary')">
-        <h2 class="text-xl font-semibold text-gray-800 mb-3">Summary</h2>
-        <div id="workitem-details" class="space-y-2 text-xs">
-          <p><span class="font-medium">Ref No:</span> <span id="detail-refnum">Loading...</span></p>
-          <p><span class="font-medium">Name:</span> <span id="detail-name"></span></p>
-          <p><span class="font-medium">Type:</span> <span id="detail-type"></span></p>
-          <p><span class="font-medium">Comment:</span> <span id="detail-comment"></span></p>
-          <p><span class="font-medium">Created By:</span> <span id="detail-createdby"></span></p>
-          <p><span class="font-medium">Created Time:</span> <span id="detail-createdtime"></span></p>
-          <p><span class="font-medium">User ID:</span> <span id="detail-userid"></span></p>
-          <p><span class="font-medium">Status:</span> <span id="detail-status" class="status-badge"></span></p>
-        </div>
-      </div>
-
-      <!-- Policy Section -->
-      <div class="card p-4" onclick="openModal('policy')">
-        <h2 class="text-xl font-semibold text-gray-800 mb-3">Policy</h2>
-        <div class="table-container max-h-32">
-          <table class="w-full text-xs text-left text-gray-600">
-            <thead class="text-xs uppercase">
-              <tr>
-                <th class="px-2 py-2">Policy No.</th>
-                <th class="px-2 py-2">Created</th>
-                <th class="px-2 py-2">Product</th>
-                <th class="px-2 py-2">Company</th>
-                <th class="px-2 py-2">Work Item</th>
-                <th class="px-2 py-2">Cust No.</th>
-                <th class="px-2 py-2">Name</th>
-                <th class="px-2 py-2">Address</th>
-                <th class="px-2 py-2">Contact</th>
-              </tr>
-            </thead>
-            <tbody id="policy-table"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Interaction-Workitem Section -->
-      <div class="card p-4" onclick="openModal('interaction')">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-xl font-semibold text-gray-800">Interaction-Workitem</h2>
-          <button id="link-workitems-btn"
-            class="btn-neutral bg-blue-500 text-white font-semibold py-1 px-2 rounded-md hover:bg-blue-600 focus:outline-none transition-all glow text-xs"
-            onclick="event.stopPropagation(); openModal('link-workitems')">
-            Link Work Items
-          </button>
-        </div>
-        <p class="text-gray-600 text-xs mb-2">Linked Work Items will appear below.</p>
-        <div id="linked-workitems" class="space-y-1 text-xs">
-          <p class="text-gray-500 italic">No linked work items yet.</p>
-        </div>
-      </div>
-
-      <!-- Activity Section -->
-      <div class="card p-4" onclick="openModal('activity')">
-        <h2 class="text-xl font-semibold text-gray-800 mb-3">Activity (Future Use)</h2>
-        <p class="text-gray-600 text-xs">This section is reserved for future activity-related functionality.</p>
+  <!-- First Row: Summary, Interaction-Workitem, Activity -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!-- Summary Section -->
+    <div class="card p-4" onclick="openModal('summary')">
+      <h2 class="text-xl font-semibold text-gray-800 mb-3">Summary</h2>
+      <div id="workitem-details" class="space-y-2 text-xs">
+        <p><span class="font-medium">Ref No:</span> <span id="detail-refnum">Loading...</span></p>
+        <p><span class="font-medium">Name:</span> <span id="detail-name"></span></p>
+        <p><span class="font-medium">Type:</span> <span id="detail-type"></span></p>
+        <p><span class="font-medium">Comment:</span> <span id="detail-comment"></span></p>
+        <p><span class="font-medium">Created By:</span> <span id="detail-createdby"></span></p>
+        <p><span class="font-medium">Created Time:</span> <span id="detail-createdtime"></span></p>
+        <p><span class="font-medium">User ID:</span> <span id="detail-userid"></span></p>
+        <p><span class="font-medium">Status:</span> <span id="detail-status" class="status-badge"></span></p>
       </div>
     </div>
-  </main>
+
+    <!-- Interaction-Workitem Section -->
+    <div class="card p-4" onclick="openModal('interaction')">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-xl font-semibold text-gray-800">Interaction-Workitem</h2>
+        <button id="link-workitems-btn"
+          class="btn-neutral bg-blue-500 text-white font-semibold py-1 px-2 rounded-md hover:bg-blue-600 focus:outline-none transition-all glow text-xs"
+          onclick="event.stopPropagation(); openModal('link-workitems')">
+          Link Work Items
+        </button>
+      </div>
+      <p class="text-gray-600 text-xs mb-2">Linked Work Items will appear below.</p>
+      <div id="linked-workitems" class="space-y-1 text-xs">
+        <p class="text-gray-500 italic">No linked work items yet.</p>
+      </div>
+    </div>
+
+    <!-- Activity Section -->
+    <div class="card p-4" onclick="openModal('activity')">
+      <h2 class="text-xl font-semibold text-gray-800 mb-3">Activity (Future Use)</h2>
+      <p class="text-gray-600 text-xs">This section is reserved for future activity-related functionality.</p>
+    </div>
+  </div>
+
+  <!-- Second Row: Policy Section -->
+  <div class="mt-4">
+    <div class="card p-4 policy-card" onclick="openModal('policy')">
+      <h2 class="text-xl font-semibold text-gray-800 mb-3">Policy</h2>
+      <div class="table-container">
+        <table class="w-full text-left text-gray-600">
+          <thead class="text-xs uppercase">
+            <tr>
+              <th class="px-4 py-3">Policy No.</th>
+              <th class="px-4 py-3">Created Date</th>
+              <th class="px-4 py-3">Product Code</th>
+              <th class="px-4 py-3">Company</th>
+              <th class="px-4 py-3">Work Item No.</th>
+              <th class="px-4 py-3">Customer No.</th>
+              <th class="px-4 py-3">Customer Name</th>
+              <th class="px-4 py-3">Address</th>
+              <th class="px-4 py-3">Contact</th>
+            </tr>
+          </thead>
+          <tbody id="policy-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
 
   <footer>
     <div class="footer-content">
@@ -681,278 +698,397 @@
   </div>
 
   <script>
-    const config = {
-      loginUrl: 'login',
-      userId: null,
-      email: null,
-      apiBaseUrl: 'http://localhost:8081/workItem_Service'
+  const config = {
+    loginUrl: 'login',
+    userId: null,
+    email: null,
+    apiBaseUrl: 'http://localhost:8081/workItem_Service'
+  };
+
+  const modals = {
+    profile: document.getElementById('profile-modal'),
+    contact: document.getElementById('contact-modal'),
+    error: document.getElementById('error-modal'),
+    success: document.getElementById('success-modal'),
+    'link-workitems': document.getElementById('link-workitems-modal'),
+    summary: document.getElementById('summary-modal'),
+    policy: document.getElementById('policy-modal'),
+    interaction: document.getElementById('interaction-modal'),
+    activity: document.getElementById('activity-modal')
+  };
+
+  let globalPoliciesData = []; // Store policy data globally
+
+  function openModal(modalId) {
+    if (modalId === 'profile') {
+      document.getElementById('profile-userid').textContent = config.userId || 'Not available';
+      document.getElementById('profile-email').textContent = config.email || 'Not available';
+    }
+    if (modalId === 'link-workitems') {
+      const workItemRefNum = new URLSearchParams(window.location.search).get('ref');
+      document.getElementById('parent-refnum').value = workItemRefNum || 'N/A';
+    }
+    modals[modalId]?.classList.remove('hidden');
+  }
+
+  function closeModal(modalId) {
+    modals[modalId]?.classList.add('hidden');
+  }
+
+  function showAlert(type, message, redirectUrl = null) {
+    document.getElementById(`${type}-message`).textContent = message;
+    openModal(type);
+    if (redirectUrl) {
+      setTimeout(() => window.location.href = redirectUrl, 2000);
+    }
+  }
+
+  function showNavPopup(message) {
+    const popup = document.getElementById('nav-popup');
+    document.getElementById('nav-message').textContent = `Navigating to ${message}...`;
+    popup.classList.add('active');
+  }
+
+  function hideNavPopup() {
+    const popup = document.getElementById('nav-popup');
+    popup.classList.remove('active');
+  }
+
+  function showLoader() {
+    document.getElementById('loader').classList.add('active');
+  }
+
+  function hideLoader() {
+    document.getElementById('loader').classList.remove('active');
+  }
+
+  function initializeUserId() {
+    config.userId = sessionStorage.getItem('userId');
+    config.email = sessionStorage.getItem('email');
+    if (!config.userId) {
+      showAlert('error', 'Please log in to continue.', config.loginUrl);
+      return false;
+    }
+    return true;
+  }
+
+  function logout() {
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('email');
+    config.userId = null;
+    config.email = null;
+    showAlert('success', 'Logged out successfully!', config.loginUrl);
+  }
+
+  function navigateTo(page) {
+    if (page !== 'logout' && !config.userId) {
+      showAlert('error', 'Please log in to access this page.', config.loginUrl);
+      return;
+    }
+    const pageUrls = {
+      dashboard: 'dashboard',
+      workitems: 'workItemServices',
+      'create-workitem': 'index',
+      logout: 'login'
+    };
+    const url = pageUrls[page] || config.loginUrl;
+    showLoader();
+    showNavPopup(page);
+    setTimeout(() => {
+      hideNavPopup();
+      hideLoader();
+      if (page === 'logout') {
+        logout();
+      } else {
+        window.location.href = url;
+      }
+    }, 2000);
+  }
+
+  async function fetchWorkItems(workItemRefNum) {
+    const params = new URLSearchParams();
+    if (workItemRefNum) params.append('workItemRefNum', workItemRefNum);
+    const response = await fetch(`${config.apiBaseUrl}/workitems?${params.toString()}`, {
+      headers: { 'userId': config.userId }
+    });
+    const data = await response.json();
+    if (data.errorMessage) throw new Error(data.errorMessage);
+    return data.data;
+  }
+
+  async function fetchPolicyDetails(workItemRefNo) {
+    if (!config.userId) {
+      throw new Error('User ID is missing. Please log in again.');
+    }
+    const params = new URLSearchParams({ workItemRefNo });
+    const response = await fetch(`http://localhost:8081/policy/policy-details?${params.toString()}`, {
+      method: 'GET',
+      headers: { 'userId': config.userId }
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Failed to fetch policy details');
+    }
+    const data = await response.json();
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    return data.data || [];
+  }
+
+  function populateWorkItemDetails(item) {
+    const fieldMappings = {
+      refnum: 'workItemReferenceNumber',
+      name: 'workItemName',
+      type: 'workType',
+      comment: 'comment',
+      createdby: 'createdBy',
+      createdtime: 'createdTime',
+      userid: 'userId',
+      status: 'status'
     };
 
-    const modals = {
-      profile: document.getElementById('profile-modal'),
-      contact: document.getElementById('contact-modal'),
-      error: document.getElementById('error-modal'),
-      success: document.getElementById('success-modal'),
-      'link-workitems': document.getElementById('link-workitems-modal'),
-      summary: document.getElementById('summary-modal'),
-      policy: document.getElementById('policy-modal'),
-      interaction: document.getElementById('interaction-modal'),
-      activity: document.getElementById('activity-modal')
-    };
+    Object.entries(fieldMappings).forEach(([uiField, apiField]) => {
+      const cardElement = document.getElementById(`detail-${uiField}`);
+      const modalElement = document.getElementById(`summary-${uiField}`);
+      let value = item[apiField] || 'N/A';
 
-    const mockPolicies = [
-      {
-        policyNum: "POL123456",
-        policyCreatedDate: "2025-01-15",
-        productCode: "PRD001",
-        polCompanyName: "Secure Insurance Co.",
-        workItemNo: "WI20256238844240",
-        customerNo: "CUST789",
-        custName: "John Doe",
-        addressDetails: "123 Main St, City, Country",
-        contactDetails: "john.doe@example.com, (555) 123-4567"
-      },
-      {
-        policyNum: "POL789012",
-        policyCreatedDate: "2024-11-20",
-        productCode: "PRD002",
-        polCompanyName: "Global Insurance Ltd.",
-        workItemNo: "WI20256238844240",
-        customerNo: "CUST789",
-        custName: "John Doe",
-        addressDetails: "456 Elm St, City, Country",
-        contactDetails: "john.doe2@example.com, (555) 987-6543"
-      }
-    ];
-
-    function openModal(modalId) {
-      if (modalId === 'profile') {
-        document.getElementById('profile-userid').textContent = config.userId || 'Not available';
-        document.getElementById('profile-email').textContent = config.email || 'Not available';
-      }
-      if (modalId === 'link-workitems') {
-        const workItemRefNum = new URLSearchParams(window.location.search).get('ref');
-        document.getElementById('parent-refnum').value = workItemRefNum || 'N/A';
-      }
-      modals[modalId]?.classList.remove('hidden');
-    }
-
-    function closeModal(modalId) {
-      modals[modalId]?.classList.add('hidden');
-    }
-
-    function showAlert(type, message, redirectUrl = null) {
-      document.getElementById(`${type}-message`).textContent = message;
-      openModal(type);
-      if (redirectUrl) {
-        setTimeout(() => window.location.href = redirectUrl, 2000);
-      }
-    }
-
-    function showNavPopup(message) {
-      const popup = document.getElementById('nav-popup');
-      document.getElementById('nav-message').textContent = `Navigating to ${message}...`;
-      popup.classList.add('active');
-    }
-
-    function hideNavPopup() {
-      const popup = document.getElementById('nav-popup');
-      popup.classList.remove('active');
-    }
-
-    function showLoader() {
-      document.getElementById('loader').classList.add('active');
-    }
-
-    function hideLoader() {
-      document.getElementById('loader').classList.remove('active');
-    }
-
-    function initializeUserId() {
-      config.userId = sessionStorage.getItem('userId');
-      config.email = sessionStorage.getItem('email');
-      if (!config.userId) {
-        showAlert('error', 'Please log in to continue.', config.loginUrl);
-        return false;
-      }
-      return true;
-    }
-
-    function logout() {
-      sessionStorage.removeItem('userId');
-      sessionStorage.removeItem('email');
-      config.userId = null;
-      config.email = null;
-      showAlert('success', 'Logged out successfully!', config.loginUrl);
-    }
-
-    function navigateTo(page) {
-      if (page !== 'logout' && !config.userId) {
-        showAlert('error', 'Please log in to access this page.', config.loginUrl);
-        return;
-      }
-      const pageUrls = {
-        dashboard: 'dashboard',
-        workitems: 'index',
-        'create-workitem': 'index',
-        logout: 'login'
-      };
-      const url = pageUrls[page] || config.loginUrl;
-      showLoader();
-      showNavPopup(page);
-      setTimeout(() => {
-        hideNavPopup();
-        hideLoader();
-        if (page === 'logout') {
-          logout();
-        } else {
-          window.location.href = url;
-        }
-      }, 2000);
-    }
-
-    async function fetchWorkItems(workItemRefNum) {
-      const params = new URLSearchParams();
-      if (workItemRefNum) params.append('workItemRefNum', workItemRefNum);
-      const response = await fetch(`${config.apiBaseUrl}/workitems?${params.toString()}`, {
-        headers: { 'userId': config.userId }
-      });
-      const data = await response.json();
-      if (data.errorMessage) throw new Error(data.errorMessage);
-      return data.data;
-    }
-
-    function populateWorkItemDetails(item) {
-      const fields = ['refnum', 'name', 'type', 'comment', 'createdby', 'createdtime', 'userid', 'status'];
-      fields.forEach(field => {
-        const cardElement = document.getElementById(`detail-${field}`);
-        const modalElement = document.getElementById(`summary-${field}`);
-        let value = item[field.replace('refnum', 'workItemReferenceNumber').replace('type', 'workType')] || 'N/A';
-        if (field === 'createdtime' && value !== 'N/A') {
+      if (uiField === 'createdtime' && value !== 'N/A') {
+        try {
           value = new Date(value).toLocaleString();
+        } catch (e) {
+          console.warn(`Invalid date format for createdTime: ${value}`);
+          value = 'N/A';
         }
-        if (cardElement) cardElement.textContent = value;
-        if (modalElement) modalElement.textContent = value;
-      });
-      const statusElements = [document.getElementById('detail-status'), document.getElementById('summary-status')];
-      statusElements.forEach(el => {
-        if (el) {
-          el.textContent = item.status || 'N/A';
-          el.className = `status-badge status-${item.status?.toLowerCase().replace(' ', '_') || 'unknown'}`;
-        }
-      });
+      }
+
+      console.log(`Setting ${uiField} (API: ${apiField}): ${value}`);
+
+      if (cardElement) {
+        cardElement.textContent = value;
+      } else {
+        console.warn(`Card element detail-${uiField} not found`);
+      }
+      if (modalElement) {
+        modalElement.textContent = value;
+      } else {
+        console.warn(`Modal element summary-${uiField} not found`);
+      }
+
+      if (uiField === 'status') {
+        const statusElements = [cardElement, modalElement].filter(Boolean);
+        statusElements.forEach(el => {
+          el.textContent = value;
+          const statusClass = value !== 'N/A' ? `status-${value.toLowerCase().replace(' ', '_')}` : 'status-unknown';
+          el.className = `status-badge ${statusClass}`;
+        });
+      }
+    });
+  }
+
+  function populatePolicyTable(policiesData, tableId) {
+    const tbody = document.getElementById(tableId);
+    tbody.innerHTML = '';
+    let hasPolicies = false;
+
+    if (!Array.isArray(policiesData) || policiesData.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-3 text-center text-gray-500">No policies found.</td></tr>';
+      return;
     }
 
-    function populatePolicyTable(policies, tableId) {
-      const tbody = document.getElementById(tableId);
-      tbody.innerHTML = '';
-      if (policies.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-3 text-center text-gray-500">No policies found.</td></tr>';
-        return;
-      }
-      policies.forEach((policy, index) => {
+    policiesData.forEach((dataItem, dataIndex) => {
+      const policyList = Array.isArray(dataItem.policyList) ? dataItem.policyList : [];
+      if (policyList.length === 0) return;
+
+      hasPolicies = true;
+      policyList.forEach((policy, policyIndex) => {
         const row = document.createElement('tr');
-        row.style.animationDelay = `${index * 0.05}s`;
+        row.style.animationDelay = `${(dataIndex * policyList.length + policyIndex) * 0.05}s`;
+
+        const nameParts = [
+          dataItem.custName,
+          dataItem.middleName,
+          dataItem.surname
+        ].filter(Boolean).join(' ') || 'N/A';
+
+        const contactParts = [
+          dataItem.email,
+          dataItem.phoneNum
+        ].filter(Boolean).join(', ') || 'N/A';
+
+        let createdDate = 'N/A';
+        if (policy.createdDate) {
+          try {
+            createdDate = new Date(policy.createdDate).toLocaleString();
+          } catch (e) {
+            console.warn(`Invalid date format for createdDate: ${policy.createdDate}`);
+          }
+        }
+
         row.innerHTML = `
-          <td class="px-4 py-3">${policy.policyNum || ''}</td>
-          <td class="px-4 py-3">${policy.policyCreatedDate || ''}</td>
-          <td class="px-4 py-3">${policy.productCode || ''}</td>
-          <td class="px-4 py-3">${policy.polCompanyName || ''}</td>
-          <td class="px-4 py-3">${policy.workItemNo || ''}</td>
-          <td class="px-4 py-3">${policy.customerNo || ''}</td>
-          <td class="px-4 py-3">${policy.custName || ''}</td>
-          <td class="px-4 py-3">${policy.addressDetails || ''}</td>
-          <td class="px-4 py-3">${policy.contactDetails || ''}</td>
+          <td class="px-4 py-3">${policy.policyNumber || 'N/A'}</td>
+          <td class="px-4 py-3">${createdDate}</td>
+          <td class="px-4 py-3">${policy.productCode || 'N/A'}</td>
+          <td class="px-4 py-3">${policy.polCompanyName || 'N/A'}</td>
+          <td class="px-4 py-3">${policy.workItemRefNo || 'N/A'}</td>
+          <td class="px-4 py-3">${dataItem.customerNo || 'N/A'}</td>
+          <td class="px-4 py-3">${nameParts}</td>
+          <td class="px-4 py-3">Not available</td>
+          <td class="px-4 py-3">${contactParts}</td>
         `;
+
+        if (tableId === 'policy-table') {
+          row.classList.add('cursor-pointer', 'hover:bg-blue-50');
+          row.addEventListener('click', () => {
+            openModal('policy');
+            populateSinglePolicyModal(dataItem, policy);
+          });
+        }
+
         tbody.appendChild(row);
       });
+    });
+
+    if (!hasPolicies) {
+      tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-3 text-center text-gray-500">No policies found.</td></tr>';
+    }
+    if (hasPolicies) {
+		  const countDiv = document.createElement('div');
+		  countDiv.className = 'px-4 py-2 text-sm text-gray-600';
+		  countDiv.textContent = `Total Policies: ${policiesData[0]?.associatedpolicyCount || 0}`;
+		  tbody.parentNode.insertBefore(countDiv, tbody);
+		}
+  }
+  function populateSinglePolicyModal(dataItem, policy) {
+    const tbody = document.getElementById('policy-modal-table');
+    tbody.innerHTML = '';
+
+    const nameParts = [
+      dataItem.custName,
+      dataItem.middleName,
+      dataItem.surname
+    ].filter(Boolean).join(' ') || 'N/A';
+
+    const contactParts = [
+      dataItem.email,
+      dataItem.phoneNum
+    ].filter(Boolean).join(', ') || 'N/A';
+
+    let createdDate = 'N/A';
+    if (policy.createdDate) {
+      try {
+        createdDate = new Date(policy.createdDate).toLocaleString();
+      } catch (e) {
+        console.warn(`Invalid date format for createdDate: ${policy.createdDate}`);
+      }
     }
 
-    async function initializePage() {
-      if (!initializeUserId()) return;
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="px-4 py-3">${policy.policyNumber || 'N/A'}</td>
+      <td class="px-4 py-3">${createdDate}</td>
+      <td class="px-4 py-3">${policy.productCode || 'N/A'}</td>
+      <td class="px-4 py-3">${policy.polCompanyName || 'N/A'}</td>
+      <td class="px-4 py-3">${policy.workItemRefNo || 'N/A'}</td>
+      <td class="px-4 py-3">${dataItem.customerNo || 'N/A'}</td>
+      <td class="px-4 py-3">${nameParts}</td>
+      <td class="px-4 py-3">Not available</td>
+      <td class="px-4 py-3">${contactParts}</td>
+    `;
+    tbody.appendChild(row);
+  }
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const workItemRefNum = urlParams.get('ref');
+  async function initializePage() {
+    if (!initializeUserId()) return;
 
-      if (!workItemRefNum) {
-        showAlert('error', 'No work item reference number provided.');
+    const urlParams = new URLSearchParams(window.location.search);
+    const workItemRefNo = urlParams.get('ref');
+
+    if (!workItemRefNo) {
+      showAlert('error', 'No work item reference number provided.');
+      return;
+    }
+
+    try {
+      showLoader();
+
+      const workItems = await fetchWorkItems(workItemRefNo);
+      console.log('Work Items Response:', workItems);
+      if (!Array.isArray(workItems) || workItems.length === 0) {
+        showAlert('error', `No work item found with reference number: ${workItemRefNo}`);
         return;
       }
+      const workItem = workItems[0];
+      populateWorkItemDetails(workItem);
 
-      try {
-        showLoader();
-        const workItems = await fetchWorkItems(workItemRefNum);
-        if (workItems.length === 0) {
-          showAlert('error', `No work item found with reference number: ${workItemRefNum}`);
+      const policyData = await fetchPolicyDetails(workItemRefNo);
+      console.log('Policy Data Response:', policyData);
+      globalPoliciesData = policyData;
+      populatePolicyTable(policyData, 'policy-table');
+    } catch (error) {
+      console.error('Error initializing page:', error);
+      showAlert('error', `Failed to load details: ${error.message}`);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initializePage();
+
+    const modalButtons = {
+      'btn-profile': () => openModal('profile'),
+      'btn-contact': () => openModal('contact'),
+      'close-profile-modal': () => closeModal('profile'),
+      'close-contact-modal': () => closeModal('contact'),
+      'close-error-modal': () => closeModal('error'),
+      'close-success-modal': () => closeModal('success'),
+      'close-link-workitems-modal': () => closeModal('link-workitems'),
+      'close-summary-modal': () => closeModal('summary'),
+      'close-policy-modal': () => closeModal('policy'),
+      'close-interaction-modal': () => closeModal('interaction'),
+      'close-activity-modal': () => closeModal('activity'),
+      'error-ok-btn': () => closeModal('error'),
+      'success-ok-btn': () => closeModal('success'),
+      'link-workitems-btn': () => openModal('link-workitems'),
+      'modal-link-workitems-btn': () => openModal('link-workitems'),
+      'submit-link-workitems-btn': () => {
+        const form = document.getElementById('link-workitems-form');
+        if (!form.checkValidity()) {
+          showAlert('error', 'Please fill all required fields.');
           return;
         }
-        const workItem = workItems[0];
-        populateWorkItemDetails(workItem);
-        populatePolicyTable(mockPolicies.filter(policy => policy.workItemNo === workItemRefNum), 'policy-table');
-        populatePolicyTable(mockPolicies.filter(policy => policy.workItemNo === workItemRefNum), 'policy-modal-table');
-      } catch (error) {
-        showAlert('error', `Failed to load work item details: ${error.message}`);
-      } finally {
-        hideLoader();
+        const linkData = {
+          parentRefNum: document.getElementById('parent-refnum').value,
+          childRefNum: document.getElementById('child-refnum').value.trim(),
+          priorityFlag: document.getElementById('priority-flag').checked,
+          comment: document.getElementById('link-comment').value.trim(),
+          workType: document.getElementById('work-type').checked ? 'LINK_WFK_WK' : ''
+        };
+        console.log('Linking work item:', linkData);
+        closeModal('link-workitems');
+        showAlert('success', `Work item ${linkData.childRefNum} linked to ${linkData.parentRefNum} (placeholder action).`);
+        document.getElementById('link-workitems-form').reset();
+        document.getElementById('work-type').checked = true;
       }
-    }
+    };
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initializePage();
+    Object.entries(modalButtons).forEach(([id, handler]) => {
+      document.getElementById(id)?.addEventListener('click', handler);
+    });
 
-      const modalButtons = {
-        'btn-profile': () => openModal('profile'),
-        'btn-contact': () => openModal('contact'),
-        'close-profile-modal': () => closeModal('profile'),
-        'close-contact-modal': () => closeModal('contact'),
-        'close-error-modal': () => closeModal('error'),
-        'close-success-modal': () => closeModal('success'),
-        'close-link-workitems-modal': () => closeModal('link-workitems'),
-        'close-summary-modal': () => closeModal('summary'),
-        'close-policy-modal': () => closeModal('policy'),
-        'close-interaction-modal': () => closeModal('interaction'),
-        'close-activity-modal': () => closeModal('activity'),
-        'error-ok-btn': () => closeModal('error'),
-        'success-ok-btn': () => closeModal('success'),
-        'link-workitems-btn': () => openModal('link-workitems'),
-        'modal-link-workitems-btn': () => openModal('link-workitems'),
-        'submit-link-workitems-btn': () => {
-          const form = document.getElementById('link-workitems-form');
-          if (!form.checkValidity()) {
-            showAlert('error', 'Please fill all required fields.');
-            return;
-          }
-          const linkData = {
-            parentRefNum: document.getElementById('parent-refnum').value,
-            childRefNum: document.getElementById('child-refnum').value.trim(),
-            priorityFlag: document.getElementById('priority-flag').checked,
-            comment: document.getElementById('link-comment').value.trim(),
-            workType: document.getElementById('work-type').checked ? 'LINK_WFK_WK' : ''
-          };
-          console.log('Linking work item:', linkData);
-          closeModal('link-workitems');
-          showAlert('success', `Work item ${linkData.childRefNum} linked to ${linkData.parentRefNum} (placeholder action).`);
-          document.getElementById('link-workitems-form').reset();
-          document.getElementById('work-type').checked = true;
-        }
-      };
-
-      Object.entries(modalButtons).forEach(([id, handler]) => {
-        document.getElementById(id)?.addEventListener('click', handler);
-      });
-
-      window.addEventListener('click', (e) => {
-        Object.keys(modals).forEach((key) => {
-          if (e.target === modals[key]) closeModal(key);
-        });
-      });
-
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          Object.keys(modals).forEach((key) => closeModal(key));
-        }
+    window.addEventListener('click', (e) => {
+      Object.keys(modals).forEach((key) => {
+        if (e.target === modals[key]) closeModal(key);
       });
     });
-  </script>
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        Object.keys(modals).forEach((key) => closeModal(key));
+      }
+    });
+  });
+</script>
 </body>
 </html>

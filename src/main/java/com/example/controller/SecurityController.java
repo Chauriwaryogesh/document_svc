@@ -32,8 +32,8 @@ import com.example.dto.CustomerDTO;
 import com.example.dto.EmailDTO;
 import com.example.dto.EmployeeDTO;
 import com.example.dto.SecurityDTO;
-import com.example.service.IEmployeeService;
-import com.example.service.OtpService;
+import com.example.service.ISecrityService;
+import com.example.service.EmailService;
 import com.example.service.QrCodeService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,22 +43,22 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SecurityController {
 
 	@Autowired
-	private IEmployeeService empService;
+	private ISecrityService empService;
 
 	@Autowired
-	private OtpService otpService;
+	private EmailService otpService;
 
 	@Autowired
 	private QrCodeService qrCodeService;
 
 	@Autowired
 	private QrCodeWebSocketHandler webSocketHandler;
-	
+
 	@PostMapping(value = "/serch-user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public com.example.service.ResponseEntity<SecurityDTO> serchUser(@RequestBody SecurityDTO searchRequest,
-			@RequestHeader(value = "userId", required=false) String userId) {
+			@RequestHeader(value = "userId", required = false) String userId) {
 
-		 com.example.service.ResponseEntity<SecurityDTO> security = empService.searchUserFromList(searchRequest, userId);
+		com.example.service.ResponseEntity<SecurityDTO> security = empService.searchUserFromList(searchRequest, userId);
 
 		return security;
 	}
@@ -285,14 +285,14 @@ public class SecurityController {
 			return ResponseEntity.status(500).body(Map.of("error", "Failed to notify client"));
 		}
 	}
-	
+
 	@GetMapping("/customer-details")
 	public com.example.service.ResponseEntity<List<CustomerDTO>> getCustomerlDetails(
 			@RequestParam(value = "email", required = false) String email,
 			@RequestParam(value = "customerNo", required = false) String customerNo, @RequestHeader String userId) {
 		com.example.service.ResponseEntity<List<CustomerDTO>> emailResp = new com.example.service.ResponseEntity<>();
 
-		List<CustomerDTO> customerDTO = otpService.getCustomerDetails(email,customerNo, userId);
+		List<CustomerDTO> customerDTO = otpService.getCustomerDetails(email, customerNo, userId);
 
 		if (customerDTO != null && !customerDTO.isEmpty()) {
 			emailResp.setData(customerDTO);
@@ -301,9 +301,10 @@ public class SecurityController {
 		}
 		return emailResp;
 	}
+
 	@PostMapping("/customer-details/update")
-	public com.example.service.ResponseEntity<String> getCustomerlDetails(
-			@RequestBody CustomerDTO customerDTO, @RequestHeader String userId) {
+	public com.example.service.ResponseEntity<String> getCustomerlDetails(@RequestBody CustomerDTO customerDTO,
+			@RequestHeader String userId) {
 		com.example.service.ResponseEntity<String> resp = new com.example.service.ResponseEntity<>();
 
 		String message = otpService.updateCustomerDetails(customerDTO, userId);
@@ -316,6 +317,60 @@ public class SecurityController {
 		return resp;
 	}
 
-	
+	@PostMapping("/register-fingerprint")
+	public com.example.service.ResponseEntity<String> registerWebAuthn(@RequestBody SecurityDTO request,
+			@RequestHeader String userId) {
+		com.example.service.ResponseEntity<String> resp = new com.example.service.ResponseEntity<>();
+		try {
+			String updatedSecurity = empService.registerWebAuthnCredentials(request);
+			if (updatedSecurity.contains("Success")) {
+				resp.setData(updatedSecurity);
+			} else {
+				resp.setErrorMessage(updatedSecurity);
+			}
+		} catch (Exception e) {
+			e.getMessage();
+		}
+		return resp;
+
+	}
+
+	@PostMapping("/login-fingerprint")
+	public ResponseEntity<?> loginWithFingerprint(@RequestHeader(value = "userId", required = true) String userId) {
+		try {
+			boolean login = otpService.fingerprintLogin(userId);
+			if (login) {
+				return ResponseEntity.ok(new SuccessResponse("Fingerprint login successful"));
+			} else {
+				return ResponseEntity.badRequest().body(new ErrorResponse("Fingerprint login failed"));
+			}
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public static class SuccessResponse {
+		private String message;
+
+		public SuccessResponse(String message) {
+			this.message = message;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+	}
+
+	public static class ErrorResponse {
+		private String errorMessage;
+
+		public ErrorResponse(String errorMessage) {
+			this.errorMessage = errorMessage;
+		}
+
+		public String getErrorMessage() {
+			return errorMessage;
+		}
+	}
 
 }

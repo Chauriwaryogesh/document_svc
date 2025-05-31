@@ -34,7 +34,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 
 @Service
-public class EmployeeService implements IEmployeeService {
+public class SecurityService implements ISecrityService {
 
 	@Autowired
 	private IEmployeeRepo employeeRepo;
@@ -55,7 +55,7 @@ public class EmployeeService implements IEmployeeService {
 	private PersonSequenceRepository personSequenceRepository;
 
 	@Autowired
-	private OtpService otpService;
+	private EmailService otpService;
 
 	@Override
 	public List<EmployeeDTO> fetchEmpList(String id, String userId) {
@@ -281,6 +281,12 @@ public class EmployeeService implements IEmployeeService {
 				security.setIsEmailVerified(securityDTO.getIsEmailVerified());
 				security.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
 				security.setUpdateTime(String.valueOf(LocalDate.now()));
+				if (securityDTO.getCredentialId() != null) {
+	                security.setCredentialId(securityDTO.getCredentialId());
+	                security.setPublicKey(securityDTO.getPublicKey());
+	                security.setUserHandle(securityDTO.getUserHandle());
+	                security.setSignatureCounter(securityDTO.getSignatureCounter());
+	            }
 				if (securityDTO.getRemainingTime() != null) {
 					security.setEndTime(securityDTO.getRemainingTime());
 				} else {
@@ -313,7 +319,15 @@ public class EmployeeService implements IEmployeeService {
 			securityEntity.setUserName(securityDTO.getUserName());
 			securityEntity.setUpdateBy(securityDTO.getUserCode());
 			securityEntity.setUpdateTime(String.valueOf(LocalDate.now()));
-			if (securityDTO.getRemainingTime() != null) {
+			
+			// Set WebAuthn credentials if provided
+	        if (securityDTO.getCredentialId() != null) {
+	            securityEntity.setCredentialId(securityDTO.getCredentialId());
+	            securityEntity.setPublicKey(securityDTO.getPublicKey());
+	            securityEntity.setUserHandle(securityDTO.getUserHandle());
+	            securityEntity.setSignatureCounter(securityDTO.getSignatureCounter());
+	        }
+	        if (securityDTO.getRemainingTime() != null) {
 				securityEntity.setEndTime(securityDTO.getRemainingTime());
 			} else {
 				LocalDate updateTime = LocalDate.now();
@@ -416,5 +430,27 @@ public class EmployeeService implements IEmployeeService {
 		}
 		return serchResp;
 	}
+	
+	public String registerWebAuthnCredentials(SecurityDTO request) {
+        // Validate userId
+		String message= "";
+        if (request.getUserCode() == null) {
+            throw new IllegalArgumentException("User ID is mandatory");
+        }
+
+        Security security = securityRepo.findByUserCode(request.getUserCode());
+        
+        security.setCredentialId(request.getCredentialId());
+        security.setPublicKey(request.getPublicKey());
+        security.setUserHandle(request.getUserHandle());
+        security.setSignatureCounter(request.getSignatureCounter());
+        security.setUpdateTime(String.valueOf(System.currentTimeMillis())); 
+        security.setUpdateBy(request.getUserCode()); 
+        security.setDeletedFlag("N"); 
+        securityRepo.save(security);
+        message="Success, fngerprint added successfully";
+        return message;
+    }
+	
 
 }

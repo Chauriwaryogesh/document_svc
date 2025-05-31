@@ -9,7 +9,7 @@ import com.example.dto.EmpRequestforUpdate;
 import com.example.dto.EmployeeDTO;
 import com.example.dto.SecurityDTO;
 
-public interface IEmployeeService{
+public interface ISecrityService{
 
 	public List<EmployeeDTO> fetchEmpList(String id, String userId);
 
@@ -27,6 +27,8 @@ public interface IEmployeeService{
 	public boolean deleteNoteById(Long id);
 
 	public com.example.service.ResponseEntity<SecurityDTO> searchUserFromList(SecurityDTO searchRequest, String userId);
+
+	public String registerWebAuthnCredentials(SecurityDTO request);
 
 	
 

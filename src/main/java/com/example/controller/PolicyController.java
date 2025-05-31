@@ -16,7 +16,7 @@ import com.example.dto.CustomerDTO;
 import com.example.dto.PolicyDTO;
 import com.example.dto.PolicyRequest;
 import com.example.dto.ResponseDTO;
-import com.example.service.OtpService;
+import com.example.service.EmailService;
 import com.example.service.PolicyService;
 import com.example.service.ResponseEntity;
 
@@ -28,7 +28,7 @@ public class PolicyController {
 	private  PolicyService policyService;
 	
 	@Autowired
-	private OtpService otpService;
+	private EmailService otpService;
 
 	@PostMapping(value = "/policy-create", consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,12 +51,13 @@ public class PolicyController {
 			@RequestParam(value = "policyNo", required = false) String policyNo,
 			@RequestParam(value = "allpolSearch", required = false) String allPol,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
+			@RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
 			@RequestHeader String userId) {
-		if(allPol == null) {
-			allPol="N";
+		if (allPol == null) {
+			allPol = "N";
 		}
 		com.example.service.ResponseEntity<List<PolicyDTO>> emailResp = policyService.getPolicyDetails(policyNo,
-				customerNo,allPol, userId);
+				customerNo, allPol, workItemRefNo, userId);
 
 		return emailResp;
 	}
@@ -71,7 +72,7 @@ public class PolicyController {
 		if (message.contains("Success")) {
 			resp.setData(message);
 		} else {
-			resp.setErrorMessage("Error while updating  customerDetails ");
+			resp.setErrorMessage(message);
 		}
 		return resp;
 	}

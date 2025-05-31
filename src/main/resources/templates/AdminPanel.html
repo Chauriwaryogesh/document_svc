@@ -1012,6 +1012,25 @@
     max-height: 80vh;
     overflow-y: auto;
 }
+.register-fingerprint-button {
+    background-color: #17a2b8; /* Cyan color for distinction */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.register-fingerprint-button:hover {
+    background-color: #138496;
+    transform: scale(1.05);
+}
 
     </style>
 </head>
@@ -1347,7 +1366,7 @@ function populateUserList() {
 
     // Slice users for the current page
     const start = currentPage * getPageSize();
-const end = start + getPageSize();
+    const end = start + getPageSize();
     const workItems = allUsers.slice(start, end);
 
     if (!workItems || workItems.length === 0) {
@@ -1409,10 +1428,14 @@ const end = start + getPageSize();
                     <label>ID</label>
                     <div>${item.id || 'N/A'}</div>
                 </div>
+                <div>
+                    <button class="customer-details-button" onclick="registerFingerprint('${item.userCode || ''}', ${item.id || 0})">
+                        <i class="fas fa-fingerprint"></i> Register Fingerprint
+                    </button>
+                </div>
             `;
             userListContainer.appendChild(userDetails);
         } else {
-            // Grid view code remains similar, apply same default values
             const userCard = document.createElement('div');
             userCard.classList.add('user-card');
             userCard.style.animationDelay = `${index * 0.1}s`;
@@ -1456,6 +1479,11 @@ const end = start + getPageSize();
                         <label>ID</label>
                         <div>${item.id || 'N/A'}</div>
                     </div>
+                    <div>
+                        <button class="customer-details-button" onclick="registerFingerprint('${item.userCode || ''}', ${item.id || 0})">
+                            <i class="fas fa-fingerprint"></i> Register Fingerprint
+                        </button>
+                    </div>
                 </div>
             `;
             userCard.querySelector('.arrow').addEventListener('click', () => toggleUserDetails(item.id || 0));
@@ -1463,6 +1491,99 @@ const end = start + getPageSize();
         }
     });
 }
+async function registerFingerprint(userCode, userId) {
+    const authUserId = getUserId();
+    if (!authUserId) return;
+
+    if (!userCode) {
+        showErrorAlert('User Code is required for fingerprint registration.');
+        return;
+    }
+
+    // Check if WebAuthn is supported
+    if (!window.PublicKeyCredential) {
+        showErrorAlert('WebAuthn is not supported in this browser. Using mock data for testing.');
+        // Mock data for testing
+        const mockFingerprintData = {
+            userCode: userCode,
+            credentialId: btoa(`credential-${userId}-${Date.now()}`), // Base64-encoded mock credential
+            publicKey: btoa(`publicKey-${userId}-${Date.now()}`), // Base64-encoded mock public key
+            userHandle: btoa(userId.toString()), // Base64-encoded user ID
+            signatureCounter: 0
+        };
+
+        await sendFingerprintData(mockFingerprintData, authUserId);
+        return;
+    }
+
+    try {
+        // WebAuthn registration
+        const publicKeyCredentialCreationOptions = {
+            challenge: Uint8Array.from('random-challenge', c => c.charCodeAt(0)), // Mock challenge; replace with server-provided challenge
+            rp: {
+                name: "Your App Name",
+                id: window.location.hostname // Must match the domain (requires HTTPS in production)
+            },
+            user: {
+                id: Uint8Array.from(userId.toString(), c => c.charCodeAt(0)),
+                name: userCode,
+                displayName: userCode
+            },
+            pubKeyCredParams: [{ alg: -7, type: "public-key" }], // ES256 algorithm
+            authenticatorSelection: {
+                authenticatorAttachment: "platform", // Fingerprint scanner
+                userVerification: "required"
+            },
+            timeout: 60000
+        };
+
+        const credential = await navigator.credentials.create({
+            publicKey: publicKeyCredentialCreationOptions
+        });
+
+        // Extract necessary data from the credential
+        const fingerprintData = {
+            userCode: userCode,
+            credentialId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+            publicKey: btoa(String.fromCharCode(...new Uint8Array(credential.response.getPublicKey()))),
+            userHandle: btoa(String.fromCharCode(...new Uint8Array(credential.response.userHandle))),
+            signatureCounter: 0
+        };
+
+        await sendFingerprintData(fingerprintData, authUserId);
+    } catch (error) {
+        console.error('Error during WebAuthn registration:', error);
+        showErrorAlert('Failed to register fingerprint: ' + error.message);
+    }
+}
+
+async function sendFingerprintData(fingerprintData, authUserId) {
+    try {
+        const response = await fetch('http://localhost:8081/Security/register-fingerprint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'userId': authUserId
+            },
+            body: JSON.stringify(fingerprintData)
+        });
+
+        if (response.ok) {
+            const responseData = await response.json();
+            showCustomAlert('Success', 'Fingerprint registered successfully', () => {
+                fetchWorkItems(); // Refresh user list if needed
+            });
+        } else {
+            const errorData = await response.json();
+            console.error('Error registering fingerprint:', errorData);
+            showErrorAlert(errorData.errorMessage || 'Failed to register fingerprint.');
+        }
+    } catch (error) {
+        console.error('Error sending fingerprint data:', error);
+        showErrorAlert('Error registering fingerprint: ' + error.message);
+    }
+}
+
 
 function updatePagination(total) {
     const pageNumbersContainer = document.getElementById('pageNumbers');
