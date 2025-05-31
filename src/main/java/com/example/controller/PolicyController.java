@@ -16,7 +16,7 @@ import com.example.dto.CustomerDTO;
 import com.example.dto.PolicyDTO;
 import com.example.dto.PolicyRequest;
 import com.example.dto.ResponseDTO;
-import com.example.service.OtpService;
+import com.example.service.EmailService;
 import com.example.service.PolicyService;
 import com.example.service.ResponseEntity;
 
@@ -28,7 +28,7 @@ public class PolicyController {
 	private  PolicyService policyService;
 	
 	@Autowired
-	private OtpService otpService;
+	private EmailService otpService;
 
 	@PostMapping(value = "/policy-create", consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
@@ -72,7 +72,7 @@ public class PolicyController {
 		if (message.contains("Success")) {
 			resp.setData(message);
 		} else {
-			resp.setErrorMessage("Error while updating  customerDetails ");
+			resp.setErrorMessage(message);
 		}
 		return resp;
 	}

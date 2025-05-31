@@ -21,6 +21,7 @@ public interface IPolicyRepo extends JpaRepository<Policy, String> {
 
 	@Query(value="Select * from policy p where p.customerNo=?1", nativeQuery = true)
 	List<Policy> findByCustomerNo(String customerNo);
-	@Query(value="Select * from policy p where p.workItemRefNo=?1", nativeQuery = true)
+	
+	@Query(value="Select * from policy p where p.work_item_ref_no=?1", nativeQuery = true)
 	List<Policy> findByWorkItemRefNum(String workItemRefNum);
 }

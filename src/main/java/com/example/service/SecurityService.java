@@ -34,7 +34,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 
 @Service
-public class EmployeeService implements IEmployeeService {
+public class SecurityService implements ISecrityService {
 
 	@Autowired
 	private IEmployeeRepo employeeRepo;
@@ -55,7 +55,7 @@ public class EmployeeService implements IEmployeeService {
 	private PersonSequenceRepository personSequenceRepository;
 
 	@Autowired
-	private OtpService otpService;
+	private EmailService otpService;
 
 	@Override
 	public List<EmployeeDTO> fetchEmpList(String id, String userId) {

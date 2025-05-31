@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.dto.EmpRequestforUpdate;
 import com.example.dto.EmployeeDTO;
 import com.example.jwtutil.JwtUtil;
-import com.example.service.IEmployeeService;
+import com.example.service.ISecrityService;
 import com.example.service.ResponseEntity;
 
 @RestController
@@ -30,7 +30,7 @@ public class EmployeeController {
 	private JwtUtil jwtUtil;
 
 	@Autowired
-	private IEmployeeService empService;
+	private ISecrityService empService;
 
 	@GetMapping(value = "Jwt Generator")
 	public Map<String, String> jwtGenerate(String userId) {

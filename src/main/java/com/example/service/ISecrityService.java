@@ -9,7 +9,7 @@ import com.example.dto.EmpRequestforUpdate;
 import com.example.dto.EmployeeDTO;
 import com.example.dto.SecurityDTO;
 
-public interface IEmployeeService{
+public interface ISecrityService{
 
 	public List<EmployeeDTO> fetchEmpList(String id, String userId);
 

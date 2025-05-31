@@ -15,6 +15,20 @@ public class SecurityDTO {
     private String publicKey;
     private String userHandle;
     private Long signatureCounter;
+    private String authenticatorData;
+    
+	/**
+	 * @return the authenticatorData
+	 */
+	public String getAuthenticatorData() {
+		return authenticatorData;
+	}
+	/**
+	 * @param authenticatorData the authenticatorData to set
+	 */
+	public void setAuthenticatorData(String authenticatorData) {
+		this.authenticatorData = authenticatorData;
+	}
 	/**
 	 * @return the credentialId
 	 */
