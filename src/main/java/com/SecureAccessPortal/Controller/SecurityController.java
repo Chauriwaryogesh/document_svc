@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.SecureAccessPortal.Config.QrCodeWebSocketHandler;
+import com.SecureAccessPortal.Configuration.QrCodeWebSocketHandlerConfig;
 import com.SecureAccessPortal.Modal.CustomerDTO;
 import com.SecureAccessPortal.Modal.EmailDTO;
 import com.SecureAccessPortal.Modal.EmployeeDTO;
@@ -52,7 +52,7 @@ public class SecurityController {
 	private QrCodeService qrCodeService;
 
 	@Autowired
-	private QrCodeWebSocketHandler webSocketHandler;
+	private QrCodeWebSocketHandlerConfig webSocketHandler;
 
 	@PostMapping(value = "/serch-user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> serchUser(@RequestBody SecurityDTO searchRequest,

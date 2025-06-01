@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,7 +64,7 @@ public class EmployeeController {
 		} catch (Exception ex) {
 			serviceResponce.setErrorMessage("Unauthorized user");
 		}
-		List<EmployeeDTO> empList = empService.fetchEmpList(id,userId);
+		List<EmployeeDTO> empList = empService.fetchEmpList(id, userId);
 		serviceResponce.setData(empList);
 		return serviceResponce;
 	}
@@ -78,12 +79,12 @@ public class EmployeeController {
 		if (employeeRequest == null) {
 			serviceResponce.setErrorMessage("Request is null");
 		}
-		employeeDTO = empService.updateEmployee(employeeRequest,userId);
+		employeeDTO = empService.updateEmployee(employeeRequest, userId);
 		serviceResponce.setData(employeeDTO);
 		return serviceResponce;
 	}
 
-	//@Cacheable("employees")
+	@Cacheable("employees")
 	@GetMapping(value = "/findAllEmployee", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmployeeDTO>> getAllEmployee(String userId) {
 		ResponseEntity<List<EmployeeDTO>> serviceResp = new ResponseEntity<List<EmployeeDTO>>();
@@ -92,26 +93,22 @@ public class EmployeeController {
 		return serviceResp;
 	}
 
-	 @GetMapping(value = "/generatePDF", produces = MediaType.APPLICATION_PDF_VALUE)
-	    public  org.springframework.http.  ResponseEntity<byte[]> generatePdf(
-	    		@RequestParam (value="id", required=false)String id,
-	    		@RequestHeader (value="userId", required = true) String userId) throws IOException {
-	        System.out.println("Generating PDF for Employee ID: " + id);
+	@GetMapping(value = "/generatePDF", produces = MediaType.APPLICATION_PDF_VALUE)
+	public org.springframework.http.ResponseEntity<byte[]> generatePdf(
+			@RequestParam(value = "id", required = false) String id,
+			@RequestHeader(value = "userId", required = true) String userId) throws IOException {
+		System.out.println("Generating PDF for Employee ID: " + id);
 
-	        byte[] pdfBytes = empService.fetchEmployeeDBforPDF(id,userId);
+		byte[] pdfBytes = empService.fetchEmployeeDBforPDF(id, userId);
 
-	        if (pdfBytes == null || pdfBytes.length == 0) {
-	            return org.springframework.http. ResponseEntity.internalServerError()
-	                    .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
-	                    .body("Error generating PDF".getBytes());
-	        }
+		if (pdfBytes == null || pdfBytes.length == 0) {
+			return org.springframework.http.ResponseEntity.internalServerError()
+					.header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
+					.body("Error generating PDF".getBytes());
+		}
 
-	        return org.springframework.http.ResponseEntity.ok()
-	                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=employee_" + id + ".pdf")
-	                .contentType(MediaType.APPLICATION_PDF)
-	                .body(pdfBytes);
-	    }
-	    
-	    	    
-	    
+		return org.springframework.http.ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=employee_" + id + ".pdf")
+				.contentType(MediaType.APPLICATION_PDF).body(pdfBytes);
+	}
 }

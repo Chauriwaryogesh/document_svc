@@ -1,4 +1,4 @@
-package com.SecureAccessPortal.Config;
+package com.SecureAccessPortal.Configuration;
 
 import java.util.Properties;
 

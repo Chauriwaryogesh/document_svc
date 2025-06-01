@@ -1,4 +1,4 @@
-package com.SecureAccessPortal.Config;
+package com.SecureAccessPortal.Configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -10,6 +10,6 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new QrCodeWebSocketHandler(), "/ws/qr-login").setAllowedOrigins("*");
+        registry.addHandler(new QrCodeWebSocketHandlerConfig(), "/ws/qr-login").setAllowedOrigins("*");
     }
 }

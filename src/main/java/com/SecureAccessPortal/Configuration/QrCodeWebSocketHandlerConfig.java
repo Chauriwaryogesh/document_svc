@@ -1,5 +1,4 @@
-package com.SecureAccessPortal.Config;
-
+package com.SecureAccessPortal.Configuration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +11,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-public class QrCodeWebSocketHandler extends TextWebSocketHandler {
+public class QrCodeWebSocketHandlerConfig extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 

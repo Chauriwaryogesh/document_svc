@@ -6,14 +6,15 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.4</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<version>3.4.0</version>
+		<relativePath /> 
 	</parent>
 	<groupId>SecureAccessPortal</groupId>
 	<artifactId>SecureAccessPortal</artifactId>
 	<version>v1</version>
 	<name>SecureAccessPortal</name>
 	<description>SecureAccessPortal</description>
+	<packaging>war</packaging>
 	<url />
 	<licenses>
 		<license />
