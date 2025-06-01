@@ -33,7 +33,7 @@
             border: 1px solid #ccc;
             border-radius: 6px;
         }
-		input[type="userId"] {
+		input[type="userCode"] {
 		            width: 100%;
 		            padding: 12px;
 		            margin-top: 10px;
@@ -155,7 +155,7 @@
     <div class="container">
         <h2>Register Email</h2>
         <input type="email" id="emailInput" placeholder=" email">
-		<input type="userId" id="userId" placeholder="userId">
+		<input type="userCode" id="userCode" placeholder="userCode">
         <button onclick="registerEmail()">Register Here</button>
 
         <div class="footer-buttons">
@@ -176,7 +176,7 @@
     const customErrorOkBtn = document.getElementById('customErrorOkBtn');
     async function registerEmail() {
         const email = document.getElementById("emailInput").value;
-        const userCode = document.getElementById("userId").value;
+        const userCode = document.getElementById("userCode").value;
 
         if (!email || !userCode) {
             alert("Email or User ID is missing.");
@@ -188,7 +188,7 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "userId": userCode
+                    "userCode": userCode
                 },
                 body: JSON.stringify({ email, userCode })
             });

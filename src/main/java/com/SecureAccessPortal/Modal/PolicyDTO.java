@@ -4,7 +4,7 @@ import java.util.List;
 
 public class PolicyDTO {
     private String associatedPolicyCount; // Renamed to camelCase
-    private String userId;
+    private String userCode;
     private String customerNo;
     private String customerName; // Renamed to camelCase
     private String middleName;
@@ -25,12 +25,12 @@ public class PolicyDTO {
         this.associatedPolicyCount = associatedPolicyCount;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getuserCode() {
+        return userCode;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setuserCode(String userCode) {
+        this.userCode = userCode;
     }
 
     public String getCustomerNo() {

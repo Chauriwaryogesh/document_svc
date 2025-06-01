@@ -652,7 +652,7 @@
 const config = {
     apiBase: 'http://localhost:8081/NewBusinessController',
     timeout: 5000,
-    userId: null, // Initialize as null to avoid default userId issues
+    userCode: null, // Initialize as null to avoid default userCode issues
     itemsPerPage: 5,
     currentPage: 1
 };
@@ -749,9 +749,9 @@ function formatDate(dateStr) {
 }
 
 // Authentication
-function initializeUserId() {
-    config.userId = sessionStorage.getItem('userId');
-    if (!config.userId) {
+function initializeuserCode() {
+    config.userCode = sessionStorage.getItem('userCode');
+    if (!config.userCode) {
         showErrorAlert('Please log in to continue.');
         setTimeout(() => window.location.href = '/login', 2000);
         return false;
@@ -760,8 +760,8 @@ function initializeUserId() {
 }
 
 function logout() {
-    sessionStorage.removeItem('userId');
-    config.userId = null;
+    sessionStorage.removeItem('userCode');
+    config.userCode = null;
     showSuccessAlert('Logged out successfully!');
     setTimeout(() => window.location.href = '/login', 1000);
 }
@@ -825,10 +825,10 @@ function updateDocTypeChart() {
 
 // Document Management
 async function fetchNewBusinessDocs() {
-    if (!config.userId) return;
+    if (!config.userCode) return;
     try {
         const response = await fetchWithTimeout(`${config.apiBase}/documents`, {
-            headers: { 'userId': config.userId }
+            headers: { 'userCode': config.userCode }
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
@@ -971,7 +971,7 @@ async function deleteSelectedNewBusinessDocs() {
         await Promise.all(selectedIds.map(id => 
             fetchWithTimeout(`${config.apiBase}/documents/delete/${id}`, {
                 method: 'DELETE',
-                headers: { 'userId': config.userId }
+                headers: { 'userCode': config.userCode }
             }).then(response => {
                 if (!response.ok) throw new Error(`Failed to delete New Business Doc ID ${id}`);
                 return id;
@@ -1085,7 +1085,7 @@ function hideCreateDocumentModal() {
 
 async function createNewBusinessDoc(event) {
     event.preventDefault();
-    if (!config.userId) {
+    if (!config.userCode) {
         showErrorAlert('User not authenticated.');
         return;
     }
@@ -1135,9 +1135,9 @@ async function createNewBusinessDoc(event) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'userId': config.userId
+                'userCode': config.userCode
             },
-            body: JSON.stringify({ name, type, userId: config.userId, content })
+            body: JSON.stringify({ name, type, userCode: config.userCode, content })
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const newDoc = await response.json();
@@ -1161,13 +1161,13 @@ async function createNewBusinessDoc(event) {
 }
 
 async function viewNewBusinessDoc(docId) {
-    if (!config.userId) {
+    if (!config.userCode) {
         showErrorAlert('User not authenticated.');
         return;
     }
     try {
         const response = await fetchWithTimeout(`${config.apiBase}/getDocument?id=${docId}`, {
-            headers: { 'userId': config.userId }
+            headers: { 'userCode': config.userCode }
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
@@ -1284,7 +1284,7 @@ async function generatePdf(docId) {
 async function generatePdfWithOptions(docId, options) {
     try {
         const response = await fetchWithTimeout(`${config.apiBase}/getDocument?id=${docId}`, {
-            headers: { 'userId': config.userId }
+            headers: { 'userCode': config.userCode }
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
@@ -1460,8 +1460,8 @@ const updateFilters = debounce(() => {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
 	resetFilters(); // Clear search bar and other filters
-    initializeUserId();
-    if (config.userId) {
+    initializeuserCode();
+    if (config.userCode) {
         initializeCharts();
         fetchNewBusinessDocs();
     }

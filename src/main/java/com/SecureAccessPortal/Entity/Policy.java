@@ -46,7 +46,7 @@ public class Policy {
     private String updatedBy;
 
     @Column(name = "user_id")
-    private String userId;
+    private String userCode;
 
     @Column(name = "deleted_flag")
     private String deletedFlag;
@@ -161,12 +161,12 @@ public class Policy {
         this.updatedBy = updatedBy;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getuserCode() {
+        return userCode;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setuserCode(String userCode) {
+        this.userCode = userCode;
     }
 
     public String getDeletedFlag() {

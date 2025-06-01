@@ -39,9 +39,9 @@ public class PhotoCaptureController {
 			"application/pdf" })
 	public ResponseEntity<byte[]> getDocument(@RequestParam(value = "id", required = false) String id,
 			@RequestParam(value = "docName", required = false) String docName,
-			@RequestHeader(value = "userId", required = false) String userId) {
+			@RequestHeader(value = "userCode", required = false) String userCode) {
 
-		CapturePhoto document = docmentSrvice.getDocumentdtls(id, docName, userId);
+		CapturePhoto document = docmentSrvice.getDocumentdtls(id, docName, userCode);
 		if (document != null) {
 			return ResponseEntity.ok()
 					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocName() + "\"")
@@ -55,9 +55,9 @@ public class PhotoCaptureController {
 
 	@PostMapping(value = "/uploadDocument", consumes = "multipart/form-data")
 	public ResponseEntity<String> uploadDocument(@RequestParam("file") MultipartFile file,
-			@RequestParam("Doc Name") String docName, @RequestHeader String userId) {
+			@RequestParam("Doc Name") String docName, @RequestHeader String userCode) {
 		try {
-			CapturePhoto document = docmentSrvice.uploadDocument(file, docName, userId);
+			CapturePhoto document = docmentSrvice.uploadDocument(file, docName, userCode);
 			return ResponseEntity.ok("Document uploaded successfully. ID: " + document.getId());
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -67,10 +67,10 @@ public class PhotoCaptureController {
 
 	@RequestMapping(value = "upload-getAllDocuments", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public com.SecureAccessPortal.Service.ResponseEntity<List<PhotoDTO>> getDocument(
-			@RequestHeader(value = "userId", required = false) String userId) {
+			@RequestHeader(value = "userCode", required = false) String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<List<PhotoDTO>> docslist = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<PhotoDTO> document = docmentSrvice.getAllDocuments(userId);
+		List<PhotoDTO> document = docmentSrvice.getAllDocuments(userCode);
 		if (document != null) {
 			docslist.setData(document);
 		} else {
@@ -94,10 +94,10 @@ public class PhotoCaptureController {
 
 	@GetMapping("/capture-getAllDocument")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<PhotoDTO>> getCaptureAllDocument(
-			@RequestHeader(value = "userId", required = false) String userId) {
+			@RequestHeader(value = "userCode", required = false) String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<List<PhotoDTO>> docslist = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<PhotoDTO> document = docmentSrvice.getCaptureAllDocuments(userId);
+		List<PhotoDTO> document = docmentSrvice.getCaptureAllDocuments(userCode);
 		if (document != null) {
 			docslist.setData(document);
 		} else {
@@ -111,9 +111,9 @@ public class PhotoCaptureController {
 			"application/pdf" })
 	public ResponseEntity<byte[]> getCaptureDocument(@RequestParam(value = "id", required = false) String id,
 			@RequestParam(value = "docName", required = false) String docName,
-			@RequestHeader(value = "userId", required = false) String userId) {
+			@RequestHeader(value = "userCode", required = false) String userCode) {
 
-		PhotoDTO document = docmentSrvice.getCaptureDocumentdtls(id, docName, userId);
+		PhotoDTO document = docmentSrvice.getCaptureDocumentdtls(id, docName, userCode);
 		if (document != null) {
 			return ResponseEntity.ok()
 					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocName() + "\"")
@@ -135,9 +135,9 @@ public class PhotoCaptureController {
 
 	@GetMapping("/notes/List")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<NotesDTO>> fetchNotes(
-			@RequestHeader(value = "userId", required = false) String userId) {
+			@RequestHeader(value = "userCode", required = false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<NotesDTO>> responce = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<NotesDTO> saved = docmentSrvice.getList(userId);
+		List<NotesDTO> saved = docmentSrvice.getList(userCode);
 		responce.setData(saved);
 		return responce;
 	}

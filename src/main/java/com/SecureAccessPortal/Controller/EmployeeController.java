@@ -34,19 +34,19 @@ public class EmployeeController {
 	private ISecrityService empService;
 
 	@GetMapping(value = "Jwt Generator")
-	public Map<String, String> jwtGenerate(String userId) {
-		String token = jwtUtil.generateToken(userId);
+	public Map<String, String> jwtGenerate(String userCode) {
+		String token = jwtUtil.generateToken(userCode);
 		return Map.of("token", token);
 	}
 
 	@RequestMapping(value = "getEmployee_Information", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmployeeDTO>> getEmployeeList(@RequestParam(value = "Id") String id,
-			@RequestHeader(value = "UserId") String userId,
+			@RequestHeader(value = "userCode") String userCode,
 			@RequestHeader(value = "AUthorizationHeader", required = false) String authorizationHeader) {
 
 		ResponseEntity<List<EmployeeDTO>> serviceResponce = new ResponseEntity<>();
 
-		if (!"SYSTEM".equalsIgnoreCase(userId)) {
+		if (!"SYSTEM".equalsIgnoreCase(userCode)) {
 
 			serviceResponce.setErrorMessage("Unauthorized user");
 		}
@@ -64,14 +64,14 @@ public class EmployeeController {
 		} catch (Exception ex) {
 			serviceResponce.setErrorMessage("Unauthorized user");
 		}
-		List<EmployeeDTO> empList = empService.fetchEmpList(id, userId);
+		List<EmployeeDTO> empList = empService.fetchEmpList(id, userCode);
 		serviceResponce.setData(empList);
 		return serviceResponce;
 	}
 
 	@PostMapping(value = "/create-Update_Employee", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeDTO> updateEmployee(@RequestBody EmpRequestforUpdate employeeRequest,
-			@RequestHeader(value = "userId", required = false) String userId,
+			@RequestHeader(value = "userCode", required = false) String userCode,
 			@RequestHeader(value = "AUthorizationHeader", required = false) String authorizationHeader) {
 
 		ResponseEntity<EmployeeDTO> serviceResponce = new ResponseEntity<>();
@@ -79,16 +79,16 @@ public class EmployeeController {
 		if (employeeRequest == null) {
 			serviceResponce.setErrorMessage("Request is null");
 		}
-		employeeDTO = empService.updateEmployee(employeeRequest, userId);
+		employeeDTO = empService.updateEmployee(employeeRequest, userCode);
 		serviceResponce.setData(employeeDTO);
 		return serviceResponce;
 	}
 
 	@Cacheable("employees")
 	@GetMapping(value = "/findAllEmployee", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<EmployeeDTO>> getAllEmployee(String userId) {
+	public ResponseEntity<List<EmployeeDTO>> getAllEmployee(String userCode) {
 		ResponseEntity<List<EmployeeDTO>> serviceResp = new ResponseEntity<List<EmployeeDTO>>();
-		List<EmployeeDTO> employeeDTO = empService.fetchAllEmployee(userId);
+		List<EmployeeDTO> employeeDTO = empService.fetchAllEmployee(userCode);
 		serviceResp.setData(employeeDTO);
 		return serviceResp;
 	}
@@ -96,10 +96,10 @@ public class EmployeeController {
 	@GetMapping(value = "/generatePDF", produces = MediaType.APPLICATION_PDF_VALUE)
 	public org.springframework.http.ResponseEntity<byte[]> generatePdf(
 			@RequestParam(value = "id", required = false) String id,
-			@RequestHeader(value = "userId", required = true) String userId) throws IOException {
+			@RequestHeader(value = "userCode", required = true) String userCode) throws IOException {
 		System.out.println("Generating PDF for Employee ID: " + id);
 
-		byte[] pdfBytes = empService.fetchEmployeeDBforPDF(id, userId);
+		byte[] pdfBytes = empService.fetchEmployeeDBforPDF(id, userCode);
 
 		if (pdfBytes == null || pdfBytes.length == 0) {
 			return org.springframework.http.ResponseEntity.internalServerError()

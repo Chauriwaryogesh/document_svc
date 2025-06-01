@@ -303,7 +303,7 @@
         </button>
       </div>
       <div class="text-gray-600 mb-6 space-y-2">
-        <p><span class="font-medium">User ID:</span> <span id="profile-userid">Not available</span></p>
+        <p><span class="font-medium">User ID:</span> <span id="profile-userCode">Not available</span></p>
         <p><span class="font-medium">Email:</span> <span id="profile-email">Not available</span></p>
       </div>
       <button onclick="document.getElementById('close-profile-modal').click()"
@@ -538,7 +538,7 @@
   <script>
     const config = {
       loginUrl: 'login',
-      userId: null,
+      userCode: null,
       email: null
     };
 
@@ -556,7 +556,7 @@
 
     function openModal(modalId) {
       if (modalId === 'profile') {
-        document.getElementById('profile-userid').textContent = config.userId || 'Not available';
+        document.getElementById('profile-userCode').textContent = config.userCode || 'Not available';
         document.getElementById('profile-email').textContent = config.email || 'Not available';
       }
       modals[modalId]?.classList.remove('hidden');
@@ -601,10 +601,10 @@
       document.getElementById('sidebar').classList.remove('active');
     }
 
-    function initializeUserId() {
-      config.userId = sessionStorage.getItem('userId');
+    function initializeuserCode() {
+      config.userCode = sessionStorage.getItem('userCode');
       config.email = sessionStorage.getItem('email');
-      if (!config.userId) {
+      if (!config.userCode) {
         showAlert('error', 'Please log in to continue.', config.loginUrl);
         return false;
       }
@@ -612,15 +612,15 @@
     }
 
     function logout() {
-      sessionStorage.removeItem('userId');
+      sessionStorage.removeItem('userCode');
       sessionStorage.removeItem('email');
-      config.userId = null;
+      config.userCode = null;
       config.email = null;
       showAlert('success', 'Logged out successfully!', config.loginUrl);
     }
 
     function navigateTo(page) {
-      if (page !== 'logout' && !config.userId) {
+      if (page !== 'logout' && !config.userCode) {
         showAlert('error', 'Please log in to access this page.', config.loginUrl);
         return;
       }
@@ -680,7 +680,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      if (!initializeUserId()) return;
+      if (!initializeuserCode()) return;
 
       ['header-title', 'header-subtitle'].forEach((id, i) => {
         const el = document.getElementById(id);

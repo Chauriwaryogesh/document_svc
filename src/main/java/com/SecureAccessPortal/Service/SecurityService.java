@@ -63,7 +63,7 @@ public class SecurityService implements ISecrityService {
 	private CustomerRepo customerRepo;
 
 	@Override
-	public List<EmployeeDTO> fetchEmpList(String id, String userId) {
+	public List<EmployeeDTO> fetchEmpList(String id, String userCode) {
 		// Convert the String id to Long (assuming id is a numeric string)
 		List<EmployeeDTO> employeeList = new ArrayList<>();
 		EmployeeDTO employeeDTO = new EmployeeDTO();
@@ -72,10 +72,10 @@ public class SecurityService implements ISecrityService {
 		try {
 			// for Security
 			List<Security> security = securityRepo.findAll();
-			boolean Notfound = security.stream().anyMatch(userCode -> userCode.getUserCode().equalsIgnoreCase(userId));
+			boolean Notfound = security.stream().anyMatch(user -> user.getUserCode().equalsIgnoreCase(userCode));
 
 			if (!Notfound) {
-				throw new BadRequestException("Invalid User" + userId);
+				throw new BadRequestException("Invalid User" + userCode);
 			}
 
 		} catch (BadRequest e) {
@@ -95,15 +95,15 @@ public class SecurityService implements ISecrityService {
 	}
 
 	@Override
-	public EmployeeDTO updateEmployee(EmpRequestforUpdate employeeRequest, String userId) {
+	public EmployeeDTO updateEmployee(EmpRequestforUpdate employeeRequest, String userCode) {
 		EmployeeDTO employeeDTO = new EmployeeDTO();
 		try {
 			// for Security
 			List<Security> security = securityRepo.findAll();
-			boolean Notfound = security.stream().anyMatch(userCode -> userCode.getUserCode().equalsIgnoreCase(userId));
+			boolean Notfound = security.stream().anyMatch(user -> user.getUserCode().equalsIgnoreCase(userCode));
 
 			if (!Notfound) {
-				throw new BadRequestException("Invalid User" + userId);
+				throw new BadRequestException("Invalid User" + userCode);
 			}
 
 		} catch (BadRequest e) {
@@ -121,14 +121,14 @@ public class SecurityService implements ISecrityService {
 				// Create WorkItem whenever added new Employee or update.
 				WorkItemDTO workItemRequest = new WorkItemDTO();
 				workItemRequest.setComment("WorkItem getting created for Update Employee Details");
-				workItemRequest.setCreatedBy(userId);
+				workItemRequest.setCreatedBy(userCode);
 				workItemRequest.setWorkType(CommonConstant.ADD_NEW_EMPLOYEE);
-				WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userId);
+				WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userCode);
 
 				// Implement Email API. to Share Info.
 				if (employeeRequest.getEmail() != null) {
 					String response = otpService.sendDetailEmail(employeeRequest.getEmail(), emplo.getId(), workItem,
-							userId);
+							userCode);
 				}
 
 			}
@@ -140,13 +140,13 @@ public class SecurityService implements ISecrityService {
 			// Create WorkItem whenever added new Employee or update.
 			WorkItemDTO workItemRequest = new WorkItemDTO();
 			workItemRequest.setComment("WorkItem getting created for new employee");
-			workItemRequest.setCreatedBy(userId);
+			workItemRequest.setCreatedBy(userCode);
 			workItemRequest.setWorkType(CommonConstant.ADD_NEW_EMPLOYEE);
-			WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userId);
+			WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userCode);
 
 			// Implement Email API. to Share Info.
 			if (employeeRequest.getEmail() != null) {
-				String response = otpService.sendDetailEmail(employeeRequest.getEmail(), id, workItem, userId);
+				String response = otpService.sendDetailEmail(employeeRequest.getEmail(), id, workItem, userCode);
 			}
 		}
 
@@ -154,14 +154,14 @@ public class SecurityService implements ISecrityService {
 	}
 
 	@Override
-	public List<EmployeeDTO> fetchAllEmployee(String userId) {
+	public List<EmployeeDTO> fetchAllEmployee(String userCode) {
 		try {
 			// for Security
 			List<Security> security = securityRepo.findAll();
-			boolean Notfound = security.stream().anyMatch(userCode -> userCode.getUserCode().equalsIgnoreCase(userId));
+			boolean Notfound = security.stream().anyMatch(user -> user.getUserCode().equalsIgnoreCase(userCode));
 
 			if (!Notfound) {
-				throw new BadRequestException("Invalid User" + userId);
+				throw new BadRequestException("Invalid User" + userCode);
 			}
 
 		} catch (BadRequest e) {
@@ -173,7 +173,7 @@ public class SecurityService implements ISecrityService {
 	}
 
 	@Override
-	public byte[] fetchEmployeeDBforPDF(String id, String userId) throws IOException {
+	public byte[] fetchEmployeeDBforPDF(String id, String userCode) throws IOException {
 		final String DIRECTORY = "D:/Employee_PDFs/";
 		Employees employee = new Employees();
 		List<Employees> employeesList = new ArrayList<>();
@@ -183,10 +183,10 @@ public class SecurityService implements ISecrityService {
 		try {
 			// for Security
 			List<Security> security = securityRepo.findAll();
-			boolean Notfound = security.stream().anyMatch(userCode -> userCode.getUserCode().equalsIgnoreCase(userId));
+			boolean Notfound = security.stream().anyMatch(user -> user.getUserCode().equalsIgnoreCase(userCode));
 
 			if (!Notfound) {
-				throw new BadRequestException("Invalid User" + userId);
+				throw new BadRequestException("Invalid User" + userCode);
 			}
 
 		} catch (BadRequest e) {
@@ -257,7 +257,7 @@ public class SecurityService implements ISecrityService {
 	}
 
 	@Override
-	public List<SecurityDTO> fetchListOfUsers(String id, String userId){
+	public List<SecurityDTO> fetchListOfUsers(String id, String userCode){
 		List<SecurityDTO> allUsers = List.of();
 		List<Security> securityList =new ArrayList<>();
 		try { 
@@ -267,7 +267,7 @@ public class SecurityService implements ISecrityService {
 			}else {
 				 securityList = securityRepo.findAll("N");
 			}
-			allUsers = securityMapper.mapSecurity(securityList,userId);
+			allUsers = securityMapper.mapSecurity(securityList,userCode);
 		} catch (Exception e) {
 			e.getCause();
 		}
@@ -275,7 +275,7 @@ public class SecurityService implements ISecrityService {
 	}
 
 	@Override
-	public SecurityDTO createUser(SecurityDTO securityDTO, String userId) {
+	public SecurityDTO createUser(SecurityDTO securityDTO, String userCode) {
 		Security security = securityRepo.findByEmail(securityDTO.getEmail(), "N");
 		if (security != null) {
 			if (securityDTO.getEmail().equalsIgnoreCase(security.getEmail())) {
@@ -343,7 +343,7 @@ public class SecurityService implements ISecrityService {
 	        Customer	custDTO = new Customer();
 			custDTO.setCustomerNo(generateCustomerNumber());
 			custDTO.setEmail(securityDTO.getEmail());
-			custDTO.setUserCode(userId);
+			custDTO.setUserCode(userCode);
 			customerRepo.save(custDTO);
 			String message = "Success, person " + custDTO.getCustomerNo() + " created/updated successfully";
 			securityRepo.save(securityEntity);
@@ -357,7 +357,7 @@ public class SecurityService implements ISecrityService {
 		return "T" + String.format("%09d", nextVal);
 	}
 	@Override
-	public String registerUser(SecurityDTO securityDTO, String userId) {
+	public String registerUser(SecurityDTO securityDTO, String userCode) {
 		String message = "";
 		Security security = securityRepo.findByEmail(securityDTO.getEmail(), "N");
 		if ( security != null && security.getEmail().equalsIgnoreCase(securityDTO.getEmail()) && security.getUserCode().equalsIgnoreCase(securityDTO.getUserCode())
@@ -412,7 +412,7 @@ public class SecurityService implements ISecrityService {
 	}
 
 	@Override
-	public ResponseEntity<SecurityDTO> searchUserFromList(SecurityDTO searchRequest, String userId) {
+	public ResponseEntity<SecurityDTO> searchUserFromList(SecurityDTO searchRequest, String userCode) {
 		ResponseEntity<SecurityDTO> serchResp=  new ResponseEntity<>();
 		
 		SecurityDTO securityDTO= new SecurityDTO();
@@ -440,7 +440,7 @@ public class SecurityService implements ISecrityService {
 	}
 	
 	public String registerWebAuthnCredentials(SecurityDTO request) {
-        // Validate userId
+        // Validate userCode
 		String message= "";
         if (request.getUserCode() == null) {
             throw new IllegalArgumentException("User ID is mandatory");

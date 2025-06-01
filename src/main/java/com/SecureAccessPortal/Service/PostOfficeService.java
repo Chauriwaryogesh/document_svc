@@ -26,7 +26,7 @@ public class PostOfficeService {
 
 	private static final Logger log = LoggerFactory.getLogger(PostOfficeService.class);
 
-	public PostalResponse getPostOfficeInfo(String pincode, String brnchName, String userId) {
+	public PostalResponse getPostOfficeInfo(String pincode, String brnchName, String userCode) {
 		PostalResponse mainResponse = new PostalResponse();
 		if (pincode != null) {
 			String url = "https://api.postalpincode.in/pincode/" + pincode;
@@ -67,7 +67,7 @@ public class PostOfficeService {
 		return mainResponse;
 	}
 
-	public List<PinCodeCount> getPinCodeInfo(String pinCode, String brnchName, String userId) {
+	public List<PinCodeCount> getPinCodeInfo(String pinCode, String brnchName, String userCode) {
 		List<PinCodeOrBranch> pinArray = new ArrayList<>();
 		pinArray = postOffice.findAll();
 

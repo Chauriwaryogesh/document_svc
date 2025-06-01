@@ -286,14 +286,14 @@
 
     <script>
         // Get user ID from sessionStorage
-        function getUserId() {
-            const userId = sessionStorage.getItem('userId');
-            if (!userId) {
+        function getuserCode() {
+            const userCode = sessionStorage.getItem('userCode');
+            if (!userCode) {
             	 showErrorAlert('User ID not found. Please log in again.');
                 window.location.href = 'login';
                 return null;
             }
-            return userId;
+            return userCode;
         }
         function showErrorAlert(message) {
             const overlay = document.getElementById('customErrorOverlay');
@@ -305,7 +305,7 @@
         // Logout function
         function logout() {
             console.log('Logging out');
-            sessionStorage.removeItem('userId');
+            sessionStorage.removeItem('userCode');
             window.location.href = 'login';
         }
 
@@ -313,14 +313,14 @@
         async function fetchNotificationCount() {
             try {
                 console.log('Fetching notification count');
-                const userId = getUserId();       
-                if (!userId) return;
+                const userCode = getuserCode();       
+                if (!userCode) return;
 
-                const response = await fetch(`/Security/get-notifications?userId=${encodeURIComponent(userId)}`, {
+                const response = await fetch(`/Security/get-notifications?userCode=${encodeURIComponent(userCode)}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `userId`,
+                        'Authorization': `userCode`,
                     },
                 });
 
@@ -388,9 +388,9 @@
             const subject = document.getElementById('subject').value;
             const body = document.getElementById('body').value;
             const attachment = document.getElementById('attachment').files[0];
-            const userId = getUserId();
+            const userCode = getuserCode();
           
-            if (!userId) return;
+            if (!userCode) return;
 
             // Show loader
             sendBtn.disabled = true;
@@ -402,7 +402,7 @@
             formData.append('to', to);
             formData.append('subject', subject);
             formData.append('body', body);
-            formData.append('userId', userId);
+            formData.append('userCode', userCode);
             if (attachment) {
                 formData.append('attachment', attachment);
             }
@@ -411,7 +411,7 @@
                 const response = await fetch('/Security/send-email', {
                     method: 'POST',
                     headers: {
-                        'Authorization': ` ${userId}`,
+                        'Authorization': ` ${userCode}`,
                     },
                     body: formData,
                 });
@@ -455,8 +455,8 @@
             const body = document.getElementById('body').value;
             const attachment = document.getElementById('attachment').files[0];
             const emailId = document.getElementById('email-form').dataset.emailId;
-            const userId = getUserId();
-            if (!userId) return;
+            const userCode = getuserCode();
+            if (!userCode) return;
 
             draftBtn.disabled = true;
             draftText.classList.add('hidden');
@@ -467,7 +467,7 @@
             formData.append('to', to);
             formData.append('subject', subject);
             formData.append('body', body);
-            formData.append('userId', userId);
+            formData.append('userCode', userCode);
             if (attachment) {
                 formData.append('attachment', attachment);
             }
@@ -479,7 +479,7 @@
                 const response = await fetch('/Security/save-draft', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `${userId}`,
+                        'Authorization': `${userCode}`,
                     },
                     body: formData,
                 });
@@ -608,16 +608,16 @@
         async function fetchEmails(folder = 'inbox') {
             try {
                 console.log(`Fetching emails for folder: ${folder}`);
-                const userId = getUserId();
+                const userCode = getuserCode();
                
-                if (!userId) return;
+                if (!userCode) return;
 
                 const endpoint = folder === 'trash' ? '/Security/get-deleted' : '/Security/get-emails';
-                const response = await fetch(`${endpoint}?userId=${encodeURIComponent(userId)}&folder=${folder}`, {
+                const response = await fetch(`${endpoint}?userCode=${encodeURIComponent(userCode)}&folder=${folder}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `${userId}`,
+                        'Authorization': `${userCode}`,
                     },
                 });
 
@@ -711,15 +711,15 @@
         async function deleteEmail(emailId, folder) {
             try {
                 console.log(`Deleting email ${emailId} from ${folder}`);
-                const userId = getUserId();
+                const userCode = getuserCode();
                
-                if (!userId ) return;
+                if (!userCode ) return;
 
-                const response = await fetch(`/Security/delete-email?emailId=${emailId}&userId=${encodeURIComponent(userId)}&folder=${folder}`, {
+                const response = await fetch(`/Security/delete-email?emailId=${emailId}&userCode=${encodeURIComponent(userCode)}&folder=${folder}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `${userId}`,
+                        'Authorization': `${userCode}`,
                     },
                 });
 
@@ -745,15 +745,15 @@
         async function recoverEmail(emailId, originalFolder) {
             try {
                 console.log(`Recovering email ${emailId} to ${originalFolder}`);
-                const userId = getUserId();
+                const userCode = getuserCode();
               
-                if (!userId ) return;
+                if (!userCode ) return;
 
-                const response = await fetch(`/Security/recover-email?emailId=${emailId}&userId=${encodeURIComponent(userId)}&folder=${originalFolder}`, {
+                const response = await fetch(`/Security/recover-email?emailId=${emailId}&userCode=${encodeURIComponent(userCode)}&folder=${originalFolder}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `${userId}`,
+                        'Authorization': `${userCode}`,
                     },
                 });
 
@@ -779,15 +779,15 @@
         async function editDraft(emailId) {
             try {
                 console.log(`Fetching draft ${emailId} for editing`);
-                const userId = getUserId();
+                const userCode = getuserCode();
             
-                if (!userId) return;
+                if (!userCode) return;
 
-                const response = await fetch(`/Security/get-draft?emailId=${emailId}&userId=${encodeURIComponent(userId)}`, {
+                const response = await fetch(`/Security/get-draft?emailId=${emailId}&userCode=${encodeURIComponent(userCode)}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `${userId}`,
+                        'Authorization': `${userCode}`,
                     },
                 });
 
@@ -819,15 +819,15 @@
         async function viewAttachment(attachmentId, filename, type) {
             console.log('viewAttachment called with attachmentId:', attachmentId, 'filename:', filename, 'type:', type);
             try {
-                const userId = getUserId();
+                const userCode = getuserCode();
                 
-                if (!userId ) return;
+                if (!userCode ) return;
 
-                const response = await fetch(`/Security/get-attachment?id=${attachmentId}&userId=${encodeURIComponent(userId)}`, {
+                const response = await fetch(`/Security/get-attachment?id=${attachmentId}&userCode=${encodeURIComponent(userCode)}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `${userId}`,
+                        'Authorization': `${userCode}`,
                     },
                 });
 
@@ -869,15 +869,15 @@
         async function viewAttachmentInNewTab(attachmentId) {
             try {
                 console.log('Fetching attachment for new tab, attachmentId:', attachmentId);
-                const userId = getUserId();
+                const userCode = getuserCode();
                
-                if (!userId ) return;
+                if (!userCode ) return;
 
-                const response = await fetch(`/Security/get-attachment?id=${attachmentId}&userId=${encodeURIComponent(userId)}`, {
+                const response = await fetch(`/Security/get-attachment?id=${attachmentId}&userCode=${encodeURIComponent(userCode)}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `${userId}`,
+                        'Authorization': `${userCode}`,
                     },
                 });
 
@@ -918,9 +918,9 @@
 
         // Initialize page
         window.onload = async () => {
-            const userId = getUserId();
-            if (userId) {
-                document.getElementById('user-id').textContent = userId;
+            const userCode = getuserCode();
+            if (userCode) {
+                document.getElementById('user-id').textContent = userCode;
                 fetchNotificationCount();
                 fetchEmails('inbox');
             }

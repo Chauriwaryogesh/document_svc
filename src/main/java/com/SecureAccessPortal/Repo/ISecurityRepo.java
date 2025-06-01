@@ -26,7 +26,7 @@ public interface ISecurityRepo  extends JpaRepository<Security, Long>{
 	Security findByUserName(String userName, String deletedFlag);
 
 	@Query(value="Select * from security s where s.userCode=?1 AND s.deletedFlag = ?2",nativeQuery = true)
-	Optional<Security> findByUserIdAndDeletedFlag(String userCode,String deletedFlag);
+	Optional<Security> findByuserCodeAndDeletedFlag(String userCode,String deletedFlag);
 
 	@Query(value="Select * from security s where s.userCode=?1",nativeQuery = true)
 	Security findByUserCode(String userCode);

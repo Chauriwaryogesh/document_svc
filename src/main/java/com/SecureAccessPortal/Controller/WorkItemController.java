@@ -28,9 +28,9 @@ public class WorkItemController {
 
 	@RequestMapping(value = "create-WorkItem", method = RequestMethod.POST, consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<WorkItemDTO> createWorkItem(@RequestBody WorkItemDTO workItemRequest,
-			@RequestHeader(value = "userId", required = true) String userId) {
+			@RequestHeader(value = "userCode", required = true) String userCode) {
 		ResponseEntity<WorkItemDTO> response = new ResponseEntity<>();
-		WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userId);
+		WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userCode);
 
 		if (workItem != null) {
 			response.setData(workItem);
@@ -44,9 +44,9 @@ public class WorkItemController {
 	@RequestMapping(value = "workitems", method = RequestMethod.GET)
 	public ResponseEntity<List<WorkItemDTO>> createWorkItem(
 			@RequestParam(value = "workItemRefNum", required = false) String workItemRefNum,
-			@RequestHeader(value = "userId", required = true) String userId) {
+			@RequestHeader(value = "userCode", required = true) String userCode) {
 		ResponseEntity<List<WorkItemDTO>> response = new ResponseEntity<>();
-		List<WorkItemDTO> workItem = workItemService.fetchWorkItems(workItemRefNum, userId);
+		List<WorkItemDTO> workItem = workItemService.fetchWorkItems(workItemRefNum, userCode);
 		if (workItem != null) {
 			response.setData(workItem);
 		} else {
@@ -57,9 +57,9 @@ public class WorkItemController {
 
 	@RequestMapping(value = "workItem-count", method = RequestMethod.GET)
 	public ResponseEntity<WorkItemCount> workItemCount(
-			@RequestHeader(value = "userId", required = true) String userId) {
+			@RequestHeader(value = "userCode", required = true) String userCode) {
 		ResponseEntity<WorkItemCount> response = new ResponseEntity<>();
-		WorkItemCount workItem = workItemService.workItemCount(userId);
+		WorkItemCount workItem = workItemService.workItemCount(userCode);
 		if (workItem != null) {
 			response.setData(workItem);
 		} else {

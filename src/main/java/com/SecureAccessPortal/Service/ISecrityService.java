@@ -11,22 +11,22 @@ import com.SecureAccessPortal.Modal.SecurityDTO;
 
 public interface ISecrityService{
 
-	public List<EmployeeDTO> fetchEmpList(String id, String userId);
+	public List<EmployeeDTO> fetchEmpList(String id, String userCode);
 
-	public EmployeeDTO updateEmployee(EmpRequestforUpdate employeeRequest, String userId);
+	public EmployeeDTO updateEmployee(EmpRequestforUpdate employeeRequest, String userCode);
 
-	public List<EmployeeDTO> fetchAllEmployee(String userId);
+	public List<EmployeeDTO> fetchAllEmployee(String userCode);
 
-	public byte[] fetchEmployeeDBforPDF(String id, String userId) throws IOException;
+	public byte[] fetchEmployeeDBforPDF(String id, String userCode) throws IOException;
 
-	public List<SecurityDTO> fetchListOfUsers(String id, String userId);
-	public SecurityDTO createUser(SecurityDTO securityDTO, String userId);
+	public List<SecurityDTO> fetchListOfUsers(String id, String userCode);
+	public SecurityDTO createUser(SecurityDTO securityDTO, String userCode);
 
-	public String registerUser(SecurityDTO securityDTO, String userId);
+	public String registerUser(SecurityDTO securityDTO, String userCode);
 
 	public boolean deleteNoteById(Long id);
 
-	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> searchUserFromList(SecurityDTO searchRequest, String userId);
+	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> searchUserFromList(SecurityDTO searchRequest, String userCode);
 
 	public String registerWebAuthnCredentials(SecurityDTO request);
 

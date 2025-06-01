@@ -31,11 +31,11 @@ public class QrCodeWebSocketHandlerConfig extends TextWebSocketHandler {
         sessions.remove(session.getId());
     }
 
-    public void sendAuthStatus(String sessionId, String status, String userId) throws Exception {
+    public void sendAuthStatus(String sessionId, String status, String userCode) throws Exception {
         WebSocketSession session = sessions.get(sessionId);
         if (session != null && session.isOpen()) {
             session.sendMessage(new TextMessage(objectMapper.writeValueAsString(
-                Map.of("type", "auth", "status", status, "userId", userId)
+                Map.of("type", "auth", "status", status, "userCode", userCode)
             )));
         }
     }

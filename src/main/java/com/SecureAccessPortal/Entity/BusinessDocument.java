@@ -27,7 +27,7 @@ public class BusinessDocument {
 	private String size;
 
 	@Column(nullable = false)
-	private String userId;
+	private String userCode;
 
 	@Column(columnDefinition = "TEXT")
 	private String content; // For database storage
@@ -87,12 +87,12 @@ public class BusinessDocument {
 		this.size = size;
 	}
 
-	public String getUserId() {
-		return userId;
+	public String getuserCode() {
+		return userCode;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setuserCode(String userCode) {
+		this.userCode = userCode;
 	}
 
 	public String getContent() {

@@ -446,21 +446,21 @@
     </footer>
 
 	<script>
-	// Function to get userId from sessionStorage
-   // Function to get userId from sessionStorage
-    function getUserId() {
-        const userId = sessionStorage.getItem('userId');
-        if (!userId) {
+	// Function to get userCode from sessionStorage
+   // Function to get userCode from sessionStorage
+    function getuserCode() {
+        const userCode = sessionStorage.getItem('userCode');
+        if (!userCode) {
             alert('User ID not found. Please log in again.');
             window.location.href = 'login';
             return null;
         }
-        return userId;
+        return userCode;
     }
 
     // Logout function
     function logout() {
-        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('userCode');
         window.location.href = 'login';
     }
 
@@ -490,8 +490,8 @@
     }
 
     async function fetchPincodeOrBranchData() {
-        const userId = getUserId();
-        if (!userId) return;
+        const userCode = getuserCode();
+        if (!userCode) return;
 
         const url = "http://localhost:8081/Post-office/PincodeOrBranch";
 
@@ -501,7 +501,7 @@
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "userId": userId
+                    "userCode": userCode
                 }
             });
 
@@ -579,11 +579,11 @@
     }
 
     async function handleItemClick(type, item) {
-        const userId = getUserId();
-        if (!userId) return;
+        const userCode = getuserCode();
+        if (!userCode) return;
 
         const baseUrl = "http://localhost:8081/Post-office/serch-postCd/Name";
-        let queryParams = `userId=${encodeURIComponent(userId)}`;
+        let queryParams = `userCode=${encodeURIComponent(userCode)}`;
 
         if (type === 'pincodes') {
             const pincode = item.pincCode;
@@ -695,11 +695,11 @@
     });
 
     async function handleQueryParam(pincode, branchName) {
-        const userId = getUserId();
-        if (!userId) return;
+        const userCode = getuserCode();
+        if (!userCode) return;
 
         const baseUrl = "http://localhost:8081/Post-office/serch-postCd/Name";
-        let queryParams = `userId=${encodeURIComponent(userId)}`;
+        let queryParams = `userCode=${encodeURIComponent(userCode)}`;
 
         if (pincode) {
             queryParams += `&pincode=${encodeURIComponent(pincode)}`;

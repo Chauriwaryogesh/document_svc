@@ -24,16 +24,16 @@ public class NewBusinessService {
 	@Autowired
 	private DocumentRepo documentRepo;
 
-	public com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> createDocument(DocumentRequest request, String userId) {
+	public com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> createDocument(DocumentRequest request, String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> response = new com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse>();
 		BusinessDocument doc = new BusinessDocument();
 		doc.setName(request.getName() + getExtension(request.getType()));
 		doc.setType(normalizeType(request.getType()));
 		doc.setSize(calculateSize(request.getContent()));
-		doc.setUserId(userId);
+		doc.setuserCode(userCode);
 		doc.setCreatedDate(LocalDateTime.now());
-		doc.setCreatedBy(userId);
+		doc.setCreatedBy(userCode);
 		storeContent(doc, request.getContent());
 		BusinessDocument savedDoc = documentRepo.save(doc);
 //        if (savedDoc == null) {
@@ -113,15 +113,15 @@ public class NewBusinessService {
 	}
 
 	// New method: Fetch all documents for a user
-	public com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> getAllDocuments(String userId) {
+	public com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> getAllDocuments(String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> documentResponseList = new ResponseEntity<>();
 
-		if (userId == null || userId.trim().isEmpty()) {
+		if (userCode == null || userCode.trim().isEmpty()) {
 			documentResponseList.setErrorMessage("User ID is required");
 
 		}
 
-		List<BusinessDocument> userDocs = documentRepo.findByUserId(userId);
+		List<BusinessDocument> userDocs = documentRepo.findByuserCode(userCode);
 		List<DocumentResponse> responses = userDocs.stream().map(doc -> {
 			DocumentResponse documentResponse = new DocumentResponse();
 			documentResponse.setId(doc.getId());
@@ -149,20 +149,20 @@ public class NewBusinessService {
 		return documentResponseList;
 	}
 
-	public com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> getDocument(Long id, String userId) {
+	public com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> getDocument(Long id, String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> documentResponse = new ResponseEntity<>();
 		BusinessDocument doc = documentRepo.findById(id).orElse(null);
 		if (id == null || id <= 0) {
 			documentResponse.setErrorMessage("Invalid document ID");
 		}
-		if (userId == null || userId.trim().isEmpty()) {
+		if (userCode == null || userCode.trim().isEmpty()) {
 			documentResponse.setErrorMessage("User ID is required");
 		}
 		if (doc == null) {
 			documentResponse.setErrorMessage("Document not found");
 		}
 
-		if (!userId.equals(doc.getUserId())) {
+		if (!userCode.equals(doc.getuserCode())) {
 			documentResponse.setErrorMessage("You are not authorized to access this document");
 		}
 

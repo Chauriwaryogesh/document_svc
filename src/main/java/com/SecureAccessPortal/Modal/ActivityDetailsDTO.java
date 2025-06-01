@@ -2,7 +2,7 @@ package com.SecureAccessPortal.Modal;
 
 public class ActivityDetailsDTO {
 	private String id;
-	private String userId ;
+	private String userCode ;
 	private String email ;
 	private String activityType ;
 	private String activityTime ;
@@ -17,11 +17,11 @@ public class ActivityDetailsDTO {
 		this.id = id;
 	}
 	
-	public String getUserId() {
-		return userId;
+	public String getuserCode() {
+		return userCode;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setuserCode(String userCode) {
+		this.userCode = userCode;
 	}
 	public String getEmail() {
 		return email;

@@ -810,7 +810,7 @@
         </div>
         <div class="menu-profile">
             <i class="fas fa-user-circle"></i>
-            <span id="menuUserId">Loading...</span>
+            <span id="menuuserCode">Loading...</span>
         </div>
         <div class="menu-content">
             <div class="menu-section">
@@ -1069,18 +1069,18 @@
             let originalWorkItems = [];
             let viewMode = 'list';
 
-            function getUserId() {
-                const PaneluserId = sessionStorage.getItem('userId');
-                if (!PaneluserId) {
+            function getuserCode() {
+                const PaneluserCode = sessionStorage.getItem('userCode');
+                if (!PaneluserCode) {
                     showErrorAlert('User ID not found. Please log in again.');
                     window.location.href = '/login';
                     return null;
                 }
-                return PaneluserId;
+                return PaneluserCode;
             }
 
             function logout() {
-                sessionStorage.removeItem('userId');
+                sessionStorage.removeItem('userCode');
                 window.location.href = '/login';
             }
 
@@ -1088,8 +1088,8 @@
             function redirectToDocumentService() { window.location.href = "DocumentService"; }
             function redirectToEmployeeService() { window.location.href = "EmployeeService"; }
             function redirectToAdminPanel() {
-                const PaneluserId = getUserId();
-                if (PaneluserId === "ychouri") {
+                const PaneluserCode = getuserCode();
+                if (PaneluserCode === "ychouri") {
                     window.location.href = "AdminPanel";
                 } else {
                     showErrorAlert("No admin access for user.");
@@ -1130,13 +1130,13 @@
             }
 
             async function fetchWorkItems() {
-                const PaneluserId = getUserId();
-                if (!PaneluserId) return;
+                const PaneluserCode = getuserCode();
+                if (!PaneluserCode) return;
 
                 try {
                     const response = await fetch('http://localhost:8081/Security/user-list', {
                         method: 'GET',
-                        headers: { 'userId': PaneluserId }
+                        headers: { 'userCode': PaneluserCode }
                     });
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     const data = await response.json();
@@ -1258,13 +1258,13 @@
             }
 
             async function loadEmailCounts() {
-                const PaneluserId = getUserId();
-                if (!PaneluserId) return;
+                const PaneluserCode = getuserCode();
+                if (!PaneluserCode) return;
 
                 try {
                     const response = await fetch('http://localhost:8081/api/dashboard/email-counts', {
                         method: 'GET',
-                        headers: { 'Content-Type': 'application/json', 'userId': PaneluserId }
+                        headers: { 'Content-Type': 'application/json', 'userCode': PaneluserCode }
                     });
                     if (!response.ok) throw new Error('Failed to fetch email counts');
                     const data = await response.json();
@@ -1278,13 +1278,13 @@
             }
 
             async function loadDashboardStats() {
-                const PaneluserId = getUserId();
-                if (!PaneluserId) return;
+                const PaneluserCode = getuserCode();
+                if (!PaneluserCode) return;
 
                 try {
                     const response = await fetch('http://localhost:8081/api/dashboard/stats', {
                         method: 'GET',
-                        headers: { 'Content-Type': 'application/json', 'userId': PaneluserId }
+                        headers: { 'Content-Type': 'application/json', 'userCode': PaneluserCode }
                     });
                     if (!response.ok) throw new Error('Failed to fetch dashboard stats');
                     const data = await response.json();
@@ -1310,8 +1310,8 @@
                     showErrorAlert('Please select one user.');
                     return;
                 }
-                const PaneluserId = getUserId();
-                if (PaneluserId === "ychouri") {
+                const PaneluserCode = getuserCode();
+                if (PaneluserCode === "ychouri") {
                     window.location.href = `AdminPanel?id=${selectedCheckbox.value}`;
                 } else {
                     showErrorAlert("No admin access for user.");
@@ -1510,11 +1510,11 @@
                 input.value = '';
 
                 try {
-                    const PaneluserId = getUserId() || 'test_user';
+                    const PaneluserCode = getuserCode() || 'test_user';
                     const response = await fetch('http://0.0.0.0:5005/webhooks/rest/webhook', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ sender: PaneluserId, message })
+                        body: JSON.stringify({ sender: PaneluserCode, message })
                     });
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     const data = await response.json();
@@ -1537,7 +1537,7 @@
                 try {
                     const response = await fetch('http://localhost:8081/api/activity-tracing', {
                         method: 'GET',
-                        headers: { 'userId': getUserId() || 'ychouri' }
+                        headers: { 'userCode': getuserCode() || 'ychouri' }
                     });
                     if (!response.ok) throw new Error('Failed to fetch activities');
                     const activities = await response.json();
@@ -1569,7 +1569,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'userId': getUserId() || 'ychouri'
+                            'userCode': getuserCode() || 'ychouri'
                         },
                         body: JSON.stringify({ action: 'view_all_activities', timestamp: new Date().toISOString() })
                     });
@@ -1598,7 +1598,7 @@
                 fetchWorkItems();
                 loadEmailCounts();
                 loadDashboardStats();
-                document.getElementById('menuUserId').textContent = getUserId() || 'Guest';
+                document.getElementById('menuuserCode').textContent = getuserCode() || 'Guest';
                 document.getElementById('notificationBadge').style.display = 'flex';
                 document.getElementById('applyFilterBtn').addEventListener('click', () => {
                     const status = document.getElementById('statusFilter').value;

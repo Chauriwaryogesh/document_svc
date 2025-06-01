@@ -151,7 +151,7 @@
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.2); /* Softer focus shadow */
             background-color: #ffffff;
         }
-        /* Removed redundant width calc for #email, #userId as base style covers it */
+        /* Removed redundant width calc for #email, #userCode as base style covers it */
 
         .toggle-visibility {
             position: absolute;
@@ -591,8 +591,8 @@
         <div class="fingerprint-popup-box">
             <h3><i class="fas fa-fingerprint"></i> Login with Fingerprint</h3>
             <p id="fingerprintMessage">Enter your User ID to start verification.</p>
-            <div id="userIdInput" class="input-group">
-                <input type="text" id="fingerprintUserId" placeholder="Enter User ID" required class="enhanced-input" />
+            <div id="userCodeInput" class="input-group">
+                <input type="text" id="fingerprintuserCode" placeholder="Enter User ID" required class="enhanced-input" />
                 <button class="popper-btn" onclick="startFingerprintVerification()">
                     <span class="btn-text">Start Verification</span>
                 </button>
@@ -626,7 +626,7 @@
                 <span class="toggle-visibility" onclick="toggleVisibility('email', this.querySelector('i'))"><i class="fas fa-eye"></i></span>
             </div>
             <div class="input-group">
-                <input type="text" id="userId" placeholder="User ID" required />
+                <input type="text" id="userCode" placeholder="User ID" required />
                 </div>
             <button onclick="sendOtp()"><i class="fas fa-paper-plane" style="margin-right: 8px;"></i>Send OTP</button>
             <button class="popper-btn" onclick="showFingerprintPopup()">
@@ -781,18 +781,18 @@
         function showFingerprintPopup() {
             closePopupAndFab();
             fingerprintPopup.classList.add('active');
-            const fpUserIdInput = document.getElementById('fingerprintUserId');
-            if(fpUserIdInput) fpUserIdInput.value = '';
-            document.getElementById('userIdInput').style.display = 'block';
+            const fpuserCodeInput = document.getElementById('fingerprintuserCode');
+            if(fpuserCodeInput) fpuserCodeInput.value = '';
+            document.getElementById('userCodeInput').style.display = 'block';
             document.getElementById('fingerprintVerification').style.display = 'none';
             document.getElementById('fingerprintMessage').textContent = 'Enter your User ID to start verification.';
         }
 
         function closeFingerprintPopup() {
             closePopupAndFab(fingerprintPopup);
-            const fpUserIdInput = document.getElementById('fingerprintUserId');
-            if(fpUserIdInput) fpUserIdInput.value = '';
-            document.getElementById('userIdInput').style.display = 'block';
+            const fpuserCodeInput = document.getElementById('fingerprintuserCode');
+            if(fpuserCodeInput) fpuserCodeInput.value = '';
+            document.getElementById('userCodeInput').style.display = 'block';
             document.getElementById('fingerprintVerification').style.display = 'none';
         }
 
@@ -819,7 +819,7 @@
                     } else if (data.type === 'auth') {
                         if (data.status === 'success') {
                             closeQrPopup();
-                            showCustomAlert('Success!', `Logged in successfully as ${data.userId || 'user'}. Redirecting...`, () => {
+                            showCustomAlert('Success!', `Logged in successfully as ${data.userCode || 'user'}. Redirecting...`, () => {
                                 window.location.href = '/ServicePage';
                             });
                         } else { showErrorAlert(data.message || 'QR code authentication failed.'); }
@@ -918,17 +918,17 @@
 
         function sendOtp() {
             const emailInput = document.getElementById("email");
-            const userIdInput = document.getElementById("userId");
+            const userCodeInput = document.getElementById("userCode");
             const email = emailInput ? emailInput.value : null;
-            const userId = userIdInput ? userIdInput.value : null;
+            const userCode = userCodeInput ? userCodeInput.value : null;
 
             if (!email) { showErrorAlert("Email is required."); return; }
-            if (!userId) { showErrorAlert("User ID is required."); return; }
+            if (!userCode) { showErrorAlert("User ID is required."); return; }
             if (!/^\S+@\S+\.\S+$/.test(email)) { showErrorAlert('Please enter a valid email address.'); return; }
 
             const params = new URLSearchParams();
             params.append("Email id", email);
-            params.append("user id", userId);
+            params.append("user id", userCode);
             showLoading();
             fetch(`http://localhost:8081/Security/generateOtpService?${params.toString()}`, { method: 'POST' })
             .then(response => {
@@ -952,7 +952,7 @@
             const email = document.getElementById("email") ? document.getElementById("email").value : null;
             const otpInput = document.getElementById("otp");
             const otp = otpInput ? otpInput.value : null;
-            const userId = document.getElementById("userId") ? document.getElementById("userId").value : null;
+            const userCode = document.getElementById("userCode") ? document.getElementById("userCode").value : null;
 
             if (!otp) { showErrorAlert("OTP is required."); return; }
             if (otp.length < 4 || otp.length > 6 || !/^\d+$/.test(otp)) {
@@ -963,7 +963,7 @@
             params.append("Otp", otp);
             showLoading();
             fetch(`http://localhost:8081/Security/verify-otp?${params.toString()}`, {
-                method: 'POST', headers: { 'user-id': userId }
+                method: 'POST', headers: { 'user-id': userCode }
             })
             .then(response => {
                 if (!response.ok) { return response.json().then(err => { throw new Error(err.errorMessage || `Server error: ${response.status}`) }); }
@@ -973,7 +973,7 @@
                 hideLoading();
                 if (data && data.errorMessage) { showErrorAlert(data.errorMessage); }
                 else if (data && (data.successMessage || data.redirectUrl || !data.errorMessage)) {
-                    sessionStorage.setItem('userId', userId);
+                    sessionStorage.setItem('userCode', userCode);
                     hideOtpPopup();
                     showCustomAlert("Verification Successful!", data.successMessage || "OTP verified. Redirecting...", () => {
                         window.location.href = data.redirectUrl || "/ServicePage";
@@ -987,16 +987,16 @@
         }
 
         function startFingerprintVerification() {
-            const userIdInput = document.getElementById('fingerprintUserId');
-            const userId = userIdInput ? userIdInput.value : null;
+            const userCodeInput = document.getElementById('fingerprintuserCode');
+            const userCode = userCodeInput ? userCodeInput.value : null;
 
-            if (!userId) {
+            if (!userCode) {
                 showErrorAlert('Please enter your User ID to start fingerprint verification.');
                 return;
             }
 
             // Show fingerprint animation UI
-            document.getElementById('userIdInput').style.display = 'none';
+            document.getElementById('userCodeInput').style.display = 'none';
             document.getElementById('fingerprintVerification').style.display = 'block';
             document.getElementById('fingerprintMessage').textContent = 'Verifying fingerprint... Please wait.';
 
@@ -1011,13 +1011,13 @@
                     success: true, // Or use 'message': 'Fingerprint login successful'
                     message: "Fingerprint login successful (Mocked)"
                 };
-                handleFingerprintResponse(mockSuccessData, userId);
+                handleFingerprintResponse(mockSuccessData, userCode);
             }, 3000); // 3-second delay
         }
         async function verifyFingerprint() {
-            const userIdInput = document.getElementById('fingerprintUserId');
-            const userId = userIdInput ? userIdInput.value : null;
-            if (!userId) {
+            const userCodeInput = document.getElementById('fingerprintuserCode');
+            const userCode = userCodeInput ? userCodeInput.value : null;
+            if (!userCode) {
                  showErrorAlert('User ID not found. Please start verification via the button.');
                  return;
             }
@@ -1036,13 +1036,13 @@
                     success: true,
                     message: "Fingerprint icon tap successful (Mocked)"
                 };
-                handleFingerprintResponse(mockIconSuccessData, userId);
+                handleFingerprintResponse(mockIconSuccessData, userCode);
             }, 1500); // Shorter delay for icon tap example
         }
 
-        function handleFingerprintResponse(data, userId) {
+        function handleFingerprintResponse(data, userCode) {
             if (data.success || data.message === 'Fingerprint login successful' || data.message === 'Fingerprint login successful (Mocked)' || data.message === "Fingerprint icon tap successful (Mocked)") {
-                sessionStorage.setItem('userId', userId); // Store userId on successful verification
+                sessionStorage.setItem('userCode', userCode); // Store userCode on successful verification
                 closeFingerprintPopup(); // Assumes this function is defined elsewhere
                 showCustomAlert(
                     'Verification Successful!',
@@ -1054,7 +1054,7 @@
             } else {
                 showErrorAlert(data.errorMessage || 'Fingerprint verification failed. Please try again.');
                 // Reset UI for another attempt if needed
-                document.getElementById('userIdInput').style.display = 'block';
+                document.getElementById('userCodeInput').style.display = 'block';
                 document.getElementById('fingerprintVerification').style.display = 'none';
                 document.getElementById('fingerprintMessage').textContent = 'Verification failed. Enter User ID to try again.';
             }

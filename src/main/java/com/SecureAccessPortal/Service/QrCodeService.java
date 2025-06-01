@@ -17,7 +17,7 @@ public class QrCodeService {
         private final String token;
         private final String sessionId;
         private final LocalDateTime expiry;
-        private String userId;
+        private String userCode;
         private boolean authenticated;
 
         public QrToken(String token, String sessionId, LocalDateTime expiry) {
@@ -34,8 +34,8 @@ public class QrCodeService {
         // Getters and setters
         public String getToken() { return token; }
         public String getSessionId() { return sessionId; }
-        public String getUserId() { return userId; }
-        public void setUserId(String userId) { this.userId = userId; }
+        public String getuserCode() { return userCode; }
+        public void setuserCode(String userCode) { this.userCode = userCode; }
         public boolean isAuthenticated() { return authenticated; }
         public void setAuthenticated(boolean authenticated) { this.authenticated = authenticated; }
     }
@@ -56,10 +56,10 @@ public class QrCodeService {
         return qrToken;
     }
 
-    public void authenticateToken(String token, String userId) {
+    public void authenticateToken(String token, String userCode) {
         QrToken qrToken = tokens.get(token);
         if (qrToken != null && !qrToken.isExpired()) {
-            qrToken.setUserId(userId);
+            qrToken.setuserCode(userCode);
             qrToken.setAuthenticated(true);
         }
     }

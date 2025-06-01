@@ -33,11 +33,11 @@ public class PolicyController {
 	@PostMapping(value = "/policy-create", consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseDTO> fetchVideofromDir(@RequestBody PolicyRequest policyDTO,
-			@RequestHeader String userId) {
+			@RequestHeader String userCode) {
 		ResponseEntity<ResponseDTO> response = new ResponseEntity<ResponseDTO>();
 		ResponseDTO responseDTO = new ResponseDTO();
 
-		responseDTO = policyService.createPolicy(policyDTO, userId);
+		responseDTO = policyService.createPolicy(policyDTO, userCode);
 
 		if (responseDTO.getStatus().equalsIgnoreCase("Success")) {
 			response.setData(responseDTO);
@@ -52,22 +52,22 @@ public class PolicyController {
 			@RequestParam(value = "allpolSearch", required = false) String allPol,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
 			@RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
-			@RequestHeader String userId) {
+			@RequestHeader String userCode) {
 		if (allPol == null) {
 			allPol = "N";
 		}
 		com.SecureAccessPortal.Service.ResponseEntity<List<PolicyDTO>> emailResp = policyService.getPolicyDetails(policyNo,
-				customerNo, allPol, workItemRefNo, userId);
+				customerNo, allPol, workItemRefNo, userCode);
 
 		return emailResp;
 	}
 	
 	@PostMapping("/customer-details/update")
 	public com.SecureAccessPortal.Service.ResponseEntity<String> getCustomerlDetails(
-			@RequestBody CustomerDTO customerDTO, @RequestHeader String userId) {
+			@RequestBody CustomerDTO customerDTO, @RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
-		String message = otpService.updateCustomerDetails(customerDTO, userId);
+		String message = otpService.updateCustomerDetails(customerDTO, userCode);
 
 		if (message.contains("Success")) {
 			resp.setData(message);
@@ -79,9 +79,9 @@ public class PolicyController {
 	@GetMapping("/policy-domain")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<String>> getPolicyDomain(
 			@RequestParam(value = "value", required = true) String value,
-			@RequestHeader String userId) {
+			@RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<String>> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<String> policyDTO = policyService.getDoaminData(value, userId);
+		List<String> policyDTO = policyService.getDoaminData(value, userCode);
 		if (policyDTO != null && !policyDTO.isEmpty()) {
 			emailResp.setData(policyDTO);
 		} else {
@@ -92,10 +92,10 @@ public class PolicyController {
 	
 	@PostMapping("/policy-details/update")
 	public com.SecureAccessPortal.Service.ResponseEntity<String> getPolicyDetails(
-			@RequestBody CustomerDTO customerDTO, @RequestHeader String userId) {
+			@RequestBody CustomerDTO customerDTO, @RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
-		String message = otpService.updateCustomerDetails(customerDTO, userId);
+		String message = otpService.updateCustomerDetails(customerDTO, userCode);
 
 		if (message.contains("Success")) {
 			resp.setData(message);

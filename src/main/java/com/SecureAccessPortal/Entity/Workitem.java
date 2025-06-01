@@ -39,7 +39,7 @@ public class Workitem {
 	private LocalDateTime createdTime;
 	
 	@Column
-	private String userId;
+	private String userCode;
 	
 	@Column
 	private String status;
@@ -150,10 +150,10 @@ public class Workitem {
 	 */
 	
 	/**
-	 * @return the userId
+	 * @return the userCode
 	 */
-	public String getUserId() {
-		return userId;
+	public String getuserCode() {
+		return userCode;
 	}
 	/**
 	 * @return the createdTime
@@ -168,9 +168,9 @@ public class Workitem {
 		this.createdTime = createdTime;
 	}
 	/**
-	 * @param userId the userId to set
+	 * @param userCode the userCode to set
 	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setuserCode(String userCode) {
+		this.userCode = userCode;
 	}
 }

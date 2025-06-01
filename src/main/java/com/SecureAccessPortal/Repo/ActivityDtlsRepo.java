@@ -9,7 +9,7 @@ import com.SecureAccessPortal.Entity.ActivityDtls;
 
 public interface ActivityDtlsRepo extends JpaRepository<ActivityDtls, Long> {
 
-	@Query(value = "Select * from Activity_Monitor t where t.userId=?1", nativeQuery = true)
-	List<ActivityDtls> findByUserId(String userId);
+	@Query(value = "Select * from Activity_Monitor t where t.userCode=?1", nativeQuery = true)
+	List<ActivityDtls> findByuserCode(String userCode);
 
 }

@@ -631,7 +631,7 @@
         }
 
         function logout() {
-            sessionStorage.removeItem('userId');
+            sessionStorage.removeItem('userCode');
             currentUserData = null;
             allActivityData = [];
             window.location.href = 'login';
@@ -648,19 +648,19 @@
             errorPopupOverlay.classList.remove('active');
         }
 
-        function displayActivityDetails(userId) {
-            if (!userId) {
+        function displayActivityDetails(userCode) {
+            if (!userCode) {
                 hideLoader();
                 showErrorPopup();
                 return;
             }
 
             showLoader();
-            console.log(`Fetching activity data for userId: ${userId}`);
+            console.log(`Fetching activity data for userCode: ${userCode}`);
             fetch(API_ENDPOINT, {
                 method: 'GET',
                 headers: {
-                    'userId': userId,
+                    'userCode': userCode,
                     'Content-Type': 'application/json'
                 }
             })
@@ -684,7 +684,7 @@
                     if (data.errorMessage) {
                         displayErrorMessage(data.errorMessage);
                     } else if (!data.data || data.data.length === 0) {
-                        displayNoDataMessage(userId);
+                        displayNoDataMessage(userCode);
                     } else {
                         currentUserData = data.data[0];
                         allActivityData = data.data;
@@ -725,15 +725,15 @@
             lucide.createIcons();
         }
 
-        function displayNoDataMessage(userId) {
+        function displayNoDataMessage(userCode) {
             const mainContentArea = document.querySelector('.container.mx-auto');
             const activityLogCard = mainContentArea.querySelector('.card:nth-of-type(2)');
             if (currentUserData) {
-                document.getElementById('userCode').textContent = currentUserData.userId || 'N/A';
+                document.getElementById('userCode').textContent = currentUserData.userCode || 'N/A';
                 document.getElementById('email').textContent = currentUserData.email || 'N/A';
                 document.getElementById('lastActivity').textContent = 'No activity yet';
-            } else if (userId) {
-                document.getElementById('userCode').textContent = userId;
+            } else if (userCode) {
+                document.getElementById('userCode').textContent = userCode;
                 document.getElementById('email').textContent = 'N/A (no activity data)';
                 document.getElementById('lastActivity').textContent = 'N/A';
             }
@@ -786,7 +786,7 @@
             const paginatedData = allActivityData.slice(start, end);
 
             if (currentUserData) {
-                document.getElementById('userCode').textContent = currentUserData.userId;
+                document.getElementById('userCode').textContent = currentUserData.userCode;
                 document.getElementById('email').textContent = currentUserData.email;
                 document.getElementById('lastActivity').textContent = formatDistanceToNow(
                     new Date(currentUserData.activityTime.replace(' ', 'T')),
@@ -805,7 +805,7 @@
                 row.className = 'table-body-row';
                 row.innerHTML = `
                     <td class="table-cell font-medium">${activity.id}</td>
-                    <td class="table-cell">${activity.userId}</td>
+                    <td class="table-cell">${activity.userCode}</td>
                     <td class="table-cell email">${escapeHtml(activity.email)}</td>
                     <td class="table-cell">${activity.activityType}</td>
                     <td class="table-cell">${activity.screenName}</td>
@@ -932,7 +932,7 @@
 
         function updateProfilePopupData() {
             if (currentUserData) {
-                document.getElementById('popupUserCode').textContent = currentUserData.userId || 'N/A';
+                document.getElementById('popupUserCode').textContent = currentUserData.userCode || 'N/A';
                 document.getElementById('popupUserEmail').textContent = currentUserData.email || 'N/A';
             } else {
                 document.getElementById('popupUserCode').textContent = 'Loading...';
@@ -971,18 +971,18 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            let userId = sessionStorage.getItem('userId');
-            console.log('Session userId:', userId);
-            if (!userId) {
+            let userCode = sessionStorage.getItem('userCode');
+            console.log('Session userCode:', userCode);
+            if (!userCode) {
                 const urlParams = new URLSearchParams(window.location.search);
-                userId = urlParams.get('userId');
-                console.log('URL userId:', userId);
-                if (userId) {
-                    sessionStorage.setItem('userId', userId);
+                userCode = urlParams.get('userCode');
+                console.log('URL userCode:', userCode);
+                if (userCode) {
+                    sessionStorage.setItem('userCode', userCode);
                 }
             }
-            if (userId) {
-                displayActivityDetails(userId);
+            if (userCode) {
+                displayActivityDetails(userCode);
             } else {
                 hideLoader();
                 showErrorPopup();

@@ -56,21 +56,21 @@ public class SecurityController {
 
 	@PostMapping(value = "/serch-user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> serchUser(@RequestBody SecurityDTO searchRequest,
-			@RequestHeader(value = "userId", required = false) String userId) {
+			@RequestHeader(value = "userCode", required = false) String userCode) {
 
-		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> security = securityService.searchUserFromList(searchRequest, userId);
+		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> security = securityService.searchUserFromList(searchRequest, userCode);
 
 		return security;
 	}
 
 	@GetMapping("/user-list")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<SecurityDTO>> fetchSecurityRole(
-			@RequestParam(value = "id", required = false) String id, @RequestHeader(required = false) String userId) {
+			@RequestParam(value = "id", required = false) String id, @RequestHeader(required = false) String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<List<SecurityDTO>> serviceResponse = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		List<SecurityDTO> response = new ArrayList<>();
 		try {
-			response = securityService.fetchListOfUsers(id, userId);
+			response = securityService.fetchListOfUsers(id, userCode);
 			if (response != null && !response.isEmpty()) {
 				serviceResponse.setData(response);
 			} else {
@@ -85,10 +85,10 @@ public class SecurityController {
 
 	@PostMapping(value = "/add-user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> accessSecurity(@RequestBody SecurityDTO securityDTO,
-			@RequestHeader(value = "userId") String userId) {
+			@RequestHeader(value = "userCode") String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> securityResponce = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		SecurityDTO security = securityService.createUser(securityDTO, userId);
+		SecurityDTO security = securityService.createUser(securityDTO, userCode);
 
 		securityResponce.setData(security);
 
@@ -97,10 +97,10 @@ public class SecurityController {
 
 	@PostMapping(value = "/register-user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public com.SecureAccessPortal.Service.ResponseEntity<String> registerUser(@RequestBody SecurityDTO securityDTO,
-			@RequestHeader(value = "userId") String userId) {
+			@RequestHeader(value = "userCode") String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<String> data = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		String ok = securityService.registerUser(securityDTO, userId);
+		String ok = securityService.registerUser(securityDTO, userCode);
 		if (ok.contains("Successfully")) {
 			data.setData(ok);
 		} else {
@@ -166,11 +166,11 @@ public class SecurityController {
 	@RequestMapping(value = "/generateOtpService", method = RequestMethod.POST)
 	public com.SecureAccessPortal.Service.ResponseEntity<String> sendOtp(
 			@RequestParam(value = "Email id", required = true) String email,
-			@RequestParam(value = "user id", required = true) String userId) {
+			@RequestParam(value = "user id", required = true) String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<String> data = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
-		String ok = otpService.sendOtp(email, userId);
+		String ok = otpService.sendOtp(email, userCode);
 		if (ok.contains("Success")) {
 			data.setData(ok);
 		} else {
@@ -181,8 +181,8 @@ public class SecurityController {
 
 	@PostMapping("/verify-otp")
 	public com.SecureAccessPortal.Service.ResponseEntity<String> verifyOtp(@RequestParam(value = "Email id") String email,
-			@RequestParam(value = "Otp") String otp, @RequestHeader(value = "user-id", required = true) String userId) {
-		boolean isValid = otpService.verifyOtp(email, otp, userId);
+			@RequestParam(value = "Otp") String otp, @RequestHeader(value = "user-id", required = true) String userCode) {
+		boolean isValid = otpService.verifyOtp(email, otp, userCode);
 		com.SecureAccessPortal.Service.ResponseEntity<String> data = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		if (isValid) {
 			data.setData("Otp Verified Successfully");
@@ -196,11 +196,11 @@ public class SecurityController {
 
 	@PostMapping(value = "/add-email", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public com.SecureAccessPortal.Service.ResponseEntity<String> addEmailService(@RequestBody List<EmailDTO> emailDTO,
-			@RequestHeader(value = "userId", required = true) String userId) {
+			@RequestHeader(value = "userCode", required = true) String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<String> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
-		String email = otpService.addEmailList(emailDTO, userId);
+		String email = otpService.addEmailList(emailDTO, userCode);
 
 		if (email != null && !email.isEmpty()) {
 			emailResp.setData(email);
@@ -213,10 +213,10 @@ public class SecurityController {
 
 	@GetMapping("/fetchEmailids")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<EmailDTO>> fetchEmailDetails(
-			@RequestParam(value = "Email id", required = false) String id, @RequestHeader String userId) {
+			@RequestParam(value = "Email id", required = false) String id, @RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<EmailDTO>> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
-		List<EmailDTO> email = otpService.fetchListOfEmailIds(id, userId);
+		List<EmailDTO> email = otpService.fetchListOfEmailIds(id, userCode);
 
 		if (email != null && !email.isEmpty()) {
 			emailResp.setData(email);
@@ -259,7 +259,7 @@ public class SecurityController {
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> authenticateQrToken(@RequestBody Map<String, String> request) {
 		String token = request.get("token");
-		String userId = request.get("userId");
+		String userCode = request.get("userCode");
 		String accessToken = request.get("accessToken"); // From mobile app
 
 		QrCodeService.QrToken qrToken = qrCodeService.validateToken(token);
@@ -269,16 +269,16 @@ public class SecurityController {
 
 		// Validate user credentials (e.g., check accessToken against a user database)
 		// For demo, assume accessToken is valid if non-empty
-		if (userId == null || accessToken == null || accessToken.isEmpty()) {
+		if (userCode == null || accessToken == null || accessToken.isEmpty()) {
 			return ResponseEntity.badRequest().body(Map.of("error", "Invalid credentials"));
 		}
 
 		// Mark token as authenticated
-		qrCodeService.authenticateToken(token, userId);
+		qrCodeService.authenticateToken(token, userCode);
 
 		// Notify browser via WebSocket
 		try {
-			webSocketHandler.sendAuthStatus(qrToken.getSessionId(), "success", userId);
+			webSocketHandler.sendAuthStatus(qrToken.getSessionId(), "success", userCode);
 			qrCodeService.removeToken(token); // Clean up
 			return ResponseEntity.ok(Map.of("message", "Authentication successful"));
 		} catch (Exception e) {
@@ -289,10 +289,10 @@ public class SecurityController {
 	@GetMapping("/customer-details")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<CustomerDTO>> getCustomerlDetails(
 			@RequestParam(value = "email", required = false) String email,
-			@RequestParam(value = "customerNo", required = false) String customerNo, @RequestHeader String userId) {
+			@RequestParam(value = "customerNo", required = false) String customerNo, @RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<CustomerDTO>> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
-		List<CustomerDTO> customerDTO = otpService.getCustomerDetails(email, customerNo, userId);
+		List<CustomerDTO> customerDTO = otpService.getCustomerDetails(email, customerNo, userCode);
 
 		if (customerDTO != null && !customerDTO.isEmpty()) {
 			emailResp.setData(customerDTO);
@@ -304,10 +304,10 @@ public class SecurityController {
 
 	@PostMapping("/customer-details/update")
 	public com.SecureAccessPortal.Service.ResponseEntity<String> getCustomerlDetails(@RequestBody CustomerDTO customerDTO,
-			@RequestHeader String userId) {
+			@RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
-		String message = otpService.updateCustomerDetails(customerDTO, userId);
+		String message = otpService.updateCustomerDetails(customerDTO, userCode);
 
 		if (message.contains("Success")) {
 			resp.setData(message);
@@ -319,7 +319,7 @@ public class SecurityController {
 
 	@PostMapping("/register-fingerprint")
 	public com.SecureAccessPortal.Service.ResponseEntity<String> registerWebAuthn(@RequestBody SecurityDTO request,
-			@RequestHeader String userId) {
+			@RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		try {
 			String updatedSecurity = securityService.registerWebAuthnCredentials(request);
@@ -336,9 +336,9 @@ public class SecurityController {
 	}
 
 	@PostMapping("/login-fingerprint")
-	public ResponseEntity<?> loginWithFingerprint(@RequestHeader(value = "userId", required = true) String userId) {
+	public ResponseEntity<?> loginWithFingerprint(@RequestHeader(value = "userCode", required = true) String userCode) {
 		try {
-			boolean login = otpService.fingerprintLogin(userId);
+			boolean login = otpService.fingerprintLogin(userCode);
 			if (login) {
 				return ResponseEntity.ok(new SuccessResponse("Fingerprint login successful"));
 			} else {

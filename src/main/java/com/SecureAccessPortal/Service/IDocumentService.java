@@ -11,24 +11,24 @@ import com.SecureAccessPortal.Modal.NotesDTO;
 import com.SecureAccessPortal.Modal.PhotoDTO;
 
 public interface IDocumentService {
-	public CapturePhoto getDocumentdtls(String id, String docName, String userId);
+	public CapturePhoto getDocumentdtls(String id, String docName, String userCode);
 
-	public String uploadDocService(List<AddDocument> document, String userId);
+	public String uploadDocService(List<AddDocument> document, String userCode);
 
-	public CapturePhoto uploadDocument(MultipartFile file, String docName , String userId) throws IOException;
+	public CapturePhoto uploadDocument(MultipartFile file, String docName , String userCode) throws IOException;
 
-	public List<PhotoDTO> getAllDocuments(String userId);
+	public List<PhotoDTO> getAllDocuments(String userCode);
 
 	public String save(NotesDTO note);
 
-	public List<NotesDTO> getList(String userId);
+	public List<NotesDTO> getList(String userCode);
 
 	public boolean deleteNoteById(Long id);
 
 	public void savePhoto(String name, MultipartFile image) throws IOException;
 
-	public List<PhotoDTO> getCaptureAllDocuments(String userId);
+	public List<PhotoDTO> getCaptureAllDocuments(String userCode);
 
-	public PhotoDTO getCaptureDocumentdtls(String id, String docName, String userId);
+	public PhotoDTO getCaptureDocumentdtls(String id, String docName, String userCode);
 
 }

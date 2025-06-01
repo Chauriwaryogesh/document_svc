@@ -11,7 +11,7 @@ public class CustomerDTO {
 	private String phoneNumber;
 	private String email;
 	private String customerNo;
-	private String userId;
+	private String userCode;
 	private String smokerStatus;
 	private String adminAccess;
 	private Address address;
@@ -90,11 +90,11 @@ public class CustomerDTO {
 	public void setCustomerNo(String customerNo) {
 		this.customerNo = customerNo;
 	}
-	public String getUserId() {
-		return userId;
+	public String getuserCode() {
+		return userCode;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setuserCode(String userCode) {
+		this.userCode = userCode;
 	}
 	public String getSmokerStatus() {
 		return smokerStatus;

@@ -25,8 +25,8 @@ import com.SecureAccessPortal.Repo.ISecurityRepo;
 		@Autowired
 		private ISecurityRepo securityRepo;
 
-	    public DashboardStats getDashboardStats(String userId) {
-	        // Fetch stats for the dashboard based on the userId
+	    public DashboardStats getDashboardStats(String userCode) {
+	        // Fetch stats for the dashboard based on the userCode
 	    	List<CapturePhoto> documents = docRepo.findAll();
 	    	 long docsCount=documents.stream().count();
 	    	
@@ -57,7 +57,7 @@ import com.SecureAccessPortal.Repo.ISecurityRepo;
 	        return stats;
 	    }
 
-		public DashboardStats getEmailCountStats(String userId) {
+		public DashboardStats getEmailCountStats(String userCode) {
 			DashboardStats stats = new DashboardStats();
 		    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

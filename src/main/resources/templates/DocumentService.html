@@ -711,19 +711,19 @@
 
     <script>
         // Get user ID from sessionStorage
-        function getUserId() {
-            const userId = sessionStorage.getItem('userId');
-            if (!userId) {
+        function getuserCode() {
+            const userCode = sessionStorage.getItem('userCode');
+            if (!userCode) {
                 alert('User ID not found. Please log in again.');
                 window.location.href = 'login';
                 return null;
             }
-            return userId;
+            return userCode;
         }
 
         // Logout function
         function logout() {
-            sessionStorage.removeItem('userId');
+            sessionStorage.removeItem('userCode');
             window.location.href = 'login';
         }
 
@@ -797,13 +797,13 @@
                 formData.append("name", name);
 
                 try {
-                    const userId = getUserId();
-                    if (!userId) return;
+                    const userCode = getuserCode();
+                    if (!userCode) return;
 
                     const response = await fetch("http://localhost:8081/DocumentService/capture-upload", {
                         method: "POST",
                         headers: {
-                            "userId": userId
+                            "userCode": userCode
                         },
                         body: formData
                     });
@@ -848,13 +848,13 @@
                 formData.append("name", docName);
 
                 try {
-                    const userId = getUserId();
-                    if (!userId) return;
+                    const userCode = getuserCode();
+                    if (!userCode) return;
 
                     const response = await fetch("http://localhost:8081/DocumentService/upload", {
                         method: "POST",
                         headers: {
-                            "userId": userId
+                            "userCode": userCode
                         },
                         body: formData
                     });
@@ -975,8 +975,8 @@
         async function viewDocumentInNewTab(docId) {
             try {
                 console.log('Fetching document for new tab, docId:', docId);
-                const userId = getUserId();
-                if (!userId) return;
+                const userCode = getuserCode();
+                if (!userCode) return;
 
                 const apiUrl = activeTab === 'captured' ? 
                     `http://localhost:8081/DocumentService/capture-getDocument?id=${docId}` : 
@@ -987,7 +987,7 @@
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "userId": userId
+                        "userCode": userCode
                     }
                 });
 
@@ -1032,13 +1032,13 @@
             formData.append("Doc Type", docType);
 
             try {
-                const userId = getUserId();
-                if (!userId) return;
+                const userCode = getuserCode();
+                if (!userCode) return;
 
                 const response = await fetch("http://localhost:8081/DocumentService/uploadDocument", {
                     method: "POST",
                     headers: {
-                        "userId": userId
+                        "userCode": userCode
                     },
                     body: formData
                 });
@@ -1057,8 +1057,8 @@
 
         async function fetchDocuments(tab) {
             try {
-                const userId = getUserId();
-                if (!userId) return;
+                const userCode = getuserCode();
+                if (!userCode) return;
 
                 const apiUrl = tab === 'captured' ? 
                     "http://localhost:8081/DocumentService/capture-getAllDocument" : 
@@ -1068,7 +1068,7 @@
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "userId": userId
+                        "userCode": userCode
                     }
                 });
 
@@ -1167,8 +1167,8 @@
         async function viewDocument(docId, docType, docName) {
             console.log('viewDocument called with docId:', docId, 'docType:', docType, 'docName:', docName);
             try {
-                const userId = getUserId();
-                if (!userId) return;
+                const userCode = getuserCode();
+                if (!userCode) return;
 
                 const apiUrl = activeTab === 'captured' ? 
                     `http://localhost:8081/DocumentService/capture-getDocument?id=${docId}` : 
@@ -1179,7 +1179,7 @@
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "userId": userId
+                        "userCode": userCode
                     }
                 });
 

@@ -15,7 +15,7 @@ public class ActivityDtls {
 	@Column
 	private long id;
 	@Column
-	private String userId ;
+	private String userCode ;
 	@Column
 	private String email ;
 	@Column
@@ -37,11 +37,11 @@ public class ActivityDtls {
 		this.id = id;
 	}
 	
-	public String getUserId() {
-		return userId;
+	public String getuserCode() {
+		return userCode;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setuserCode(String userCode) {
+		this.userCode = userCode;
 	}
 	public String getEmail() {
 		return email;

@@ -700,7 +700,7 @@
     <script>
         const config = {
           loginUrl: 'login.html', // Assuming a login page
-          userId: null,
+          userCode: null,
           apiBaseUrl: 'http://localhost:8081/bankService', // Mock API
           policyUrl: 'policy.html',
           pageSize: 10
@@ -892,29 +892,29 @@
           addNotification(type === 'error' ? 'Error' : 'Success', message); // Ensure type matches notification types
         }
 
-        function initializeUserId() {
-          config.userId = sessionStorage.getItem('userId');
-          if (!config.userId) {
+        function initializeuserCode() {
+          config.userCode = sessionStorage.getItem('userCode');
+          if (!config.userCode) {
             // For a real app, redirect. For this demo, maybe set a default or show a message.
             // alert('Please log in to continue.');
             // window.location.href = config.loginUrl;
             // return false;
             console.warn("User not logged in. Proceeding in demo mode.");
-            config.userId = "demoUser"; // Fallback for demo
+            config.userCode = "demoUser"; // Fallback for demo
           }
           return true;
         }
 
         function logout() {
-          sessionStorage.removeItem('userId');
-          config.userId = null;
+          sessionStorage.removeItem('userCode');
+          config.userCode = null;
           showToast('Logged out successfully.');
           // window.location.href = config.loginUrl;
           logActivity('Logged out');
         }
 
         function navigateTo(page) {
-          if (!config.userId) {
+          if (!config.userCode) {
             alert('Please log in to access this page.');
             // window.location.href = config.loginUrl;
             return;
@@ -1538,7 +1538,7 @@
           }
 
         async function initializePage() {
-            if (!initializeUserId()) return;
+            if (!initializeuserCode()) return;
 
             showLoader();
             try {

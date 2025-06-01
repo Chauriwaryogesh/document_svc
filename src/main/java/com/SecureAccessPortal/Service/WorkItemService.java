@@ -37,18 +37,18 @@ public class WorkItemService implements IWorkItemService {
 	private ActivityDtlsRepo activityDtlsRepo;
 
 	@Override
-	public WorkItemDTO createWorkItem(WorkItemDTO workItemRequest, String userId) {
+	public WorkItemDTO createWorkItem(WorkItemDTO workItemRequest, String userCode) {
 		WorkItemDTO workItemDTO = new WorkItemDTO();
 		try {
 			com.SecureAccessPortal.Entity.Workitem workItem = new com.SecureAccessPortal.Entity.Workitem();
 			workItem.setWorkItemId(String.valueOf(UUID.randomUUID()));
 			workItem.setComment(workItemRequest.getComment());
-			workItem.setCreatedBy(userId);
+			workItem.setCreatedBy(userCode);
 			workItem.setCreatedTime(LocalDateTime.now());
-			if (userId != null) {
-				workItem.setUserId(userId);
+			if (userCode != null) {
+				workItem.setuserCode(userCode);
 			} else {
-				workItem.setUserId(workItemRequest.getCreatedBy());
+				workItem.setuserCode(workItemRequest.getCreatedBy());
 			}
 			workItem.setWorkItemName(workItemRequest.getWorkItemName());
 			workItem.setWorkType(workItemRequest.getWorkType());
@@ -83,9 +83,9 @@ public class WorkItemService implements IWorkItemService {
 	}
 
 	@Override
-	public ResponseEntity<List<ActivityDetailsDTO>> getActivityDtls(String userId) {
+	public ResponseEntity<List<ActivityDetailsDTO>> getActivityDtls(String userCode) {
 		ResponseEntity<List<ActivityDetailsDTO>> response = new ResponseEntity<List<ActivityDetailsDTO>>();
-		List<ActivityDtls> activityDtls = activityDtlsRepo.findByUserId(userId);
+		List<ActivityDtls> activityDtls = activityDtlsRepo.findByuserCode(userCode);
 		if (activityDtls != null && !activityDtls.isEmpty()) {
 			List<ActivityDetailsDTO> activityList = activityDtls.stream().map(activity -> {
 				ActivityDetailsDTO activityDetailsDTO = new ActivityDetailsDTO();
@@ -97,7 +97,7 @@ public class WorkItemService implements IWorkItemService {
 				activityDetailsDTO.setIpAddress(activity.getIpAddress());
 				activityDetailsDTO.setScreenName(activity.getScreenName());
 				activityDetailsDTO.setTimeSpentSeconds(activity.getTimeSpentSeconds());
-				activityDetailsDTO.setUserId(activity.getUserId());
+				activityDetailsDTO.setuserCode(activity.getuserCode());
 				return activityDetailsDTO;
 			}).collect(Collectors.toList());
 
@@ -111,7 +111,7 @@ public class WorkItemService implements IWorkItemService {
 	}
 
 	@Override
-	public List<WorkItemDTO> fetchWorkItems(String wiRefNum, String userId) {
+	public List<WorkItemDTO> fetchWorkItems(String wiRefNum, String userCode) {
 		List<WorkItemDTO> workItemDTOList = new ArrayList<>();
 		try {
 			if (wiRefNum != null) {
@@ -122,7 +122,7 @@ public class WorkItemService implements IWorkItemService {
 					workItem.setComment(workItems.getComment());
 					workItem.setCreatedBy(workItems.getCreatedBy());
 					workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
-					workItem.setUserId(workItems.getUserId());
+					workItem.setuserCode(workItems.getuserCode());
 					workItem.setWorkItemName(workItems.getWorkItemName());
 					workItem.setWorkType(workItems.getWorkType());
 					workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
@@ -138,7 +138,7 @@ public class WorkItemService implements IWorkItemService {
 					workItem.setComment(workItems.getComment());
 					workItem.setCreatedBy(workItems.getCreatedBy());
 					workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
-					workItem.setUserId(workItems.getUserId());
+					workItem.setuserCode(workItems.getuserCode());
 					workItem.setWorkItemName(workItems.getWorkItemName());
 					workItem.setWorkType(workItems.getWorkType());
 					workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
@@ -157,7 +157,7 @@ public class WorkItemService implements IWorkItemService {
 	}
 
 	@Override
-	public WorkItemCount workItemCount(String userId) {
+	public WorkItemCount workItemCount(String userCode) {
 		WorkItemCount workItemCount = new WorkItemCount();
 
 		Queue queue = new Queue();

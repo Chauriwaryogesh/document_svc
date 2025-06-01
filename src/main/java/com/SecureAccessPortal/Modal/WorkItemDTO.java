@@ -8,7 +8,7 @@ public class WorkItemDTO {
 	private String comment;
 	private String createdBy;
 	private String createdTime;
-	private String userId;
+	private String userCode;
 	private String status;
 	private String queue;
 	/**
@@ -108,16 +108,16 @@ public class WorkItemDTO {
 		this.createdTime = createdTime;
 	}
 	/**
-	 * @return the userId
+	 * @return the userCode
 	 */
-	public String getUserId() {
-		return userId;
+	public String getuserCode() {
+		return userCode;
 	}
 	/**
-	 * @param userId the userId to set
+	 * @param userCode the userCode to set
 	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setuserCode(String userCode) {
+		this.userCode = userCode;
 	}
 	/**
 	 * @return the workItemReferenceNumber

@@ -11,7 +11,7 @@ import com.SecureAccessPortal.Modal.SecurityDTO;
 @Component
 public class SecurityMapper {
 
-	public List<SecurityDTO> mapSecurity(List<Security> security, String userId) {
+	public List<SecurityDTO> mapSecurity(List<Security> security, String userCode) {
 		return security.stream().map(securityMap -> {
 			SecurityDTO securityDT = new SecurityDTO();
 			securityDT.setId(String.valueOf(securityMap.getId()));

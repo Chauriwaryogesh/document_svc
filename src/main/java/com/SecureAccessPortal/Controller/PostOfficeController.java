@@ -23,9 +23,9 @@ public class PostOfficeController {
 	@GetMapping("/serch-postCd/Name")
 	public PostalResponse getPOstOfficeDetails(@RequestParam(value = "pincode", required = false) String pincode,
 			@RequestParam(value = "branchName", required = false) String brnchName,
-					@RequestParam(value = "userId", required = true) String userId) {
+					@RequestParam(value = "userCode", required = true) String userCode) {
 		
-		PostalResponse postOffice= postOfficeService.getPostOfficeInfo(pincode,brnchName,userId);
+		PostalResponse postOffice= postOfficeService.getPostOfficeInfo(pincode,brnchName,userCode);
 		return postOffice;
 
 	}
@@ -33,10 +33,10 @@ public class PostOfficeController {
 	@GetMapping("/PincodeOrBranch")
 	public ResponseEntity<List<PinCodeCount>> getpinCodeDetails(@RequestParam( value = "pincode", required = false) String pincode,
 	@RequestParam(value = "branchName", required = false) String brnchName,
-	@RequestHeader(value = "userId", required = true) String userId) {
+	@RequestHeader(value = "userCode", required = true) String userCode) {
 
 		ResponseEntity<List<PinCodeCount>> response=new  ResponseEntity<>();
-		List<PinCodeCount> postOffice= postOfficeService.getPinCodeInfo(pincode,brnchName,userId);
+		List<PinCodeCount> postOffice= postOfficeService.getPinCodeInfo(pincode,brnchName,userCode);
 		response.setData(postOffice);
 		return response;
 

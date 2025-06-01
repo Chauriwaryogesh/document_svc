@@ -12,7 +12,7 @@ public class PolicyList {
     private String polCompanyName;
     private String createdBy;
     private String updatedBy;
-    private String userId;
+    private String userCode;
     private String deletedFlag;
     private String policyName;
     private String customerNo;
@@ -58,17 +58,17 @@ public class PolicyList {
 	}
 
 	/**
-	 * @return the userId
+	 * @return the userCode
 	 */
-	public String getUserId() {
-		return userId;
+	public String getuserCode() {
+		return userCode;
 	}
 
 	/**
-	 * @param userId the userId to set
+	 * @param userCode the userCode to set
 	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setuserCode(String userCode) {
+		this.userCode = userCode;
 	}
 
 	/**

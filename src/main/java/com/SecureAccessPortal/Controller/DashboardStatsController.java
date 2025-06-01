@@ -19,9 +19,9 @@ public class DashboardStatsController {
     private DashboardService dashboardService;
 
     @GetMapping("/stats")
-    public ResponseEntity<DashboardStats> getDashboardStats(@RequestHeader("userId") String userId) {
+    public ResponseEntity<DashboardStats> getDashboardStats(@RequestHeader("userCode") String userCode) {
         try {
-            DashboardStats stats = dashboardService.getDashboardStats(userId);
+            DashboardStats stats = dashboardService.getDashboardStats(userCode);
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Handle errors here
@@ -29,9 +29,9 @@ public class DashboardStatsController {
     }
     
     @GetMapping("/email-counts")
-    public ResponseEntity<DashboardStats> getEmailCountStats(@RequestHeader("userId") String userId) {
+    public ResponseEntity<DashboardStats> getEmailCountStats(@RequestHeader("userCode") String userCode) {
         try {
-            DashboardStats stats = dashboardService.getEmailCountStats(userId);
+            DashboardStats stats = dashboardService.getEmailCountStats(userCode);
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Handle errors here

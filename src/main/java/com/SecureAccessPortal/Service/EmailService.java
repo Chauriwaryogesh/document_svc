@@ -69,7 +69,7 @@ public class EmailService {
 		this.IOtpServiceDB = IOtpServiceDB;
 	}
 
-	public String sendOtp(String email, String userId) {
+	public String sendOtp(String email, String userCode) {
 		String response = "";
 		String otp = generateOtp();
 		otpStore.put(email, otp);
@@ -79,7 +79,7 @@ public class EmailService {
 			// Check email status is Verified Y
 			Security security = securityRepo.findByEmail(email, "N");
 			if (security != null) {
-				if (security.getEmail().equalsIgnoreCase(email) && security.getUserCode().equalsIgnoreCase(userId)
+				if (security.getEmail().equalsIgnoreCase(email) && security.getUserCode().equalsIgnoreCase(userCode)
 						&& security.getIsEmailVerified().equals("Y") && security.getIsUserCodeVerified().equals("Y")) {
 
 					MimeMessage message = mailSender.createMimeMessage();
@@ -195,7 +195,7 @@ public class EmailService {
 					LocalDateTime dateTime = LocalDateTime.now();
 					long epochMillis = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					otpStore.setCreatedTime(epochMillis);
-					otpStore.setCreatedBy(userId);
+					otpStore.setCreatedBy(userCode);
 
 					LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(30);
 					long exp = expiryTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
@@ -236,7 +236,7 @@ public class EmailService {
 		return String.valueOf(otp);
 	}
 
-	public boolean verifyOtp(String email, String otp, String userId) {
+	public boolean verifyOtp(String email, String otp, String userCode) {
 		// call Repo
 		Optional<OtpStore> emailData = IOtpServiceDB.findById(email);
 		// OtpStore otpStore = emailData.get();
@@ -254,7 +254,7 @@ public class EmailService {
 		return counter.getAndIncrement();
 	}
 
-	public String sendDetailEmail(String email, String id, WorkItemDTO workItem, String userId) {
+	public String sendDetailEmail(String email, String id, WorkItemDTO workItem, String userCode) {
 		String otp = generateOtp();
 		otpStore.put(email, otp);
 
@@ -319,7 +319,7 @@ public class EmailService {
 			LocalDateTime dateTime = LocalDateTime.now();
 			long epochMillis = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 			otpStore.setCreatedTime(epochMillis);
-			otpStore.setCreatedBy(userId);
+			otpStore.setCreatedBy(userCode);
 
 			LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(30);
 			long exp = expiryTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
@@ -335,14 +335,14 @@ public class EmailService {
 
 	}
 
-	public String addEmailList(List<EmailDTO> emailDTOList, String userId) {
+	public String addEmailList(List<EmailDTO> emailDTOList, String userCode) {
 		String response = "";
 		List<Email> emailList = emailDTOList.stream().map(emailDTO -> {
 			Email email = new Email();
 			email.setEmail(emailDTO.getEmail());
 			email.setCountry(emailDTO.getCountry());
-			if (userId != null) {
-				email.setCreatedBy(userId);
+			if (userCode != null) {
+				email.setCreatedBy(userCode);
 			} else {
 				email.setCreatedBy(emailDTO.getCreatedBy());
 			}
@@ -361,9 +361,9 @@ public class EmailService {
 			// Create WorkItem whenever added new Employee or update.
 			WorkItemDTO workItemRequest = new WorkItemDTO();
 			workItemRequest.setComment("WorkItem getting created for Update Employee Details");
-			workItemRequest.setCreatedBy(userId);
+			workItemRequest.setCreatedBy(userCode);
 			workItemRequest.setWorkType(CommonConstant.Email_added);
-			WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userId);
+			WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userCode);
 			if (workItem != null) {
 				logger.info("WorkItemcreated succesfully");
 				new RuntimeErrorException(null, "Error while creating WorkItem");
@@ -374,7 +374,7 @@ public class EmailService {
 		return response;
 	}
 
-	public List<EmailDTO> fetchListOfEmailIds(String id, String userId) {
+	public List<EmailDTO> fetchListOfEmailIds(String id, String userCode) {
 		// fetch using id
 		if (id != null) {
 			List<Email> listOfEmail = emailRepo.findByEmail(id);
@@ -431,7 +431,7 @@ public class EmailService {
 		return messageResp;
 	}
 
-	public List<CustomerDTO> getCustomerDetails(String email, String customerNo, String userId) {
+	public List<CustomerDTO> getCustomerDetails(String email, String customerNo, String userCode) {
 		List<CustomerDTO> customerList = new ArrayList<>();
 		if (customerNo != null) {
 			Optional<Customer> customer = customerRepo.findByCustomerNo(customerNo);
@@ -461,7 +461,7 @@ public class EmailService {
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
-			custDTO.setUserId(cust.getUserCode());
+			custDTO.setuserCode(cust.getUserCode());
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
 			custDTO.setDateOfBirth(cust.getDateOfBirth());
 			// mapping for address
@@ -496,7 +496,7 @@ public class EmailService {
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
-			custDTO.setUserId(cust.getUserCode());
+			custDTO.setuserCode(cust.getUserCode());
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
 			custDTO.setDateOfBirth(cust.getDateOfBirth());
 			// mapping for address
@@ -519,7 +519,7 @@ public class EmailService {
 		return customerList;
 	}
 
-	public String updateCustomerDetails(CustomerDTO cust, String userId) {
+	public String updateCustomerDetails(CustomerDTO cust, String userCode) {
 		String message = "";
 		try {
 
@@ -573,9 +573,9 @@ public class EmailService {
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
-			custDTO.setUserCode(userId);
+			custDTO.setUserCode(userCode);
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
-			custDTO.setCreatedBy(userId);
+			custDTO.setCreatedBy(userCode);
 			custDTO.setCreatedTime(LocalDateTime.now());
 
 			// Map address
@@ -631,9 +631,9 @@ public class EmailService {
 		return numberFormatted;
 	}
 
-	public boolean fingerprintLogin(String userId) {
+	public boolean fingerprintLogin(String userCode) {
 		try {
-			Optional<Security> securityOpt = securityRepo.findByUserIdAndDeletedFlag(userId, "N");
+			Optional<Security> securityOpt = securityRepo.findByuserCodeAndDeletedFlag(userCode, "N");
 			if (!securityOpt.isPresent()) {
 				return false; 
 			}

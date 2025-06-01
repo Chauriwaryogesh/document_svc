@@ -7,7 +7,7 @@ public class PolicyRequest {
 	public String policyName;
 	public String fcuFlag;
 	public String associatedpolicyCount;
-	public String userId;
+	public String userCode;
 	public String customerNo;
 	public String custName;
 	public String middleName;
@@ -90,16 +90,16 @@ public class PolicyRequest {
 		this.associatedpolicyCount = associatedpolicyCount;
 	}
 	/**
-	 * @return the userId
+	 * @return the userCode
 	 */
-	public String getUserId() {
-		return userId;
+	public String getuserCode() {
+		return userCode;
 	}
 	/**
-	 * @param userId the userId to set
+	 * @param userCode the userCode to set
 	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setuserCode(String userCode) {
+		this.userCode = userCode;
 	}
 	/**
 	 * @return the customerNo

@@ -19,10 +19,10 @@ public class ActivityController {
 	
 	//@PostMapping("/updateActivity")
 	@GetMapping("/get-ActivityDtls")
-	public ResponseEntity<List<ActivityDetailsDTO>> getActivitydtls(@RequestHeader String userId) {
+	public ResponseEntity<List<ActivityDetailsDTO>> getActivitydtls(@RequestHeader String userCode) {
 
 		ResponseEntity<List<ActivityDetailsDTO>> listOfActiity = new ResponseEntity<List<ActivityDetailsDTO>>();
-		listOfActiity = workItemService.getActivityDtls(userId);
+		listOfActiity = workItemService.getActivityDtls(userCode);
 
 		return listOfActiity;
 	}

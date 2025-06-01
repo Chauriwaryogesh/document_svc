@@ -38,7 +38,7 @@ public class DocumentService implements IDocumentService {
 	 private IPhoto photoRepository;
 	 
 	@Override
-	public CapturePhoto getDocumentdtls(String id, String docName, String userId) {
+	public CapturePhoto getDocumentdtls(String id, String docName, String userCode) {
 		// List<DocumentDTO> documentDto = new ArrayList<>();
 		Optional<CapturePhoto> documents = docRepo.findById(Long.valueOf(id));
 		CapturePhoto document = null;
@@ -50,7 +50,7 @@ public class DocumentService implements IDocumentService {
 	}
 
 	@Override
-	public String uploadDocService(List<AddDocument> documentList, String userId) {
+	public String uploadDocService(List<AddDocument> documentList, String userCode) {
 
 		List<CapturePhoto> document = documentMapper.uploadDoc(documentList);
 
@@ -61,20 +61,20 @@ public class DocumentService implements IDocumentService {
 		return str;
 	}
 
-	public CapturePhoto uploadDocument(MultipartFile file,String docName, String userId) throws IOException {
+	public CapturePhoto uploadDocument(MultipartFile file,String docName, String userCode) throws IOException {
 		CapturePhoto document = new CapturePhoto();
 		document.setDocId(String.valueOf(UUID.randomUUID()));
 		document.setDocName(docName);
 		document.setDocType(file.getContentType());
-		document.setCreatedBy(userId);
-		document.setUpdatedBy(userId);
+		document.setCreatedBy(userCode);
+		document.setUpdatedBy(userCode);
 		document.setData(file.getBytes());
 
 		return docRepo.save(document);
 	}
 
 	@Override
-	public List<PhotoDTO> getAllDocuments(String userId) {
+	public List<PhotoDTO> getAllDocuments(String userCode) {
 		List<CapturePhoto> documents = docRepo.findAll();
 		return  documents.stream().map(file ->{
 			PhotoDTO document= new PhotoDTO();
@@ -101,7 +101,7 @@ public class DocumentService implements IDocumentService {
 	}
 
 	@Override
-	public List<NotesDTO> getList(String userId) {
+	public List<NotesDTO> getList(String userCode) {
 		List<Note> notes = noteRepo.findAll();
 		return notes.stream().map(note -> {
 			NotesDTO notesDTO = new NotesDTO();
@@ -132,7 +132,7 @@ public class DocumentService implements IDocumentService {
 	    }
 
 	@Override
-	public List<PhotoDTO> getCaptureAllDocuments(String userId) {
+	public List<PhotoDTO> getCaptureAllDocuments(String userCode) {
 		List<Photo> documents = photoRepository.findAll();
 		return  documents.stream().map(file ->{
 			PhotoDTO document= new PhotoDTO();
@@ -147,7 +147,7 @@ public class DocumentService implements IDocumentService {
 	}
 
 	@Override
-	public PhotoDTO getCaptureDocumentdtls(String id, String docName, String userId) {
+	public PhotoDTO getCaptureDocumentdtls(String id, String docName, String userCode) {
 		Optional<Photo> documents = photoRepository.findById(Long.valueOf(id));
 		PhotoDTO document= new PhotoDTO();
 		if (documents.isPresent()) {

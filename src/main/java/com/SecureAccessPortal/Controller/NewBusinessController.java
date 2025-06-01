@@ -27,13 +27,13 @@ public class NewBusinessController {
 	private NewBusinessService businessService;
 
 	@PostMapping("/createDocument")
-	public com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> createDocument(@RequestHeader("userId") String userId,
+	public com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> createDocument(@RequestHeader("userCode") String userCode,
 			@RequestBody DocumentRequest request) {
 		com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> documentResponse = new ResponseEntity<DocumentResponse>();
 		if (request.getName().isEmpty() || !isValidType(request.getType()) || request.getContent() == null) {
 			documentResponse.setErrorMessage("Invalid name, type, or content");
 		}
-		documentResponse = businessService.createDocument(request, userId);
+		documentResponse = businessService.createDocument(request, userCode);
 
 		return documentResponse;
 	}
@@ -43,11 +43,11 @@ public class NewBusinessController {
 	}
 
 	@GetMapping("/documents")
-	public ResponseEntity<List<DocumentResponse>> getAllDocuments(@RequestHeader("userId") String userId) {
+	public ResponseEntity<List<DocumentResponse>> getAllDocuments(@RequestHeader("userCode") String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> documentResponse = new ResponseEntity<>();
 
 		try {
-			documentResponse = businessService.getAllDocuments(userId);
+			documentResponse = businessService.getAllDocuments(userCode);
 		} catch (IllegalArgumentException e) {
 			documentResponse.setErrorMessage("Something went wrong");
 		} catch (Exception e) {
@@ -58,11 +58,11 @@ public class NewBusinessController {
 
 	@GetMapping("/getDocument")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> getDocument(@RequestParam("id") Long id,
-			@RequestHeader("userId") String userId) {
+			@RequestHeader("userCode") String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> documentResponse = new ResponseEntity<>();
 
 		try {
-			documentResponse = businessService.getDocument(id, userId);
+			documentResponse = businessService.getDocument(id, userCode);
 		} catch (IllegalArgumentException e) {
 			documentResponse.setErrorMessage("Something went wrong");
 		} catch (Exception e) {
@@ -73,7 +73,7 @@ public class NewBusinessController {
 	}
 	@DeleteMapping("documents/delete/{id}")
 	public org.springframework.http.ResponseEntity<Void> deleteNote(@PathVariable(value="id",required=true) Long id,
-			@RequestHeader("userId") String userId) {
+			@RequestHeader("userCode") String userCode) {
 		boolean deleted = businessService.deleteNoteById(id);
 		return deleted ? org.springframework.http.ResponseEntity.noContent().build() : org.springframework.http.ResponseEntity.notFound().build();
 	}

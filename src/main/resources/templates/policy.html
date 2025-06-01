@@ -820,7 +820,7 @@
         </button>
       </div>
       <div class="text-gray-600 mb-6 space-y-2">
-        <p><span class="font-medium">User ID:</span> <span id="profile-userid">Not available</span></p>
+        <p><span class="font-medium">User ID:</span> <span id="profile-userCode">Not available</span></p>
         <p><span class="font-medium">Email:</span> <span id="profile-email">Not available</span></p>
       </div>
       <button onclick="document.getElementById('close-profile-modal').click()" class="btn-base btn-primary w-full">
@@ -877,7 +877,7 @@
       </div>
       <div class="modal-body">
         <form id="create-party-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input type="hidden" id="party-userId" value="">
+          <input type="hidden" id="party-userCode" value="">
           <div id="personal-section" class="tab-content col-span-2">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div class="input-group">
@@ -1006,7 +1006,7 @@
       </div>
       <div class="modal-body">
         <form id="create-policy-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input type="hidden" id="policy-userId" value="">
+          <input type="hidden" id="policy-userCode" value="">
           <div class="input-group">
             <select id="policy-productCode" required>
               <option value="">Select product code</option>
@@ -1157,7 +1157,7 @@
  <script>
  const config = {
 		  loginUrl: 'login',
-		  userId: null,
+		  userCode: null,
 		  email: null,
 		  itemsPerPage: 5,
 		  currentPage: 1,
@@ -1191,7 +1191,7 @@
 			  elements.searchAllPolicies.classList.toggle('hidden', searchType !== 'policy');
 			}
 		async function fetchProductCodes() {
-		  if (!config.userId) {
+		  if (!config.userCode) {
 		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
 		    return;
 		  }
@@ -1199,7 +1199,7 @@
 		  try {
 		    const response = await fetch('http://localhost:8081/policy/policy-domain?value=PRODUCT', {
 		      method: 'GET',
-		      headers: { 'userId': config.userId }
+		      headers: { 'userCode': config.userCode }
 		    });
 		    if (response.ok) {
 		      const { data } = await response.json();
@@ -1228,7 +1228,7 @@
 		}
 
 		async function fetchPolicyNames() {
-		  if (!config.userId) {
+		  if (!config.userCode) {
 		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
 		    return;
 		  }
@@ -1236,7 +1236,7 @@
 		  try {
 		    const response = await fetch('http://localhost:8081/policy/policy-domain?value=POLICY', {
 		      method: 'GET',
-		      headers: { 'userId': config.userId }
+		      headers: { 'userCode': config.userCode }
 		    });
 		    if (response.ok) {
 		      const { data } = await response.json();
@@ -1266,18 +1266,18 @@
 
 		function openModal(modalId) {
 		  if (modalId === 'profile') {
-		    document.getElementById('profile-userid').textContent = config.userId || 'Not available';
+		    document.getElementById('profile-userCode').textContent = config.userCode || 'Not available';
 		    document.getElementById('profile-email').textContent = config.email || 'Not available';
 		  }
 		  if (modalId === 'create-party') {
-		    initializeUserId();
-		    document.getElementById('party-userId').value = config.userId;
+		    initializeuserCode();
+		    document.getElementById('party-userCode').value = config.userCode;
 		    resetPartyForm();
 		    switchTab('personal');
 		  }
 		  if (modalId === 'create-policy') {
-		    initializeUserId();
-		    document.getElementById('policy-userId').value = config.userId;
+		    initializeuserCode();
+		    document.getElementById('policy-userCode').value = config.userCode;
 		    resetPolicyForm();
 		    fetchProductCodes();
 		    fetchPolicyNames();
@@ -1299,7 +1299,7 @@
 		function resetPolicyForm() {
 		  document.getElementById('create-policy-form').reset();
 		  document.getElementById('policy-polCompanyName').value = 'Secure Life Limited';
-		  document.getElementById('policy-userId').value = config.userId || '';
+		  document.getElementById('policy-userCode').value = config.userCode || '';
 		  const fields = ['productCode', 'policyName', 'customerNo', 'custName', 'middleName', 'surname', 'phoneNum', 'email', 'smokerStatus', 'dateOfBirth', 'fcuFlag', 'gender'];
 		  fields.forEach(field => {
 		    const element = document.getElementById(`policy-${field}`);
@@ -1319,7 +1319,7 @@
 
 		function resetPartyForm() {
 		  document.getElementById('create-party-form').reset();
-		  document.getElementById('party-userId').value = config.userId || '';
+		  document.getElementById('party-userCode').value = config.userCode || '';
 		  const fields = [
 		    'name', 'middleName', 'surname', 'age', 'dob', 'gender', 'smokerStatus', 'adminAccess',
 		    'phone', 'email', 'alternateEmail', 'phoneCountryCode', 'secondaryPhone', 'emergencyContactName', 'emergencyContactPhone',
@@ -1372,22 +1372,22 @@
 		  document.getElementById('loader').classList.remove('active');
 		}
 
-		function initializeUserId() {
-		  config.userId = sessionStorage.getItem('userId') || 'default-user-id';
+		function initializeuserCode() {
+		  config.userCode = sessionStorage.getItem('userCode') || 'default-user-id';
 		  config.email = sessionStorage.getItem('email') || 'default-email@example.com';
 		  return true;
 		}
 
 		function logout() {
-		  sessionStorage.removeItem('userId');
+		  sessionStorage.removeItem('userCode');
 		  sessionStorage.removeItem('email');
-		  config.userId = null;
+		  config.userCode = null;
 		  config.email = null;
 		  showAlert('success', 'Logged out successfully!', config.loginUrl);
 		}
 
 		function navigateTo(page) {
-		  if (page !== 'logout' && !config.userId) {
+		  if (page !== 'logout' && !config.userCode) {
 		    showAlert('error', 'Please log in to access this page.', config.loginUrl);
 		    return;
 		  }
@@ -1444,7 +1444,7 @@
 		  try {
 		    const response = await fetch(`http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(customerNo)}`, {
 		      method: 'GET',
-		      headers: { 'userId': config.userId }
+		      headers: { 'userCode': config.userCode }
 		    });
 
 		    if (response.ok) {
@@ -1489,7 +1489,7 @@
 		}
 
 		async function createParty() {
-		  const userId = document.getElementById('party-userId').value;
+		  const userCode = document.getElementById('party-userCode').value;
 		  const name = document.getElementById('party-name').value.trim();
 		  const middleName = document.getElementById('party-middleName').value.trim();
 		  const surname = document.getElementById('party-surname').value.trim();
@@ -1511,7 +1511,7 @@
 		  const zipCode = document.getElementById('party-zipCode').value.trim();
 		  const country = document.getElementById('party-country').value.trim();
 
-		  if (!userId) {
+		  if (!userCode) {
 		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
 		    return;
 		  }
@@ -1537,7 +1537,7 @@
 		  }
 
 		  const payload = {
-		    userId,
+		    userCode,
 		    name,
 		    middleName,
 		    surname,
@@ -1558,7 +1558,7 @@
 		      method: 'POST',
 		      headers: {
 		        'Content-Type': 'application/json',
-		        'userId': config.userId
+		        'userCode': config.userCode
 		      },
 		      body: JSON.stringify(payload)
 		    });
@@ -1583,7 +1583,7 @@
 		}
 
 		async function createPolicy() {
-		  const userId = document.getElementById('policy-userId').value;
+		  const userCode = document.getElementById('policy-userCode').value;
 		  const productCode = document.getElementById('policy-productCode').value;
 		  const polCompanyName = document.getElementById('policy-polCompanyName').value;
 		  const policyName = document.getElementById('policy-policyName').value;
@@ -1598,7 +1598,7 @@
 		  const dateOfBirth = document.getElementById('policy-dateOfBirth').value;
 		  const gender = document.getElementById('policy-gender').value;
 
-		  if (!userId) {
+		  if (!userCode) {
 		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
 		    return;
 		  }
@@ -1636,7 +1636,7 @@
 		  }
 
 		  const payload = {
-		    userId,
+		    userCode,
 		    productCode,
 		    polCompanyName,
 		    policyName,
@@ -1658,7 +1658,7 @@
 		      method: 'POST',
 		      headers: {
 		        'Content-Type': 'application/json',
-		        'userId': config.userId
+		        'userCode': config.userCode
 		      },
 		      body: JSON.stringify(payload)
 		    });
@@ -1906,7 +1906,7 @@
 			}
 
 			function showCustomerPolicies(customerNo) {
-			  if (!config.userId) {
+			  if (!config.userCode) {
 			    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
 			    return;
 			  }
@@ -2344,7 +2344,7 @@
 			    showAlert('error', 'Please enter a search query.');
 			    return;
 			  }
-			  if (!config.userId) {
+			  if (!config.userCode) {
 			    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
 			    return;
 			  }
@@ -2360,7 +2360,7 @@
 				    }
 			    const response = await fetch(endpoint, {
 			      method: 'GET',
-			      headers: { 'userId': config.userId },
+			      headers: { 'userCode': config.userCode },
 			    });
 
 			    if (response.ok) {
@@ -2444,7 +2444,7 @@
 			}
 
 		function showCustomerPolicies(customerNo) {
-			  if (!config.userId) {
+			  if (!config.userCode) {
 			    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
 			    return;
 			  }
@@ -2700,7 +2700,7 @@ if (policy.bankAccounts && policy.bankAccounts.length > 0) {
 
 		// Event Listeners
 		document.addEventListener('DOMContentLoaded', () => {
-		  initializeUserId();
+		  initializeuserCode();
 		// Add listener for search-type change to toggle search-all-policies visibility
 		  elements.searchType.addEventListener('change', toggleSearchAllPolicies);
 
