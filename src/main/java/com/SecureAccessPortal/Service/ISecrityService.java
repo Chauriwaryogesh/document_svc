@@ -20,7 +20,7 @@ public interface ISecrityService{
 	public byte[] fetchEmployeeDBforPDF(String id, String userId) throws IOException;
 
 	public List<SecurityDTO> fetchListOfUsers(String id, String userId);
-	public SecurityDTO updateSecurity(SecurityDTO securityDTO, String userId);
+	public SecurityDTO createUser(SecurityDTO securityDTO, String userId);
 
 	public String registerUser(SecurityDTO securityDTO, String userId);
 

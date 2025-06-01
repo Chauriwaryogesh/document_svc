@@ -461,7 +461,7 @@ public class EmailService {
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
-			custDTO.setUserId(cust.getUserId());
+			custDTO.setUserId(cust.getUserCode());
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
 			custDTO.setDateOfBirth(cust.getDateOfBirth());
 			// mapping for address
@@ -496,7 +496,7 @@ public class EmailService {
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
-			custDTO.setUserId(cust.getUserId());
+			custDTO.setUserId(cust.getUserCode());
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
 			custDTO.setDateOfBirth(cust.getDateOfBirth());
 			// mapping for address
@@ -573,7 +573,7 @@ public class EmailService {
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
-			custDTO.setUserId(userId);
+			custDTO.setUserCode(userId);
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
 			custDTO.setCreatedBy(userId);
 			custDTO.setCreatedTime(LocalDateTime.now());

@@ -43,7 +43,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SecurityController {
 
 	@Autowired
-	private ISecrityService empService;
+	private ISecrityService securityService;
 
 	@Autowired
 	private EmailService otpService;
@@ -58,7 +58,7 @@ public class SecurityController {
 	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> serchUser(@RequestBody SecurityDTO searchRequest,
 			@RequestHeader(value = "userId", required = false) String userId) {
 
-		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> security = empService.searchUserFromList(searchRequest, userId);
+		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> security = securityService.searchUserFromList(searchRequest, userId);
 
 		return security;
 	}
@@ -70,7 +70,7 @@ public class SecurityController {
 		com.SecureAccessPortal.Service.ResponseEntity<List<SecurityDTO>> serviceResponse = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		List<SecurityDTO> response = new ArrayList<>();
 		try {
-			response = empService.fetchListOfUsers(id, userId);
+			response = securityService.fetchListOfUsers(id, userId);
 			if (response != null && !response.isEmpty()) {
 				serviceResponse.setData(response);
 			} else {
@@ -88,7 +88,7 @@ public class SecurityController {
 			@RequestHeader(value = "userId") String userId) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> securityResponce = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		SecurityDTO security = empService.updateSecurity(securityDTO, userId);
+		SecurityDTO security = securityService.createUser(securityDTO, userId);
 
 		securityResponce.setData(security);
 
@@ -100,7 +100,7 @@ public class SecurityController {
 			@RequestHeader(value = "userId") String userId) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<String> data = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		String ok = empService.registerUser(securityDTO, userId);
+		String ok = securityService.registerUser(securityDTO, userId);
 		if (ok.contains("Successfully")) {
 			data.setData(ok);
 		} else {
@@ -157,7 +157,7 @@ public class SecurityController {
 
 	@DeleteMapping("user-list/delete/{id}")
 	public org.springframework.http.ResponseEntity<Void> deleteNote(@PathVariable Long id) {
-		boolean deleted = empService.deleteNoteById(id);
+		boolean deleted = securityService.deleteNoteById(id);
 		return deleted ? org.springframework.http.ResponseEntity.noContent().build()
 				: org.springframework.http.ResponseEntity.notFound().build();
 	}
@@ -322,7 +322,7 @@ public class SecurityController {
 			@RequestHeader String userId) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		try {
-			String updatedSecurity = empService.registerWebAuthnCredentials(request);
+			String updatedSecurity = securityService.registerWebAuthnCredentials(request);
 			if (updatedSecurity.contains("Success")) {
 				resp.setData(updatedSecurity);
 			} else {

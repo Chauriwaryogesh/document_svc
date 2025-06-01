@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
+import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Employees;
 import com.SecureAccessPortal.Entity.PersonSequence;
 import com.SecureAccessPortal.Entity.Security;
@@ -23,6 +24,7 @@ import com.SecureAccessPortal.Modal.EmpRequestforUpdate;
 import com.SecureAccessPortal.Modal.EmployeeDTO;
 import com.SecureAccessPortal.Modal.SecurityDTO;
 import com.SecureAccessPortal.Modal.WorkItemDTO;
+import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.IEmployeeRepo;
 import com.SecureAccessPortal.Repo.ISecurityRepo;
 import com.SecureAccessPortal.Repo.PersonSequenceRepository;
@@ -56,6 +58,9 @@ public class SecurityService implements ISecrityService {
 
 	@Autowired
 	private EmailService otpService;
+	
+	@Autowired
+	private CustomerRepo customerRepo;
 
 	@Override
 	public List<EmployeeDTO> fetchEmpList(String id, String userId) {
@@ -270,11 +275,10 @@ public class SecurityService implements ISecrityService {
 	}
 
 	@Override
-	public SecurityDTO updateSecurity(SecurityDTO securityDTO, String userId) {
+	public SecurityDTO createUser(SecurityDTO securityDTO, String userId) {
 		Security security = securityRepo.findByEmail(securityDTO.getEmail(), "N");
 		if (security != null) {
 			if (securityDTO.getEmail().equalsIgnoreCase(security.getEmail())) {
-				//security.setId(Long.valueOf( securityDTO.getId()));
 				security.setUserCode(securityDTO.getUserCode());
 				security.setUserName(securityDTO.getUserName());
 				security.setUpdateBy(securityDTO.getUserCode());
@@ -334,9 +338,14 @@ public class SecurityService implements ISecrityService {
 				// Subtract 5 days from updateTime
 				LocalDate newDate = updateTime.plusDays(5);
 				securityEntity.setEndTime(newDate.toString());
-
 			}
-
+	     // add entry of user in Customer table
+	        Customer	custDTO = new Customer();
+			custDTO.setCustomerNo(generateCustomerNumber());
+			custDTO.setEmail(securityDTO.getEmail());
+			custDTO.setUserCode(userId);
+			customerRepo.save(custDTO);
+			String message = "Success, person " + custDTO.getCustomerNo() + " created/updated successfully";
 			securityRepo.save(securityEntity);
 		}
 		return securityDTO;
@@ -347,7 +356,6 @@ public class SecurityService implements ISecrityService {
 		Long nextVal = seq.getId();
 		return "T" + String.format("%09d", nextVal);
 	}
-
 	@Override
 	public String registerUser(SecurityDTO securityDTO, String userId) {
 		String message = "";

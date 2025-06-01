@@ -24,7 +24,6 @@ public class Customer {
     @NotEmpty
     private String email;
 
-    @NotBlank
     @Column
     private String name;
 
@@ -37,11 +36,11 @@ public class Customer {
     @Column
     private String age;
 
-    @NotBlank
+    
     @Column
     private String dateOfBirth; // Consider changing to LocalDate for better date handling
 
-    @NotBlank
+   
     @Column
     private String gender;
 
@@ -60,7 +59,7 @@ public class Customer {
     private LocalDateTime createdTime; // Changed to LocalDateTime for consistency
 
     @Column
-    private String userId;
+    private String userCode;
 
     @Column
     private String smokerStatus;
@@ -211,15 +210,15 @@ public class Customer {
         this.createdTime = createdTime;
     }
 
-    public String getUserId() {
-        return userId;
-    }
+    public String getUserCode() {
+		return userCode;
+	}
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
 
-    public String getSmokerStatus() {
+	public String getSmokerStatus() {
         return smokerStatus;
     }
 
