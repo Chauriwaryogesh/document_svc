@@ -1804,6 +1804,7 @@
 			                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 			                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m0 0v14m-6-6h12M3 15h12" />
 			                  </svg>
+			                  console.log("item.phoneNumber",item.phoneNumber);
 			                  <span class="font-medium">Phone:</span>
 			                  <span class="tooltip truncate ml-2" data-tooltip="${item.phoneNumber || 'N/A'}">${item.phoneNumber || 'N/A'}</span>
 			                </p>
@@ -2548,8 +2549,8 @@ if (policy.bankAccounts && policy.bankAccounts.length > 0) {
 			          <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
 			          <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
 			          <p class="text-sm text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.custName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNum || 'N/A'}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.customerName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
+			          <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNumber || 'N/A'}</p>
 			          <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
 			          <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
 			          <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
