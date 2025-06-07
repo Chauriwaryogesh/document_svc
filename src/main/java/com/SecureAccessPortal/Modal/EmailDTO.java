@@ -1,8 +1,10 @@
 package com.SecureAccessPortal.Modal;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-@JsonIgnoreProperties
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmailDTO {
 	private String email;
 	
@@ -22,6 +24,27 @@ public class EmailDTO {
 	
 	private String isVerified;
 	private String comment;
+	private String userCode;
+	private long count;
+	
+	
+
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
 	public String getComment() {
 		return comment;
 	}

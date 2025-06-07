@@ -374,8 +374,11 @@ public class EmailService {
 		return response;
 	}
 
-	public List<EmailDTO> fetchListOfEmailIds(String id, String userCode) {
+	public List<EmailDTO> fetchListOfEmailIds(String id, String allEmails, String emailVerified,
+			String userCodeVerified, String adminAccess, String inActive, String userCode) {
 		// fetch using id
+		List<Security>securityList=	securityRepo.findAll();
+		List<EmailDTO> emailInfo = new ArrayList<EmailDTO>();
 		if (id != null) {
 			List<Email> listOfEmail = emailRepo.findByEmail(id);
 			return listOfEmail.stream().map(email -> {
@@ -391,24 +394,57 @@ public class EmailService {
 				emailDTO.setUpdatedTime(email.getUpdatedTime());
 				return emailDTO;
 			}).collect(Collectors.toList());
-		} else {
-			List<Email> listOfEmail = emailRepo.findAll();
-			return listOfEmail.stream().map(email -> {
-				EmailDTO emailDTO = new EmailDTO();
-				emailDTO.setEmail(email.getEmail());
-				emailDTO.setComment(email.getComment());
-				emailDTO.setCountry(email.getCountry());
-				emailDTO.setCreatedBy(email.getCreatedBy());
-				emailDTO.setIsVerified(email.getIsVerified());
-				emailDTO.setOwnerName(email.getOwnerName());
-				emailDTO.setPhoneNumber(email.getPhoneNumber());
-				emailDTO.setUpdatedBy(email.getUpdatedBy());
-				emailDTO.setUpdatedTime(email.getUpdatedTime());
-				return emailDTO;
+		} else if (allEmails != null) {
+			 emailInfo=securityList.stream().map(sec ->{
+				EmailDTO emailDTO= new EmailDTO();
+				emailDTO.setEmail(sec.getEmail());
+				emailDTO.setUserCode(sec.getUserCode());
+				long count=	 securityList.stream().count();
+				emailDTO.setCount(count);
+				return emailDTO;	
+			}).collect(Collectors.toList());
+		} else if (emailVerified != null) {
+			emailInfo=securityList.stream().filter(sec -> sec.getIsEmailVerified() != null && sec.getIsEmailVerified().equalsIgnoreCase("Y")).map(sec ->{
+				EmailDTO emailDTO= new EmailDTO();
+				emailDTO.setEmail(sec.getEmail());
+				emailDTO.setUserCode(sec.getUserCode());
+				long count=	 securityList.stream().filter(secr -> sec.getIsEmailVerified() != null && secr.getIsEmailVerified().equalsIgnoreCase("Y")).count();
+				emailDTO.setCount(count);
+				return emailDTO;	
+			}).collect(Collectors.toList());
+		} else if (userCodeVerified != null) {
+			emailInfo=securityList.stream().filter(sec -> sec.getIsUserCodeVerified() != null && sec.getIsUserCodeVerified().equalsIgnoreCase("Y")).map(sec ->{
+				EmailDTO emailDTO= new EmailDTO();
+				emailDTO.setEmail(sec.getEmail());
+				emailDTO.setUserCode(sec.getUserCode());
+				long count=	 securityList.stream().filter(secr -> sec.getIsUserCodeVerified() != null &&  secr.getIsUserCodeVerified().equalsIgnoreCase("Y")).count();
+				emailDTO.setCount(count);
+				return emailDTO;	
+			}).collect(Collectors.toList());
+		} else if (adminAccess != null) {
+			List<Customer> all = customerRepo.findAll();
+			emailInfo=all.stream().filter(sec ->sec.getAdminAccess() != null && sec.getAdminAccess().equalsIgnoreCase("Y") ).map(sec ->{
+				EmailDTO emailDTO= new EmailDTO();
+				emailDTO.setEmail(sec.getEmail());
+				emailDTO.setUserCode(sec.getUserCode());
+				long count=	 all.stream().filter(secr -> secr.getAdminAccess() != null && secr.getAdminAccess().equalsIgnoreCase("Y") ).count();
+				emailDTO.setCount(count);
+				return emailDTO;	
+			}).collect(Collectors.toList());
+		} else if (inActive != null) {
+			emailInfo=securityList.stream().filter(sec -> sec.getIsEmailVerified() != null && sec.getIsEmailVerified().equalsIgnoreCase("N") &&
+					sec.getIsUserCodeVerified() != null &&	sec.getIsUserCodeVerified().equalsIgnoreCase("N")).map(sec ->{
+				EmailDTO emailDTO= new EmailDTO();
+				emailDTO.setEmail(sec.getEmail());
+				emailDTO.setUserCode(sec.getUserCode());
+				long count=	 securityList.stream().filter(secr -> sec.getIsEmailVerified() != null && secr.getIsEmailVerified().equalsIgnoreCase("N") &&
+						secr.getIsUserCodeVerified() != null &&		secr.getIsUserCodeVerified().equalsIgnoreCase("N")).count();
+				emailDTO.setCount(count);
+				return emailDTO;	
 			}).collect(Collectors.toList());
 		}
+		return emailInfo;
 	}
-
 	public String sendEmailtoUser(String to, String subject, String body, MultipartFile attachment) {
 
 		String messageResp = "";

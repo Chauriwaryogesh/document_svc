@@ -213,10 +213,17 @@ public class SecurityController {
 
 	@GetMapping("/fetchEmailids")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<EmailDTO>> fetchEmailDetails(
-			@RequestParam(value = "Email id", required = false) String id, @RequestHeader String userCode) {
+			@RequestParam(value = "Email id", required = false) String id,
+			@RequestParam(value = "allEmails", required = false) String allEmails,
+			@RequestParam(value = "emailVerified", required = false) String emailVerified,
+			@RequestParam(value = "userCodeVerified", required = false) String userCodeVerified,
+			@RequestParam(value = "adminAccess", required = false) String adminAccess,
+			@RequestParam(value = "inActive", required = false) String inActive,
+			@RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<EmailDTO>> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
-		List<EmailDTO> email = otpService.fetchListOfEmailIds(id, userCode);
+		List<EmailDTO> email = otpService.fetchListOfEmailIds(id, allEmails,emailVerified,userCodeVerified,adminAccess,
+				inActive, userCode);
 
 		if (email != null && !email.isEmpty()) {
 			emailResp.setData(email);
