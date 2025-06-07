@@ -573,7 +573,7 @@ public class EmailService {
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
-			custDTO.setUserCode(userCode);
+			custDTO.setUserCode(cust.getuserCode());
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
 			custDTO.setCreatedBy(userCode);
 			custDTO.setCreatedTime(LocalDateTime.now());

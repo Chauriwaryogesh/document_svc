@@ -297,7 +297,7 @@ public class SecurityController {
 		if (customerDTO != null && !customerDTO.isEmpty()) {
 			emailResp.setData(customerDTO);
 		} else {
-			emailResp.setErrorMessage("CustomerDetails Not found ");
+			emailResp.setErrorMessage("Customer Details Not available ");
 		}
 		return emailResp;
 	}

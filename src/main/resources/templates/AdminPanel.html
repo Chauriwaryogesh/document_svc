@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - User Management</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -1100,6 +1099,23 @@
         font-size: 1.3rem;
     }
 }
+.modal#userCodePromptModal .modal-content input#prompt-userCode {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    background-color: var(--light-color);
+}
+
+.modal#userCodePromptModal .modal-content input#prompt-userCode:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.15);
+    background-color: white;
+}
     </style>
 </head>
 <body>
@@ -1219,10 +1235,25 @@
             </div>
         </div>
         <div class="bottom-button-container">
+            <button onclick="openProvideCustomerDetailsModal()"><i class="fas fa-id-card"></i> Provide Customer Details</button>
             <button onclick="deleteUserModel()" class="delete-btn"><i class="fas fa-trash-alt"></i> Delete Selected</button>
             <button onclick="openNewUserModal()" class="create-user-btn"><i class="fas fa-user-plus"></i> Create New User</button>
             <button onclick="saveChanges()" class="save-changes-btn"><i class="fas fa-save"></i> Save Changes (Expanded)</button>
         </div>
+        <div class="modal small-modal" id="userCodePromptModal">
+    <button class="close-button" onclick="closeModal('userCodePromptModal')">×</button>
+    <h2><i class="fas fa-user"></i> Enter User Code</h2>
+    <div class="modal-content">
+        <div>
+            <label for="prompt-userCode">User Code<span class="required">*</span></label>
+            <input type="text" id="prompt-userCode" placeholder="Enter user code (e.g., UC_1050)" required>
+        </div>
+    </div>
+    <div class="modal-buttons">
+        <button class="cancel-button" onclick="closeModal('userCodePromptModal')">Cancel</button>
+        <button class="save-button" onclick="validateUserCode()">Submit</button>
+    </div>
+</div>
     </div>
     <div class="modal-overlay" id="modalOverlay"></div>
     <div class="modal small-modal" id="newUserModal">
@@ -1408,6 +1439,60 @@
                 if (callback) callback();
             };
         }
+        function openProvideCustomerDetailsModal() {
+            openModal('userCodePromptModal');
+            document.getElementById('prompt-userCode').value = '';
+        }
+
+        async function validateUserCode() {
+            const userCodeInput = document.getElementById('prompt-userCode').value.trim();
+            if (!userCodeInput) {
+                showGlobalErrorAlert('User Code is required.');
+                return;
+            }
+            const authuserCode = getuserCode();
+            if (!authuserCode) return;
+            showLoadingSpinner(true);
+            try {
+                const response = await fetch('http://localhost:8081/Security/serch-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'userCode': authuserCode
+                    },
+                    body: JSON.stringify({ userCode: userCodeInput })
+                });
+                showLoadingSpinner(false);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                if (data.errorMessage || !data.data) {
+                    throw new Error(data.errorMessage || 'User not found.');
+                }
+                // Close user code prompt modal
+                closeModal('userCodePromptModal');
+                // Open customer details modal and populate fields
+                const modal = document.getElementById('customerDetailsModal');
+                // Clear all fields
+                ['customer-name', 'customer-middleName', 'customer-surname', 'customer-age', 'customer-dateOfBirth', 
+                 'customer-phoneNumber', 'customer-id', 'customer-street', 'customer-city', 'customer-state', 
+                 'customer-zipCode', 'customer-country', 'customer-alternateEmail', 'customer-phoneCountryCode', 
+                 'customer-emergencyContactName', 'customer-emergencyContactPhone']
+                    .forEach(id => document.getElementById(id).value = '');
+                document.getElementById('customer-gender').value = '';
+                ['customer-smokerStatus', 'customer-adminAccess'].forEach(id => document.getElementById(id).checked = false);
+                // Populate email and userCode
+                document.getElementById('customer-email').value = data.data.email || '';
+                document.getElementById('customer-userCode').value = data.data.userCode || '';
+                // Reset tabs to Customer Profile
+                initializeTabs('customerDetailsModal');
+                openModal('customerDetailsModal');
+            } catch (error) {
+                showLoadingSpinner(false);
+                showGlobalErrorAlert(`Failed to validate user: ${error.message}`);
+            }
+        }
      
         function showGlobalErrorAlert(message) {
             document.getElementById('customErrorMessageGlobal').textContent = message;
@@ -1501,7 +1586,6 @@
             currentPage = 0;
             applyFiltersAndRender();
         }
-     // Populate user list starting from paginatedUsers.forEach
         function populateUserList(usersToDisplay) {
             userListContainer.innerHTML = '';
             const start = currentPage * getPageSize();
@@ -1542,8 +1626,8 @@
                     userDetails.innerHTML = `
                         <div><label for="email-${elementIdSuffix}">Email</label><input type="text" id="email-${elementIdSuffix}" value="${item.email || ''}" data-field="email"></div>
                         <div><label for="userCode-${elementIdSuffix}">User Code</label><input type="text" id="userCode-${elementIdSuffix}" value="${item.userCode || ''}" data-field="userCode"></div>
-                        <div><label>Email Verified</label><div class="checkbox-group"><input type="checkbox" id="isEmailVerified-${elementIdSuffix}" ${item.isEmailVerified ? 'checked' : ''} data-field="isEmailVerified"><label for="isEmailVerified-${elementIdSuffix}">Yes</label></div></div>
-                        <div><label>User Code Verified</label><div class="checkbox-group"><input type="checkbox" id="isUserCodeVerified-${elementIdSuffix}" ${item.isUserCodeVerified ? 'checked' : ''} data-field="isUserCodeVerified"><label for="isUserCodeVerified-${elementIdSuffix}">Yes</label></div></div>
+                        <div><label>Email Verified</label><div class="checkbox-group"><input type="checkbox" id="isEmailVerified-${elementIdSuffix}" ${item.isEmailVerified === 'Y' ? 'checked' : ''} data-field="isEmailVerified"><label for="isEmailVerified-${elementIdSuffix}">Yes</label></div></div>
+                        <div><label>User Code Verified</label><div class="checkbox-group"><input type="checkbox" id="isUserCodeVerified-${elementIdSuffix}" ${item.isUserCodeVerified === 'Y' ? 'checked' : ''} data-field="isUserCodeVerified"><label for="isUserCodeVerified-${elementIdSuffix}">Yes</label></div></div>
                         <div><label for="remainingTime-${elementIdSuffix}">Expiry Date</label><input type="date" id="remainingTime-${elementIdSuffix}" value="${item.remainingTime ? item.remainingTime.split('T')[0] : ''}" data-field="remainingTime"></div>
                         <div><label>System ID</label><div style="padding:9px; color: var(--text-muted-color);">${item.id || 'N/A'}</div></div>
                         <div><button class="register-fingerprint-button" onclick="event.stopPropagation(); registerFingerprint('${item.userCode}', ${item.id})"><i class="fas fa-fingerprint"></i> Register Fingerprint</button></div>
@@ -1563,13 +1647,13 @@
                             <button class="customer-details-button" style="font-size:0.78em;" onclick="event.stopPropagation(); showCustomerDetails('${item.email}', ${item.id})">
                                 <i class="fas fa-address-card"></i> View Details
                             </button>
-                            <span class="arrow" onclick="event.stopPropagation(); toggleUserDetails(${item.id}, this.closest('.user-card'))"><i class="fas fa-chevron-down"></i></span>
+                            <span class="arrow" onclick="event.stopPropagation(); toggleUserDetails(${item.id}, this.closest('.user-card'));"><span class="arrow"><i class="fas fa-chevron-down"></i></span>
                         </div>
                         <div class="user-details" data-user-id="${item.id}" style="display:none;">
                             <div><label for="email-${elementIdSuffix}">Email</label><input type="text" id="email-${elementIdSuffix}" value="${item.email || ''}" data-field="email"></div>
                             <div><label for="userCode-${elementIdSuffix}">User Code</label><input type="text" id="userCode-${elementIdSuffix}" value="${item.userCode || ''}" data-field="userCode"></div>
-                            <div><label>Email Verified</label><div class="checkbox-group"><input type="checkbox" id="isEmailVerified-${elementIdSuffix}" ${item.isEmailVerified ? 'checked' : ''} data-field="isEmailVerified"><label for="isEmailVerified-${elementIdSuffix}">Yes</label></div></div>
-                            <div><label>User Code Verified</label><div class="checkbox-group"><input type="checkbox" id="isUserCodeVerified-${elementIdSuffix}" ${item.isUserCodeVerified ? 'checked' : ''} data-field="isUserCodeVerified"><label for="isUserCodeVerified-${elementIdSuffix}">Yes</label></div></div>
+                            <div><label>Email Verified</label><div class="checkbox-group"><input type="checkbox" id="isEmailVerified-${elementIdSuffix}" ${item.isEmailVerified === 'Y' ? 'checked' : ''} data-field="isEmailVerified"><label for="isEmailVerified-${elementIdSuffix}">Yes</label></div></div>
+                            <div><label>User Code Verified</label><div class="checkbox-group"><input type="checkbox" id="isUserCodeVerified-${elementIdSuffix}" ${item.isUserCodeVerified === 'Y' ? 'checked' : ''} data-field="isUserCodeVerified"><label for="isUserCodeVerified-${elementIdSuffix}">Yes</label></div></div>
                             <div><label for="remainingTime-${elementIdSuffix}">Expiry Date</label><input type="date" id="remainingTime-${elementIdSuffix}" value="${item.remainingTime ? item.remainingTime.split('T')[0] : ''}" data-field="remainingTime"></div>
                             <div><button class="register-fingerprint-button" onclick="event.stopPropagation(); registerFingerprint('${item.userCode}', ${item.id})"><i class="fas fa-fingerprint"></i> Register Fingerprint</button></div>
                         </div>
@@ -1578,7 +1662,6 @@
                 }
             });
         }
-     // Update pagination display
         function updatePaginationDisplay(totalPages, totalItems) {
             prevPageBtn.disabled = currentPage === 0;
             nextPageBtn.disabled = currentPage >= totalPages - 1;
@@ -1604,7 +1687,6 @@
                 pageNumbersContainer.appendChild(pageBtn);
             }
         }
-     // Pagination navigation
         prevPageBtn.addEventListener('click', () => {
             if (currentPage > 0) {
                 currentPage--;
@@ -1637,13 +1719,11 @@
             }
             console.log('Selected User IDs:', selecteduserCodes);
         }
-     // Toggle user details
         function toggleUserDetails(userId, element) {
             const userDetails = viewMode === 'list'
                 ? element.nextElementSibling
                 : element.querySelector('.user-details');
             const isActive = element.classList.contains('active');
-            // Close all other open details
             document.querySelectorAll('.user-summary.active, .user-card.active').forEach(el => {
                 el.classList.remove('active');
                 const details = viewMode === 'list'

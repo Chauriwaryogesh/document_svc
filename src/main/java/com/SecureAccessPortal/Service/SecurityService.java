@@ -436,6 +436,16 @@ public class SecurityService implements ISecrityService {
 			serchResp.setErrorMessage("No user found");
 			}
 		}
+		else if(searchRequest.getUserCode() != null) {
+			Security user= securityRepo.findByUserCodeDeletedN(searchRequest.getUserCode(),"N");
+			if(user != null) {
+				securityDTO.setEmail(user.getEmail());
+				securityDTO.setUserCode(user.getUserCode());
+				serchResp.setData(securityDTO);
+			}else {
+			serchResp.setErrorMessage("No user found");
+			}
+		}
 		return serchResp;
 	}
 	
