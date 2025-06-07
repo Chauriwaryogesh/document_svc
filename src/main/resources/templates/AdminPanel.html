@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -969,6 +969,7 @@
             margin-left: 3px;
             font-weight: bold;
         }
+       
     </style>
 </head>
 <body>
@@ -1000,7 +1001,7 @@
                 <li><a href="#"><i class="fas fa-cogs"></i> Site Settings</a></li>
                 <li><a href="#"><i class="fas fa-chart-line"></i> Analytics</a></li>
             </ul>
-        </nav>
+        </nav>   
     </header>
     <div class="container">
         <div class="top-actions-bar">
@@ -1019,6 +1020,37 @@
                 <button onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </div>
+        <section id="analyticsDashboard" style="display: none;">
+    <h2>Analytics Dashboard</h2>
+    <div class="dashboard-grid">
+        <div class="card">
+            <h3>User Growth</h3>
+            <canvas id="userGrowthChart"></canvas>
+        </div>
+        <div class="card">
+            <h3>Verification Rates</h3>
+            <canvas id="verificationRatesChart"></canvas>
+        </div>
+        <div class="card">
+            <h3>Risk Score Distribution</h3>
+            <canvas id="riskScoreDistributionChart"></canvas>
+        </div>
+        </div>
+</section>
+<div id="notificationArea" class="notifications-container"></div>
+<section id="activityLogViewer" style="display: none;">
+    <h2>User Activity Log</h2>
+    <div class="filter-controls">
+        <input type="text" id="logUserFilter" placeholder="Filter by User Code or Email">
+        <input type="date" id="logDateFilter">
+        <button id="applyLogFilters" class="btn">Apply</button>
+    </div>
+    <div class="pagination-controls">
+        <button id="prevLogPageBtn" class="btn">&laquo; Prev</button>
+        <span id="currentLogPage">Page 1</span>
+        <button id="nextLogPageBtn" class="btn">Next &raquo;</button>
+    </div>
+</section>
         <div class="user-list-container" id="userListContainer">
             <div class="loading-message">Loading users... <i class="fas fa-spinner fa-spin"></i></div>
         </div>
@@ -1165,6 +1197,7 @@
     <footer class="main-footer">
         <p>© <span id="currentYear"></span> Access Management Control. All Rights Reserved.</p>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         let allUsers = [];
         let currentPage = 0;
@@ -1172,7 +1205,7 @@
         let viewMode = 'grid';
         let selecteduserCodes = [];
         let currentSearchQuery = '';
-        const getPageSize = () => viewMode === 'grid' ? 9 : 10;
+        const getPageSize = () => viewMode === 'grid' ? 12 : 10;
         const userListContainer = document.getElementById('userListContainer');
         const paginationContainer = document.getElementById('paginationContainer');
         const prevPageBtn = document.getElementById('prevPage');
@@ -1192,6 +1225,7 @@
                 if (callback) callback();
             };
         }
+     
         function showGlobalErrorAlert(message) {
             document.getElementById('customErrorMessageGlobal').textContent = message;
             document.getElementById('customErrorOverlayGlobal').classList.add('active');
@@ -1214,6 +1248,7 @@
                 window.location.href = 'login';
             });
         }
+        
         async function initialLoad() {
             const authuserCode = getuserCode();
             if (!authuserCode) return;
@@ -1250,6 +1285,7 @@
                 applyFiltersAndRender();
             }
         }
+        
         function applyFiltersAndRender() {
             currentSearchQuery = userSearchInput.value.toLowerCase().trim();
             let filteredUsers = allUsers;
@@ -1778,8 +1814,15 @@
         }
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('currentYear').textContent = new Date().getFullYear();
-            initialLoad();
-
+            initialLoad();         
+            document.getElementById('prevLogPageBtn').addEventListener('click', () => {
+                if (currentLogPage > 0) loadActivityLogs(currentLogPage - 1);
+            });
+            document.getElementById('nextLogPageBtn').addEventListener('click', () => {
+                // Need to know total pages from API response to check currentLogPage < totalPages -1
+                loadActivityLogs(currentLogPage + 1);
+            });
+                
             userSearchInput.addEventListener('focus', () => {
                 searchBarContainer.classList.add('focused');
                 if (userSearchInput.value && clearSearchBtn) clearSearchBtn.style.display = 'inline-flex';
