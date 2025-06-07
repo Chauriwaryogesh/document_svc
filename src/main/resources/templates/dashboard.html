@@ -1157,25 +1157,51 @@
                     showErrorAlert('Failed to fetch work items.');
                 }
             }
+            function renderPagination() {
+                const totalPages = Math.ceil(filteredWorkItems.length / itemsPerPage) || 1; // Ensure at least 1 page
+                const paginationControls = document.getElementById('paginationControls');
+                if (!paginationControls) return;
 
-            function filterWorkItems(status) {
-                console.log("Status", status);
-                if (status === '') {
-                    filteredWorkItems = [...originalWorkItems];
-                } else if (status === 'completed') {
-                    filteredWorkItems = originalWorkItems.filter(item =>
-                        (item.isEmailVerified === 'Y' || item.isEmailVerified === true) &&
-                        (item.isUserCodeVerified === 'Y' || item.isUserCodeVerified === true)
-                    );
-                } else if (status === 'in-progress') {
-                    filteredWorkItems = originalWorkItems.filter(item =>
-                        (item.isEmailVerified === 'N' || item.isEmailVerified === false) ||
-                        (item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false)
-                    );
-                } else if (status === 'on-going') {
-                    filteredWorkItems = [...originalWorkItems];
+                paginationControls.innerHTML = ''; // Clear existing buttons
+
+                // Previous button
+                const prevButton = document.createElement('button');
+                prevButton.className = 'pagination-button';
+                prevButton.textContent = 'Previous';
+                prevButton.disabled = currentPage === 1;
+                prevButton.addEventListener('click', () => changePage(currentPage - 1));
+                paginationControls.appendChild(prevButton);
+
+                // Page number buttons
+                const maxPagesToShow = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust startPage if endPage is at the totalPages limit
+                if (endPage - startPage + 1 < maxPagesToShow && totalPages > maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
                 }
-                currentPage = 1;
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageButton = document.createElement('button');
+                    pageButton.className = `pagination-button ${currentPage === i ? 'active' : ''}`;
+                    pageButton.textContent = i;
+                    pageButton.addEventListener('click', () => changePage(i));
+                    paginationControls.appendChild(pageButton);
+                }
+
+                // Next button
+                const nextButton = document.createElement('button');
+                nextButton.className = 'pagination-button';
+                nextButton.textContent = 'Next';
+                nextButton.disabled = currentPage === totalPages;
+                nextButton.addEventListener('click', () => changePage(currentPage + 1));
+                paginationControls.appendChild(nextButton);
+            }
+
+            function changePage(page) {
+                if (page < 1 || page > Math.ceil(filteredWorkItems.length / itemsPerPage)) return; // Prevent invalid pages
+                currentPage = page;
                 populateWorkItems();
                 renderPagination();
             }
@@ -1189,14 +1215,13 @@
                 grid.innerHTML = '';
 
                 const start = (currentPage - 1) * itemsPerPage;
-                const end = start + itemsPerPage;
+                const end = Math.min(start + itemsPerPage, filteredWorkItems.length);
                 const paginatedItems = filteredWorkItems.slice(start, end);
 
                 if (!paginatedItems.length) {
-                    tbody.innerHTML = `
-                        <tr><td colspan="8" style="text-align: center; color: gray;">No items match the selected filter.</td></tr>`;
-                    grid.innerHTML = `
-                        <p style="text-align: center; color: gray;">No items match the selected filter.</p>`;
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: gray;">No items match the selected filter.</td></tr>`;
+                    grid.innerHTML = `<p style="text-align: center; color: gray;">No items match the selected filter.</p>`;
+                    toggleBulkActions(); // Ensure bulk actions are hidden
                     return;
                 }
 
@@ -1210,8 +1235,8 @@
                             <td>${item.userCode || 'N/A'}</td>
                             <td>${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</td>
                             <td>${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</td>
-                            <td>${item.createdTime || 'N/A'}</td>
-                            <td>${item.remainingTime || 'N/A'}</td>
+                            <td>${item.createdTime ? new Date(item.createdTime).toLocaleString() : 'N/A'}</td>
+                            <td>${item.remainingTime ? new Date(item.remainingTime).toLocaleString() : 'N/A'}</td>
                         `;
                     });
                 } else {
@@ -1225,30 +1250,52 @@
                             <p><strong>User ID:</strong> ${item.userCode || 'N/A'}</p>
                             <p><strong>Email Verification:</strong> ${item.isEmailVerified === 'N' || item.isEmailVerified === false ? 'No' : 'Yes'}</p>
                             <p><strong>User ID Verification:</strong> ${item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false ? 'No' : 'Yes'}</p>
-                            <p><strong>Access Given:</strong> ${item.createdTime || 'N/A'}</p>
-                            <p><strong>Expires:</strong> ${item.remainingTime || 'N/A'}</p>
+                            <p><strong>Access Given:</strong> ${item.createdTime ? new Date(item.createdTime).toLocaleString() : 'N/A'}</p>
+                            <p><strong>Expires:</strong> ${item.remainingTime ? new Date(item.remainingTime).toLocaleString() : 'N/A'}</p>
                         `;
                         grid.appendChild(card);
                     });
                 }
 
+                // Reattach event listeners for checkboxes
                 document.querySelectorAll('.user-checkbox').forEach(cb => {
-                    cb.removeEventListener('change', toggleBulkActions);
+                    cb.removeEventListener('change', toggleBulkActions); // Prevent duplicate listeners
                     cb.addEventListener('change', toggleBulkActions);
                 });
+
+                // Update select all checkbox state
+                const selectAll = document.getElementById('selectAll');
+                if (selectAll) {
+                    selectAll.checked = false; // Reset select all on page change
+                    selectAll.addEventListener('change', function () {
+                        document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = this.checked);
+                        toggleBulkActions();
+                    });
+                }
             }
 
-            function renderPagination() {
-                const totalPages = Math.ceil(filteredWorkItems.length / itemsPerPage);
-                const paginationControls = document.getElementById('paginationControls');
-                if (!paginationControls) return;
-                paginationControls.innerHTML = `
-                    <button class="pagination-button" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">Previous</button>
-                    ${Array.from({ length: totalPages }, (_, i) => `
-                        <button class="pagination-button ${currentPage === i + 1 ? 'active' : ''}" onclick="changePage(${i + 1})">${i + 1}</button>
-                    `).join('')}
-                    <button class="pagination-button" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Next</button>
-                `;
+            function filterWorkItems(status) {
+                console.log("Filtering by status:", status);
+                if (status === '') {
+                    filteredWorkItems = [...originalWorkItems];
+                } else if (status === 'completed') {
+                    filteredWorkItems = originalWorkItems.filter(item =>
+                        (item.isEmailVerified === 'Y' || item.isEmailVerified === true) &&
+                        (item.isUserCodeVerified === 'Y' || item.isUserCodeVerified === true)
+                    );
+                } else if (status === 'in-progress') {
+                    filteredWorkItems = originalWorkItems.filter(item =>
+                        (item.isEmailVerified === 'N' || item.isEmailVerified === false) ||
+                        (item.isUserCodeVerified === 'N' || item.isUserCodeVerified === false)
+                    );
+                } else if (status === 'on-going') {
+                    filteredWorkItems = originalWorkItems.filter(item =>
+                        item.remainingTime && new Date(item.remainingTime) > new Date()
+                    );
+                }
+                currentPage = 1; // Reset to first page after filtering
+                populateWorkItems();
+                renderPagination();
             }
 
             function changePage(page) {
