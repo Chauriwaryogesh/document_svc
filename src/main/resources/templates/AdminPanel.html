@@ -6,30 +6,32 @@
     <title>Admin Panel - User Management</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
-            --primary-color: #007bff;
-            --primary-color-rgb: 0, 123, 255;
-            --primary-hover-color: #0056b3;
-            --secondary-color: #6c757d;
-            --secondary-hover-color: #545b62;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --info-color: #17a2b8;
-            --light-color: #f8f9fa;
-            --dark-color: #343a40;
-            --text-color: #333;
-            --text-muted-color: #6c757d;
-            --bg-color: #eef1f5;
-            --header-bg: linear-gradient(to right, #2c3e50, #465566);
+            --primary-color: #6366f1;
+            --primary-color-rgb: 99, 102, 241;
+            --primary-hover-color: #4f46e5;
+            --secondary-color: #6b7280;
+            --secondary-hover-color: #4b5563;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --light-color: #f9fafb;
+            --dark-color: #1f2937;
+            --text-color: #111827;
+            --text-muted-color: #6b7280;
+            --bg-color: #f3f4f6;
+            --header-bg: #ffffff;
+            --header-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --footer-bg: #1f2937;
             --card-bg: #ffffff;
-            --border-color: #dee2e6;
-            --border-radius: 0.5rem;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-            --font-family: 'Poppins', sans-serif;
+            --border-color: #e5e7eb;
+            --border-radius: 0.75rem;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --font-family: 'Inter', sans-serif;
         }
         body {
             font-family: var(--font-family);
@@ -39,7 +41,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 70px;
+            padding-top: 80px;
             padding-bottom: 20px;
             min-height: 100vh;
             box-sizing: border-box;
@@ -51,8 +53,8 @@
         }
         header.main-header {
             background: var(--header-bg);
-            color: white;
-            padding: 0.8rem 2rem;
+            color: var(--text-color);
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -61,45 +63,54 @@
             top: 0;
             left: 0;
             z-index: 1030;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-            animation: slideDownHeader 0.5s ease-out;
+            box-shadow: var(--header-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        @keyframes slideDownHeader {
-            from { transform: translateY(-100%); opacity: 0.8; }
-            to { transform: translateY(0); opacity: 1; }
+        header.main-header.scrolled {
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         header.main-header h1 {
-            font-size: 1.4rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
             margin: 0;
             display: flex;
             align-items: center;
             gap: 12px;
-            color: white;
+            color: var(--primary-color);
         }
         header.main-header h1 i {
-            font-size: 1.7rem;
+            font-size: 1.8rem;
+            color: var(--primary-color);
         }
         header.main-header nav ul {
             list-style: none;
             padding: 0;
             display: flex;
             margin: 0;
-            gap: 0.8rem;
+            gap: 0.5rem;
         }
         header.main-header nav ul li a {
-            color: white;
+            color: var(--text-color);
             text-decoration: none;
-            padding: 8px 16px;
-            border-radius: var(--border-radius);
-            background: rgba(255, 255, 255, 0.08);
-            transition: all 0.25s ease;
+            padding: 10px 18px;
+            border-radius: 0.5rem;
+            background: transparent;
+            transition: all 0.3s ease;
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         header.main-header nav ul li a:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
+            background: rgba(var(--primary-color-rgb), 0.1);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        header.main-header nav ul li a.active {
+            background: var(--primary-color);
+            color: white;
         }
         .top-actions-bar {
             width: 100%;
@@ -132,7 +143,7 @@
             color: var(--text-color);
             width: 100%;
         }
-        .search-container.focused, #userSearchInput:focus { /* Modified to ensure focus on input also expands */
+        .search-container.focused, #userSearchInput:focus {
             width: 420px;
             box-shadow: 0 0 12px rgba(var(--primary-color-rgb), 0.3);
         }
@@ -264,7 +275,7 @@
         }
         .user-list-container.grid-view {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Slightly wider cards */
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             grid-auto-rows: min-content;
             gap: 18px;
         }
@@ -279,7 +290,7 @@
             display: flex;
             flex-direction: column;
             border-top: 3px solid transparent;
-             min-height: 180px; /* Adjusted min-height */
+            min-height: 180px;
         }
         .user-list-container.grid-view .user-card:hover {
             transform: translateY(-4px);
@@ -313,7 +324,7 @@
             margin-right: 4px;
         }
         .user-list-container.grid-view .user-card .card-actions {
-            margin-top: auto; /* Pushes actions to bottom */
+            margin-top: auto;
             padding-top: 12px;
             display: flex;
             justify-content: space-between;
@@ -334,20 +345,18 @@
             border-top: 1px solid var(--border-color);
             margin-top: 12px;
             display: none;
-            grid-template-columns: 1fr 1fr; /* Default two columns for list view */
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
             background-color: #fcfcfc;
             border-radius: 0 0 var(--border-radius) var(--border-radius);
             animation: expandDetailsAnim 0.35s ease-out;
-            width: 100%; /* Ensure it takes full width of its container */
+            width: 100%;
             box-sizing: border-box;
         }
-        /* Override for grid view user details to stack vertically */
         .user-list-container.grid-view .user-card .user-details {
-            grid-template-columns: 1fr; /* Single column for details in grid view */
-            gap: 10px; /* Slightly reduced gap for tighter packing */
+            grid-template-columns: 1fr;
+            gap: 10px;
         }
-
         .user-list-container.grid-view .user-card.active .user-details,
         .user-summary.active + .user-details {
             display: grid;
@@ -355,7 +364,7 @@
         @keyframes expandDetailsAnim {
             from {
                 opacity: 0;
-                max-height: 0; /* Use max-height for smoother animation */
+                max-height: 0;
                 padding-top: 0;
                 padding-bottom: 0;
                 margin-top: 0;
@@ -364,7 +373,7 @@
             }
             to {
                 opacity: 1;
-                max-height: 600px; /* Adjust as needed, should be larger than content */
+                max-height: 600px;
                 padding-top: 15px;
                 padding-bottom: 15px;
                 margin-top: 12px;
@@ -428,14 +437,14 @@
             gap: 5px;
         }
         .customer-details-button:hover, .register-fingerprint-button:hover {
-            background-color: #117a8b;
+            background-color: #2563eb;
             transform: translateY(-1px);
         }
         .register-fingerprint-button {
             background-color: var(--success-color);
         }
         .register-fingerprint-button:hover {
-            background-color: #1e7e34;
+            background-color: #059669;
         }
         .bottom-button-container {
             margin-top: 25px;
@@ -466,7 +475,7 @@
             color: white;
         }
         .bottom-button-container .delete-btn:hover {
-            background-color: #c82333;
+            background-color: #dc2626;
         }
         .bottom-button-container .create-user-btn, .bottom-button-container .save-changes-btn {
             background-color: var(--primary-color);
@@ -482,7 +491,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(var(--dark-color-rgb, 52, 58, 64), 0.7);
+            background-color: rgba(var(--dark-color-rgb), 0.7);
             z-index: 1040;
             animation: fadeInModalOverlayAnim 0.3s ease;
         }
@@ -579,7 +588,7 @@
             color: white;
         }
         .modal-buttons .save-button:hover, .modal-buttons .update-button:hover {
-            background-color: #218838;
+            background-color: #059669;
         }
         .modal-buttons .cancel-button {
             background-color: var(--secondary-color);
@@ -783,18 +792,38 @@
             background-color: var(--primary-hover-color);
         }
         footer.main-footer {
-            background: var(--header-bg);
-            color: rgba(255,255,255,0.8);
-            padding: 0.8rem 0;
+            background: var(--footer-bg);
+            color: #d1d5db;
+            padding: 1.5rem 0;
             text-align: center;
             margin-top: auto;
             width: 100%;
-            box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.1);
             font-weight: 400;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
+            position: relative;
         }
         footer.main-footer p {
             margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        footer.main-footer a {
+            color: #93c5fd;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        footer.main-footer a:hover {
+            color: #60a5fa;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 0.85rem;
         }
         .pagination-container {
             display: flex;
@@ -880,18 +909,18 @@
         }
         @media (max-width: 768px) {
             body {
-                padding-top: 60px;
+                padding-top: 70px;
             }
             .container {
                 width: 95%;
             }
             header.main-header {
                 flex-direction: column;
-                padding: 0.7rem 1rem;
-                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                gap: 0.8rem;
             }
             header.main-header h1 {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
             header.main-header nav {
                 width: 100%;
@@ -899,7 +928,7 @@
             header.main-header nav ul {
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 0.5rem;
+                gap: 0.6rem;
                 margin-top: 0.5rem;
             }
             .user-list-container.grid-view {
@@ -936,11 +965,11 @@
         }
         @media (max-width: 480px) {
             header.main-header h1 {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
             header.main-header nav ul li a {
-                padding: 5px 8px;
-                font-size: 0.8rem;
+                padding: 6px 10px;
+                font-size: 0.85rem;
             }
             .header-actions button {
                 font-size: 0.8rem;
@@ -969,11 +998,10 @@
             margin-left: 3px;
             font-weight: bold;
         }
-       
     </style>
 </head>
 <body>
-<div id="customAlertOverlay" class="custom-alert-overlay">
+    <div id="customAlertOverlay" class="custom-alert-overlay">
         <div id="customAlertBox" class="custom-alert-box">
             <div id="customAlertHeader" class="custom-alert-header"></div>
             <div id="customAlertMessage" class="custom-alert-message"></div>
@@ -982,7 +1010,6 @@
             </div>
         </div>
     </div>
-
     <div id="customErrorOverlay" class="custom-alert-overlay error">
         <div id="customErrorBox" class="custom-alert-box">
             <div id="customErrorHeader" class="custom-alert-header error">Error</div>
@@ -996,12 +1023,12 @@
         <h1><i class="fas fa-user-shield"></i> Admin Dashboard</h1>
         <nav>
             <ul>
-                <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="#"><i class="fas fa-users"></i> Users</a></li>
                 <li><a href="#"><i class="fas fa-cogs"></i> Site Settings</a></li>
                 <li><a href="#"><i class="fas fa-chart-line"></i> Analytics</a></li>
             </ul>
-        </nav>   
+        </nav>
     </header>
     <div class="container">
         <div class="top-actions-bar">
@@ -1021,36 +1048,36 @@
             </div>
         </div>
         <section id="analyticsDashboard" style="display: none;">
-    <h2>Analytics Dashboard</h2>
-    <div class="dashboard-grid">
-        <div class="card">
-            <h3>User Growth</h3>
-            <canvas id="userGrowthChart"></canvas>
-        </div>
-        <div class="card">
-            <h3>Verification Rates</h3>
-            <canvas id="verificationRatesChart"></canvas>
-        </div>
-        <div class="card">
-            <h3>Risk Score Distribution</h3>
-            <canvas id="riskScoreDistributionChart"></canvas>
-        </div>
-        </div>
-</section>
-<div id="notificationArea" class="notifications-container"></div>
-<section id="activityLogViewer" style="display: none;">
-    <h2>User Activity Log</h2>
-    <div class="filter-controls">
-        <input type="text" id="logUserFilter" placeholder="Filter by User Code or Email">
-        <input type="date" id="logDateFilter">
-        <button id="applyLogFilters" class="btn">Apply</button>
-    </div>
-    <div class="pagination-controls">
-        <button id="prevLogPageBtn" class="btn">&laquo; Prev</button>
-        <span id="currentLogPage">Page 1</span>
-        <button id="nextLogPageBtn" class="btn">Next &raquo;</button>
-    </div>
-</section>
+            <h2>Analytics Dashboard</h2>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>User Growth</h3>
+                    <canvas id="userGrowthChart"></canvas>
+                </div>
+                <div class="card">
+                    <h3>Verification Rates</h3>
+                    <canvas id="verificationRatesChart"></canvas>
+                </div>
+                <div class="card">
+                    <h3>Risk Score Distribution</h3>
+                    <canvas id="riskScoreDistributionChart"></canvas>
+                </div>
+            </div>
+        </section>
+        <div id="notificationArea" class="notifications-container"></div>
+        <section id="activityLogViewer" style="display: none;">
+            <h2>User Activity Log</h2>
+            <div class="filter-controls">
+                <input type="text" id="logUserFilter" placeholder="Filter by User Code or Email">
+                <input type="date" id="logDateFilter">
+                <button id="applyLogFilters" class="btn">Apply</button>
+            </div>
+            <div class="pagination-controls">
+                <button id="prevLogPageBtn" class="btn">« Prev</button>
+                <span id="currentLogPage">Page 1</span>
+                <button id="nextLogPageBtn" class="btn">Next »</button>
+            </div>
+        </section>
         <div class="user-list-container" id="userListContainer">
             <div class="loading-message">Loading users... <i class="fas fa-spinner fa-spin"></i></div>
         </div>
@@ -1196,6 +1223,11 @@
     </div>
     <footer class="main-footer">
         <p>© <span id="currentYear"></span> Access Management Control. All Rights Reserved.</p>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Support</a>
+        </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -1216,6 +1248,28 @@
         const clearSearchBtn = searchBarContainer.querySelector('.clear-btn');
         const modalOverlay = document.getElementById('modalOverlay');
         const viewToggleButtonIcon = document.querySelector('.header-actions button[onclick="toggleView()"] i');
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.main-header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+     // Search bar focus effect
+        userSearchInput.addEventListener('focus', () => {
+            searchBarContainer.classList.add('focused');
+        });
+        userSearchInput.addEventListener('blur', () => {
+            if (!userSearchInput.value.trim()) {
+                searchBarContainer.classList.remove('focused');
+            }
+        });
+        userSearchInput.addEventListener('input', () => {
+            clearSearchBtn.style.display = userSearchInput.value.trim() ? 'inline-flex' : 'none';
+        });
         function showGlobalCustomAlert(header, message, callback) {
             document.getElementById('customAlertHeaderGlobal').textContent = header;
             document.getElementById('customAlertMessageGlobal').textContent = message;
@@ -1254,7 +1308,7 @@
             if (!authuserCode) return;
             userListContainer.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> Loading users...</div>';
             updatePaginationDisplay(0, 0);
-            userListContainer.classList.toggle('grid-view', viewMode === 'grid'); // Set initial view class
+            userListContainer.classList.toggle('grid-view', viewMode === 'grid');
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const idParam = urlParams.get('id');
@@ -1316,13 +1370,16 @@
             currentPage = 0;
             applyFiltersAndRender();
         }
+     // Populate user list starting from paginatedUsers.forEach
         function populateUserList(usersToDisplay) {
             userListContainer.innerHTML = '';
             const start = currentPage * getPageSize();
             const end = start + getPageSize();
             const paginatedUsers = usersToDisplay.slice(start, end);
             if (!paginatedUsers || paginatedUsers.length === 0) {
-                userListContainer.innerHTML = currentSearchQuery ? '<div class="info-message">No users match your search criteria.</div>' : '<div class="info-message">No users available to display.</div>';
+                userListContainer.innerHTML = currentSearchQuery
+                    ? '<div class="info-message">No users match your search criteria.</div>'
+                    : '<div class="info-message">No users available to display.</div>';
                 return;
             }
             paginatedUsers.forEach((item, index) => {
@@ -1349,14 +1406,15 @@
                     userListContainer.appendChild(userSummary);
                     const userDetails = document.createElement('div');
                     userDetails.classList.add('user-details');
-                    userDetails.dataset.userCode = item.id;
+                    userDetails.dataset.userId = item.id;
+                    userDetails.style.display = 'none';
                     userDetails.innerHTML = `
                         <div><label for="email-${elementIdSuffix}">Email</label><input type="text" id="email-${elementIdSuffix}" value="${item.email || ''}" data-field="email"></div>
                         <div><label for="userCode-${elementIdSuffix}">User Code</label><input type="text" id="userCode-${elementIdSuffix}" value="${item.userCode || ''}" data-field="userCode"></div>
-                        <div><label>Email Verified</label><div class="checkbox-group"><input type="checkbox" id="isEmailVerified-${elementIdSuffix}" ${item.isEmailVerified === 'Y' ? 'checked' : ''} data-field="isEmailVerified"><label for="isEmailVerified-${elementIdSuffix}">Yes</label></div></div>
-                        <div><label>User Code Verified</label><div class="checkbox-group"><input type="checkbox" id="isUserCodeVerified-${elementIdSuffix}" ${item.isUserCodeVerified === 'Y' ? 'checked' : ''} data-field="isUserCodeVerified"><label for="isUserCodeVerified-${elementIdSuffix}">Yes</label></div></div>
+                        <div><label>Email Verified</label><div class="checkbox-group"><input type="checkbox" id="isEmailVerified-${elementIdSuffix}" ${item.isEmailVerified ? 'checked' : ''} data-field="isEmailVerified"><label for="isEmailVerified-${elementIdSuffix}">Yes</label></div></div>
+                        <div><label>User Code Verified</label><div class="checkbox-group"><input type="checkbox" id="isUserCodeVerified-${elementIdSuffix}" ${item.isUserCodeVerified ? 'checked' : ''} data-field="isUserCodeVerified"><label for="isUserCodeVerified-${elementIdSuffix}">Yes</label></div></div>
                         <div><label for="remainingTime-${elementIdSuffix}">Expiry Date</label><input type="date" id="remainingTime-${elementIdSuffix}" value="${item.remainingTime ? item.remainingTime.split('T')[0] : ''}" data-field="remainingTime"></div>
-                        <div><label>System ID</label><div style="padding:9px; color:var(--text-muted-color);">${item.id || 'N/A'}</div></div>
+                        <div><label>System ID</label><div style="padding:9px; color: var(--text-muted-color);">${item.id || 'N/A'}</div></div>
                         <div><button class="register-fingerprint-button" onclick="event.stopPropagation(); registerFingerprint('${item.userCode}', ${item.id})"><i class="fas fa-fingerprint"></i> Register Fingerprint</button></div>
                     `;
                     userListContainer.appendChild(userDetails);
@@ -1376,13 +1434,12 @@
                             </button>
                             <span class="arrow" onclick="event.stopPropagation(); toggleUserDetails(${item.id}, this.closest('.user-card'))"><i class="fas fa-chevron-down"></i></span>
                         </div>
-                        <div class="user-details" data-user-id="${item.id}">
+                        <div class="user-details" data-user-id="${item.id}" style="display:none;">
                             <div><label for="email-${elementIdSuffix}">Email</label><input type="text" id="email-${elementIdSuffix}" value="${item.email || ''}" data-field="email"></div>
                             <div><label for="userCode-${elementIdSuffix}">User Code</label><input type="text" id="userCode-${elementIdSuffix}" value="${item.userCode || ''}" data-field="userCode"></div>
-                            <div><label>Email Verified</label><div class="checkbox-group"><input type="checkbox" id="isEmailVerified-${elementIdSuffix}" ${item.isEmailVerified === 'Y' ? 'checked' : ''} data-field="isEmailVerified"><label for="isEmailVerified-${elementIdSuffix}">Yes</label></div></div>
-                            <div><label>User Code Verified</label><div class="checkbox-group"><input type="checkbox" id="isUserCodeVerified-${elementIdSuffix}" ${item.isUserCodeVerified === 'Y' ? 'checked' : ''} data-field="isUserCodeVerified"><label for="isUserCodeVerified-${elementIdSuffix}">Yes</label></div></div>
+                            <div><label>Email Verified</label><div class="checkbox-group"><input type="checkbox" id="isEmailVerified-${elementIdSuffix}" ${item.isEmailVerified ? 'checked' : ''} data-field="isEmailVerified"><label for="isEmailVerified-${elementIdSuffix}">Yes</label></div></div>
+                            <div><label>User Code Verified</label><div class="checkbox-group"><input type="checkbox" id="isUserCodeVerified-${elementIdSuffix}" ${item.isUserCodeVerified ? 'checked' : ''} data-field="isUserCodeVerified"><label for="isUserCodeVerified-${elementIdSuffix}">Yes</label></div></div>
                             <div><label for="remainingTime-${elementIdSuffix}">Expiry Date</label><input type="date" id="remainingTime-${elementIdSuffix}" value="${item.remainingTime ? item.remainingTime.split('T')[0] : ''}" data-field="remainingTime"></div>
-                            <div><label>System ID</label><div style="padding:9px; color:var(--text-muted-color);">${item.id || 'N/A'}</div></div>
                             <div><button class="register-fingerprint-button" onclick="event.stopPropagation(); registerFingerprint('${item.userCode}', ${item.id})"><i class="fas fa-fingerprint"></i> Register Fingerprint</button></div>
                         </div>
                     `;
@@ -1390,58 +1447,45 @@
                 }
             });
         }
-        function updatePaginationDisplay(totalPageCount, totalFilteredItemCount) {
-            const summaryEl = paginationContainer.querySelector('.pagination-summary');
+     // Update pagination display
+        function updatePaginationDisplay(totalPages, totalItems) {
+            prevPageBtn.disabled = currentPage === 0;
+            nextPageBtn.disabled = currentPage >= totalPages - 1;
+            const startItem = currentPage * getPageSize() + 1;
+            const endItem = Math.min((currentPage + 1) * getPageSize(), totalItems);
+            paginationContainer.querySelector('.pagination-summary').textContent =
+                totalItems > 0 ? `Showing ${startItem} to ${endItem} of ${totalItems} users` : 'No users to display';
             pageNumbersContainer.innerHTML = '';
-            totalPages = totalPageCount;
-            if (totalFilteredItemCount > 0) {
-                const startItem = currentPage * getPageSize() + 1;
-                const endItem = Math.min((currentPage + 1) * getPageSize(), totalFilteredItemCount);
-                summaryEl.textContent = `Showing ${startItem}-${endItem} of ${totalFilteredItemCount} users`;
-            } else {
-                summaryEl.textContent = currentSearchQuery ? 'No users match search.' : 'No users found.';
-            }
-            if (totalPages <= 1) {
-                prevPageBtn.disabled = true;
-                nextPageBtn.disabled = true;
-                if (totalPages === 1 && totalFilteredItemCount > 0) pageNumbersContainer.innerHTML = '<button class="active">1</button>';
-                else pageNumbersContainer.innerHTML = '';
-                return;
-            }
-            const maxVisiblePages = 3;
-            let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
-            let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
-            if (endPage - startPage + 1 < maxVisiblePages && totalPages >= maxVisiblePages) {
-                startPage = Math.max(0, endPage - maxVisiblePages + 1);
-            }
-            if (totalPages < maxVisiblePages) {
-                startPage = 0;
-                endPage = totalPages - 1;
-            }
-            if (startPage > 0) {
-                const firstButton = document.createElement('button');
-                firstButton.textContent = '1';
-                firstButton.onclick = () => changePage(0);
-                pageNumbersContainer.appendChild(firstButton);
-                if (startPage > 1) pageNumbersContainer.appendChild(document.createTextNode('...'));
+            const maxPagesToShow = 5;
+            let startPage = Math.max(0, currentPage - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(totalPages - 1, startPage + maxPagesToShow - 1);
+            if (endPage - startPage + 1 < maxPagesToShow) {
+                startPage = Math.max(0, endPage - maxPagesToShow + 1);
             }
             for (let i = startPage; i <= endPage; i++) {
-                const pageButton = document.createElement('button');
-                pageButton.textContent = i + 1;
-                if (i === currentPage) pageButton.classList.add('active');
-                pageButton.onclick = () => changePage(i);
-                pageNumbersContainer.appendChild(pageButton);
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i + 1;
+                pageBtn.className = i === currentPage ? 'active' : '';
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    applyFiltersAndRender();
+                });
+                pageNumbersContainer.appendChild(pageBtn);
             }
-            if (endPage < totalPages - 1) {
-                if (endPage < totalPages - 2) pageNumbersContainer.appendChild(document.createTextNode('...'));
-                const lastButton = document.createElement('button');
-                lastButton.textContent = totalPages;
-                lastButton.onclick = () => changePage(totalPages - 1);
-                pageNumbersContainer.appendChild(lastButton);
-            }
-            prevPageBtn.disabled = currentPage === 0;
-            nextPageBtn.disabled = currentPage === totalPages - 1;
         }
+     // Pagination navigation
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                applyFiltersAndRender();
+            }
+        });
+        nextPageBtn.addEventListener('click', () => {
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                applyFiltersAndRender();
+            }
+        });
         function changePage(page) {
             currentPage = page;
             applyFiltersAndRender();
@@ -1462,16 +1506,24 @@
             }
             console.log('Selected User IDs:', selecteduserCodes);
         }
-        function toggleUserDetails(userCode, parentElement) {
-            const detailsElement = userListContainer.querySelector(`.user-details[data-user-id="${userCode}"]`);
-            if (!detailsElement || !parentElement) return;
-            const isActive = parentElement.classList.toggle('active');
-            detailsElement.style.display = isActive ? 'grid' : 'none';
-            const arrowIcon = parentElement.querySelector('.arrow i');
-            if (arrowIcon) {
-                arrowIcon.className = isActive ?
-                    (viewMode === 'grid' ? 'fas fa-chevron-up' : 'fas fa-chevron-down') :
-                    (viewMode === 'grid' ? 'fas fa-chevron-down' : 'fas fa-chevron-right');
+     // Toggle user details
+        function toggleUserDetails(userId, element) {
+            const userDetails = viewMode === 'list'
+                ? element.nextElementSibling
+                : element.querySelector('.user-details');
+            const isActive = element.classList.contains('active');
+            // Close all other open details
+            document.querySelectorAll('.user-summary.active, .user-card.active').forEach(el => {
+                el.classList.remove('active');
+                const details = viewMode === 'list'
+                    ? el.nextElementSibling
+                    : el.querySelector('.user-details');
+                if (details) details.style.display = 'none';
+            });
+            // Toggle current details
+            if (!isActive) {
+                element.classList.add('active');
+                userDetails.style.display = 'grid';
             }
         }
         function showLoadingSpinner(show) {
@@ -1631,6 +1683,7 @@
             });
             if (modalOverlay) modalOverlay.style.display = 'none';
         }
+        
         async function showCustomerDetails(email, userCodeForLookup) {
             const authuserCode = getuserCode();
             if (!authuserCode) return;
@@ -1823,18 +1876,6 @@
                 loadActivityLogs(currentLogPage + 1);
             });
                 
-            userSearchInput.addEventListener('focus', () => {
-                searchBarContainer.classList.add('focused');
-                if (userSearchInput.value && clearSearchBtn) clearSearchBtn.style.display = 'inline-flex';
-            });
-            userSearchInput.addEventListener('blur', () => {
-                setTimeout(() => {
-                    if (!searchBarContainer.contains(document.activeElement)) {
-                        if (!userSearchInput.value) searchBarContainer.classList.remove('focused');
-                        if (clearSearchBtn) clearSearchBtn.style.display = userSearchInput.value ? 'inline-flex' : 'none';
-                    }
-                }, 150);
-            });
             userSearchInput.addEventListener('input', () => {
                 if(clearSearchBtn) clearSearchBtn.style.display = userSearchInput.value ? 'inline-flex' : 'none';
             });
