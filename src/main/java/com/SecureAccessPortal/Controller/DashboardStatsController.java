@@ -37,6 +37,15 @@ public class DashboardStatsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Handle errors here
         }
     }
+    @GetMapping("/user-counts")
+    public ResponseEntity<DashboardStats> getUsersCountStats(@RequestHeader("userCode") String userCode) {
+        try {
+            DashboardStats stats = dashboardService.getUsersCountStats(userCode);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Handle errors here
+        }
+    }
     
     
 }

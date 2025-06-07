@@ -998,6 +998,108 @@
             margin-left: 3px;
             font-weight: bold;
         }
+       .summary-boxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+    padding: 0 8px;
+}
+.summary-box {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border-left: 3px solid transparent;
+    animation: fadeInUpGeneral 0.5s ease-out forwards;
+}
+.summary-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+    border-left-color: var(--primary-color);
+}
+.summary-box i {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    transition: transform 0.3s ease;
+}
+.summary-box:hover i {
+    transform: scale(1.1);
+}
+.summary-box h3 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: var(--dark-color);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+.summary-box p {
+    margin: 4px 0 0;
+    color: var(--text-muted-color);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.summary-box.active-users { border-left-color: var(--success-color); }
+.summary-box.email-verified { border-left-color: var(--info-color); }
+.summary-box.usercode-verified { border-left-color: var(--warning-color); }
+.summary-box.admin-access { border-left-color: var(--primary-color); }
+.summary-box.inactive-users { border-left-color: var(--danger-color); }
+.summary-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.04) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.summary-box:hover::before {
+    opacity: 1;
+}
+@keyframes fadeInUpGeneral {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 768px) {
+    .summary-boxes {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+    }
+    .summary-box {
+        padding: 12px;
+    }
+    .summary-box h3 {
+        font-size: 1.3rem;
+    }
+    .summary-box i {
+        font-size: 1.5rem;
+    }
+    .summary-box p {
+        font-size: 0.8rem;
+    }
+}
+@media (max-width: 480px) {
+    .summary-boxes {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+    }
+    .summary-box {
+        padding: 10px;
+    }
+    .summary-box h3 {
+        font-size: 1.2rem;
+    }
+    .summary-box i {
+        font-size: 1.3rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -1031,6 +1133,33 @@
         </nav>
     </header>
     <div class="container">
+    <div class="summary-boxes">
+    <div class="summary-box">
+        <i class="fas fa-users"></i>
+        <h3 id="active-users-count">0</h3>
+        <p>Active Users</p>
+    </div>
+    <div class="summary-box">
+        <i class="fas fa-envelope"></i>
+        <h3 id="email-verified-count">0</h3>
+        <p>Email Verified</p>
+    </div>
+    <div class="summary-box">
+        <i class="fas fa-barcode"></i>
+        <h3 id="usercode-verified-count">0</h3>
+        <p>User Code Verified</p>
+    </div>
+    <div class="summary-box">
+        <i class="fas fa-user-shield"></i>
+        <h3 id="admin-access-count">0</h3>
+        <p>Admin Access</p>
+    </div>
+    <div class="summary-box">
+        <i class="fas fa-user-slash"></i>
+        <h3 id="inactive-users-count">0</h3>
+        <p>Inactive Users</p>
+    </div>
+</div>
         <div class="top-actions-bar">
             <div class="search-container" id="searchBarContainer">
                 <input type="text" id="userSearchInput" placeholder="Search by ID, Email, User Code...">
@@ -1332,11 +1461,13 @@
                     if (clearSearchBtn) clearSearchBtn.style.display = 'inline-flex';
                 }
                 applyFiltersAndRender();
+                await fetchUserStats();
             } catch (error) {
                 console.error('Error during initial load:', error);
                 userListContainer.innerHTML = `<div class="error-message">Error loading users: ${error.message}. Please try again later.</div>`;
                 allUsers = [];
                 applyFiltersAndRender();
+                await fetchUserStats();
             }
         }
         
@@ -1557,6 +1688,38 @@
                 return;
             }
             await sendUserData('http://localhost:8081/Security/add-user', updatedUser, 'User details updated successfully.');
+        }
+        async function fetchUserStats() {
+            const authuserCode = getuserCode();
+            if (!authuserCode) return;
+            try {
+                const response = await fetch('http://localhost:8081/api/dashboard/user-counts', {
+                    method: 'GET',
+                    headers: { 'userCode': authuserCode }
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const stats = await response.json();
+                updateUserStatsUI(stats);
+            } catch (error) {
+                console.error('Error fetching user stats:', error);
+                showGlobalErrorAlert(`Failed to load user statistics: ${error.message}`);
+                // Fallback: Initialize with zeros
+                updateUserStatsUI({
+                    activeUsers: 0,
+                    emailVerified: 0,
+                    userCodeVerified: 0,
+                    adminAccess: 0,
+                    inactiveUsers: 0
+                });
+            }
+        }
+
+        function updateUserStatsUI(stats) {
+            document.getElementById('active-users-count').textContent = stats.activeUsers || 0;
+            document.getElementById('email-verified-count').textContent = stats.emailVerified || 0;
+            document.getElementById('usercode-verified-count').textContent = stats.userCodeVerified || 0;
+            document.getElementById('admin-access-count').textContent = stats.adminAccess || 0;
+            document.getElementById('inactive-users-count').textContent = stats.inactiveUsers || 0;
         }
         async function saveNewUser() {
             const newEmail = document.getElementById('new-email').value.trim();

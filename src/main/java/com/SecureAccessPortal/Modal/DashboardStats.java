@@ -11,6 +11,52 @@ public class DashboardStats {
 	private int verPending;
 	private int totalClosed;
 	private int corrospodnace;
+	
+	//new ly added for Usercount
+	private int activeUsers;
+	private int inactiveUsers;
+	private int emailVerified;
+	private int userCodeVerified;
+	private int adminAccess;
+	public int getActiveUsers() {
+		return activeUsers;
+	}
+
+	public void setActiveUsers(int activeUsers) {
+		this.activeUsers = activeUsers;
+	}
+
+	public int getInactiveUsers() {
+		return inactiveUsers;
+	}
+
+	public void setInactiveUsers(int inactiveUsers) {
+		this.inactiveUsers = inactiveUsers;
+	}
+
+	public int getEmailVerified() {
+		return emailVerified;
+	}
+
+	public void setEmailVerified(int emailVerified) {
+		this.emailVerified = emailVerified;
+	}
+
+	public int getUserCodeVerified() {
+		return userCodeVerified;
+	}
+
+	public void setUserCodeVerified(int userCodeVerified) {
+		this.userCodeVerified = userCodeVerified;
+	}
+
+	public int getAdminAccess() {
+		return adminAccess;
+	}
+
+	public void setAdminAccess(int adminAccess) {
+		this.adminAccess = adminAccess;
+	}
 
 	public int getVerPending() {
 		return verPending;

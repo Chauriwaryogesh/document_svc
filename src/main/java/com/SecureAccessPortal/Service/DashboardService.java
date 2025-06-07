@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.SecureAccessPortal.Entity.CapturePhoto;
+import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Security;
 import com.SecureAccessPortal.Modal.DashboardStats;
+import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.ICapturePhtoRepo;
 import com.SecureAccessPortal.Repo.ISecurityRepo;
 
@@ -24,7 +26,9 @@ import com.SecureAccessPortal.Repo.ISecurityRepo;
 		
 		@Autowired
 		private ISecurityRepo securityRepo;
-
+		
+		@Autowired
+		private CustomerRepo customerRepo;
 	    public DashboardStats getDashboardStats(String userCode) {
 	        // Fetch stats for the dashboard based on the userCode
 	    	List<CapturePhoto> documents = docRepo.findAll();
@@ -91,6 +95,30 @@ import com.SecureAccessPortal.Repo.ISecurityRepo;
 			stats.setVerPending((int) verPending);
 			return stats;
 
+		}
+
+		public DashboardStats getUsersCountStats(String userCode) {
+			DashboardStats stats = new DashboardStats();
+			try {
+			List<Security> security = securityRepo.findAll();
+			List<Customer> customer = customerRepo.findAll();
+			long activeUsers = security.stream().count();
+			long inactiveUsers = security.stream().filter(sec -> sec.getIsEmailVerified().equalsIgnoreCase("N")
+					&& sec.getIsUserCodeVerified().equalsIgnoreCase("N")).count();
+			long emailVerified = security.stream().filter(sec -> sec.getIsEmailVerified().equalsIgnoreCase("Y"))
+					.count();
+			long userCodeVerified = security.stream().filter(sec -> sec.getIsUserCodeVerified().equalsIgnoreCase("Y"))
+					.count();
+			long adminAccess = customer.stream().filter(sec -> sec.getAdminAccess() != null && sec.getAdminAccess().equalsIgnoreCase("Y")).count();
+			stats.setActiveUsers((int) activeUsers);
+			stats.setInactiveUsers((int) inactiveUsers);
+			stats.setEmailVerified((int) emailVerified);
+			stats.setUserCodeVerified((int) userCodeVerified);
+			stats.setAdminAccess((int) adminAccess);
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			return stats;
 		}
 	}
 
