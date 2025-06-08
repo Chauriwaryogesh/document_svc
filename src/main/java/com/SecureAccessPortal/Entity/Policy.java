@@ -45,7 +45,7 @@ public class Policy {
     @Column(name = "updated_by")
     private String updatedBy;
 
-    @Column(name = "user_id")
+    @Column(name = "userCode")
     private String userCode;
 
     @Column(name = "deleted_flag")

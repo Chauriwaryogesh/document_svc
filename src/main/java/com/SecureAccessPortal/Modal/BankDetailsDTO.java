@@ -14,6 +14,7 @@ public class BankDetailsDTO {
 	private String accountType;
 	private String status;
 	private String customerNumber; // From Customer entity
+	private String customerName;
 	private String holderName; // Derived from Customer's name
 	private String policyNumber; // From Policy entity
 	private String policyStatus; // From Policy entity
@@ -30,6 +31,13 @@ public class BankDetailsDTO {
 	private BigDecimal accountBalance;
 	private String linkedPaymentMethod;
 	private Integer verificationAttempts;
+	
+	public String getCustomerName() {
+		return customerName;
+	}
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
 	/**
 	 * @return the id
 	 */
