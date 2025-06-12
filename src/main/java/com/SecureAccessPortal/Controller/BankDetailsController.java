@@ -36,7 +36,7 @@ public class BankDetailsController {
 		com.SecureAccessPortal.Service.ResponseEntity<List<BankDetailsDTO>> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
 		List<BankDetailsDTO> bankDetails = bankDetailsService.getBankDetails(bankAccNo,policyNo,customerNo,userCode);
-		if (bankDetails != null) {
+		if (bankDetails != null && !bankDetails.isEmpty()) {
 			response.setData(bankDetails);
 		} else {
 			response.setErrorMessage("No Bank account found for Customer");
@@ -95,10 +95,10 @@ public class BankDetailsController {
 			@RequestHeader(value = "userCode", required = true) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<PolicyRequest> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		PolicyRequest custDtl = bankDetailsService.getCustomerDetails(policyNo,customerNo,userCode);
-		if (custDtl != null) {
+		if (custDtl != null && !custDtl.isBlank()) {
 			response.setData(custDtl);
 		} else {
-			response.setErrorMessage("No BAnk NAmes found");
+			response.setErrorMessage("No Customer details found for the given Policy");
 		}
 		return response;
 	}

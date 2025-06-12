@@ -210,5 +210,11 @@ public class PolicyRequest {
 		this.smokerStatus = smokerStatus;
 	}
 	
+	public boolean isBlank() {
+        return (policyNumber == null || policyNumber.isEmpty())
+            && (customerNo == null || customerNo.isEmpty());
+        // add other relevant field checks as needed
+    }
+	
 
 }

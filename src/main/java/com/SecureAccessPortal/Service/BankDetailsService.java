@@ -130,7 +130,7 @@ public class BankDetailsService {
 		return bankNames;
 	}
 	public List<String> getBranchCodes(String userCode) {
-		 List<String> bankNames=List.of("HDFC700989","HDFC700989","HDFC700989","HDFC700979","HDFC700990");
+		 List<String> bankNames=List.of("HDFC00001234","HDFC700989","HDFC700989","HDFC700979","HDFC700990");
 		return bankNames;
 	}
 
@@ -138,12 +138,14 @@ public class BankDetailsService {
 		PolicyRequest customer = new PolicyRequest();
 		if (policyNo != null) {
 			Policy policyNum = policyRepo.findByPolicyNum(policyNo);
-			Customer byCustomerNoNew = customerRepo.findByCustomerNoNew(policyNum.getCustomerNo());
-			customer.setCustName(byCustomerNoNew.getName() + " " + byCustomerNoNew.getSurname());
-			customer.setCustomerNo(byCustomerNoNew.getCustomerNo());
-			customer.setDateOfBirth(byCustomerNoNew.getDateOfBirth());
-			customer.setEmail(byCustomerNoNew.getEmail());
-			customer.setuserCode(byCustomerNoNew.getUserCode());
+			if(policyNum != null) {
+				Customer byCustomerNoNew = customerRepo.findByCustomerNoNew(policyNum.getCustomerNo());
+				customer.setCustName(byCustomerNoNew.getName() + " " + byCustomerNoNew.getSurname());
+				customer.setCustomerNo(byCustomerNoNew.getCustomerNo());
+				customer.setDateOfBirth(byCustomerNoNew.getDateOfBirth());
+				customer.setEmail(byCustomerNoNew.getEmail());
+				customer.setuserCode(byCustomerNoNew.getUserCode());	
+			}
 		}
 		return customer;
 	}

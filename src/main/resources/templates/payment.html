@@ -211,6 +211,11 @@
         font-weight: 600;
         color: var(--text-primary);
       }
+      .form-label.required::after {
+        content: '*';
+        color: var(--accent-red);
+        margin-left: 4px;
+      }
       .actions-container {
         display: flex;
         flex-wrap: nowrap;
@@ -358,22 +363,20 @@
         <button id="export-csv" class="btn-neutral bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg" aria-label="Export as CSV">Export CSV</button>
         <button id="export-pdf" class="btn-neutral bg-red-500 text-white font-semibold py-2 px-5 rounded-lg" aria-label="Export as PDF">Export PDF</button>
       </div>
-
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        <div id="total-accounts" class="card p-6 text-center cursor-pointer hover:bg-blue-50" role="button" aria-label="View all accounts">
-          <h3 class="text-lg font-semibold">Total Accounts</h3>
-          <p id="total-accounts" class="text-3xl font-bold text-gray-800">0</p>
-        </div>
-        <div id="verified-accounts" class="card p-6 text-center" role="tab" aria-label="View verified accounts">
-          <h3 class="text-lg font-semibold">Verified Accounts</h3>
-          <p id="verified-accounts" class="text-3xl font-bold text-gray-800">0</p>
-        </div>
-        <div id="pending-verifications" class="card p-6 text-center cursor-pointer hover:bg-yellow-50" role="button" aria-label="View pending verifications">
-          <h3 class="text-lg font-semibold">Pending Verifications</h3>
-          <p id="pending-verifications" class="text-3xl font-bold text-gray-800">0</p>
-        </div>
-      </div>
-
+  <div id="total-accounts-card" class="card p-6 text-center cursor-pointer hover:bg-blue-50" role="button" aria-label="View all accounts">
+    <h3 class="text-lg font-semibold">Total Accounts</h3>
+    <p id="total-accounts-count" class="text-3xl font-bold text-gray-800">0</p>
+  </div>
+  <div id="verified-accounts-card" class="card p-6 text-center" role="tab" aria-label="View verified accounts">
+    <h3 class="text-lg font-semibold">Verified Accounts</h3>
+    <p id="verified-accounts-count" class="text-3xl font-bold text-gray-800">0</p>
+  </div>
+  <div id="pending-verifications-card" class="card p-6 text-center cursor-pointer hover:bg-yellow-50" role="button" aria-label="View pending verifications">
+    <h3 class="text-lg font-semibold">Pending Verifications</h3>
+    <p id="pending-verifications-count" class="text-3xl font-bold text-gray-800">0</p>
+  </div>
+</div>
       <div class="card p-8">
         <h2 class="text-2xl font-bold mb-6">Bank Accounts & Verification</h2>
         <div class="flex flex-col sm:flex-row gap-4 mb-6">
@@ -566,6 +569,7 @@
               <label class="flex items-center">
                 <input type="checkbox" id="col-accountType" checked class="mr-2"> Account Type
               </label>
+              < inappropriate code continues... >
               <label class="flex items-center">
                 <input type="checkbox" id="col-status" checked class="mr-2"> Status
               </label>
@@ -583,7 +587,7 @@
               </label>
             </div>
           </div>
-          <div class="flex justify-end space-x-2 mt-6">
+          <div class="flex justify-end  space-x-2 mt-6">
             <button id="save-table-settings" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Save table settings">Save</button>
             <button id="close-table-settings-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
           </div>
@@ -678,7 +682,7 @@
 
       <div id="loader" class="loader">
         <div class="spinner"></div>
-      </div>;
+      </div>
 
     <script>
     const config = {
@@ -714,90 +718,92 @@
 
     		const addBankAccountModalHTML = `
     		<div id="add-bank-account-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="add-bank-account-title" role="dialog" aria-modal="true">
-    		  <div class="modal-content w-full max-w-lg">
+    		  <div class="modal-content w-full max-w-2xl">
     		    <h3 id="add-bank-account-title" class="text-xl font-bold mb-3">Add Bank Account</h3>
     		    <form id="add-bank-account-form" class="space-y-4">
-    		      <div>
-    		        <label for="add-account-number" class="form-label block text-sm">Bank Account Number</label>
+    		    <h4 class="text-lg font-semibold">Policy Details</h4>
+    		    <div>
+    		        <label for="add-policy-number" class="form-label block text-sm required">Policy Number</label>
+    		        <input type="text" id="add-policy-number" class="form-input mt-1" placeholder="Enter policy number" required aria-required="true">
+    		    </div>
+    		    <div>
+    		        <label for="add-customer-number" class="form-label block text-sm required">Customer Number</label>
+    		        <input type="text" id="add-customer-number" class="form-input mt-1" placeholder="Customer number (auto-filled)" readonly aria-required="true">
+    		    </div>
+    		    <div>
+    		        <label for="add-cust-name" class="form-label block text-sm required">Customer Name</label>
+    		        <input type="text" id="add-cust-name" class="form-input mt-1" placeholder="Customer name (auto-filled)" readonly aria-required="true">
+    		    </div>
+    		    <div>
+    		        <label for="add-email" class="form-label block text-sm required">Email</label>
+    		        <input type="email" id="add-email" class="form-input mt-1" placeholder="Email (auto-filled)" readonly aria-required="true">
+    		    </div>
+    		    <div>
+    		        <label for="add-date-of-birth" class="form-label block text-sm required">Date of Birth</label>
+    		        <input type="date" id="add-date-of-birth" class="form-input mt-1" readonly aria-required="true">
+    		    </div>
+    		    <div>
+    		        <label for="add-user-code" class="form-label block text-sm required">User Code</label>
+    		        <input type="text" id="add-user-code" class="form-input mt-1" placeholder="User code (auto-filled)" readonly aria-required="true">
+    		    </div>
+    		    <h4 class="text-lg font-semibold mt-6">Bank Account Details</h4>
+    		    <div>
+    		        <label for="add-account-number" class="form-label block text-sm required">Bank Account Number</label>
     		        <input type="text" id="add-account-number" class="form-input mt-1" placeholder="Enter account number" required aria-required="true">
-    		      </div>
-    		      <div>
-    		        <label for="add-ifsc-code" class="form-label block text-sm">IFSC Code</label>
+    		    </div>
+    		    <div>
+    		        <label for="add-ifsc-code" class="form-label block text-sm required">IFSC Code</label>
     		        <select id="add-ifsc-code" class="form-input mt-1" required aria-required="true">
     		          <option value="" disabled selected>Select IFSC code</option>
     		        </select>
-    		      </div>
-    		      <div>
-    		        <label for="add-bank-name" class="form-label block text-sm">Bank Name</label>
+    		    </div>
+    		    <div>
+    		        <label for="add-bank-name" class="form-label block text-sm required">Bank Name</label>
     		        <select id="add-bank-name" class="form-input mt-1" required aria-required="true">
     		          <option value="" disabled selected>Select bank name</option>
     		        </select>
-    		      </div>
-    		      <div>
+    		    </div>
+    		    <div>
     		        <label for="add-branch-code" class="form-label block text-sm">Branch Code</label>
     		        <input type="text" id="add-branch-code" class="form-input mt-1" placeholder="Branch code (auto-filled)" readonly>
-    		      </div>
-    		      <div>
-    		        <label for="add-account-type" class="form-label block text-sm">Account Type</label>
+    		    </div>
+    		    <div>
+    		        <label for="add-account-type" class="form-label block text-sm required">Account Type</label>
     		        <select id="add-account-type" class="form-input mt-1" required aria-required="true">
     		          <option value="" disabled selected>Select account type</option>
     		          <option value="Savings">Savings</option>
     		          <option value="Current">Current</option>
     		          <option value="Checking">Checking</option>
     		        </select>
-    		      </div>
-    		      <div>
-    		        <label for="add-customer-number" class="form-label block text-sm">Customer Number</label>
-    		        <input type="text" id="add-customer-number" class="form-input mt-1" placeholder="Customer number (auto-filled)" readonly aria-required="true">
-    		      </div>
-    		      <div>
-    		        <label for="add-policy-number" class="form-label block text-sm">Policy Number</label>
-    		        <input type="text" id="add-policy-number" class="form-input mt-1" placeholder="Enter policy number" required aria-required="true">
-    		      </div>
-    		      <div>
-    		        <label for="add-email" class="form-label block text-sm">Email</label>
-    		        <input type="email" id="add-email" class="form-input mt-1" placeholder="Email (auto-filled)" readonly aria-required="true">
-    		      </div>
-    		      <div>
-    		        <label for="add-date-of-birth" class="form-label block text-sm">Date of Birth</label>
-    		        <input type="date" id="add-date-of-birth" class="form-input mt-1" readonly aria-required="true">
-    		      </div>
-    		      <div>
-    		        <label for="add-cust-name" class="form-label block text-sm">Customer Name</label>
-    		        <input type="text" id="add-cust-name" class="form-input mt-1" placeholder="Customer name (auto-filled)" readonly aria-required="true">
-    		      </div>
-    		      <div>
-    		        <label for="add-user-code" class="form-label block text-sm">User Code</label>
-    		        <input type="text" id="add-user-code" class="form-input mt-1" placeholder="User code (auto-filled)" readonly aria-required="true">
-    		      </div>
-    		      <div>
-    		        <label for="add-account-holder-type" class="form-label block text-sm">Account Holder Type</label>
+    		    </div>
+    		    <div>
+    		        <label for="add-account-holder-type" class="form-label block text-sm required">Account Holder Type</label>
     		        <select id="add-account-holder-type" class="form-input mt-1" required aria-required="true">
     		          <option value="" disabled selected>Select holder type</option>
     		          <option value="Single">Single</option>
     		          <option value="Joint">Joint</option>
     		        </select>
-    		      </div>
-    		      <div>
+    		    </div>
+    		    <div>
     		        <label for="add-swift-code" class="form-label block text-sm">Swift Code</label>
     		        <input type="text" id="add-swift-code" class="form-input mt-1" placeholder="Enter swift code">
-    		      </div>
-    		      <div>
-    		        <label for="add-payment-method-status" class="form-label block text-sm">Payment Method</label>
+    		    </div>
+    		    <div>
+    		        <label for="add-payment-method-status" class="form-label block text-sm required">Payment Method</label>
     		        <select id="add-payment-method-status" class="form-input mt-1" required aria-required="true">
     		          <option value="" disabled selected>Select payment method</option>
     		          <option value="CHEQUE">Cheque</option>
     		          <option value="ONLINE">Online</option>
     		          <option value="WIRE">Wire Transfer</option>
     		        </select>
-    		      </div>
-    		      <div id="add-bank-account-error" class="error-text hidden" aria-live="polite"></div>
-    		      <div id="add-bank-account-result" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
-    		    </form>
-    		    <div class="flex justify-end space-x-2 mt-6">
-    		      <button id="add-bank-account-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Submit bank account">Add Account</button>
-    		      <button id="close-add-bank-account-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
     		    </div>
+    		    <div id="add-bank-account-error" class="error-text hidden" aria-live="polite"></div>
+    		    <div id="add-bank-account-result" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
+    		  </form>
+    		  <div class="flex justify-end space-x-2 mt-6">
+    		    <button id="add-bank-account-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Submit bank account">Add Account</button>
+    		    <button id="close-add-bank-account-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+    		  </div>
     		  </div>
     		</div>`;
 
@@ -1187,31 +1193,37 @@
     		}
 
     		async function searchBankDetails(searchTerm, searchType) {
-    		  if (!searchTerm) {
-    		    throw new Error('Search term is required');
-    		  }
-    		  const params = {};
-    		  if (searchType === 'policyNo') {
-    		    params.policyNo = searchTerm;
-    		  } else if (searchType === 'accountNo') {
-    		    params.bankAccNo = searchTerm;
-    		  } else if (searchType === 'customerNo') {
-    		    params.customerNumber = searchTerm;
-    		  }
-    		  try {
-    		    const response = await fetch(`/bankService/bank-details?${new URLSearchParams(params)}`, {
-    		      method: 'GET',
-    		      headers: { 'userCode': config.userCode },
-    		    });
-    		    if (!response.ok) {
-    		      throw new Error('API request failed');
-    		    }
-    		    const result = await response.json();
-    		    return result.data || [];
-    		  } catch (error) {
-    		    throw new Error(error.message || 'Failed to fetch bank details');
-    		  }
-    		}
+    			  // Allow empty searchTerm if API supports it; otherwise, keep the check
+    			  // if (!searchTerm) {
+    			  //   throw new Error('Search term is required');
+    			  // }
+    			  const params = {};
+    			  if (searchType === 'policyNo') {
+    			    params.policyNo = searchTerm;
+    			  } else if (searchType === 'accountNo') {
+    			    params.bankAccNo = searchTerm;
+    			  } else if (searchType === 'customerNo') { // Note: API expects 'customerNumber', but param is 'customerNo'
+    			    params.customerNumber = searchTerm;
+    			  } else {
+    			    throw new Error('Invalid search type');
+    			  }
+    			  try {
+    			    const response = await fetch(`/bankService/bank-details?${new URLSearchParams(params)}`, {
+    			      method: 'GET',
+    			      headers: { 'userCode': config.userCode },
+    			    });
+    			    if (!response.ok) {
+    			      throw new Error(`API request failed with status ${response.status}`);
+    			    }
+    			    const result = await response.json();
+    			    if (result.errorMessage) {
+    			      throw new Error(result.errorMessage); // Propagate the API's error message
+    			    }
+    			    return result.data || [];
+    			  } catch (error) {
+    			    throw new Error(error.message || 'Failed to fetch bank details');
+    			  }
+    			}
 
     		async function addBankAccount(data) {
     		  try {
@@ -1316,7 +1328,7 @@
     		  if (Array.isArray(bankNames) && bankNames.length) {
     		    bankNames.forEach(name => {
     		      const option = document.createElement('option');
-    		      option.valueContent = name;
+    		      option.value = name;
     		      option.textContent = name;
     		      bankNameSelect.appendChild(option);
     		    });
@@ -1378,691 +1390,989 @@
     		    errorDiv.classList.remove('hidden');
     		    return null;
     		  }
-    		  /* if (!/^[A-Z]{4}0[A-Z0-6]{6}$/.test(ifscCode.toUpperCase())) {
-    		    errorDiv.textContent = 'Invalid IFSC code format. Example: HDFC0001234';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  } */
-    		  return {
-    		    accountNumber,
-    		    ifscCode: ifscCode.toUpperCase(),
-    		    name,
-    		    surname,
-    		    bankName
-    		  };
-    		}
-
-    		function validateCustomerNumber(modalIdPrefix) {
-    		  const customerNumberInput = document.getElementById(`${modalIdPrefix}-customer-number`);
-    		  const errorDiv = document.getElementById(`${modalIdPrefix}-error`);
-    		  if (!customerNumberInput || !errorDiv) return null;
-
-    		  const customerNumber = customerNumberInput.value.trim();
-    		  errorDiv.textContent = '';
-    		  errorDiv.classList.add('hidden');
-
-    		  if (!customerNumber) {
-    		    errorDiv.textContent = 'Customer number is required.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  }
-    		  if (!/^[A-Z0-9]{5,15}$/.test(customerNumber.toUpperCase())) {
-    		    errorDiv.textContent = 'Invalid customer number format. Must be alphanumeric, 5-15 characters.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  }
-    		  return customerNumber.toUpperCase();
-    		}
-
-    		function validateAddBankAccountForm() {
-    		  const accountNumber = document.getElementById('add-account-number').value.trim();
-    		  const ifscCode = document.getElementById('add-ifsc-code').value.trim();
-    		  const bankName = document.getElementById('add-bank-name').value;
-    		  const accountType = document.getElementById('add-account-type').value;
-    		  const customerNumber = document.getElementById('add-customer-number').value.trim();
-    		  const policyNumber = document.getElementById('add-policy-number').value.trim();
-    		  const accountHolderType = document.getElementById('add-account-holder-type').value;
-    		  const branchCode = document.getElementById('add-branch-code').value.trim();
-    		  const swiftCode = document.getElementById('add-swift-code').value.trim();
-    		  const paymentMethod = document.getElementById('add-payment-method-status').value;
-    		  const email = document.getElementById('add-email').value.trim();
-    		  const dateOfBirth = document.getElementById('add-date-of-birth').value;
-    		  const custName = document.getElementById('add-cust-name').value.trim();
-    		  const userCode = document.getElementById('add-user-code').value.trim();
-    		  const errorDiv = document.getElementById('add-bank-account-error');
-
-    		  errorDiv.textContent = '';
-    		  errorDiv.classList.add('hidden');
-
-    		  if (!accountNumber || !ifscCode || !bankName || !accountType || !customerNumber || !policyNumber || !accountHolderType || !paymentMethod || !email || !dateOfBirth || !custName || !userCode) {
-    		    errorDiv.textContent = 'All required fields must be filled.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  }
-
-    		  if (!/^[A-Z0-9]{5,15}$/.test(customerNumber.toUpperCase())) {
-    		    errorDiv.textContent = 'Invalid customer number. Must be alphanumeric, 5-15 characters.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  }
-    		  if (!/^[A-Z0-9]{5,15}$/.test(policyNumber.toUpperCase())) {
-    		    errorDiv.textContent = 'Invalid policy number format. Must be alphanumeric, 5-15 characters.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  }
-    		  /* if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifscCode.toUpperCase())) {
-    		    errorDiv.textContent = 'Invalid IFSC code format. Example: HDFC0001234';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  } */
-    		  if (!/^[A-Z0-9]{8,20}$/.test(accountNumber.toUpperCase())) {
-    		    errorDiv.textContent = 'Invalid account number format. Must be alphanumeric, 8-20 characters.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  }
-    		 /*  if (swiftCode && !/^[A-Z]{8,11}$/.test(swiftCode.toUpperCase())) {
-    		    errorDiv.textContent = 'Invalid SWIFT code format. Must be 8-11 uppercase alphanumeric characters.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  } */
-    		  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-    		    errorDiv.textContent = 'Invalid email format.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  }
-
-    		  return {
-    		    accountNumber,
-    		    ifscCode: ifscCode.toUpperCase(),
-    		    bankName,
-    		    branchCode,
-    		    accountType,
-    		    customerNumber: customerNumber.toUpperCase(),
-    		    policyNumber: policyNumber.toUpperCase(),
-    		    email,
-    		    dateOfBirth,
-    		    custName,
-    		    userCode,
-    		    accountHolderType,
-    		    swiftCode: swiftCode ? swiftCode.toUpperCase() : null,
-    		    paymentMethod
-    		  };
-    		}
-
-    		function validatePolicyPaymentForm() {
-    		  const policyNumber = document.getElementById('payment-policy-number').value.trim();
-    		  const amount = document.getElementById('payment-amount').value;
-    		  const paymentMethod = document.getElementById('payment-method').value;
-    		  const errorDiv = document.getElementById('policy-payments-error');
-
-    		  errorDiv.textContent = '';
-    		  errorDiv.classList.add('hidden');
-
-    		  if (!policyNumber || !amount || !paymentMethod) {
-    		    errorDiv.textContent = 'All fields are required.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  }
-    		  if (!/^[A-Z0-9]{5,15}$/.test(policyNumber.toUpperCase())) {
-    		    errorDiv.textContent = 'Invalid policy number format. Must be alphanumeric, 5-15 characters.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  }
-    		  if (isNaN(amount) || amount <= 0) {
-    		    errorDiv.textContent = 'Invalid payment amount. Must be a positive number.';
-    		    errorDiv.classList.remove('hidden');
-    		    return null;
-    		  }
-
-    		  return {
-    		    policyNumber: policyNumber.toUpperCase(),
-    		    amount: parseFloat(amount),
-    		    paymentMethod
-    		  };
-    		}
-
-    		function renderTableRows(accounts) {
-    		  const tbody = document.getElementById('bank-accounts-table');
-    		  if (!tbody) {
-    		    console.error('Table body not found');
-    		    return;
-    		  }
-    		  tbody.innerHTML = '';
-
-    		  accounts.forEach(account => {
-    		    const row = document.createElement('tr');
-    		    row.innerHTML = `
-    		      ${visibleColumns.accountSelect ? `<td class="px-4 py-3"><input type="checkbox" class="row-select" data-account-number="${account.accountNumber}"></td>` : ''}
-    		      ${visibleColumns.accountNumber ? `<td class="px-4 py-3 masked-account-table">${account.accountNumber}</td>` : ''}
-    		      ${visibleColumns.policyNumber ? `<td class="px-4 py-3">${account.policyNumber || 'N/A'}</td>` : ''}
-    		      ${visibleColumns.holderName ? `<td class="px-4 py-3">${account.holderName || 'N/A'}</td>` : ''}
-    		      ${visibleColumns.bankName ? `<td class="px-4 py-3">${account.bankName || 'N/A'}</td>` : ''}
-    		      ${visibleColumns.accountType ? `<td class="px-4 py-3">${account.accountType || 'N/A'}</td>` : ''}
-    		      ${visibleColumns.status ? `<td class="px-4 py-3 ${account.status === 'Active' ? 'status-active' : 'status-pending'}">${account.status || 'N/A'}</td>` : ''}
-    		      ${visibleColumns.policyStatus ? `<td class="px-4 py-3">${account.policyStatus || 'N/A'}</td>` : ''}
-    		      ${visibleColumns.progress ? `
-    		        <td class="px-4 py-3">
-    		          <div class="progress-bar">
-    		            <div class="progress-step ${account.verificationStep >= 1 ? 'completed' : ''}"></div>
-    		            <div class="progress-step ${account.verificationStep >= 2 ? 'completed' : ''}"></div>
-    		            <div class="progress-step ${account.verificationStep >= 3 ? 'completed' : ''}"></div>
-    		          </div>
-    		        </td>
-    		      ` : ''}
-    		      ${visibleColumns.notes ? `<td class="px-4 py-3">${accountNotes.get(account.accountNumber) || account.notes || 'None'}</td>` : ''}
-    		      ${visibleColumns.actions ? `
-    		        <td class="px-4 py-3">
-    		          <div class="actions-container">
-    		            <button class="action-button verify-button" data-account-number="${account.accountNumber}" data-action="verify-bank">Verify</button>
-    		            <button class="action-button payment-button" data-policy-number="${account.policyNumber}" data-action="make-payment">Payment</button>
-    		          </div>
-    		        </td>
-    		      ` : ''}
-    		    `;
-    		    tbody.appendChild(row);
-    		  });
-
-    		  document.querySelectorAll('.verify-button').forEach(button => {
-    		    button.addEventListener('click', () => {
-    		      const accountNumber = button.dataset.accountNumber;
-    		      const account = accounts.find(acc => acc.accountNumber === accountNumber);
-    		      openModal('bank-verification', account);
-    		    });
-    		  });
-
-    		  document.querySelectorAll('.payment-button').forEach(button => {
-    		    button.addEventListener('click', () => {
-    		      const policyNumber = button.dataset.policyNumber;
-    		      openModal('policy-payments', { policyNumber });
-    		    });
-    		  });
-
-    		  updateTableActions();
-    		}
-
-    		function updateTableActions() {
-    		  const selectedRows = document.querySelectorAll('.row-select:checked');
-    		  const bulkVerifyBtn = document.getElementById('bulk-verify');
-    		  if (bulkVerifyBtn) {
-    		    bulkVerifyBtn.classList.toggle('hidden', selectedRows.length === 0);
-    		  }
-    		}
-
-    		async function processBulkVerification(accounts, modalElement) {
-    		  const progressDiv = modalElement.querySelector('#bulk-progress');
-    		  const resultsDiv = modalElement.querySelector('#bulk-results');
-    		  if (!progressDiv || !resultsDiv) return;
-
-    		  progressDiv.textContent = `Processing 0 of ${accounts.length}`;
-    		  resultsDiv.innerHTML = '';
-
-    		  for (let i = 0; i < accounts.length; i++) {
-    		    const account = accounts[i];
-    		    progressDiv.textContent = `Processing ${i + 1} of ${accounts.length}`;
-    		    try {
-    		      const result = await verifyBankAccount({ accountNumber: account.accountNumber });
-    		      resultsDiv.innerHTML += `<p class="text-green-600">${account.accountNumber}: ${result.message}</p>`;
-    		      allAccounts = allAccounts.map(acc =>
-    		        acc.accountNumber === account.accountNumber ? { ...acc, status: 'Active', verificationStep: 3 } : acc
-    		      );
-    		    } catch (error) {
-    		      resultsDiv.innerHTML += `<p class="text-red-600">${account.accountNumber}: ${error.message}</p>`;
-    		    }
-    		    renderTableRows(getPagedAccounts());
-    		    await new Promise(resolve => setTimeout(resolve, 500));
-    		  }
-
-    		  progressDiv.textContent = 'Bulk verification completed.';
-    		  showToast('Bulk verification completed', 'success');
-    		}
-
-    		function updateNotifications(modalElement) {
-    		  const content = modalElement.querySelector('#notifications-content');
-    		  if (!content) return;
-
-    		  content.innerHTML = notifications.length
-    		    ? notifications.map(n => `<p><strong>${n.type}:</strong> ${n.message} <span class="text-gray-500 text-xs">(${new Date(n.timestamp).toLocaleString()})</span></p>`).join('')
-    		    : '<p>No notifications found.</p>';
-
-    		  const notificationDot = document.getElementById('notification-dot');
-    		  if (notificationDot) {
-    		    notificationDot.classList.toggle('hidden', notifications.length === 0);
-    		  }
-    		}
-
-    		function addNotification(type, message) {
-    		  notifications.push({ type, message, timestamp: new Date().toISOString() });
-    		  updateNotifications(modals['notifications']);
-    		}
-
-    		function updateActivityLog(modalElement) {
-    		  const content = modalElement.querySelector('#activity-log-content');
-    		  if (!content) return;
-
-    		  content.innerHTML = activityLogs.length
-    		    ? activityLogs.map(log => `<p>${log.timestamp}: ${log.action}</p>`).join('')
-    		    : '<p>No activity logs found.</p>';
-    		}
-
-    		function logActivity(action) {
-    		  activityLogs.push({ timestamp: new Date().toLocaleString(), action });
-    		}
-
-    		function getPagedAccounts() {
-    		  const start = (currentPage - 1) * config.pageSize;
-    		  const end = start + config.pageSize;
-    		  return allAccounts.slice(start, end);
-    		}
-
-    		function updatePagination() {
-    		  const prevBtn = document.getElementById('prev-page');
-    		  const nextBtn = document.getElementById('next-page');
-    		  const pageInfo = document.getElementById('page-info');
-    		  if (!prevBtn || !nextBtn || !pageInfo) return;
-
-    		  prevBtn.disabled = currentPage === 1;
-    		  nextBtn.disabled = currentPage * config.pageSize >= allAccounts.length;
-    		  pageInfo.textContent = `Page ${currentPage}`;
-    		}
-
-    		function renderStatsChart(filter, canvas) {
-    		  const ctx = canvas.getContext('2d');
-    		  if (!ctx) return;
-
-    		  const data = {
-    		    labels: ['Active', 'Pending', 'Failed'],
-    		    datasets: [{
-    		      label: 'Account Status',
-    		      data: [
-    		        allAccounts.filter(acc => acc.status === 'Active').length,
-    		        allAccounts.filter(acc => acc.status === 'Pending').length,
-    		        allAccounts.filter(acc => acc.status === 'Failed').length
-    		      ],
-    		      backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
-    		    }]
-    		  };
-
-    		  new Chart(ctx, {
-    		    type: 'doughnut',
-    		    data,
-    		    options: {
-    		      responsive: true,
-    		      plugins: { legend: { position: 'top' } }
-    		    }
-    		  });
-    		}
-
-    		function initializeEventListeners() {
-    		  const sidebarToggle = document.getElementById('sidebar-toggle');
-    		  const sidebarClose = document.getElementById('sidebar-close');
-    		  const sidebar = document.getElementById('sidebar');
-    		  if (sidebarToggle && sidebarClose && sidebar) {
-    		    sidebarToggle.addEventListener('click', () => sidebar.classList.add('open'));
-    		    sidebarClose.addEventListener('click', () => sidebar.classList.remove('open'));
-    		  }
-
-    		  const logoutBtn = document.getElementById('btn-logout');
-    		  if (logoutBtn) logoutBtn.addEventListener('click', logout);
-
-    		  Object.keys(modals).forEach(modalId => {
-    		    const closeBtn = document.getElementById(`close-${modalId}-modal`);
-    		    if (closeBtn) closeBtn.addEventListener('click', () => closeModal(modalId));
-    		  });
-
-    		  const bankVerifySubmit = document.getElementById('bank-verification-submit');
-    		  if (bankVerifySubmit) {
-    		    bankVerifySubmit.addEventListener('click', async () => {
-    		      const data = validateBankForm();
-    		      if (!data) return;
-
-    		      showLoader();
-    		      try {
-    		        const result = await verifyBankAccount(data);
-    		        document.getElementById('bank-verification-result').innerHTML = `<span class="success-tick">✔</span>${result.message}`;
-    		        allAccounts = allAccounts.map(acc =>
-    		          acc.accountNumber === data.accountNumber ? { ...acc, status: 'Active', verificationStep: 'success' } : acc
-    		        );
-    		        renderTableRows(getPagedAccounts());
-    		        showToast(result.message, 'success');
-    		        logAudit('Bank Verification', { accountNumber: data.accountNumber, status: 'pending' });
-    		      } catch (error) {
-    		        document.getElementById('bank-verification-error').textContent = error.message;
-    		        document.getElementById('bank-verification-error').classList.remove('hidden');
-    		        document.getElementById('bank-manual-verification').classList.remove('hidden');
-    		        showToast(error.message, 'error');
-    		      } finally {
-    		        hideLoader();
-    		      }
-    		    });
-    		  }
-
-    		  const addBankAccountSubmit = document.getElementById('add-bank-account-submit');
-    		  if (addBankAccountSubmit) {
-    		    addBankAccountSubmit.addEventListener('click', async () => {
-    		      const data = validateAddBankAccountForm();
-    		      if (!data) return;
-
-    		      showLoader();
-    		      try {
-    		        const result = await addBankAccount(data);
-    		        allAccounts.push({
-    		          ...data,
-    		          status: 'Pending',
-    		          verificationStep: 1,
-    		          holderName: data.custName,
-    		          notes: ''
-    		        });
-    		        renderTableRows(getPagedAccounts());
-    		        updatePagination();
-    		        closeModal('add-bank-account');
-    		        showToast('Bank account added successfully', 'success');
-    		        logAudit('Add Bank Account', { accountNumber: data.accountNumber, status: 'success' });
-    		      } catch (error) {
-    		        document.getElementById('add-bank-account-error').textContent = error.message || 'Failed to add bank account';
-    		        document.getElementById('add-bank-account-error').classList.remove('hidden');
-    		        showToast(error.message || 'Failed to add bank account', 'error');
-    		      } finally {
-    		        hideLoader();
-    		      }
-    		    });
-    		  }
-
-    		// Policy payment submit
-              const policyPaymentSubmit = document.getElementById('policy-payments-submit');
-              if (policyPaymentSubmit) {
-                policyPaymentSubmit.addEventListener('click', async () => {
-                  const data = validatePolicyPaymentForm();
-                  if (!data) return;
-
-                  showLoader();
-                  try {
-                    const result = await processPolicyPayment(data);
-                    document.getElementById('policy-payments-result').innerHTML = `<span class="success-tick">✔</span>${result.message}`;
-                    showToast(result.message, 'success');
-                    logAudit('Policy Payment', { policyNumber: data.policyNumber, status: result.status, amount: data.amount });
-                  } catch (error) {
-                    document.getElementById('policy-payments-error').textContent = error.message;
-                    document.getElementById('policy-payments-error').classList.remove('hidden');
-                    showToast(error.message, 'error');
-                  } finally {
-                    hideLoader();
-                  }
-                });
-              }
-    		  const searchBtn = document.getElementById('search-bank-details');
-    		  if (searchBtn) {
-    		    searchBtn.addEventListener('click', async () => {
-    		      const searchTerm = document.getElementById('table-search').value.trim();
-    		      const searchType = document.getElementById('search-type').value;
-    		      if (!searchTerm) return;
-
-    		      showLoader();
-    		      try {
-    		        const results = await searchBankDetails(searchTerm, searchType);
-    		        allAccounts = results;
-    		        currentPage = 1;
-    		        renderTableRows(getPagedAccounts());
-    		        updatePagination();
-    		        showToast('Search completed', 'success');
-    		      } catch (error) {
-    		        showToast(error.message, 'error');
-    		      } finally {
-    		        hideLoader();
-    		      }
-    		    });
-    		  }
-
-    		  const statusFilter = document.getElementById('status-filter');
-    		  if (statusFilter) {
-    		    statusFilter.addEventListener('change', () => {
-    		      const status = statusFilter.value;
-    		      const filteredAccounts = status
-    		        ? allAccounts.filter(acc => acc.status === statusFilter)
-    		        : allAccounts;
-    		      currentPage = 1;
-    		      renderTableRows(getPagedAccounts(filteredAccounts));
-    		      updatePagination();
-    		    });
-    		  }
-
-    		  const prevPageBtn = document.getElementById('prev-page');
-    		  const nextPageBtn = document.getElementById('next-page');
-    		  if (prevPageBtn && nextPageBtn) {
-    		    prevPageBtn.addEventListener('click', () => {
-    		      if (currentPageBtn > 1) {
-    		        currentPage--;
-    		        renderTableRows(getPagedAccounts());
-    		        updatePagination();
-    		      }
-    		    });
-    		    nextPageBtn.addEventListener('click', () => {
-    		      if (currentPageBtn * config.pageSize < allAccounts.length) {
-    		        currentPage++;
-    		        renderTableRows(getPagedAccounts());
-    		        updatePagination();
-    		      }
-    		    });
-    		  }
-
-    		  const selectAll = document.getElementById('select-all');
-    		    if (selectAll) {
-    		      selectAll.addEventListener('change', () => {
-    		        document.querySelectorAll('.row-select').forEach(select => {
-    		          cb.checked = selectAll.checked;
-    		        });
-    		        updateTableActions();
-    		      });
-    		    }
-
-    		    // Bulk verify
-    	          const bulkVerifyBtn = document.getElementById('bulk-verify');
-    	          if (bulkVerifyBtn) {
-    	            bulkVerifyBtn.addEventListener('click', () => {
-    	              const selected = Array.from(document.querySelectorAll('.row-select:checked')).map(cb => {
-    	                const accountNumber = cb.dataset.accountNumber;
-    	                return allAccounts.find(acc => acc.accountNumber === accountNumber);
-    	              });
-    	              openModal('bulk-verification', { accounts: selected });
-    	            });
-    	          }
-
-    	          // Table settings save
-    	          const saveTableSettings = document.getElementById('save-table-settings');
-    	          if (saveTableSettings) {
-    	            saveTableSettings.addEventListener('click', () => {
-    	              Object.keys(visibleColumns).forEach(col => {
-    	                const checkbox = document.getElementById(`col-${col}`);
-    	                if (checkbox) visibleColumns[col] = checkbox.checked;
-    	              });
-    	              renderTableRows(getPagedAccounts());
-    	              closeModal('table-settings');
-    	              showToast('Table settings saved', 'success');
-    	            });
-    	          }
-
-    		  const saveNoteBtn = document.getElementById('save-note');
-    		  if (saveNoteBtn) {
-    		    saveNoteBtn.addEventListener('click', () => {
-    		      const noteForm = document.getElementById('account-notes-form');
-    		      const note = document.getElementById('account-note').value.trim();
-    		      const accountNumber = noteForm.dataset.accountNumber;
-    		      if (note && accountNumber) {
-    		        accountNotes.set(accountNumber, note);
-    		        renderTableRows(getPagedAccounts());
-    		        closeModal('account-notes');
-    		        showToast('Note saved successfully', 'success');
-    		        logAudit('Add Note', { accountNumber, note });
-    		      }
-    		    });
-    		  }
-
-    		  const clearNotificationsBtn = document.getElementById('clear-notifications');
-    		  if (clearNotificationsBtn) {
-    		    clearNotificationsBtn.addEventListener('click', () => {
-    		      notifications = [];
-    		      updateNotifications(modals['notifications']);
-    		      showToast('Notifications cleared', 'success');
-    		    });
-    		  }
-
-    		  document.addEventListener('keydown', e => {
-    		    if (e.ctrlKey && e.key === 'b') openModal('bulk-verification', { accounts: allAccounts });
-    		    if (e.key === 'f') document.getElementById('table-search')?.focus();
-    		    if (e.key === 'p') document.getElementById('prev-page')?.click();
-    		    if (e.key === 'n') document.getElementById('next-page')?.click();
-    		    if (e.key === 's') document.getElementById('sidebar-toggle')?.click();
-    		    if (e.key === 'k') openModal('shortcut-help');
-    		    if (e.key === 'a') openModal('add-bank-account');
-    		  });
-
-    		  const sidebarActions = {
-    		    'new-verification': () => openModal('verify', {}),
-    		    'add-bank-account': () => openModal('add-bank-account', {}),
-    		    'export-table': () => exportTable(),
-    		    'view-activity': () => openModal('activity-log')
-    		  };
-    		  Object.entries(sidebarActions).forEach(([id, action]) => {
-    		    const btn = document.getElementById(id);
-    		    if (btn) btn.addEventListener('click', action);
-    		  });
-
-    		  const exportCsvBtn = document.getElementById('export-csv');
-    		  const exportPdfBtn = document.getElementById('export-pdf');
-    		  if (exportCsvBtn) exportCsvBtn.addEventListener('click', () => exportTable('csv'));
-    		  if (exportPdfBtn) exportPdfBtn.addEventListener('click', () => exportTable('pdf'));
-
-    		  const notificationsToggle = document.getElementById('notifications-toggle');
-    		  if (notificationsToggle) notificationsToggle.addEventListener('click', () => openModal('notifications'));
-
-    		  const searchIfscBtn = document.getElementById('search-ifsc');
-    		  if (searchIfscBtn) {
-    		    searchIfscBtn.addEventListener('click', async () => {
-    		      const ifscCode = document.getElementById('ifsc-code').value.trim();
-    		      if (!ifscCode) return;
-
-    		      showLoader();
-    		      try {
-    		        const result = await searchIFSC(ifscCode);
-    		        document.getElementById('bank-name').value = result.bankName || '';
-    		        showToast('IFSC code searched successfully', 'success');
-    		      } catch (error) {
-    		        document.getElementById('bank-verification-error').textContent = error.message;
-    		        document.getElementById('bank-verification-error').classList.remove('hidden');
-    		        showToast(error.message, 'error');
-    		      } finally {
-    		        hideLoader();
-    		      }
-    		    });
-    		  }
-
-    		  const manualVerifyBtn = document.getElementById('bank-manual-verification');
-    		  if (manualVerifyBtn) {
-    		    manualVerifyBtn.addEventListener('click', async () => {
-    		      const data = validateBankForm();
-    		      if (!data) return;
-
-    		      showLoader();
-    		      try {
-    		        const result = await manualVerification('bank', data);
-    		        document.getElementById('bank-verification-result').textContent = result.message;
-    		        showToast(result.message, 'success');
-    		      } catch (error) {
-    		        document.getElementById('bank-verification-error').textContent = error.message;
-    		        document.getElementById('bank-verification-error').classList.remove('hidden');
-    		        showToast(error.message, 'error');
-    		      } finally {
-    		        hideLoader();
-    		      }
-    		    });
-    		  }
-
-    		  const verifySubmitBtn = document.getElementById('verify-submit');
-    		  if (verifySubmitBtn) {
-    		    verifySubmitBtn.addEventListener('click', async () => {
-    		      const customerNumber = validateCustomerNumber('verify');
-    		      const verifyType = document.getElementById('verify-type').value;
-    		      if (!customerNumber || !verifyType) return;
-
-    		      showLoader();
-    		      try {
-    		        let result;
-    		        if (verifyType === 'id') result = await verifyIdentity(customerNumber);
-    		        else if (verifyType === 'death') result = await verifyDeath(customerNumber);
-    		        else if (verifyType === 'sanctions') result = await checkSanctions(customerNumber);
-
-    		        document.getElementById('verify-result').innerHTML = `<span class="success-tick">✔</span>${result.message}`;
-    		        showToast(result.message, 'success');
-    		        logAudit('Verification', { customerNumber, type: verifyType, status: result.status });
-    		      } catch (error) {
-    		        document.getElementById('verify-error').textContent = error.message;
-    		        document.getElementById('verify-error').classList.remove('hidden');
-    		        document.getElementById('verify-manual').classList.remove('hidden');
-    		        showToast(error.message, 'error');
-    		      } finally {
-    		        hideLoader();
-    		      }
-    		    });
-    		  }
-    		}
-
-    		function exportTable(format = 'csv') {
-    		  if (!allAccounts.length) {
-    		    showToast('No data to export', 'error');
-    		    return;
-    		  }
-
-    		  if (format === 'csv') {
-    		    const headers = Object.keys(visibleColumns).filter(col => visibleColumns[col]).map(col => col.replace(/([A-Z])/g, ' $1').trim());
-    		    const rows = allAccounts.map(acc => {
-    		      return Object.keys(visibleColumns).filter(col => visibleColumns[col]).map(col => {
-    		        if (col === 'notes') return `"${accountNotes.get(acc.accountNumber) || acc.notes || ''}"`;
-    		        if (col === 'progress') return acc.verificationStep || 0;
-    		        return `"${acc[col] || ''}"`;
-    		      }).join(',');
-    		    });
-    		    const csv = [headers.join(','), ...rows].join('\n');
-    		    const blob = new Blob([csv], { type: 'text/csv' });
-    		    const url = URL.createObjectURL(blob);
-    		    const a = document.createElement('a');
-    		    a.href = url;
-    		    a.download = 'bank-accounts.csv';
-    		    a.click();
-    		    URL.revokeObjectURL(url);
-    		    showToast('Table exported as CSV', 'success');
-    		  } else if (format === 'pdf') {
-    		    const { jsPDF } = window.jspdf;
-    		    const doc = new jsPDF();
-    		    doc.text('Bank Accounts Report', 14, 20);
-    		    const headers = Object.keys(visibleColumns).filter(col => visibleColumns[col]).map(col => col.replace(/([A-Z])/g, ' $1')).trim();
-    		    const rows = allAccounts.map(acc => Object.keys(visibleColumns).filter(col => visibleColumns[col]).map(col => {
-    		      if (col === 'notes') return accountNotes.get(acc.accountNumber) || acc.notes || '';
-    		      if (col === 'progress') return acc.verificationStep || 0;
-    		      return acc[col] || 'N/A';
-    		    }));
-    		    doc.autoTable({
-    		      head: [headers],
-    		      body: rows,
-    		      startY: 30
-    		    });
-    		    doc.save('bank-accounts.pdf');
-    		    showToast('Table exported as PDF', 'success');
-    		  }
-    		  logActivity(`Exported table as ${format.toUpperCase()}`);
-    		}
-
-    		function initializeApp() {
-    		  if (!getuserCode()) {
-    		    navigateTo('login');
-    		    return;
-    		  }
-    		  initializeModals();
-    		  initializeEventListeners();
-    		  renderTableRows(getPagedAccounts());
-    		  updatePagination();
-    		  logActivity('Application initialized');
-    		}
-
-    		window.addEventListener('load', initializeApp);
-    </script>
+return {
+  accountNumber,
+  ifscCode,
+  holderName: `${name} ${surname.trim()}`,
+  bankName,
+};
+}
+
+function validateVerificationForm() {
+  const customerNumber = document.getElementById('verify-customer-number').value.trim();
+  const verificationType = document.getElementById('verify-type').value;
+  const errorDiv = document.getElementById('verify-error');
+
+  errorDiv.textContent = '';
+  errorDiv.classList.remove('hidden');
+
+  if (!customerNumber || !verificationType) {
+    errorDiv.textContent = 'Customer number and verification type are required.';
+    errorDiv.classList.remove('hidden');
+    return null;
+  }
+
+  return { customerNumber, verificationType };
+}
+
+function validateAddBankAccountForm() {
+  const policyNumber = document.getElementById('add-policy-number').value.trim();
+  const customerNumber = document.getElementById('add-customer-number').value.trim();
+  const customerName = document.getElementById('add-cust-name').value.trim();
+  const email = document.getElementById('add-email').value.trim();
+  const dob = document.getElementById('add-date-of-birth').value.trim();
+  const userCode = document.getElementById('add-user-code').value.trim();
+  const accountNumber = document.getElementById('add-account-number').value.trim();
+  const ifscCode = document.getElementById('add-ifsc-code').value;
+  const bankName = document.getElementById('add-bank-name').value;
+  const accountType = document.getElementById('add-account-type').value;
+  const accountHolderType = document.getElementById('add-account-holder-type').value;
+  const paymentMethod = document.getElementById('add-payment-method-status').value;
+  const errorDiv = document.getElementById('add-bank-account-error');
+
+  errorDiv.textContent = '';
+  errorDiv.classList.add('hidden');
+
+  const requiredFields = {
+    'Policy Number': policyNumber,
+    'Customer Number': customerNumber,
+    'Customer Name': customerName,
+    'Email': email,
+    'Date of Birth': dob,
+    'User Code': userCode,
+    'Account Number': accountNumber,
+    'IFSC Code': ifscCode,
+    'Bank Name': bankName,
+    'Account Type': accountType,
+    'Account Holder Type': accountHolderType,
+    'Payment Method': paymentMethod
+  };
+
+  for (const [field, value] of Object.entries(requiredFields)) {
+    if (!value) {
+      errorDiv.textContent = `${field} is required.`;
+      errorDiv.classList.remove('hidden');
+      return null;
+    }
+  }
+
+  if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+    errorDiv.textContent = 'Invalid email format.';
+    errorDiv.classList.remove('hidden');
+    return null;
+  }
+
+  return {
+    policyNumber,
+    customerNumber,
+    customerName,
+    email,
+    dateOfBirth: dob,
+    userCode,
+    accountNumber,
+    ifscCode,
+    bankName,
+    accountType,
+    accountHolderType,
+    paymentMethod,
+    swiftCode: document.getElementById('add-swift-code').value.trim() || null,
+    branchCode: document.getElementById('add-branch-code').value.trim() || null
+  };
+}
+
+function validatePolicyPaymentForm() {
+  const policyNumber = document.getElementById('payment-policy-number').value.trim();
+  const amount = document.getElementById('payment-amount').value.trim();
+  const paymentMethod = document.getElementById('payment-method').value;
+  const errorDiv = document.getElementById('policy-payments-error');
+
+  errorDiv.textContent = '';
+  errorDiv.classList.add('hidden');
+
+  if (!policyNumber || !amount || !paymentMethod) {
+    errorDiv.textContent = 'All fields are required for payment processing.';
+    errorDiv.classList.remove('hidden');
+    return null;
+  }
+
+  if (isNaN(amount) || amount <= 0) {
+    errorDiv.textContent = 'Please enter a valid payment amount.';
+    errorDiv.classList.remove('hidden');
+    return null;
+  }
+
+  return { policyNumber, amount: parseFloat(amount), paymentMethod };
+}
+
+function renderStatsChart(filter, canvas) {
+	  const existingChart = Chart.getChart(canvas);
+	  if (existingChart) {
+	    existingChart.destroy();
+	  }
+	  const stats = calculateStats(filter);
+	  new Chart(canvas, {
+	    type: 'bar',
+	    data: {
+	      labels: ['Total Accounts', 'Verified', 'Pending', 'Active Policies'],
+	      datasets: [{
+	        label: 'Account Statistics',
+	        data: [
+	          stats.totalAccounts,
+	          stats.verifiedAccounts,
+	          stats.pendingVerifications,
+	          stats.activePolicies
+	        ],
+	        backgroundColor: [
+	          'var(--accent-blue)',
+	          'var(--accent-green)',
+	          'var(--accent-yellow)',
+	          'var(--accent-teal)'
+	        ],
+	        borderColor: [
+	          'var(--accent-blue)',
+	          'var(--accent-green)',
+	          'var(--accent-yellow)',
+	          'var(--accent-teal)'
+	        ],
+	        borderWidth: 1
+	      }]
+	    },
+	    options: {
+	      responsive: true,
+	      scales: {
+	        y: {
+	          beginAtZero: true,
+	          title: {
+	            display: true,
+	            text: 'Count'
+	          }
+	        }
+	      },
+	      plugins: {
+	        legend: {
+	          display: false
+	        },
+	        title: {
+	          display: true,
+	          text: 'Account Statistics'
+	        }
+	      }
+	    }
+	  });
+	}
+
+function calculateStats(filter) {
+  let filteredAccounts = allAccounts;
+  if (filter === 'verified') {
+    filteredAccounts = allAccounts.filter(acc => acc.status === 'Active');
+  } else if (filter === 'pending') {
+    filteredAccounts = allAccounts.filter(acc => acc.status === 'Pending');
+  }
+
+  return {
+    totalAccounts: allAccounts.length,
+    verifiedAccounts: allAccounts.filter(acc => acc.status === 'Active').length,
+    pendingVerifications: allAccounts.filter(acc => acc.status === 'Pending').length,
+    activePolicies: allAccounts.filter(acc => acc.policyStatus === 'Active').length
+  };
+}
+
+function updateNotifications(modalElement) {
+  const content = modalElement.querySelector('#notifications-content');
+  if (content) {
+    content.innerHTML = notifications.length
+      ? notifications.map(n => `
+          <div class="p-2 bg-gray-50 rounded-lg">
+            <p class="text-sm font-semibold">${n.title}</p>
+            <p class="text-xs text-gray-600">${n.message}</p>
+            <p class="text-xs text-gray-500">${new Date(n.timestamp).toLocaleString()}</p>
+          </div>
+        `).join('')
+      : '<p>No notifications available.</p>';
+  }
+  const notificationDot = document.getElementById('notification-dot');
+  if (notificationDot) {
+    notificationDot.classList.toggle('hidden', notifications.length === 0);
+  }
+}
+
+function addNotification(title, message) {
+  notifications.push({
+    title,
+    message,
+    timestamp: new Date().toISOString()
+  });
+  if (notifications.length > 20) {
+    notifications.shift();
+  }
+  if (modals['notifications'] && !modals['notifications'].classList.contains('hidden')) {
+    updateNotifications(modals['notifications']);
+  }
+}
+
+function updateActivityLog(modalElement) {
+  const content = modalElement.querySelector('#activity-log-content');
+  if (content) {
+    content.innerHTML = activityLogs.length
+      ? activityLogs.map(log => `
+          <div class="p-2 bg-gray-50 rounded-lg">
+            <p class="text-sm">${log.message}</p>
+            <p class="text-xs text-gray-500">${new Date(log.timestamp).toLocaleString()}</p>
+          </div>
+        `).join('')
+      : '<p>No activity logged.</p>';
+  }
+}
+
+function logActivity(message) {
+  activityLogs.push({
+    message,
+    timestamp: new Date().toISOString()
+  });
+  if (activityLogs.length > 50) {
+    activityLogs.shift();
+  }
+}
+
+function exportTableToCSV() {
+  const headers = [
+    'Account Number',
+    'Policy Number',
+    'Holder Name',
+    'Bank Name',
+    'Account Type',
+    'Status',
+    'Policy Status',
+    'Notes'
+  ].filter((_, idx) => {
+    const colKeys = [
+      'accountNumber',
+      'policyNumber',
+      'holderName',
+      'bankName',
+      'accountType',
+      'status',
+      'policyStatus',
+      'notes'
+    ];
+    return visibleColumns[colKeys[idx]];
+  });
+
+  const csvRows = [headers.join(',')];
+  allAccounts.forEach(acc => {
+    const row = [
+      acc.accountNumber,
+      acc.policyNumber,
+      `"${acc.holderName.replace(/"/g, '""')}"`,
+      acc.bankName,
+      acc.accountType,
+      acc.status,
+      acc.policyStatus,
+      `"${(accountNotes.get(acc.accountNumber) || '').replace(/"/g, '""')}"`
+    ].filter((_, idx) => {
+      const colKeys = [
+        'accountNumber',
+        'policyNumber',
+        'holderName',
+        'bankName',
+        'accountType',
+        'status',
+        'policyStatus',
+        'notes'
+      ];
+      return visibleColumns[colKeys[idx]];
+    });
+    csvRows.push(row.join(','));
+  });
+
+  const csvString = csvRows.join('\n');
+  const blob = new Blob([csvString], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'bank_accounts.csv';
+  a.click();
+  window.URL.revokeObjectURL(url);
+  showToast('Table exported as CSV', 'success');
+  logActivity('Exported table to CSV');
+}
+
+function exportTableToPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const headers = [
+    'Account Number',
+    'Policy Number',
+    'Holder Name',
+    'Bank Name',
+    'Account Type',
+    'Status',
+    'Policy Status',
+    'Notes'
+  ].filter((_, idx) => {
+    const colKeys = [
+      'accountNumber',
+      'policyNumber',
+      'holderName',
+      'bankName',
+      'accountType',
+      'status',
+      'policyStatus',
+      'notes'
+    ];
+    return visibleColumns[colKeys[idx]];
+  });
+
+  const data = allAccounts.map(acc => [
+    acc.accountNumber,
+    acc.policyNumber,
+    acc.holderName,
+    acc.bankName,
+    acc.accountType,
+    acc.status,
+    acc.policyStatus,
+    accountNotes.get(acc.accountNumber) || ''
+  ].filter((_, idx) => {
+    const colKeys = [
+      'accountNumber',
+      'policyNumber',
+      'holderName',
+      'bankName',
+      'accountType',
+      'status',
+      'policyStatus',
+      'notes'
+    ];
+    return visibleColumns[colKeys[idx]];
+  }));
+
+  doc.autoTable({
+    head: [headers],
+    body: data,
+    theme: 'striped',
+    headStyles: { fillColor: [29, 78, 216] },
+    margin: { top: 10 }
+  });
+
+  doc.save('bank_accounts.pdf');
+  showToast('Table exported as PDF', 'success');
+  logActivity('Exported table to PDF');
+}
+
+function updateTable() {
+	  const tableBody = document.getElementById('bank-accounts-table');
+	  const statusFilter = document.getElementById('status-filter').value;
+	  const searchTerm = document.getElementById('table-search').value.trim().toLowerCase();
+	  const searchType = document.getElementById('search-type').value;
+
+	  let filteredAccounts = allAccounts;
+
+	  if (statusFilter) {
+	    filteredAccounts = filteredAccounts.filter(acc => acc.status === statusFilter);
+	  }
+
+	  if (searchTerm) {
+	    filteredAccounts = filteredAccounts.filter(acc => {
+	      if (searchType === 'policyNo') {
+	        return acc.policyNumber.toLowerCase().includes(searchTerm);
+	      } else if (searchType === 'accountNo') {
+	        return acc.accountNumber.toLowerCase().includes(searchTerm);
+	      } else if (searchType === 'customerNumber') {
+	        return acc.customerNumber.toLowerCase().includes(searchTerm);
+	      }
+	      return false;
+	    });
+	  }
+
+	  filteredAccounts.sort((a, b) => {
+	    const aValue = a[sortKey] || '';
+	    const bValue = b[sortKey] || '';
+	    return sortAsc
+	      ? aValue.localeCompare(bValue, undefined, { numeric: true })
+	      : bValue.localeCompare(aValue, undefined, { numeric: true });
+	  });
+
+	  const start = (currentPage - 1) * config.pageSize;
+	  const end = start + config.pageSize;
+	  const paginatedAccounts = filteredAccounts.slice(start, end);
+
+	  tableBody.innerHTML = '';
+	  paginatedAccounts.forEach(acc => {
+	    const row = document.createElement('tr');
+	    row.innerHTML = `
+	      ${visibleColumns.accountSelect ? `<td class="px-4 py-2"><input type="checkbox" class="row-checkbox" data-account-number="${acc.accountNumber}"></td>` : ''}
+	      ${visibleColumns.accountNumber ? `<td class="px-4 py-2 masked-account-table">${acc.accountNumber}</td>` : ''}
+	      ${visibleColumns.policyNumber ? `<td class="px-4 py-2"><a href="#" class="text-blue-600 hover:underline view-policy" data-policy-number="${acc.policyNumber}">${acc.policyNumber}</a></td>` : ''}
+	      ${visibleColumns.holderName ? `<td class="px-4 py-2">${acc.holderName}</td>` : ''}
+	      ${visibleColumns.bankName ? `<td class="px-4 py-2">${acc.bankName}</td>` : ''}
+	      ${visibleColumns.accountType ? `<td class="px-4 py-2">${acc.accountType}</td>` : ''}
+	      ${visibleColumns.status ? `<td class="px-4 py-2 status-${acc.status.toLowerCase()}">${acc.status}</td>` : ''}
+	      ${visibleColumns.policyStatus ? `<td class="px-4 py-2">${acc.policyStatus}</td>` : ''}
+	      ${visibleColumns.progress ? `
+	        <td class="px-4 py-2">
+	          <div class="progress-bar">
+	            <div class="progress-step ${acc.status === 'Active' ? 'completed' : ''}"></div>
+	            <div class="progress-step ${acc.status === 'Active' ? 'completed' : acc.status === 'Pending' ? 'pending' : ''}"></div>
+	            <div class="progress-step ${acc.status === 'Active' && acc.policyStatus === 'Active' ? 'completed' : ''}"></div>
+	          </div>
+	        </td>
+	      ` : ''}
+	      ${visibleColumns.notes ? `<td class="px-4 py-2"><button class="view-notes action-button bg-gray-200 text-gray-800" data-account-number="${acc.accountNumber}">View Notes</button></td>` : ''}
+	      ${visibleColumns.actions ? `
+	        <td class="px-4 py-2">
+	          <div class="actions-container">
+	            <button class="verify-account action-button verify-button" data-account-number="${acc.accountNumber}" data-holder-name="${acc.holderName}" data-bank-name="${acc.bankName}" data-ifsc-code="${acc.ifscCode || ''}">Verify</button>
+	            <button class="view-history action-button bg-gray-200 text-gray-800" data-account-number="${acc.accountNumber}">History</button>
+	            <button class="make-payment action-button payment-button" data-policy-number="${acc.policyNumber}">Pay</button>
+	          </div>
+	        </td>
+	      ` : ''}
+	    `;
+	    tableBody.appendChild(row);
+	  });
+
+	  const totalPages = Math.ceil(filteredAccounts.length / config.pageSize);
+	  document.getElementById('prev-page').disabled = currentPage === 1;
+	  document.getElementById('next-page').disabled = currentPage === totalPages;
+	  document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+	  document.getElementById('bulk-verify').classList.toggle('hidden', !filteredAccounts.some(acc => acc.status === 'Pending'));
+	  updateStats();
+	}
+
+function updateStats() {
+	  const stats = calculateStats();
+	  const totalAccountsEl = document.getElementById('total-accounts-count');
+	  const verifiedAccountsEl = document.getElementById('verified-accounts-count');
+	  const pendingVerificationsEl = document.getElementById('pending-verifications-count');
+
+	  if (totalAccountsEl) {
+	    totalAccountsEl.textContent = stats.totalAccounts || 0;
+	  } else {
+	    console.error('Total accounts count element not found');
+	  }
+
+	  if (verifiedAccountsEl) {
+	    verifiedAccountsEl.textContent = stats.verifiedAccounts || 0;
+	  } else {
+	    console.error('Verified accounts count element not found');
+	  }
+
+	  if (pendingVerificationsEl) {
+	    pendingVerificationsEl.textContent = stats.pendingVerifications || 0;
+	  } else {
+	    console.error('Pending verifications count element not found');
+	  }
+	}
+async function processBulkVerification(accounts, modalElement) {
+  const progress = modalElement.querySelector('#bulk-progress');
+  const results = modalElement.querySelector('#bulk-results');
+  if (progress) progress.textContent = `Processing 0 of ${accounts.length}`;
+  if (results) results.innerHTML = '';
+
+  for (let i = 0; i < accounts.length; i++) {
+    const acc = accounts[i];
+    if (progress) progress.textContent = `Processing ${i + 1} of ${accounts.length}`;
+    try {
+      const result = await verifyBankAccount({ accountNumber: acc.accountNumber });
+      if (results) {
+        results.innerHTML += `<p class="text-green-600">${acc.accountNumber}: ${result.message}</p>`;
+      }
+      const account = allAccounts.find(a => a.accountNumber === acc.accountNumber);
+      if (account) {
+        account.status = 'Active';
+      }
+      await logAudit('Bank Verification', {
+        accountNumber: acc.accountNumber,
+        status: result.status,
+        message: result.message
+      });
+    } catch (error) {
+      if (results) {
+        results.innerHTML += `<p class="text-red-600">${acc.accountNumber}: ${error.message}</p>`;
+      }
+    }
+  }
+
+  updateTable();
+  showToast('Bulk verification completed', 'success');
+  logActivity('Processed bulk verification');
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) {
+    sidebar.classList.toggle('open');
+    logActivity(sidebar.classList.contains('open') ? 'Opened sidebar' : 'Closed sidebar');
+  }
+}
+
+function initializeEventListeners() {
+  document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
+  document.getElementById('sidebar-close').addEventListener('click', toggleSidebar);
+  document.getElementById('btn-logout').addEventListener('click', logout);
+  document.getElementById('btn-profile').addEventListener('click', () => navigateTo('profile'));
+  document.getElementById('new-verification').addEventListener('click', () => openModal('verify'));
+  document.getElementById('add-bank-account').addEventListener('click', () => openModal('add-bank-account'));
+  document.getElementById('export-table').addEventListener('click', exportTableToCSV);
+  document.getElementById('view-activity').addEventListener('click', () => openModal('activity-log'));
+
+  document.getElementById('search-bank-details').addEventListener('click', async () => {
+    const searchTerm = document.getElementById('table-search').value.trim();
+    const searchType = document.getElementById('search-type').value;
+    showLoader();
+    try {
+      allAccounts = await searchBankDetails(searchTerm, searchType);
+      currentPage = 1;
+      updateTable();
+      showToast('Search completed', 'success');
+      logActivity(`Searched bank details: ${searchType}=${searchTerm}`);
+    } catch (error) {
+      showToast(error.message, 'error');
+      logActivity(`Search failed: ${error.message}`);
+    } finally {
+      hideLoader();
+    }
+  });
+
+  document.getElementById('table-search').addEventListener('input', () => {
+    currentPage = 1;
+    updateTable();
+  });
+
+  document.getElementById('status-filter').addEventListener('change', () => {
+    currentPage = 1;
+    updateTable();
+  });
+
+  document.getElementById('select-all').addEventListener('change', (e) => {
+    document.querySelectorAll('.row-checkbox').forEach(cb => {
+      cb.checked = e.target.checked;
+    });
+    document.getElementById('bulk-verify').classList.toggle('hidden', !e.target.checked);
+  });
+
+  document.getElementById('bulk-verify').addEventListener('click', () => {
+    const selected = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => {
+      return allAccounts.find(acc => acc.accountNumber === cb.dataset.accountNumber);
+    });
+    if (selected.length) {
+      openModal('bulk-verification', { accounts: selected });
+    }
+  });
+
+  document.getElementById('table-settings').addEventListener('click', () => openModal('table-settings'));
+  document.getElementById('export-csv').addEventListener('click', exportTableToCSV);
+  document.getElementById('export-pdf').addEventListener('click', exportTableToPDF);
+
+  document.getElementById('prev-page').addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      updateTable();
+      logActivity(`Navigated to page ${currentPage}`);
+    }
+  });
+
+  document.getElementById('next-page').addEventListener('click', () => {
+    const totalPages = Math.ceil(allAccounts.length / config.pageSize);
+    if (currentPage < totalPages) {
+      currentPage++;
+      updateTable();
+      logActivity(`Navigated to page ${currentPage}`);
+    }
+  });
+
+  document.getElementById('save-table-settings').addEventListener('click', () => {
+    Object.keys(visibleColumns).forEach(col => {
+      const checkbox = document.getElementById(`col-${col}`);
+      if (checkbox) visibleColumns[col] = checkbox.checked;
+    });
+    updateTable();
+    closeModal('table-settings');
+    showToast('Table settings saved', 'success');
+    logActivity('Updated table settings');
+  });
+
+  document.getElementById('close-table-settings-modal').addEventListener('click', () => closeModal('table-settings'));
+
+//Bank Verification Submit
+  document.getElementById('bank-verification-submit').addEventListener('click', async () => {
+    const data = validateBankForm();
+    if (!data) return;
+    showLoader();
+    try {
+      const result = await verifyBankAccount(data);
+      document.getElementById('bank-verification-result').textContent = result.message;
+      document.getElementById('bank-verification-result').classList.add('success-tick');
+      const account = allAccounts.find(acc => acc.accountNumber === data.accountNumber);
+      if (account) {
+        account.status = 'Active';
+        updateTable(); // This will call updateStats
+      }
+      await logAudit('Bank Verification', {
+        accountNumber: data.accountNumber,
+        status: result.status,
+        message: result.message
+      });
+      showToast(result.message, 'success');
+      logActivity(`Bank account verified: ${data.accountNumber}`);
+    } catch (error) {
+      document.getElementById('bank-verification-error').textContent = error.message;
+      document.getElementById('bank-verification-error').classList.remove('hidden');
+      document.getElementById('bank-manual-verification').classList.remove('hidden');
+      showToast(error.message, 'error');
+    } finally {
+      hideLoader();
+    }
+  });
+
+  // Add Bank Account Submit
+  document.getElementById('add-bank-account-submit').addEventListener('click', async () => {
+    const data = validateAddBankAccountForm();
+    if (!data) return;
+    showLoader();
+    try {
+      const result = await addBankAccount(data);
+      allAccounts.push({
+        accountNumber: data.accountNumber,
+        policyNumber: data.policyNumber,
+        holderName: data.customerName,
+        bankName: data.bankName,
+        accountType: data.accountType,
+        status: 'Pending',
+        policyStatus: 'Pending',
+        customerNumber: data.customerNumber,
+        ifscCode: data.ifscCode
+      });
+      updateTable(); // This will call updateStats
+      closeModal('add-bank-account');
+      showToast('Bank account added successfully', 'success');
+      logActivity(`Added bank account: ${data.accountNumber}`);
+    } catch (error) {
+      document.getElementById('add-bank-account-error').textContent = error.message;
+      document.getElementById('add-bank-account-error').classList.remove('hidden');
+      showToast(error.message, 'error');
+    } finally {
+      hideLoader();
+    }
+  });
+
+  // Policy Payment Submit
+  document.getElementById('policy-payments-submit').addEventListener('click', async () => {
+    const data = validatePolicyPaymentForm();
+    if (!data) return;
+    showLoader();
+    try {
+      const result = await processPolicyPayment(data);
+      document.getElementById('policy-payments-result').textContent = result.message;
+      document.getElementById('policy-payments-result').classList.add('success-tick');
+      await logAudit('Policy Payment', {
+        policyNumber: data.policyNumber,
+        amount: data.amount,
+        status: result.status,
+        message: result.message
+      });
+      // Update policy status if necessary
+      const account = allAccounts.find(acc => acc.policyNumber === data.policyNumber);
+      if (account) {
+        account.policyStatus = 'Active';
+        updateTable(); // This will call updateStats
+      }
+      showToast(result.message, 'success');
+      logActivity(`Processed payment for policy: ${data.policyNumber}`);
+    } catch (error) {
+      document.getElementById('policy-payments-error').textContent = error.message;
+      document.getElementById('policy-payments-error').classList.remove('hidden');
+      showToast(error.message, 'error');
+    } finally {
+      hideLoader();
+    }
+  });
+
+  document.getElementById('bank-manual-verification').addEventListener('click', async () => {
+    const data = validateBankForm();
+    if (!data) return;
+    showLoader();
+    try {
+      const result = await manualVerification('bank', data);
+      document.getElementById('bank-verification-result').textContent = result.message;
+      showToast(result.message, 'success');
+      logActivity(`Initiated manual verification for bank: ${data.accountNumber}`);
+    } catch (error) {
+      document.getElementById('bank-verification-error').textContent = error.message;
+      document.getElementById('bank-verification-error').classList.remove('hidden');
+      showToast(error.message, 'error');
+    } finally {
+      hideLoader();
+    }
+  });
+
+  document.getElementById('close-bank-verification-modal').addEventListener('click', () => closeModal('bank-verification'));
+
+  document.getElementById('search-ifsc').addEventListener('click', async () => {
+    const ifscCode = document.getElementById('ifsc-code').value.trim();
+    if (!ifscCode) {
+      document.getElementById('bank-verification-error').textContent = 'Please enter an IFSC code.';
+      document.getElementById('bank-verification-error').classList.remove('hidden');
+      return;
+    }
+    showLoader();
+    try {
+      const bankCode = await searchIFSC(ifscCode);
+      document.getElementById('bank-name').value = bankCode ? 'HDFC Bank' : '';
+      showToast('IFSC verified successfully', 'success');
+      logActivity(`Searched IFSC code: ${ifscCode}`);
+    } catch (error) {
+      document.getElementById('bank-verification-error').textContent = error.message;
+      document.getElementById('bank-verification-error').classList.remove('hidden');
+      showToast(error.message, 'error');
+    } finally {
+      hideLoader();
+    }
+  });
+
+  document.getElementById('verify-submit').addEventListener('click', async () => {
+    const data = validateVerificationForm();
+    if (!data) return;
+    showLoader();
+    try {
+      let result;
+      if (data.verificationType === 'id') {
+        result = await verifyIdentity(data.customerNumber);
+      } else if (data.verificationType === 'death') {
+        result = await verifyDeath(data.customerNumber);
+      } else if (data.verificationType === 'sanctions') {
+        result = await checkSanctions(data.customerNumber);
+      }
+      document.getElementById('verify-result').textContent = result.message;
+      document.getElementById('verify-result').classList.add('success-tick');
+      await logAudit(`${data.verificationType} Verification`, {
+        customerNumber: data.customerNumber,
+        status: result.status,
+        message: result.message
+      });
+      showToast(result.message, 'success');
+      logActivity(`Performed ${data.verificationType} verification for customer: ${data.customerNumber}`);
+    } catch (error) {
+      document.getElementById('verify-error').textContent = error.message;
+      document.getElementById('verify-error').classList.remove('hidden');
+      document.getElementById('verify-manual').classList.remove('hidden');
+      showToast(error.message, 'error');
+    } finally {
+      hideLoader();
+    }
+  });
+
+  document.getElementById('verify-manual').addEventListener('click', async () => {
+    const data = validateVerificationForm();
+    if (!data) return;
+    showLoader();
+    try {
+      const result = await manualVerification(data.verificationType, { customerNumber: data.customerNumber });
+      document.getElementById('verify-result').textContent = result.message;
+      showToast(result.message, 'success');
+      logActivity(`Initiated manual ${data.verificationType} verification for customer: ${data.customerNumber}`);
+    } catch (error) {
+      document.getElementById('verify-error').textContent = error.message;
+      document.getElementById('verify-error').classList.remove('hidden');
+      showToast(error.message, 'error');
+    } finally {
+      hideLoader();
+    }
+  });
+
+  document.getElementById('close-verify-modal').addEventListener('click', () => closeModal('verify'));
+
+  document.getElementById('close-add-bank-account-modal').addEventListener('click', () => closeModal('add-bank-account'));
+
+  document.getElementById('close-policy-details-modal').addEventListener('click', () => closeModal('policy-details'));
+
+  document.getElementById('close-verification-history-modal').addEventListener('click', () => closeModal('verification-history'));
+
+  document.getElementById('close-bulk-verification-modal').addEventListener('click', () => closeModal('bulk-verification'));
+
+  document.getElementById('notifications-toggle').addEventListener('click', () => openModal('notifications'));
+
+  document.getElementById('clear-notifications').addEventListener('click', () => {
+    notifications = [];
+    updateNotifications(modals['notifications']);
+    showToast('Notifications cleared', 'success');
+    logActivity('Cleared all notifications');
+  });
+
+  document.getElementById('close-notifications-modal').addEventListener('click', () => closeModal('notifications'));
+
+  document.getElementById('save-note').addEventListener('click', () => {
+    const note = document.getElementById('account-note').value.trim();
+    const accountNumber = document.getElementById('account-notes-form').dataset.accountNumber;
+    if (note && accountNumber) {
+      accountNotes.set(accountNumber, note);
+      updateTable();
+      closeModal('account-notes');
+      showToast('Note saved', 'success');
+      logActivity(`Saved note for account: ${accountNumber}`);
+    } else {
+      document.getElementById('notes-error').textContent = 'Note cannot be empty.';
+      document.getElementById('notes-error').classList.remove('hidden');
+    }
+  });
+
+  document.getElementById('close-account-notes-modal').addEventListener('click', () => closeModal('account-notes'));
+
+  document.getElementById('close-activity-log-modal').addEventListener('click', () => closeModal('activity-log'));
+
+  function attachStatsListeners() {
+	    const totalAccountsCard = document.getElementById('total-accounts-card');
+	    const verifiedAccountsCard = document.getElementById('verified-accounts-card');
+	    const pendingVerificationsCard = document.getElementById('pending-verifications-card');
+
+	    if (totalAccountsCard && verifiedAccountsCard && pendingVerificationsCard) {
+	      totalAccountsCard.addEventListener('click', () => {
+	        updateStats();
+	        openModal('widget-stats', { filter: 'all' });
+	      });
+	      verifiedAccountsCard.addEventListener('click', () => {
+	        updateStats();
+	        openModal('widget-stats', { filter: 'verified' });
+	      });
+	      pendingVerificationsCard.addEventListener('click', () => {
+	        updateStats();
+	        openModal('widget-stats', { filter: 'pending' });
+	      });
+	      return true;
+	    }
+	    return false;
+	  }
+
+	  if (!attachStatsListeners()) {
+	    const interval = setInterval(() => {
+	      if (attachStatsListeners()) {
+	        clearInterval(interval);
+	      }
+	    }, 100);
+	    setTimeout(() => clearInterval(interval), 5000); // Stop polling after 5 seconds
+	  }
+  document.getElementById('close-widget-stats-modal').addEventListener('click', () => {
+	  const canvas = document.getElementById('stats-chart');
+	  const existingChart = Chart.getChart(canvas);
+	  if (existingChart) {
+	    existingChart.destroy();
+	  }
+	  closeModal('widget-stats');
+	});
+  document.getElementById('close-policy-payments-modal').addEventListener('click', () => closeModal('policy-payments'));
+
+  document.getElementById('sidebar-search').addEventListener('input', (e) => {
+    const term = e.target.value.trim().toLowerCase();
+    const actions = document.querySelectorAll('#sidebar button');
+    actions.forEach(btn => {
+      const text = btn.textContent.toLowerCase();
+      btn.style.display = text.includes(term) ? '' : 'none';
+    });
+  });
+
+  document.getElementById('bank-accounts-table').addEventListener('click', async (e) => {
+    if (e.target.classList.contains('view-policy')) {
+      e.preventDefault();
+      const policyNumber = e.target.dataset.policyNumber;
+      showLoader();
+      try {
+        const policyDetails = await fetchPolicyDetails(policyNumber);
+        openModal('policy-details', policyDetails);
+        logActivity(`Viewed policy details: ${policyNumber}`);
+      } catch (error) {
+        showToast(error.message, 'error');
+      } finally {
+        hideLoader();
+      }
+    } else if (e.target.classList.contains('verify-account')) {
+      const data = {
+        accountNumber: e.target.dataset.accountNumber,
+        holderName: e.target.dataset.holderName,
+        bankName: e.target.dataset.bankName,
+        ifscCode: e.target.dataset.ifscCode
+      };
+      openModal('bank-verification', data);
+    } else if (e.target.classList.contains('view-history')) {
+      openModal('verification-history', { accountNumber: e.target.dataset.accountNumber });
+    } else if (e.target.classList.contains('view-notes')) {
+      openModal('account-notes', { accountNumber: e.target.dataset.accountNumber });
+    } else if (e.target.classList.contains('make-payment')) {
+      openModal('policy-payments', { policyNumber: e.target.dataset.policyNumber });
+    }
+  });
+
+  document.querySelectorAll('th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.sort;
+      if (sortKey === key) {
+        sortAsc = !sortAsc;
+      } else {
+        sortKey = key;
+        sortAsc = true;
+      }
+      const icon = th.querySelector('.sort-icon');
+      if (icon) {
+        icon.textContent = sortAsc ? '↓' : '↑';
+        icon.classList.toggle('asc', sortAsc);
+      }
+      updateTable();
+      logActivity(`Sorted table by ${key} ${sortAsc ? 'ascending' : 'descending'}`);
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'b') {
+      e.preventDefault();
+      document.getElementById('bulk-verify').click();
+    } else if (e.key === 'f') {
+      e.preventDefault();
+      document.getElementById('table-search').focus();
+    } else if (e.key === 'p') {
+      e.preventDefault();
+      document.getElementById('prev-page').click();
+    } else if (e.key === 'n') {
+      e.preventDefault();
+      document.getElementById('next-page').click();
+    } else if (e.key === 's') {
+      e.preventDefault();
+      toggleSidebar();
+    } else if (e.key === 'k') {
+      e.preventDefault();
+      openModal('shortcut-help');
+    } else if (e.key === 'a') {
+      e.preventDefault();
+      openModal('add-bank-account');
+    }
+  });
+
+  document.getElementById('close-shortcut-help-modal').addEventListener('click', () => closeModal('shortcut-help'));
+}
+async function initializeApp() {
+	  config.userCode = getuserCode();
+	  initializeModals();
+	  if (document.readyState === 'loading') {
+	    // DOM not fully loaded, wait for it
+	    await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
+	  }
+	  initializeEventListeners();
+	  showLoader();
+	  try {
+	    allAccounts = await searchBankDetails('', 'policyNo') || [];
+	    currentPage = 1;
+	    updateTable();
+	    showToast('Application loaded successfully', 'success');
+	    logActivity('Initialized application');
+	  } catch (error) {
+	    console.error('Initialization error:', error);
+	    allAccounts = [];
+	    updateTable();
+	    showToast(error.message || 'Failed to load data', 'error');
+	    logActivity(`Initialization failed: ${error.message}`);
+	  } finally {
+	    hideLoader();
+	  }
+	}
+document.addEventListener('DOMContentLoaded', initializeApp);
+</script>
 </body>
 </html>
