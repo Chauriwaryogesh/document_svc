@@ -2,21 +2,49 @@ package com.SecureAccessPortal.Modal;
 
 public class PolicyRequest {
 	private String  policyNumber;
-	public String productCode;
-	public String polCompanyName;
-	public String policyName;
-	public String fcuFlag;
-	public String associatedpolicyCount;
-	public String userCode;
-	public String customerNo;
-	public String custName;
-	public String middleName;
-	public String surname;
-	public String phoneNum;
-	public String email;
-	public String dateOfBirth;
-	public String gender;
-	public String smokerStatus;
+	private String productCode;
+	private String polCompanyName;
+	private String policyName;
+	private String fcuFlag;
+	private String associatedpolicyCount;
+	private String userCode;
+	private String customerNo;
+	private String custName;
+	private String middleName;
+	private String surname;
+	private String phoneNum;
+	private String email;
+	private String dateOfBirth;
+	private String gender;
+	private String smokerStatus;
+	private String policyAmount;
+	private String policyDate;
+	private String installmentCount;
+	private String dueDate;
+	public String getPolicyAmount() {
+		return policyAmount;
+	}
+	public void setPolicyAmount(String policyAmount) {
+		this.policyAmount = policyAmount;
+	}
+	public String getPolicyDate() {
+		return policyDate;
+	}
+	public void setPolicyDate(String policyDate) {
+		this.policyDate = policyDate;
+	}
+	public String getInstallmentCount() {
+		return installmentCount;
+	}
+	public void setInstallmentCount(String installmentCount) {
+		this.installmentCount = installmentCount;
+	}
+	public String getDueDate() {
+		return dueDate;
+	}
+	public void setDueDate(String dueDate) {
+		this.dueDate = dueDate;
+	}
 	/**
 	 * @return the policyNumber
 	 */

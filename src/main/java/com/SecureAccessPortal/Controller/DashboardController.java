@@ -66,4 +66,8 @@ public class DashboardController {
     public String payment(String userCode) {
         return "payment"; 
     }
+    @GetMapping("/verification")
+    public String verification(String userCode) {
+        return "verification"; 
+    }
 }

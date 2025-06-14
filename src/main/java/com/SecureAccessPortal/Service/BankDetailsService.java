@@ -1,26 +1,35 @@
 package com.SecureAccessPortal.Service;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Policy;
+import com.SecureAccessPortal.Entity.VerificationRecord;
+import com.SecureAccessPortal.Exception.ResourceNotFoundException;
 import com.SecureAccessPortal.Modal.BankDetailsDTO;
 import com.SecureAccessPortal.Modal.PolicyRequest;
+import com.SecureAccessPortal.Modal.VerificationRecordDTO;
 import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.IPolicyRepo;
+import com.SecureAccessPortal.Repo.VerificationRecordRepo;
 
 @Service
 public class BankDetailsService {
 
-    private final BankAccountRepo bankDetailsRepository;
+    private final BankAccountRepo bankAccountRepository;
     
     @Autowired
     private CustomerRepo customerRepo;
@@ -28,25 +37,28 @@ public class BankDetailsService {
     @Autowired
     private IPolicyRepo policyRepo;
     
+    
+    @Autowired
+    private VerificationRecordRepo verificationRecordRepository;
 
-    public BankDetailsService(BankAccountRepo bankDetailsRepository) {
-        this.bankDetailsRepository = bankDetailsRepository;
+    public BankDetailsService(BankAccountRepo bankAccountRepository) {
+        this.bankAccountRepository = bankAccountRepository;
     }
 
 	public List<BankDetailsDTO> getBankDetails(String bankAccNo, String policyNo, String customerNo, String userCode) {
 		List<BankAccount> bankDetails = new ArrayList<BankAccount>();
 		if (bankAccNo != null) {
-			bankDetails = bankDetailsRepository.findByBankAccNo(bankAccNo);
+			bankDetails = bankAccountRepository.findByBankAccNo(bankAccNo);
 		} else if (policyNo != null) {
-			bankDetails = bankDetailsRepository.findByPolicyNumber(policyNo);
+			bankDetails = bankAccountRepository.findByPolicyNumber(policyNo);
 		} else if (customerNo != null) {
-			bankDetails = bankDetailsRepository.findByCustomerNo(customerNo);
+			bankDetails = bankAccountRepository.findByCustomerNo(customerNo);
 		}
 		return bankDetails.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
     public List<BankDetailsDTO> getAllBankDetails() {
-        List<BankAccount> bankDetails = bankDetailsRepository.findAll();
+        List<BankAccount> bankDetails = bankAccountRepository.findAll();
         return bankDetails.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -115,7 +127,7 @@ public class BankDetailsService {
 			dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
 			dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
 
-			BankAccount save = bankDetailsRepository.save(dto);
+			BankAccount save = bankAccountRepository.save(dto);
 			message = "Bank details saved for customer " + save.getCustomer().getName() + " "
 					+ save.getCustomer().getSurname() + " " + save.getPolicy().getCustomerNo();
 		} catch (Exception e) {
@@ -148,6 +160,197 @@ public class BankDetailsService {
 			}
 		}
 		return customer;
+	}
+	
+	public VerificationRecordDTO createVerificationRecord(String action, String accountNo, MultipartFile document,
+			String status, String userCode, String details, String customerNo, String policyNumber) {
+		if (!isValidAction(action)) {
+			throw new IllegalArgumentException("Invalid action type. Must be SANCTIONS, ID, or DEATH");
+		}
+		if (document.isEmpty() || document.getSize() > 5 * 1024 * 1024) {
+			throw new IllegalArgumentException("Document is empty or exceeds 5MB");
+		}
+		if (!isValidFileType(document)) {
+			throw new IllegalArgumentException("Unsupported file type. Use PDF, PNG, or JPG");
+		}
+		if (!isValidStatus(status)) {
+			throw new IllegalArgumentException("Invalid status. Must be PENDING, PASS, FAIL, or IN_REVIEW");
+		}
+		BankAccount bankAccount = bankAccountRepository.findByAccountNo(accountNo);
+		if(bankAccount == null) {
+			throw new ResourceNotFoundException("Bank account not found for accountNo: " + accountNo);
+		}
+		VerificationRecord verificationRecord = new VerificationRecord();
+		verificationRecord.setBankAccount(bankAccount);
+		verificationRecord.setCustomerNo(customerNo != null ? customerNo : bankAccount.getCustomer().getCustomerNo());
+		verificationRecord.setPolicyNumber(policyNumber != null ? policyNumber : bankAccount.getPolicy().getPolicyNumber());
+		verificationRecord.setUserCode(userCode);
+		switch (action.toUpperCase()) {
+		case "SANCTIONS":
+			verificationRecord.setSanctions(details);
+			try {
+				verificationRecord.setSanctionsDocs(document.getBytes());
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Failed to process document");
+			}
+			verificationRecord.setSancStatus(status);
+			break;
+		case "ID":
+			verificationRecord.setIdentity(details);
+			try {
+				verificationRecord.setIdentityDocs(document.getBytes());
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Failed to process document");
+			}
+			verificationRecord.setIdentityStatus(status);
+			break;
+		case "DEATH":
+			verificationRecord.setDeath(details);
+			try {
+				verificationRecord.setDeathDocs(document.getBytes());
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Failed to process document");
+			}
+			verificationRecord.setDeathStatus(status);
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid action type");
+		}
+
+// Save and map to DTO
+		verificationRecord = verificationRecordRepository.save(verificationRecord);
+		return mapToDTO(verificationRecord, action);
+	}
+
+	public Page<VerificationRecordDTO> getVerificationRecords(String accountNo, String action, String status,
+			String userCode, Pageable pageable) {
+// Validate inputs
+		if (accountNo == null || accountNo.isEmpty()) {
+			throw new IllegalArgumentException("Account number is required");
+		}
+		if (action != null && !isValidAction(action)) {
+			throw new IllegalArgumentException("Invalid action type. Must be SANCTIONS, ID, or DEATH");
+		}
+		if (status != null && !isValidStatus(status)) {
+			throw new IllegalArgumentException("Invalid status. Must be PENDING, PASS, FAIL, or IN_REVIEW");
+		}
+		BankAccount byAccountNo = bankAccountRepository.findByAccountNo(accountNo);
+		if(byAccountNo == null) {
+			throw new ResourceNotFoundException("Bank account not found for accountNo: " + accountNo);
+		}
+
+		Page<VerificationRecord> verificationRecords;
+		if (action != null && status != null) {
+			verificationRecords = verificationRecordRepository.findByBankAccountAccountNoAndActionAndStatus(accountNo,
+					action.toUpperCase(), status, pageable);
+		} else if (action != null) {
+			verificationRecords = verificationRecordRepository.findByBankAccountAccountNoAndAction(accountNo,
+					action.toUpperCase(), pageable);
+		} else if (status != null) {
+			verificationRecords = verificationRecordRepository.findByBankAccountAccountNoAndStatus(accountNo, status,
+					pageable);
+		} else {
+			verificationRecords = verificationRecordRepository.findByBankAccountAccountNo(accountNo, pageable);
+		}
+		return verificationRecords.map(record -> mapToDTO(record, action != null ? action : determineAction(record)));
+	}
+
+	public byte[] getVerificationDocument(Long id, String action, String userCode) {
+		if (!isValidAction(action)) {
+			throw new IllegalArgumentException("Invalid action type. Must be SANCTIONS, ID, or DEATH");
+		}
+		VerificationRecord verificationRecord = verificationRecordRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Verification record not found for id: " + id));
+		switch (action.toUpperCase()) {
+		case "SANCTIONS":
+			if (verificationRecord.getSanctionsDocs() == null) {
+				throw new ResourceNotFoundException("No sanctions document found for id: " + id);
+			}
+			return verificationRecord.getSanctionsDocs();
+		case "ID":
+			if (verificationRecord.getIdentityDocs() == null) {
+				throw new ResourceNotFoundException("No ID document found for id: " + id);
+			}
+			return verificationRecord.getIdentityDocs();
+		case "DEATH":
+			if (verificationRecord.getDeathDocs() == null) {
+				throw new ResourceNotFoundException("No death document found for id: " + id);
+			}
+			return verificationRecord.getDeathDocs();
+		default:
+			throw new IllegalArgumentException("Invalid action type");
+		}
+	}
+	private boolean isValidAction(String action) {
+		return action != null && (action.equalsIgnoreCase("SANCTIONS") || action.equalsIgnoreCase("ID")
+				|| action.equalsIgnoreCase("DEATH"));
+	}
+
+	private boolean isValidStatus(String status) {
+		return status != null && (status.equals("PENDING") || status.equals("PASS") || status.equals("FAIL")
+				|| status.equals("IN_REVIEW"));
+	}
+
+	private boolean isValidFileType(MultipartFile file) {
+		String contentType = file.getContentType();
+		return contentType != null && (contentType.equals("application/pdf") || contentType.equals("image/png")
+				|| contentType.equals("image/jpeg"));
+	}
+	private VerificationRecordDTO mapToDTO(VerificationRecord record, String action) {
+		VerificationRecordDTO dto = new VerificationRecordDTO();
+		dto.setId(record.getId());
+		dto.setAccountNo(record.getBankAccount().getAccountNo());
+		dto.setCustomerNo(record.getCustomerNo());
+		dto.setPolicyNumber(record.getPolicyNumber());
+		dto.setAction(action.toUpperCase());
+        dto.setUserCode(record.getUserCode());
+		switch (action.toUpperCase()) {
+		case "SANCTIONS":
+			dto.setDetails(record.getSanctions());
+			dto.setStatus(record.getSancStatus());
+			break;
+		case "ID":
+			dto.setDetails(record.getIdentity());
+			dto.setStatus(record.getIdentityStatus());
+			break;
+		case "DEATH":
+			dto.setDetails(record.getDeath());
+			dto.setStatus(record.getDeathStatus());
+			break;
+		}
+		dto.setCreatedBy(record.getCreatedBy());
+		return dto;
+	}
+
+	private String determineAction(VerificationRecord record) {
+		if (record.getSanctions() != null || record.getSanctionsDocs() != null) {
+			return "SANCTIONS";
+		} else if (record.getIdentity() != null || record.getIdentityDocs() != null) {
+			return "ID";
+		} else if (record.getDeath() != null || record.getDeathDocs() != null) {
+			return "DEATH";
+		}
+		return "UNKNOWN";
+	}
+
+	public String updateStatus(Long id, VerificationRecordDTO verificationRecordDTO) {
+		String message = "";
+		try {
+			Optional<VerificationRecord> record = verificationRecordRepository.findById(id);
+			VerificationRecord verificationRecord = record.get();
+			if ("ID".equalsIgnoreCase(verificationRecordDTO.getAction())) {
+				verificationRecord.setIdentityStatus(verificationRecordDTO.getStatus());
+			} else if ("DEATH".equalsIgnoreCase(verificationRecordDTO.getAction())) {
+				verificationRecord.setDeathStatus(verificationRecordDTO.getStatus());
+			} else if ("SANCTIONS".equalsIgnoreCase(verificationRecordDTO.getAction())) {
+				verificationRecord.setSancStatus(verificationRecordDTO.getStatus());
+			}
+			verificationRecordRepository.save(verificationRecord);
+			message = "Success";
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return message;
 	}
 }
 

@@ -2,7 +2,9 @@ package com.SecureAccessPortal.Entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -43,9 +46,13 @@ public class BankAccount {
     private Customer customer;
 
     // Relationship with Policy
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "policy_number", nullable = false, referencedColumnName = "policyNumber")
     private Policy policy;
+    
+    @OneToMany(mappedBy = "bankAccount", fetch = FetchType.EAGER ,cascade = CascadeType.ALL)
+    private List<VerificationRecord> verificationRecord;
+    
 
     @Column(name = "last_verification_date")
     private LocalDateTime lastVerificationDate;
@@ -86,7 +93,18 @@ public class BankAccount {
     @Column(name = "verification_attempts")
     private Integer verificationAttempts;
 
-    // Getters and Setters
+    
+   
+
+	public List<VerificationRecord> getVerificationRecord() {
+		return verificationRecord;
+	}
+
+	public void setVerificationRecord(List<VerificationRecord> verificationRecord) {
+		this.verificationRecord = verificationRecord;
+	}
+
+	// Getters and Setters
     public Long getId() {
         return id;
     }
