@@ -1,5 +1,7 @@
 package com.SecureAccessPortal.Repo;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,5 +29,8 @@ public interface VerificationRecordRepo extends JpaRepository<VerificationRecord
 			+ "(:action = 'DEATH' AND v.death IS NOT NULL AND v.deathStatus = :status))")
 	Page<VerificationRecord> findByBankAccountAccountNoAndActionAndStatus(String accountNo, String action,
 			String status, Pageable pageable);
+
+	@Query(value = "Select * from Verification_Records v where v.accountNo=?1 ", nativeQuery = true)
+	List<VerificationRecord> findByAccountNo(String accountNo);
 
 }

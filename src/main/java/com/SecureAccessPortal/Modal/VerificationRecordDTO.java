@@ -15,9 +15,64 @@ public class VerificationRecordDTO {
 	private String status;
 	private String userCode;
 	private LocalDateTime createdBy;
+	private String deathCertNo;
 	private String deathStatus;
+	private byte[] deathCertificate;
+	private String idCertNo;
 	private String identityStatus;
+	private byte[] idCertificate;
+	private String sanctionsCertNo;
 	private String sancStatus;
+	private byte[] sanctionsCertificate;
+	
+
+	public String getDeathCertNo() {
+		return deathCertNo;
+	}
+
+	public void setDeathCertNo(String deathCertNo) {
+		this.deathCertNo = deathCertNo;
+	}
+
+	public String getIdCertNo() {
+		return idCertNo;
+	}
+
+	public void setIdCertNo(String idCertNo) {
+		this.idCertNo = idCertNo;
+	}
+
+	public String getSanctionsCertNo() {
+		return sanctionsCertNo;
+	}
+
+	public void setSanctionsCertNo(String sanctionsCertNo) {
+		this.sanctionsCertNo = sanctionsCertNo;
+	}
+
+	public byte[] getDeathCertificate() {
+		return deathCertificate;
+	}
+
+	public void setDeathCertificate(byte[] deathCertificate) {
+		this.deathCertificate = deathCertificate;
+	}
+
+	public byte[] getIdCertificate() {
+		return idCertificate;
+	}
+
+	public void setIdCertificate(byte[] idCertificate) {
+		this.idCertificate = idCertificate;
+	}
+
+	public byte[] getSanctionsCertificate() {
+		return sanctionsCertificate;
+	}
+
+	public void setSanctionsCertificate(byte[] sanctionsCertificate) {
+		this.sanctionsCertificate = sanctionsCertificate;
+	}
 
 	public String getUserCode() {
 		return userCode;

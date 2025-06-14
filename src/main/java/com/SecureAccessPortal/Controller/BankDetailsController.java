@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.SecureAccessPortal.Exception.ResourceNotFoundException;
 import com.SecureAccessPortal.Modal.BankDetailsDTO;
+import com.SecureAccessPortal.Modal.PhotoDTO;
 import com.SecureAccessPortal.Modal.PolicyRequest;
 import com.SecureAccessPortal.Modal.VerificationRecordDTO;
 import com.SecureAccessPortal.Service.BankDetailsService;
@@ -190,7 +192,21 @@ public class BankDetailsController {
 			throw new ResourceNotFoundException(e.getMessage());
 		}
 	}
-	
+	@RequestMapping(value = "/getAllDocuments", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public com.SecureAccessPortal.Service.ResponseEntity<List<VerificationRecordDTO>> getDocument(
+			@RequestParam (value="accountNo",required=false) String accountNo,
+			@RequestHeader(value = "userCode", required = false) String userCode) {
+
+		com.SecureAccessPortal.Service.ResponseEntity<List<VerificationRecordDTO>> docslist = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		List<VerificationRecordDTO> document = bankDetailsService.getAllDocuments(accountNo,userCode);
+		if (document != null) {
+			docslist.setData(document);
+		} else {
+			docslist.setErrorMessage("document List isEmpty");
+
+		}
+		return docslist;
+	}
 	
 
 }

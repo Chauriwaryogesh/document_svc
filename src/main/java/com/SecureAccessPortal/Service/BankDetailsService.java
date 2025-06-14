@@ -25,6 +25,7 @@ import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.IPolicyRepo;
 import com.SecureAccessPortal.Repo.VerificationRecordRepo;
+import com.SecureAccessPortal.Transformer.BankMapper;
 
 @Service
 public class BankDetailsService {
@@ -33,6 +34,9 @@ public class BankDetailsService {
     
     @Autowired
     private CustomerRepo customerRepo;
+    
+    @Autowired
+    private BankMapper bankMapper;
     
     @Autowired
     private IPolicyRepo policyRepo;
@@ -53,6 +57,8 @@ public class BankDetailsService {
 			bankDetails = bankAccountRepository.findByPolicyNumber(policyNo);
 		} else if (customerNo != null) {
 			bankDetails = bankAccountRepository.findByCustomerNo(customerNo);
+		}else {
+			bankDetails = bankAccountRepository.findAll();
 		}
 		return bankDetails.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
@@ -351,6 +357,26 @@ public class BankDetailsService {
 			t.printStackTrace();
 		}
 		return message;
+	}
+
+	public List<VerificationRecordDTO> getAllDocuments(String accountNo, String userCode) {
+		 List<VerificationRecordDTO> listOfDocument= new ArrayList<>();
+		if(accountNo != null) {
+			List<VerificationRecord> verRecords = verificationRecordRepository.findByAccountNo(accountNo);
+			if(verRecords != null) {
+				listOfDocument= bankMapper.mapVerificationRecordList(verRecords);	
+			}else {
+				throw new RuntimeException("No record Found");
+			}
+		}else {
+			List<VerificationRecord> verRecords = verificationRecordRepository.findAll();
+			if(verRecords != null) {
+				listOfDocument= bankMapper.mapVerificationRecordList(verRecords);	
+			}else {
+				throw new RuntimeException("No record Found");
+			}
+		}
+		 return listOfDocument;
 	}
 }
 
