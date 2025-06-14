@@ -4,48 +4,58 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-@Entity
-@Table(name ="WorkItem")
-public class Workitem {
-	@Id
-	@Column
-	@NotBlank
-	private String workItemRefNumber;
-	
-	@Column
-	private String workItemId;
-	
-	@Column
-	private String workItemName;
-	@Column
-	@NotNull
-	private String workType;
-	
-	@Column
-	@NotBlank
-	@NotNull
-	private String comment;
-	
-	@Column
-	@NotNull
-	private String createdBy;
-	
-	@Column
-	private LocalDateTime createdTime;
-	
-	@Column
-	private String userCode;
-	
-	@Column
-	private String status;
-	
-	@Column
-	private String queue;
+	@Entity
+	@Table(name ="WorkItem")
+	public class Workitem {
+		@Id
+		@Column
+		@NotBlank
+		private String workItemRefNumber;
+		
+		@Column
+		private String workItemId;
+		
+		@Column
+		private String workItemName;
+		@Column
+		@NotNull
+		private String workType;
+		
+		@Column
+		@NotBlank
+		@NotNull
+		private String comment;
+		
+		@Column
+		@NotNull
+		private String createdBy;
+		
+		@Column
+		private LocalDateTime createdTime;
+		
+		@Column
+		private String userCode;
+		
+		@Column
+		private String status;
+		
+		@Column
+		private String queue;
+		
+	public String getUserCode() {
+		return userCode;
+	}
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
 	/**
 	 * @return the queue
 	 */

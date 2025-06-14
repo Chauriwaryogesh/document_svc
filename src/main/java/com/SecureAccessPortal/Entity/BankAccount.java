@@ -52,7 +52,6 @@ public class BankAccount {
     
     @OneToMany(mappedBy = "bankAccount", fetch = FetchType.EAGER ,cascade = CascadeType.ALL)
     private List<VerificationRecord> verificationRecord;
-    
 
     @Column(name = "last_verification_date")
     private LocalDateTime lastVerificationDate;
@@ -92,9 +91,17 @@ public class BankAccount {
 
     @Column(name = "verification_attempts")
     private Integer verificationAttempts;
-
     
-   
+    @Column(name = "work_item_ref_no")
+    private String workItemRefNo;
+ 
+	public String getWorkItemRefNo() {
+		return workItemRefNo;
+	}
+
+	public void setWorkItemRefNo(String workItemRefNo) {
+		this.workItemRefNo = workItemRefNo;
+	}
 
 	public List<VerificationRecord> getVerificationRecord() {
 		return verificationRecord;

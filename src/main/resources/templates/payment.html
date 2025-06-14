@@ -117,9 +117,9 @@
       thead th {
         position: sticky;
         top: 0;
-        background: #1e90ff; /* Updated to match table header color */
+        background: #1e90ff;
         color: white;
-        z-index: 5; /* Lowered to prevent overlap with document-viewer */
+        z-index: 5;
         font-weight: 600;
       }
       tbody tr:nth-child(even) {
@@ -256,8 +256,8 @@
         right: -2px;
       }
       .sidebar {
-        /* transition: transform 0.3s ease; */ /* Animation removed */
         transform: translateX(-100%);
+        transition: transform 0.3s ease;
       }
       .sidebar.open {
         transform: translateX(0);
@@ -388,23 +388,23 @@
         text-decoration: underline;
       }
       #document-viewer {
-        display: none; /* Hidden by default */
+        display: none;
         position: fixed;
         inset: 0;
         background: rgba(0, 0, 0, 0.75);
         align-items: center;
         justify-content: center;
-        z-index: 1000; /* Higher than table headers */
+        z-index: 1000;
         padding: 1rem;
       }
       #document-viewer:not(.hidden) {
-        display: flex; /* Show when not hidden */
+        display: flex;
       }
       #document-viewer .bg-white {
         position: relative;
         max-width: 90vw;
         max-height: 90vh;
-        width: 800px; /* Minimum width for larger screens */
+        width: 800px;
         padding: 2rem;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -417,11 +417,11 @@
       #document-content img,
       #document-content embed {
         width: 100%;
-        max-height: 400px; /* Matches verify-document-modal */
+        max-height: 400px;
         height: auto;
         border: 1px solid #d1d5db;
         border-radius: 8px;
-        object-fit: contain; /* Prevent distortion */
+        object-fit: contain;
       }
       #close-document-viewer {
         width: 100%;
@@ -436,85 +436,87 @@
     </style>
 </head>
 <body>
-    <nav class="w-full fixed top-0 z-40" aria-label="Main navigation">
-      <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <nav class="w-full fixed top-0 z-40 bg-white shadow-md" aria-label="Main navigation">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
         <div class="flex items-center space-x-4">
           <button id="sidebar-toggle" class="btn-neutral text-gray-700 hover:text-blue-600" aria-label="Toggle sidebar">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
           </button>
-          <div class="text-2xl font-bold">Banking App</div>
+          <div class="text-xl sm:text-2xl font-bold text-gray-800">Banking App</div>
         </div>
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-3 sm:space-x-4">
           <div class="relative">
             <button id="notifications-toggle" class="btn-neutral text-gray-700 hover:text-blue-600" aria-label="View notifications">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
               </svg>
               <span id="notification-dot" class="notification-dot hidden"></span>
             </button>
           </div>
-          <button id="btn-profile" class="btn-neutral text-gray-700 hover:text-blue-600 font-semibold">Profile</button>
-          <button id="btn-logout" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700" aria-label="Logout">Logout</button>
+          <button id="btn-profile" class="btn-neutral text-gray-700 hover:text-blue-600 font-semibold text-sm sm:text-base">Profile</button>
+          <button id="btn-logout" class="btn-neutral bg-blue-600 text-white font-semibold py-1.5 px-3 sm:py-2 sm:px-5 rounded-lg hover:bg-blue-700 text-sm sm:text-base" aria-label="Logout">Logout</button>
         </div>
       </div>
     </nav>
 
-    <div id="sidebar" class="sidebar fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 p-6 flex flex-col space-y-4">
-      <button id="sidebar-close" class="btn-neutral text-gray-700 hover:text-blue-600 self-end" aria-label="Close sidebar">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-      </button>
-      <h3 class="text-lg font-bold">Quick Actions</h3>
-      <input type="text" id="sidebar-search" class="form-input" placeholder="Search accounts or actions" aria-label="Quick search">
-      <button id="new-verification" class="btn-neutral bg-blue-600 text-white py-2 px-4 rounded-lg w-full">New Verification</button>
-      <button id="add-bank-account" class="btn-neutral bg-teal-500 text-white py-2 px-4 rounded-lg w-full">Add Bank Account</button>
-      <button id="export-table" class="btn-neutral bg-green-500 text-white py-2 px-4 rounded-lg w-full">Export Table</button>
-      <button id="view-activity" class="btn-neutral bg-purple-500 text-white py-2 px-4 rounded-lg w-full">Recent Activity</button>
-      
-      <button id="upload-doc" class="btn-neutral bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg w-full hover:bg-teal-600" aria-label="Upload verification document">Upload Doc</button>
-      <button id="verify" class="btn-neutral bg-purple-500 text-white font-semibold py-2 px-4 rounded-lg w-full hover:bg-purple-600" aria-label="Trigger verification">All Documents</button>
-      <button id="verify-document" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg w-full hover:bg-yellow-600" aria-label="Verify document">Verify Document</button>
+    <div id="sidebar" class="sidebar fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 p-4 flex flex-col space-y-3">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-gray-800">Quick Actions</h3>
+        <button id="sidebar-close" class="btn-neutral text-gray-700 hover:text-blue-600" aria-label="Close sidebar">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
       </div>
+      <input type="text" id="sidebar-search" class="form-input text-sm" placeholder="Search accounts or actions" aria-label="Quick search">
+      <button id="new-verification" class="btn-neutral bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-semibold hover:bg-blue-700">New Verification</button>
+      <button id="add-bank-account" class="btn-neutral bg-teal-500 text-white py-2 px-4 rounded-lg text-sm font-semibold hover:bg-teal-600">Add Bank Account</button>
+      <button id="export-table" class="btn-neutral bg-green-500 text-white py-2 px-4 rounded-lg text-sm font-semibold hover:bg-green-600">Export Table</button>
+      <button id="view-activity" class="btn-neutral bg-purple-500 text-white py-2 px-4 rounded-lg text-sm font-semibold hover:bg-purple-600">Recent Activity</button>
+      <button id="upload-doc" class="btn-neutral bg-teal-500 text-white py-2 px-4 rounded-lg text-sm font-semibold hover:bg-teal-600" aria-label="Upload verification document">Upload Doc</button>
+      <button id="verify" class="btn-neutral bg-purple-500 text-white py-2 px-4 rounded-lg text-sm font-semibold hover:bg-purple-600" aria-label="Trigger verification">All Documents</button>
+      <button id="verify-document" class="btn-neutral bg-yellow-500 text-white py-2 px-4 rounded-lg text-sm font-semibold hover:bg-yellow-600" aria-label="Verify document">Verify Document</button>
+    </div>
 
-    <main class="w-full max-w-7xl flex flex-col flex-grow p-6 mt-20" aria-label="main-content">
-      <div class="mb-6 flex flex-wrap gap-2 sm:space-x-4">
-        <button onclick="navigateTo('dashboard')" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700" aria-label="Back to dashboard">
+    <main class="w-full max-w-7xl flex flex-col flex-grow p-4 sm:p-6 mt-16 sm:mt-20" aria-label="main-content">
+      <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <button onclick="navigateTo('dashboard')" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700 w-full sm:w-auto" aria-label="Back to dashboard">
           Back to Dashboard
         </button>
-        <button id="bulk-verify" class="btn-neutral bg-green-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-green-600 hidden" aria-label="Verify selected accounts">Verify Selected</button>
-        <button id="table-settings" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-5 rounded-lg" aria-label="Table settings">Table Settings</button>
-        <button id="export-csv" class="btn-neutral bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg" aria-label="Export as CSV">Export CSV</button>
-        <button id="export-pdf" class="btn-neutral bg-red-500 text-white font-semibold py-2 px-5 rounded-lg" aria-label="Export as PDF">Export PDF</button>
+        <button id="bulk-verify" class="btn-neutral bg-green-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-green-600 hidden w-full sm:w-auto" aria-label="Verify selected accounts">Verify Selected</button>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        <div id="total-accounts-card" class="card p-6 text-center cursor-pointer hover:bg-blue-50" role="button" aria-label="View all accounts">
-          <h3 class="text-lg font-semibold">Total Accounts</h3>
-          <p id="total-accounts-count" class="text-3xl font-bold text-gray-800">0</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div id="total-accounts-card" class="card p-4 sm:p-6 text-center cursor-pointer hover:bg-blue-50" role="button" aria-label="View all accounts">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800">Total Accounts</h3>
+          <p id="total-accounts-count" class="text-2xl sm:text-3xl font-bold text-gray-800">0</p>
         </div>
-        <div id="verified-accounts-card" class="card p-6 text-center" role="tab" aria-label="View verified accounts">
-          <h3 class="text-lg font-semibold">Verified Accounts</h3>
-          <p id="verified-accounts-count" class="text-3xl font-bold text-gray-800">0</p>
+        <div id="verified-accounts-card" class="card p-4 sm:p-6 text-center" role="tab" aria-label="View verified accounts">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800">Verified Accounts</h3>
+          <p id="verified-accounts-count" class="text-2xl sm:text-3xl font-bold text-gray-800">0</p>
         </div>
-        <div id="pending-verifications-card" class="card p-6 text-center cursor-pointer hover:bg-yellow-50" role="button" aria-label="View pending verifications">
-          <h3 class="text-lg font-semibold">Pending Verifications</h3>
-          <p id="pending-verifications-count" class="text-3xl font-bold text-gray-800">0</p>
+        <div id="pending-verifications-card" class="card p-4 sm:p-6 text-center cursor-pointer hover:bg-yellow-50" role="button" aria-label="View pending verifications">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800">Pending Verifications</h3>
+          <p id="pending-verifications-count" class="text-2xl sm:text-3xl font-bold text-gray-800">0</p>
         </div>
       </div>
-      <div class="card p-8">
-        <h2 class="text-2xl font-bold mb-6">Bank Accounts & Verification</h2>
-        <div class="flex flex-col sm:flex-row gap-4 mb-6">
-          <select id="search-type" class="form-input w-full sm:w-40" aria-label="Select search type">
-          <option value="all">All Accounts</option>
+      <div class="card p-4 sm:p-8">
+        <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Bank Accounts & Verification</h2>
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4 sm:mb-6 flex-wrap">
+          <select id="search-type" class="form-input w-full sm:w-40 text-sm" aria-label="Select search type">
+            <option value="all">All Accounts</option>
             <option value="policyNo">Policy Number</option>
             <option value="accountNo">Account Number</option>
             <option value="customerNumber">Customer Number</option>
           </select>
-          <input type="table-search" id="table-search" class="form-input w-full sm:w-64" placeholder="Enter search term" aria-label="Search accounts">
-          <button id="search-bank-details" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Search bank details">Search</button>
-          <select id="status-filter" class="form-input w-full sm:w-40" aria-label="Filter by status">
+          <input type="text" id="table-search" class="form-input w-full sm:w-64 text-sm" placeholder="Enter search term" aria-label="Search accounts">
+          <button id="search-bank-details" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm w-full sm:w-auto" aria-label="Search bank details">Search</button>
+          <select id="status-filter" class="form-input w-full sm:w-40 text-sm" aria-label="Filter by status">
             <option value="">All Statuses</option>
             <option value="Active">Active</option>
             <option value="Pending">Pending</option>
           </select>
+          <div class="flex gap-2 sm:ml-auto w-full sm:w-auto">
+            <button id="export-csv" class="btn-neutral bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg text-sm hover:bg-blue-600 w-full sm:w-auto" aria-label="Export as CSV">Export CSV</button>
+            <button id="export-pdf" class="btn-neutral bg-red-500 text-white font-semibold py-2 px-4 rounded-lg text-sm hover:bg-red-600 w-full sm:w-auto" aria-label="Export as PDF">Export PDF</button>
+          </div>
         </div>
         <div class="table-container">
           <table class="w-full text-left text-gray-700 text-sm" aria-label="Bank accounts table">
@@ -536,10 +538,10 @@
             <tbody id="bank-accounts-table"></tbody>
           </table>
         </div>
-        <div class="flex justify-between items-center mt-6">
-          <div>
-            <button id="prev-page" class="btn-neutral bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 disabled:opacity-50" disabled>Previous</button>
-            <button id="next-page" class="btn-neutral bg-gray-200 text-gray-800 py-2 px-4 rounded-lg">Next</button>
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-4 sm:mt-6 gap-4">
+          <div class="flex gap-2">
+            <button id="prev-page" class="btn-neutral bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-sm w-full sm:w-auto" disabled>Previous</button>
+            <button id="next-page" class="btn-neutral bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto">Next</button>
           </div>
           <span id="page-info" class="text-sm font-semibold text-gray-700">Page 1</span>
         </div>
@@ -551,30 +553,30 @@
           <form id="form-bank-verification" class="modal space-y-4">
             <div>
               <label for="bank-account-number" class="form-label block text-sm">Bank Account Number</label>
-              <input type="text" id="bank-account-number" class="form-input mt-1" placeholder="Enter account number" required aria-required="true">
+              <input type="text" id="bank-account-number" class="form-input mt-1 text-sm" placeholder="Enter account number" required aria-required="true">
             </div>
             <div>
               <label for="re-enter-account-number" class="form-label block text-sm">Re-enter Bank Account Number</label>
-              <input type="text" id="re-enter-account-number" class="form-input mt-1" placeholder="Re-enter account number" required aria-required="true">
+              <input type="text" id="re-enter-account-number" class="form-input mt-1 text-sm" placeholder="Re-enter account number" required aria-required="true">
             </div>
             <div>
               <label for="ifsc-code" class="form-label block text-sm">IFSC Code</label>
-              <div class="flex space-x-2 mt-1">
-                <input type="text" id="ifsc-code" class="form-input" placeholder="e.g., HDFC0001234" required aria-required="true">
-                <button type="button" id="search-ifsc" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">Search IFSC</button>
+              <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-1">
+                <input type="text" id="ifsc-code" class="form-input text-sm" placeholder="e.g., HDFC0001234" required aria-required="true">
+                <button type="button" id="search-ifsc" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm w-full sm:w-auto">Search IFSC</button>
               </div>
             </div>
             <div>
               <label for="name" class="form-label block text-sm">Name</label>
-              <input type="text" id="name" class="form-input mt-1" placeholder="Enter first name" required aria-required="true">
+              <input type="text" id="name" class="form-input mt-1 text-sm" placeholder="Enter first name" required aria-required="true">
             </div>
             <div>
               <label for="surname" class="form-label block text-sm">Surname</label>
-              <input type="text" id="surname" class="form-input mt-1" placeholder="Enter surname" required aria-required="true">
+              <input type="text" id="surname" class="form-input mt-1 text-sm" placeholder="Enter surname" required aria-required="true">
             </div>
             <div>
               <label for="bank-name" class="form-label block text-sm">Bank Name</label>
-              <select id="bank-name" class="form-input mt-1" required aria-required="true">
+              <select id="bank-name" class="form-input mt-1 text-sm" required aria-required="true">
                 <option value="" disabled selected>Select a bank</option>
                 <option value="HDFC Bank">HDFC Bank</option>
                 <option value="ICICI Bank">ICICI Bank</option>
@@ -583,13 +585,13 @@
                 <option value="Axis Bank">Axis Bank</option>
               </select>
             </div>
-            <div id="bank-verification-error" class="error-text hidden" aria-live="polite"></div>
+            <div id="bank-verification-error" class="error-text hidden text-sm" aria-live="polite"></div>
             <div id="bank-verification-result" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
           </form>
-          <div class="flex justify-end space-x-2 mt-6">
-            <button id="bank-verification-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">Verify</button>
-            <button id="bank-manual-verification" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 hidden">Manual Verification</button>
-            <button id="close-bank-verification-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+          <div class="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 mt-6">
+            <button id="bank-verification-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm w-full sm:w-auto">Verify</button>
+            <button id="bank-manual-verification" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 hidden text-sm w-full sm:w-auto">Manual Verification</button>
+            <button id="close-bank-verification-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto">Close</button>
           </div>
         </div>
       </div>
@@ -600,24 +602,24 @@
           <form id="verify-form" class="space-y-4">
             <div>
               <label for="verify-customer-number" class="form-label block text-sm">Customer Number</label>
-              <input type="text" id="verify-customer-number" class="form-input mt-1" placeholder="Enter customer number" required aria-required="true">
+              <input type="text" id="verify-customer-number" class="form-input mt-1 text-sm" placeholder="Enter customer number" required aria-required="true">
             </div>
             <div>
               <label for="verify-type" class="form-label block text-sm">Verification Type</label>
-              <select id="verify-type" class="form-input mt-1" required aria-required="true">
+              <select id="verify-type" class="form-input mt-1 text-sm" required aria-required="true">
                 <option value="" disabled selected>Select verification type</option>
                 <option value="id">ID Verification</option>
                 <option value="death">Death Verification</option>
                 <option value="sanctions">Sanctions Check</option>
               </select>
             </div>
-            <div id="verify-error" class="error-text hidden" aria-live="polite"></div>
+            <div id="verify-error" class="error-text hidden text-sm" aria-live="polite"></div>
             <div id="verify-result" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
           </form>
-          <div class="flex justify-end space-x-2 mt-6">
-            <button id="verify-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Submit verification">Verify</button>
-            <button id="verify-manual" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 hidden" aria-label="Manual verification">Manual Verification</button>
-            <button id="close-verify-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+          <div class="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 mt-6">
+            <button id="verify-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm w-full sm:w-auto" aria-label="Submit verification">Verify</button>
+            <button id="verify-manual" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 hidden text-sm w-full sm:w-auto" aria-label="Manual verification">Manual Verification</button>
+            <button id="close-verify-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto" aria-label="Close modal">Close</button>
           </div>
         </div>
       </div>
@@ -625,14 +627,14 @@
       <div id="policy-details-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="policy-details-title" role="dialog" aria-modal="true">
         <div class="modal-content w-full max-w-md">
           <h3 id="policy-details-title" class="text-xl font-bold mb-4">Policy Details</h3>
-          <div id="policy-details-content" class="space-y-2 text-gray-600">
+          <div id="policy-details-content" class="space-y-2 text-gray-600 text-sm">
             <p><strong>Policy Number:</strong> <span id="policy-number"></span></p>
             <p><strong>Type:</strong> <span id="policy-type"></span></p>
             <p><strong>Premium:</strong> <span id="policy-premium"></span></p>
             <p><strong>Status:</strong> <span id="policy-status"></span></p>
           </div>
           <div class="flex justify-end mt-6">
-            <button id="close-policy-details-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+            <button id="close-policy-details-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto" aria-label="Close modal">Close</button>
           </div>
         </div>
       </div>
@@ -640,9 +642,9 @@
       <div id="verification-history-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="history-title" role="dialog" aria-modal="true">
         <div class="modal-content w-full max-w-lg">
           <h3 id="history-title" class="text-xl font-bold mb-4">Verification History</h3>
-          <div id="history-content" class="timeline"></div>
+          <div id="history-content" class="timeline text-sm"></div>
           <div class="flex justify-end mt-6">
-            <button id="close-verification-history-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+            <button id="close-verification-history-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto" aria-label="Close modal">Close</button>
           </div>
         </div>
       </div>
@@ -650,10 +652,10 @@
       <div id="bulk-verification-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="bulk-verification-title" role="dialog" aria-modal="true">
         <div class="modal-content w-full max-w-md">
           <h3 id="bulk-verification-title" class="text-xl font-bold mb-4">Bulk Verification</h3>
-          <div id="bulk-progress" class="text-gray-600 mb-4"></div>
+          <div id="bulk-progress" class="text-gray-600 mb-4 text-sm"></div>
           <div id="bulk-results" class="text-sm text-gray-600 space-y-2 max-h-60 overflow-y-auto" aria-live="polite"></div>
           <div class="flex justify-end mt-6">
-            <button id="close-bulk-verification-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+            <button id="close-bulk-verification-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto" aria-label="Close modal">Close</button>
           </div>
         </div>
       </div>
@@ -661,57 +663,10 @@
       <div id="notifications-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="notifications-title" role="dialog" aria-modal="true">
         <div class="modal-content w-full max-w-md">
           <h3 id="notifications-title" class="text-xl font-bold mb-4">Notifications</h3>
-          <div id="notifications-content" class="space-y-2 max-h-80 overflow-y-auto"></div>
-          <div class="flex justify-end space-x-2 mt-6">
-            <button id="clear-notifications" class="btn-neutral bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600" aria-label="Clear notifications">Clear All</button>
-            <button id="close-notifications-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="table-settings-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="settings-modal-title" role="dialog" aria-modal="true">
-        <div class="modal-content w-full max-w-md">
-          <h3 id="settings-modal-title" class="text-xl font-bold mb-4">Table Settings</h3>
-          <div id="settings-content" class="space-y-4">
-            <div class="flex flex-col space-y-2">
-              <label class="flex items-center">
-                <input type="checkbox" id="col-accountSelect" checked class="mr-2"> Select Row
-              </label>
-              <label class="flex items-center">
-                <input type="checkbox" id="col-accountNumber" checked class="mr-2"> Account Number
-              </label>
-              <label class="flex items-center">
-                <input type="checkbox" id="col-policyNumber" checked class="mr-2"> Policy Number
-              </label>
-              <label class="flex items-center">
-                <input type="checkbox" id="col-holderName" checked class="mr-2"> Holder Name
-              </label>
-              <label class="flex items-center">
-                <input type="checkbox" id="col-bankName" checked class="mr-2"> Bank Name
-              </label>
-              <label class="flex items-center">
-                <input type="checkbox" id="col-accountType" checked class="mr-2"> Account Type
-              </label>
-              <label class="flex items-center">
-                <input type="checkbox" id="col-status" checked class="mr-2"> Status
-              </label>
-              <label class="flex items-center">
-                <input type="checkbox" id="col-policyStatus" checked class="mr-2"> Policy Status
-              </label>
-              <label class="flex items-center">
-                <input type="checkbox" id="col-progress" checked class="mr-2"> Progress
-              </label>
-              <label class="flex items-center">
-                <input type="checkbox" id="col-notes" checked class="mr-2"> Notes
-              </label>
-              <label class="flex items-center">
-                <input type="checkbox" id="col-actions" checked class="mr-2"> Actions
-              </label>
-            </div>
-          </div>
-          <div class="flex justify-end space-x-2 mt-6">
-            <button id="save-table-settings" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Save table settings">Save</button>
-            <button id="close-table-settings-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+          <div id="notifications-content" class="space-y-2 max-h-80 overflow-y-auto text-sm"></div>
+          <div class="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 mt-6">
+            <button id="clear-notifications" class="btn-neutral bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 text-sm w-full sm:w-auto" aria-label="Clear notifications">Clear All</button>
+            <button id="close-notifications-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto" aria-label="Close modal">Close</button>
           </div>
         </div>
       </div>
@@ -722,12 +677,12 @@
           <form id="account-notes-form" class="space-y-4">
             <div>
               <label for="account-note" class="form-label block text-sm">Notes</label>
-              <textarea id="account-note" class="form-input mt-1 h-32" placeholder="Enter notes for this account" required aria-required="true"></textarea>
+              <textarea id="account-note" class="form-input mt-1 h-32 text-sm" placeholder="Enter notes for this account" required aria-required="true"></textarea>
             </div>
-            <div id="notes-error" class="error-text hidden" aria-live="polite"></div>
-            <div class="flex justify-end space-x-2 mt-6">
-              <button type="button" id="save-note" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Save note">Save Note</button>
-              <button type="button" id="close-account-notes-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+            <div id="notes-error" class="error-text hidden text-sm" aria-live="polite"></div>
+            <div class="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 mt-6">
+              <button type="button" id="save-note" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm w-full sm:w-auto" aria-label="Save note">Save Note</button>
+              <button type="button" id="close-account-notes-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto" aria-label="Close modal">Close</button>
             </div>
           </form>
         </div>
@@ -736,9 +691,9 @@
       <div id="activity-log-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="activity-log-title" role="dialog" aria-modal="true">
         <div class="modal-content w-full max-w-lg">
           <h3 id="activity-log-title" class="text-xl font-bold mb-4">Activity Log</h3>
-          <div id="activity-log-content" class="space-y-2 max-h-80 overflow-y-auto"></div>
+          <div id="activity-log-content" class="space-y-2 max-h-80 overflow-y-auto text-sm"></div>
           <div class="flex justify-end mt-6">
-            <button id="close-activity-log-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+            <button id="close-activity-log-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto" aria-label="Close modal">Close</button>
           </div>
         </div>
       </div>
@@ -747,7 +702,7 @@
           <h3 id="widget-stats-title" class="text-xl font-bold mb-4">Account Statistics</h3>
           <canvas id="stats-chart" class="mb-4"></canvas>
           <div class="flex justify-end mt-6">
-            <button id="close-widget-stats-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+            <button id="close-widget-stats-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto" aria-label="Close modal">Close</button>
           </div>
         </div>
       </div>
@@ -758,27 +713,27 @@
           <form id="policy-payments-form" class="space-y-4">
             <div>
               <label for="payment-policy-number" class="form-label block text-sm">Policy Number</label>
-              <input type="text" id="payment-policy-number" class="form-input mt-1" placeholder="Enter policy number" required aria-required="true">
+              <input type="text" id="payment-policy-number" class="form-input mt-1 text-sm" placeholder="Enter policy number" required aria-required="true">
             </div>
             <div>
               <label for="payment-amount" class="form-label block text-sm">Payment Amount</label>
-              <input type="number" id="payment-amount" class="form-input mt-1" placeholder="Enter amount" required aria-required="true">
+              <input type="number" id="payment-amount" class="form-input mt-1 text-sm" placeholder="Enter amount" required aria-required="true">
             </div>
             <div>
               <label for="payment-method" class="form-label block text-sm">Payment Method</label>
-              <select id="payment-method" class="form-input mt-1" required aria-required="true">
+              <select id="payment-method" class="form-input mt-1 text-sm" required aria-required="true">
                 <option value="" disabled selected>Select payment method</option>
                 <option value="CHEQUE">Cheque</option>
                 <option value="ONLINE">Online</option>
                 <option value="WIRE">Wire Transfer</option>
               </select>
             </div>
-            <div id="policy-payments-error" class="error-text hidden" aria-live="polite"></div>
+            <div id="policy-payments-error" class="error-text hidden text-sm" aria-live="polite"></div>
             <div id="policy-payments-result" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
           </form>
-          <div class="flex justify-end space-x-2 mt-6">
-            <button id="policy-payments-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Submit payment">Submit Payment</button>
-            <button id="close-policy-payments-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+          <div class="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 mt-6">
+            <button id="policy-payments-submit" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm w-full sm:w-auto" aria-label="Submit payment">Submit Payment</button>
+            <button id="close-policy-payments-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto" aria-label="Close modal">Close</button>
           </div>
         </div>
       </div>
@@ -789,43 +744,43 @@
           <form id="upload-doc-form" class="space-y-4">
             <div>
               <label for="upload-account-no" class="form-label block text-sm required">Account Number</label>
-              <input type="text" id="upload-account-no" class="form-input mt-1" placeholder="Enter account number" required aria-required="true">
-              <button type="button" id="fetch-bank-details" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 mt-2">Fetch Details</button>
+              <input type="text" id="upload-account-no" class="form-input mt-1 text-sm" placeholder="Enter account number" required aria-required="true">
+              <button type="button" id="fetch-bank-details" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 mt-2 text-sm w-full sm:w-auto">Fetch Details</button>
             </div>
             <div id="upload-bank-details" class="hidden space-y-4">
               <h4 class="text-lg font-semibold">Bank Details</h4>
               <div>
                 <label for="upload-fetched-account-number" class="form-label block text-sm">Account Number</label>
-                <input type="text" id="upload-fetched-account-number" class="form-input mt-1" readonly>
+                <input type="text" id="upload-fetched-account-number" class="form-input mt-1 text-sm" readonly>
               </div>
               <div>
                 <label for="upload-ifsc-code" class="form-label block text-sm">IFSC Code</label>
-                <input type="text" id="upload-ifsc-code" class="form-input mt-1" readonly>
+                <input type="text" id="upload-ifsc-code" class="form-input mt-1 text-sm" readonly>
               </div>
               <div>
                 <label for="upload-bank-name" class="form-label block text-sm">Bank Name</label>
-                <input type="text" id="upload-bank-name" class="form-input mt-1" readonly>
+                <input type="text" id="upload-bank-name" class="form-input mt-1 text-sm" readonly>
               </div>
               <div>
                 <label for="upload-account-type" class="form-label block text-sm">Account Type</label>
-                <input type="text" id="upload-account-type" class="form-input mt-1" readonly>
+                <input type="text" id="upload-account-type" class="form-input mt-1 text-sm" readonly>
               </div>
               <div>
                 <label for="upload-customer-number" class="form-label block text-sm required">Customer Number</label>
-                <input type="text" id="upload-customer-number" class="form-input mt-1" required aria-required="true">
+                <input type="text" id="upload-customer-number" class="form-input mt-1 text-sm" required aria-required="true">
               </div>
               <div>
                 <label for="upload-holder-name" class="form-label block text-sm">Holder Name</label>
-                <input type="text" id="upload-holder-name" class="form-input mt-1" readonly>
+                <input type="text" id="upload-holder-name" class="form-input mt-1 text-sm" readonly>
               </div>
               <div>
                 <label for="upload-policy-number" class="form-label block text-sm required">Policy Number</label>
-                <input type="text" id="upload-policy-number" class="form-input mt-1" required aria-required="true">
+                <input type="text" id="upload-policy-number" class="form-input mt-1 text-sm" required aria-required="true">
               </div>
             </div>
             <div>
               <label for="upload-action" class="form-label block text-sm required">Action</label>
-              <select id="upload-action" class="form-input mt-1" required aria-required="true">
+              <select id="upload-action" class="form-input mt-1 text-sm" required aria-required="true">
                 <option value="" disabled selected>Select Action</option>
                 <option value="ID">ID</option>
                 <option value="SANCTIONS">SANCTIONS</option>
@@ -834,7 +789,7 @@
             </div>
             <div>
               <label for="upload-status" class="form-label block text-sm required">Status</label>
-              <select id="upload-status" class="form-input mt-1" required aria-required="true">
+              <select id="upload-status" class="form-input mt-1 text-sm" required aria-required="true">
                 <option value="" disabled selected>Select Status</option>
                 <option value="PENDING">PENDING</option>
                 <option value="PASS">PASS</option>
@@ -844,20 +799,20 @@
             </div>
             <div>
               <label for="upload-user-code" class="form-label block text-sm required">User Code</label>
-              <input type="text" id="upload-user-code" class="form-input mt-1" placeholder="Enter user code" required aria-required="true">
+              <input type="text" id="upload-user-code" class="form-input mt-1 text-sm" placeholder="Enter user code" required aria-required="true">
             </div>
             <div>
               <label for="upload-details" class="form-label block text-sm">Details</label>
-              <input type="text" id="upload-details" class="form-input mt-1" placeholder="Enter details (optional)">
+              <input type="text" id="upload-details" class="form-input mt-1 text-sm" placeholder="Enter details (optional)">
             </div>
             <div>
               <label for="upload-document" class="form-label block text-sm required">Document</label>
-              <input type="file" id="upload-document" class="form-input mt-1" accept=".pdf,.png,.jpg" required aria-required="true">
+              <input type="file" id="upload-document" class="form-input mt-1 text-sm" accept=".pdf,.png,.jpg" required aria-required="true">
             </div>
-            <div id="upload-error" class="error-text hidden" aria-live="polite"></div>
-            <div class="flex justify-end space-x-2 mt-6">
-              <button type="submit" id="upload-submit" class="btn-neutral bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600">Submit</button>
-              <button type="button" id="close-upload-doc-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+            <div id="upload-error" class="error-text hidden text-sm" aria-live="polite"></div>
+            <div class="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 mt-6">
+              <button type="submit" id="upload-submit" class="btn-neutral bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 text-sm w-full sm:w-auto">Submit</button>
+              <button type="button" id="close-upload-doc-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto">Close</button>
             </div>
           </form>
         </div>
@@ -869,27 +824,27 @@
           <div class="tabs mb-6 border-b border-gray-200">
             <ul class="flex" role="tablist">
               <li class="tab-item">
-                <button id="tab-single" class="tab-link bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-t-lg hover:bg-gray-200 active" role="tab" aria-controls="panel-single" aria-selected="true">Fetch Single Document</button>
+                <button id="tab-single" class="tab-link bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-t-lg hover:bg-gray-200 active text-sm" role="tab" aria-controls="panel-single" aria-selected="true">Fetch Single Document</button>
               </li>
               <li class="tab-item">
-                <button id="tab-all" class="tab-link bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-t-lg hover:bg-gray-200" role="tab" aria-controls="panel-all" aria-selected="false">Fetch All Documents</button>
+                <button id="tab-all" class="tab-link bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-t-lg hover:bg-gray-200 text-sm" role="tab" aria-controls="panel-all" aria-selected="false">Fetch All Documents</button>
               </li>
             </ul>
             <div class="tab-content mt-4">
               <div id="panel-single" class="tab-panel" role="tabpanel" aria-labelledby="tab-single">
                 <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                  <input type="text" id="account-no-input" class="form-input w-full sm:w-64 border-gray-300 rounded-lg p-2" placeholder="Enter account number" aria-label="Account number">
-                  <button id="fetch-single-document" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600" aria-label="Fetch single document">Fetch</button>
+                  <input type="text" id="account-no-input" class="form-input w-full sm:w-64 border-gray-300 rounded-lg p-2 text-sm" placeholder="Enter account number" aria-label="Account number">
+                  <button id="fetch-single-document" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 text-sm w-full sm:w-auto" aria-label="Fetch single document">Fetch</button>
                 </div>
               </div>
               <div id="panel-all" class="tab-panel hidden" role="tabpanel" aria-labelledby="tab-all">
                 <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                  <button id="fetch-all-documents" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600" aria-label="Fetch all documents">Fetch All Documents</button>
+                  <button id="fetch-all-documents" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 text-sm w-full sm:w-auto" aria-label="Fetch all documents">Fetch All Documents</button>
                 </div>
               </div>
             </div>
           </div>
-          <div id="all-documents-error" class="error-text hidden text-red-600 mb-4" aria-live="polite"></div>
+          <div id="all-documents-error" class="error-text hidden text-red-600 mb-4 text-sm" aria-live="polite"></div>
           <div id="all-documents-loader" class="spinner hidden mx-auto mb-4"></div>
           <div class="table-container">
             <table class="w-full text-left text-gray-700 text-sm border-collapse" aria-label="Documents table">
@@ -913,13 +868,13 @@
           <div id="document-viewer" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-1000" role="dialog" aria-labelledby="document-viewer-title" aria-modal="true">
             <div class="bg-white p-6 rounded-lg max-w-4xl max-h-[90vh] overflow-auto relative">
               <h4 id="document-viewer-title" class="sr-only">Document Viewer</h4>
-              <button id="close-document-viewer-top" class="btn-neutral bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600" aria-label="Close document viewer">×</button>
+              <button id="close-document-viewer-top" class="btn-neutral bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 text-sm" aria-label="Close document viewer">×</button>
               <div id="document-content" class="mb-4"></div>
-              <button id="close-document-viewer" class="btn-neutral bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600" aria-label="Close document viewer">Close</button>
+              <button id="close-document-viewer" class="btn-neutral bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 text-sm w-full" aria-label="Close document viewer">Close</button>
             </div>
           </div>
           <div class="flex justify-end mt-6">
-            <button id="close-all-documents-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300" aria-label="Close modal">Close</button>
+            <button id="close-all-documents-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto" aria-label="Close modal">Close</button>
           </div>
         </div>
       </div>
@@ -930,11 +885,11 @@
           <form id="verify-document-form" class="space-y-4">
             <div>
               <label for="verify-id" class="form-label block text-sm required">Verification ID</label>
-              <input type="number" id="verify-id" class="form-input mt-1" placeholder="Enter verification ID" required aria-required="true">
+              <input type="number" id="verify-id" class="form-input mt-1 text-sm" placeholder="Enter verification ID" required aria-required="true">
             </div>
             <div>
               <label for="verify-action" class="form-label block text-sm required">Action</label>
-              <select id="verify-action" class="form-input mt-1" required aria-required="true">
+              <select id="verify-action" class="form-input mt-1 text-sm" required aria-required="true">
                 <option value="" disabled selected>Select Action</option>
                 <option value="ID">ID</option>
                 <option value="SANCTIONS">SANCTIONS</option>
@@ -943,10 +898,10 @@
             </div>
             <div>
               <label for="verify-user-code" class="form-label block text-sm required">User Code</label>
-              <input type="text" id="verify-user-code" class="form-input mt-1" placeholder="Enter user code" required aria-required="true">
+              <input type="text" id="verify-user-code" class="form-input mt-1 text-sm" placeholder="Enter user code" required aria-required="true">
             </div>
             <div>
-              <button type="button" id="fetch-document" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600">Fetch Document</button>
+              <button type="button" id="fetch-document" class="btn-neutral bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 text-sm w-full sm:w-auto">Fetch Document</button>
             </div>
             <div id="document-display" class="hidden space-y-4">
               <h4 class="text-lg font-semibold">Document</h4>
@@ -954,17 +909,17 @@
               <div id="document-container" class="border border-gray-300 rounded-lg overflow-hidden"></div>
               <div>
                 <label for="verify-response-status" class="form-label block text-sm required">Response Status</label>
-                <select id="verify-response-status" class="form-input mt-1" required aria-required="true">
+                <select id="verify-response-status" class="form-input mt-1 text-sm" required aria-required="true">
                   <option value="" disabled selected>Select Status</option>
                   <option value="PASS">PASS</option>
                   <option value="REJECT">REJECT</option>
                 </select>
               </div>
-              <button type="button" id="save-status" class="btn-neutral bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600">Save</button>
+              <button type="button" id="save-status" class="btn-neutral bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600 text-sm w-full sm:w-auto">Save</button>
             </div>
-            <div id="verify-document-error" class="error-text hidden" aria-live="polite"></div>
+            <div id="verify-document-error" class="error-text hidden text-sm" aria-live="polite"></div>
             <div class="flex justify-end space-x-2 mt-6">
-              <button type="button" id="close-verify-document-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+              <button type="button" id="close-verify-document-modal" class="btn-neutral bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm w-full sm:w-auto">Close</button>
             </div>
           </form>
         </div>
@@ -973,6 +928,8 @@
       <div id="loader" class="loader">
         <div class="spinner"></div>
       </div>
+    </main>
+
     <script>
     const config = {
     		  loginUrl: 'login',
@@ -1106,7 +1063,6 @@
     		    'verification-history': document.getElementById('verification-history-modal'),
     		    'bulk-verification': document.getElementById('bulk-verification-modal'),
     		    'notifications': document.getElementById('notifications-modal'),
-    		    'table-settings': document.getElementById('table-settings-modal'),
     		    'account-notes': document.getElementById('account-notes-modal'),
     		    'activity-log': document.getElementById('activity-log-modal'),
     		    'widget-stats': document.getElementById('widget-stats-modal'),
@@ -1785,7 +1741,7 @@ function validateAddBankAccountForm() {
   const bankName = document.getElementById('add-bank-name').value;
   const accountType = document.getElementById('add-account-type').value;
   const accountHolderType = document.getElementById('add-account-holder-type').value;
-  const paymentMethod = document.getElementById('add-payment-method-status').value;
+  const paymentMethodStatus = document.getElementById('add-payment-method-status').value;
   const errorDiv = document.getElementById('add-bank-account-error');
 
   errorDiv.textContent = '';
@@ -1803,7 +1759,7 @@ function validateAddBankAccountForm() {
     'Bank Name': bankName,
     'Account Type': accountType,
     'Account Holder Type': accountHolderType,
-    'Payment Method': paymentMethod
+    'Payment Method': paymentMethodStatus
   };
 
   for (const [field, value] of Object.entries(requiredFields)) {
@@ -1832,7 +1788,7 @@ function validateAddBankAccountForm() {
     bankName,
     accountType,
     accountHolderType,
-    paymentMethod,
+    paymentMethodStatus,
     swiftCode: document.getElementById('add-swift-code').value.trim() || null,
     branchCode: document.getElementById('add-branch-code').value.trim() || null
   };
@@ -1841,13 +1797,13 @@ function validateAddBankAccountForm() {
 function validatePolicyPaymentForm() {
   const policyNumber = document.getElementById('payment-policy-number').value.trim();
   const amount = document.getElementById('payment-amount').value.trim();
-  const paymentMethod = document.getElementById('payment-method').value;
+  const paymentMethodStatus = document.getElementById('payment-method').value;
   const errorDiv = document.getElementById('policy-payments-error');
 
   errorDiv.textContent = '';
   errorDiv.classList.add('hidden');
 
-  if (!policyNumber || !amount || !paymentMethod) {
+  if (!policyNumber || !amount || !paymentMethodStatus) {
     errorDiv.textContent = 'All fields are required for payment processing.';
     errorDiv.classList.remove('hidden');
     return null;
@@ -1859,7 +1815,7 @@ function validatePolicyPaymentForm() {
     return null;
   }
 
-  return { policyNumber, amount: parseFloat(amount), paymentMethod };
+  return { policyNumber, amount: parseFloat(amount), paymentMethodStatus };
 }
 
 function renderStatsChart(filter, canvas) {
@@ -2767,8 +2723,6 @@ function initializeEventListeners() {
       openModal('bulk-verification', { accounts: selected });
     }
   });
-
-  document.getElementById('table-settings').addEventListener('click', () => openModal('table-settings'));
   document.getElementById('export-csv').addEventListener('click', exportTableToCSV);
   document.getElementById('export-pdf').addEventListener('click', exportTableToPDF);
 
@@ -2788,20 +2742,6 @@ function initializeEventListeners() {
       logActivity(`Navigated to page ${currentPage}`);
     }
   });
-
-  document.getElementById('save-table-settings').addEventListener('click', () => {
-    Object.keys(visibleColumns).forEach(col => {
-      const checkbox = document.getElementById(`col-${col}`);
-      if (checkbox) visibleColumns[col] = checkbox.checked;
-    });
-    updateTable();
-    closeModal('table-settings');
-    showToast('Table settings saved', 'success');
-    logActivity('Updated table settings');
-  });
-
-  document.getElementById('close-table-settings-modal').addEventListener('click', () => closeModal('table-settings'));
-
 //Bank Verification Submit
   document.getElementById('bank-verification-submit').addEventListener('click', async () => {
     const data = validateBankForm();

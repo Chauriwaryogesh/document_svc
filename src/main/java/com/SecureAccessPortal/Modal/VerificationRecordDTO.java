@@ -14,7 +14,10 @@ public class VerificationRecordDTO {
 	private String details;
 	private String status;
 	private String userCode;
-	private LocalDateTime createdBy;
+	private String createdBy;
+	private LocalDateTime createdTime;
+	private  String updatedBy;
+	private LocalDateTime updatedTime;
 	private String deathCertNo;
 	private String deathStatus;
 	private byte[] deathCertificate;
@@ -125,13 +128,36 @@ public class VerificationRecordDTO {
 	public String getCustomerNo() {
 		return customerNo;
 	}
-
-	public LocalDateTime getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(LocalDateTime createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
+	}
+
+	public LocalDateTime getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(LocalDateTime createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+
+	public LocalDateTime getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(LocalDateTime updatedTime) {
+		this.updatedTime = updatedTime;
 	}
 
 	public String getDeathStatus() {

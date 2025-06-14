@@ -13,5 +13,7 @@ public class CommonConstant {
 	public static final String POLICY_CREATED = "Policy Created";
 	public static final String SUCCESS = "Success";
 	public static final String FAILURE = "Failure";
+	public static final String VERIFICATION_RECORD = "VERIFICATION_RECORD";
+	public static final String BANK_ACC_CREATED = "BANK_ACC_CREATED";
 
 }

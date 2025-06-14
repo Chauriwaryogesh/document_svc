@@ -30,6 +30,9 @@ public class BankMapper {
 			dto.setSanctionsCertNo(record.getSanctions());
 			dto.setSanctionsCertificate(record.getSanctionsDocs());
 			dto.setCreatedBy(record.getCreatedBy());
+			dto.setUpdatedBy(record.getUpdatedBy());
+			dto.setUpdatedTime(record.getUpdatedTime());
+			dto.setCreatedTime(record.getCreatedTime());
 			return dto;	
 		}).collect(Collectors.toList());
 		

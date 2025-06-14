@@ -2,17 +2,23 @@ package com.SecureAccessPortal.Service;
 
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.management.RuntimeErrorException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Policy;
@@ -21,6 +27,7 @@ import com.SecureAccessPortal.Exception.ResourceNotFoundException;
 import com.SecureAccessPortal.Modal.BankDetailsDTO;
 import com.SecureAccessPortal.Modal.PolicyRequest;
 import com.SecureAccessPortal.Modal.VerificationRecordDTO;
+import com.SecureAccessPortal.Modal.WorkItemDTO;
 import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.IPolicyRepo;
@@ -29,6 +36,8 @@ import com.SecureAccessPortal.Transformer.BankMapper;
 
 @Service
 public class BankDetailsService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(PolicyService.class);
 
     private final BankAccountRepo bankAccountRepository;
     
@@ -41,7 +50,9 @@ public class BankDetailsService {
     @Autowired
     private IPolicyRepo policyRepo;
     
-    
+    @Autowired
+	private IWorkItemService workItemService;
+     
     @Autowired
     private VerificationRecordRepo verificationRecordRepository;
 
@@ -115,10 +126,7 @@ public class BankDetailsService {
 				Customer customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber());
 				dto.setCustomer(customer);
 			}
-			if (bankAccount.getPolicyNumber() != null) {
-				Policy policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber());
-				dto.setPolicy(policy);
-			}
+			
 			dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
 			dto.setCreatedBy(bankAccount.getCreatedBy());
 			dto.setCreatedDate(bankAccount.getCreatedDate());
@@ -132,8 +140,36 @@ public class BankDetailsService {
 			dto.setAccountBalance(bankAccount.getAccountBalance());
 			dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
 			dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
-
+			if (bankAccount.getPolicyNumber() != null) {
+				Policy policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber());
+				dto.setPolicy(policy);
+			
+			//create workitem
+			WorkItemDTO workItemRequest = new WorkItemDTO();
+			workItemRequest.setComment("Bank Account is created " + dto.getCustomer().getName() + " "
+					+ dto.getCustomer().getSurname() + "for the customer");
+			workItemRequest.setCreatedBy(userCode);
+			workItemRequest.setuserCode(userCode);
+			workItemRequest.setWorkItemName(CommonConstant.BANK_ACC_CREATED);
+			workItemRequest.setCreatedTime(String.valueOf(LocalDateTime.now()));
+			workItemRequest.setWorkType(CommonConstant.BANK_ACC_CREATED);
+			workItemRequest.setStatus(CommonConstant.OPEN);
+			workItemRequest.setQueue(CommonConstant.TEAM_MEMBER);
+			WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userCode);
+			if (workItem != null) {
+				dto.setWorkItemRefNo(workItem.getWorkItemReferenceNumber());
+				logger.info("WorkItemcreated succesfully");
+				if (workItem != null) {
+					policy.setWorkItemRefNo(workItem.getWorkItemReferenceNumber());
+					logger.info("WorkItemcreated succesfully");
+					policyRepo.save(policy);
+				}
+			} else {
+				new RuntimeErrorException(null, "Error while creating WorkItem");
+			}
+			}
 			BankAccount save = bankAccountRepository.save(dto);
+			
 			message = "Bank details saved for customer " + save.getCustomer().getName() + " "
 					+ save.getCustomer().getSurname() + " " + save.getPolicy().getCustomerNo();
 		} catch (Exception e) {
@@ -223,7 +259,25 @@ public class BankDetailsService {
 			throw new IllegalArgumentException("Invalid action type");
 		}
 
-// Save and map to DTO
+		//create workitem
+		WorkItemDTO workItemRequest = new WorkItemDTO();
+		workItemRequest.setComment("Verification Record Created for "+action+" Account is created "+ customerNo + "for the customer");
+		workItemRequest.setCreatedBy(userCode);
+		workItemRequest.setuserCode(userCode);
+		workItemRequest.setWorkItemName(CommonConstant.VERIFICATION_RECORD);
+		workItemRequest.setCreatedTime(String.valueOf(LocalDateTime.now()));
+		workItemRequest.setWorkType(CommonConstant.VERIFICATION_RECORD);
+		workItemRequest.setStatus(CommonConstant.OPEN);
+		workItemRequest.setQueue(CommonConstant.TEAM_MEMBER);
+		WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userCode);
+		if (workItem != null) {
+			verificationRecord.setWorkItemRefNo(workItem.getWorkItemReferenceNumber());
+			logger.info("WorkItemcreated succesfully");
+
+		} else {
+			new RuntimeErrorException(null, "Error while creating WorkItem");
+		}
+		
 		verificationRecord = verificationRecordRepository.save(verificationRecord);
 		return mapToDTO(verificationRecord, action);
 	}
@@ -325,6 +379,9 @@ public class BankDetailsService {
 			break;
 		}
 		dto.setCreatedBy(record.getCreatedBy());
+		dto.setUpdatedBy(record.getUpdatedBy());
+		dto.setUpdatedTime(record.getUpdatedTime());
+		dto.setCreatedTime(record.getCreatedTime());
 		return dto;
 	}
 
@@ -352,7 +409,29 @@ public class BankDetailsService {
 				verificationRecord.setSancStatus(verificationRecordDTO.getStatus());
 			}
 			verificationRecordRepository.save(verificationRecord);
+			//create workitem
+			WorkItemDTO workItemRequest = new WorkItemDTO();
+			workItemRequest.setComment("Verification for "+ verificationRecordDTO.getAction() + verificationRecordDTO.getStatus() + " for the customer"
+					
+					+ verificationRecord.getCustomerNo() + "for the customer");
+			workItemRequest.setCreatedBy(verificationRecord.getCreatedBy());
+			workItemRequest.setuserCode(verificationRecord.getCreatedBy());
+			workItemRequest.setWorkItemName(CommonConstant.POLICY_CREATED);
+			workItemRequest.setCreatedTime(String.valueOf(LocalDateTime.now()));
+			workItemRequest.setWorkType(CommonConstant.ADD_POL);
+			workItemRequest.setStatus(CommonConstant.OPEN);
+			workItemRequest.setQueue(CommonConstant.TEAM_MEMBER);
+			WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, verificationRecord.getCreatedBy());
+			if (workItem != null) {
+				verificationRecord.setWorkItemRefNo(workItem.getWorkItemReferenceNumber());
+				logger.info("WorkItemcreated succesfully");
+
+			} else {
+				new RuntimeErrorException(null, "Error while creating WorkItem");
+			}
 			message = "Success";
+			// workitem create:
+			
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
