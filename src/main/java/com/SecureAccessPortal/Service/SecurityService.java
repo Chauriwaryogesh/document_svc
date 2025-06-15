@@ -6,12 +6,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
@@ -20,6 +22,7 @@ import com.SecureAccessPortal.Entity.Employees;
 import com.SecureAccessPortal.Entity.PersonSequence;
 import com.SecureAccessPortal.Entity.Security;
 import com.SecureAccessPortal.Exception.BadRequestException;
+import com.SecureAccessPortal.Exception.DuplicateEntryException;
 import com.SecureAccessPortal.Modal.EmpRequestforUpdate;
 import com.SecureAccessPortal.Modal.EmployeeDTO;
 import com.SecureAccessPortal.Modal.SecurityDTO;
@@ -30,6 +33,7 @@ import com.SecureAccessPortal.Repo.ISecurityRepo;
 import com.SecureAccessPortal.Repo.PersonSequenceRepository;
 import com.SecureAccessPortal.Transformer.IEmployeeMapper;
 import com.SecureAccessPortal.Transformer.SecurityMapper;
+import com.SecureAccessPortal.util.DateUtil;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -61,6 +65,9 @@ public class SecurityService implements ISecrityService {
 	
 	@Autowired
 	private CustomerRepo customerRepo;
+	
+	@Autowired
+	private DateUtil dateUtil;
 
 	@Override
 	public List<EmployeeDTO> fetchEmpList(String id, String userCode) {
@@ -273,134 +280,203 @@ public class SecurityService implements ISecrityService {
 		}
 		return allUsers;
 	}
-
 	@Override
-	public SecurityDTO createUser(SecurityDTO securityDTO, String userCode) {
-		Security security = securityRepo.findByEmail(securityDTO.getEmail(), "N");
-		if (security != null) {
-			if (securityDTO.getEmail().equalsIgnoreCase(security.getEmail())) {
-				security.setUserCode(securityDTO.getUserCode());
-				security.setUserName(securityDTO.getUserName());
-				security.setUpdateBy(securityDTO.getUserCode());
-				security.setIsEmailVerified(securityDTO.getIsEmailVerified());
-				security.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
-				security.setUpdateTime(String.valueOf(LocalDate.now()));
-				if (securityDTO.getCredentialId() != null) {
-	                security.setCredentialId(securityDTO.getCredentialId());
-	                security.setPublicKey(securityDTO.getPublicKey());
-	                security.setUserHandle(securityDTO.getUserHandle());
-	                security.setSignatureCounter(securityDTO.getSignatureCounter());
-	            }
-				if (securityDTO.getRemainingTime() != null) {
-					security.setEndTime(securityDTO.getRemainingTime());
-				} else {
-					LocalDate updateTime = LocalDate.now();
-					// Subtract 5 days from updateTime
-					LocalDate newDate = updateTime.plusDays(5);
-					security.setEndTime(newDate.toString());
-					
-				}
-				securityRepo.save(security);
+    @Transactional
+    public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> createUser(SecurityDTO securityDTO, String userCode) {
+		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> response= new com.SecureAccessPortal.Service.ResponseEntity<>();
+		 List<String> errors = new ArrayList<>();
 
-			}
-		} else {
-			Security securityEntity = new Security();
-			securityEntity.setEmail(securityDTO.getEmail());
-			if (securityDTO.getIsEmailVerified() == null) {
-				securityEntity.setIsEmailVerified("N");
-			} else {
-				securityEntity.setIsEmailVerified(securityDTO.getIsEmailVerified());
-			}
-			if (securityDTO.getIsUserCodeVerified() == null) {
-				securityEntity.setIsUserCodeVerified("N");
-
-			} else {
-				securityEntity.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
-
-			}
-			securityEntity.setDeletedFlag("N");
-			securityEntity.setUserCode(securityDTO.getUserCode());
-			securityEntity.setUserName(securityDTO.getUserName());
-			securityEntity.setUpdateBy(securityDTO.getUserCode());
-			securityEntity.setUpdateTime(String.valueOf(LocalDate.now()));
-			
-			// Set WebAuthn credentials if provided
-	        if (securityDTO.getCredentialId() != null) {
-	            securityEntity.setCredentialId(securityDTO.getCredentialId());
-	            securityEntity.setPublicKey(securityDTO.getPublicKey());
-	            securityEntity.setUserHandle(securityDTO.getUserHandle());
-	            securityEntity.setSignatureCounter(securityDTO.getSignatureCounter());
+	        // Validate input
+	        if (securityDTO.getEmail() == null || securityDTO.getEmail().trim().isEmpty()) {
+	            errors.add("Email is required");
 	        }
-	        if (securityDTO.getRemainingTime() != null) {
-				securityEntity.setEndTime(securityDTO.getRemainingTime());
-			} else {
-				LocalDate updateTime = LocalDate.now();
-				// Subtract 5 days from updateTime
-				LocalDate newDate = updateTime.plusDays(5);
-				securityEntity.setEndTime(newDate.toString());
-			}
-	     // add entry of user in Customer table
-	        Customer	custDTO = new Customer();
-			custDTO.setCustomerNo(generateCustomerNumber());
-			custDTO.setEmail(securityDTO.getEmail());
-			custDTO.setUserCode(userCode);
-			customerRepo.save(custDTO);
-			String message = "Success, person " + custDTO.getCustomerNo() + " created/updated successfully";
-			securityRepo.save(securityEntity);
-		}
-		return securityDTO;
-	}
+	        if (securityDTO.getUserCode() == null || securityDTO.getUserCode().trim().isEmpty()) {
+	            errors.add("UserCode is required");
+	        }
+	        if (!errors.isEmpty()) {
+	        	response.setErrorMessage(String.join("; ", errors));
+	            return response;
+	        }
+	        // Check for existing Security and Customer records
+	        Optional<Security> existingSecurityByEmail = securityRepo.findByEmailAndDeletedFlag(securityDTO.getEmail(), "N");
+	        Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail());
+	        Optional<Security> existingSecurityByUserCode = securityRepo.findByUserCodeAndDeletedFlag(securityDTO.getUserCode(), "N");
+	        Optional<Customer> existingCustomerByUserCode = customerRepo.findByUserCode(securityDTO.getUserCode());
+
+	        Security securityEntity;
+	        Customer customer = null;
+	        if (existingSecurityByEmail.isPresent()) {
+	            // Update existing Security record
+	            securityEntity = existingSecurityByEmail.get();
+	            // Verify userCode matches to prevent updating another user's record
+	            if (!securityEntity.getUserCode().equals(securityDTO.getUserCode())) {
+	                response.setErrorMessage("Email '" + securityDTO.getEmail() + "' is associated with a different userCode");
+	                return response;
+	            }
+	            // Update fields
+	            securityEntity.setUserName(securityDTO.getUserName());
+	            securityEntity.setIsEmailVerified(securityDTO.getIsEmailVerified() != null ? securityDTO.getIsEmailVerified() : securityEntity.getIsEmailVerified());
+	            securityEntity.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified() != null ? securityDTO.getIsUserCodeVerified() : securityEntity.getIsUserCodeVerified());
+	            securityEntity.setUpdateBy(userCode);
+	            securityEntity.setUpdateTime(LocalDate.now());
+
+	            if (securityDTO.getRemainingTime() != null) {
+	                LocalDate remainTime = dateUtil.stringToLocalDateConvert(securityDTO.getRemainingTime());
+	                securityEntity.setEndTime(remainTime.plusDays(5));
+	            }
+
+	            // Update WebAuthn credentials if provided
+	            if (securityDTO.getCredentialId() != null) {
+	                securityEntity.setCredentialId(securityDTO.getCredentialId());
+	                securityEntity.setPublicKey(securityDTO.getPublicKey());
+	                securityEntity.setUserHandle(securityDTO.getUserHandle());
+	                securityEntity.setSignatureCounter(securityDTO.getSignatureCounter());
+	            }
+
+	            // No changes to Customer record
+	        } else if (existingCustomerByEmail.isPresent() || existingSecurityByUserCode.isPresent() || existingCustomerByUserCode.isPresent()) {
+	            // Duplicate exists for email or userCode in Customer or different Security record
+	            if (existingCustomerByEmail.isPresent()) {
+	                response.setErrorMessage("Email '" + securityDTO.getEmail() + "' already exists in Customer table");
+	            } else if (existingSecurityByUserCode.isPresent()) {
+	                response.setErrorMessage("UserCode '" + securityDTO.getUserCode() + "' already exists in Security table");
+	            } else {
+	                response.setErrorMessage("UserCode '" + securityDTO.getUserCode() + "' already exists in Customer table");
+	            }
+	            return response;
+	        } else {
+	            // Create new Security and Customer records
+	            securityEntity = new Security();
+	            securityEntity.setEmail(securityDTO.getEmail());
+	            securityEntity.setUserCode(securityDTO.getUserCode());
+	            securityEntity.setUserName(securityDTO.getUserName());
+	            securityEntity.setIsEmailVerified(securityDTO.getIsEmailVerified() != null ? securityDTO.getIsEmailVerified() : "N");
+	            securityEntity.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified() != null ? securityDTO.getIsUserCodeVerified() : "N");
+	            securityEntity.setDeletedFlag("N");
+	            securityEntity.setUpdateBy(userCode);
+	            securityEntity.setUpdateTime(LocalDate.now());
+
+	            if (securityDTO.getRemainingTime() != null) {
+	                LocalDate remainTime = dateUtil.stringToLocalDateConvert(securityDTO.getRemainingTime());
+	                securityEntity.setEndTime(remainTime.plusDays(5));
+	            } else {
+	                securityEntity.setEndTime(LocalDate.now().plusDays(5));
+	            }
+
+	            // Set WebAuthn credentials if provided
+	            if (securityDTO.getCredentialId() != null) {
+	                securityEntity.setCredentialId(securityDTO.getCredentialId());
+	                securityEntity.setPublicKey(securityDTO.getPublicKey());
+	                securityEntity.setUserHandle(securityDTO.getUserHandle());
+	                securityEntity.setSignatureCounter(securityDTO.getSignatureCounter());
+	            }
+
+	            // Create corresponding Customer record
+	            customer = new Customer();
+	            String customerNo = generateCustomerNumber();
+	            customer.setCustomerNo(customerNo);
+	            customer.setEmail(securityDTO.getEmail());
+	            customer.setUserCode(securityDTO.getUserCode());
+	            customer.setCreatedBy(userCode);
+	            customer.setCreatedTime(LocalDateTime.now());
+
+	            // Link Security to Customer
+	            securityEntity.setCustomerNo(customerNo);
+	        }
+
+	        // Save records
+	        if (customer != null) {
+	            customerRepo.save(customer);
+	        }
+	        securityRepo.save(securityEntity);
+
+	        response.setData(securityDTO);
+	        return response;
+	    }
 
 	public String generateCustomerNumber() {
 		PersonSequence seq = personSequenceRepository.save(new PersonSequence());
 		Long nextVal = seq.getId();
 		return "T" + String.format("%09d", nextVal);
 	}
-	@Override
-	public String registerUser(SecurityDTO securityDTO, String userCode) {
-		String message = "";
-		Security security = securityRepo.findByEmail(securityDTO.getEmail(), "N");
-		if ( security != null && security.getEmail().equalsIgnoreCase(securityDTO.getEmail()) && security.getUserCode().equalsIgnoreCase(securityDTO.getUserCode())
-				&& security.getIsEmailVerified().equals("Y") && security.getIsUserCodeVerified().equals("Y")) {
-			message = "User already Exist in System and Verified Please to go login Page";
-		}else if ( security != null && security.getEmail().equalsIgnoreCase(securityDTO.getEmail()) && security.getUserCode().equalsIgnoreCase(securityDTO.getUserCode())
-				&& security.getIsEmailVerified().equals("N") && security.getIsUserCodeVerified().equals("N")) {
-			message = "User already Exist in System and Pending for Verification";
-		}
-		else {
-			Security securityEntity = new Security();
-			securityEntity.setEmail(securityDTO.getEmail());
-			if (securityDTO.getIsEmailVerified() == null) {
-				securityEntity.setIsEmailVerified("N");
-			} else {
-				securityEntity.setIsEmailVerified(securityDTO.getIsEmailVerified());
-			}
-			if (securityDTO.getIsUserCodeVerified() == null) {
-				securityEntity.setIsUserCodeVerified("N");
+	@Transactional
+    public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> registerUser(SecurityDTO securityDTO, String userCode) {
+        ResponseEntity<SecurityDTO> response = new ResponseEntity<>();
+        List<String> errors = new ArrayList<>();
 
-			} else {
-				securityEntity.setIsUserCodeVerified(securityDTO.getIsUserCodeVerified());
+        // Validate input
+        if (securityDTO.getEmail() == null || securityDTO.getEmail().trim().isEmpty()) {
+            errors.add("Email is required");
+        }
+        if (securityDTO.getUserCode() == null || securityDTO.getUserCode().trim().isEmpty()) {
+            errors.add("UserCode is required");
+        }
+        if (!errors.isEmpty()) {
+            response.setErrorMessage(String.join("; ", errors));
+            return response;
+        }
 
-			}
-			securityEntity.setDeletedFlag("N");
-			securityEntity.setUserCode(securityDTO.getUserCode());
-			securityEntity.setUserName(securityDTO.getUserName());
-			securityEntity.setUpdateBy(securityDTO.getUserCode());
-			securityEntity.setUpdateTime(String.valueOf(LocalDate.now()));
-			if (securityDTO.getRemainingTime() != null) {
-				securityEntity.setEndTime(securityDTO.getRemainingTime());
-			} else {
-				LocalDate updateTime = LocalDate.now();
-				// Subtract 5 days from updateTime
-				LocalDate newDate = updateTime.plusDays(5);
-				securityEntity.setEndTime(newDate.toString());
+        // Check for existing Security and Customer records
+        Optional<Security> existingSecurityByEmail = securityRepo.findByEmailAndDeletedFlag(securityDTO.getEmail(), "N");
+        Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail());
+        Optional<Security> existingSecurityByUserCode = securityRepo.findByUserCodeAndDeletedFlag(securityDTO.getUserCode(), "N");
+        Optional<Customer> existingCustomerByUserCode = customerRepo.findByUserCode(securityDTO.getUserCode());
 
-			}
-			securityRepo.save(securityEntity);
-			message = "Successfully Register, Pending for Verification";
-		}
-		return message;
-	}
+        if (existingSecurityByEmail.isPresent()) {
+            Security security = existingSecurityByEmail.get();
+            // Check if userCode matches
+            if (!security.getUserCode().equalsIgnoreCase(securityDTO.getUserCode())) {
+                response.setErrorMessage("Email '" + securityDTO.getEmail() + "' is associated with a different userCode");
+                return response;
+            }
+            // Check verification status
+            if ("Y".equals(security.getIsEmailVerified()) && "Y".equals(security.getIsUserCodeVerified())) {
+                response.setErrorMessage("User already exists in system and verified. Please go to login page");
+                return response;
+            } else if ("N".equals(security.getIsEmailVerified()) && "N".equals(security.getIsUserCodeVerified())) {
+                response.setErrorMessage("User already exists in system and pending for verification");
+                return response;
+            } else {
+                response.setErrorMessage("User exists with partial verification. Please complete verification");
+                return response;
+            }
+        } else if (existingCustomerByEmail.isPresent()) {
+            response.setErrorMessage("Email '" + securityDTO.getEmail() + "' already exists in Customer table");
+            return response;
+        } else if (existingSecurityByUserCode.isPresent()) {
+            response.setErrorMessage("UserCode '" + securityDTO.getUserCode() + "' already exists in Security table,please check email");
+            return response;
+        } else if (existingCustomerByUserCode.isPresent()) {
+            response.setErrorMessage("UserCode '" + securityDTO.getUserCode() + "' already exists in Customer table,please check email");
+            return response;
+        }
+
+        // Create new Security record
+        Security securityEntity = new Security();
+        securityEntity.setEmail(securityDTO.getEmail());
+        securityEntity.setUserCode(securityDTO.getUserCode());
+        securityEntity.setIsEmailVerified("N");
+        securityEntity.setIsUserCodeVerified("N");
+        securityEntity.setDeletedFlag("N");
+        securityEntity.setUpdateBy(userCode);
+        securityEntity.setUpdateTime(LocalDate.now());
+        securityEntity.setEndTime(LocalDate.now().plusDays(5));
+
+        // Create corresponding Customer record
+        Customer customer = new Customer();
+        String customerNo = generateCustomerNumber();
+        customer.setCustomerNo(customerNo);
+        customer.setEmail(securityDTO.getEmail());
+        customer.setUserCode(securityDTO.getUserCode());
+        customer.setCreatedBy(userCode);
+        customer.setCreatedTime(LocalDateTime.now());
+        securityEntity.setCustomerNo(customerNo);
+        customerRepo.save(customer);
+        securityRepo.save(securityEntity);
+        response.setData(securityDTO);
+        response.setStatus("Successfully registered, pending for verification");
+        return response;
+    }
 
 	@Override
 	public boolean deleteNoteById(Long id) {
@@ -462,7 +538,7 @@ public class SecurityService implements ISecrityService {
         security.setPublicKey(request.getPublicKey());
         security.setUserHandle(request.getUserHandle());
         security.setSignatureCounter(request.getSignatureCounter());
-        security.setUpdateTime(String.valueOf(System.currentTimeMillis())); 
+        security.setUpdateTime(LocalDate.now()); 
         security.setUpdateBy(request.getUserCode()); 
         security.setDeletedFlag("N"); 
         securityRepo.save(security);

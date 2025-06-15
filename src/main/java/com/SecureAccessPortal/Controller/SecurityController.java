@@ -88,24 +88,17 @@ public class SecurityController {
 			@RequestHeader(value = "userCode") String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> securityResponce = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		SecurityDTO security = securityService.createUser(securityDTO, userCode);
-
-		securityResponce.setData(security);
+		securityResponce = securityService.createUser(securityDTO, userCode);
 
 		return securityResponce;
 	}
 
 	@PostMapping(value = "/register-user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public com.SecureAccessPortal.Service.ResponseEntity<String> registerUser(@RequestBody SecurityDTO securityDTO,
+	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> registerUser(@RequestBody SecurityDTO securityDTO,
 			@RequestHeader(value = "userCode") String userCode) {
 
-		com.SecureAccessPortal.Service.ResponseEntity<String> data = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		String ok = securityService.registerUser(securityDTO, userCode);
-		if (ok.contains("Successfully")) {
-			data.setData(ok);
-		} else {
-			data.setErrorMessage(ok);
-		}
+		 com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> data = securityService.registerUser(securityDTO, userCode);
+		
 		return data;
 	}
 

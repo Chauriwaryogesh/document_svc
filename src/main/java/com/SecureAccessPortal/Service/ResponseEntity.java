@@ -8,14 +8,15 @@ public class ResponseEntity<T> implements Serializable {
 		super();
 	}
 	T data;
-	String links;
+	String status;
 	String metaData;
 	String errorMessage;
-	public String getLinks() {
-		return links;
+	
+	public String getStatus() {
+		return status;
 	}
-	public void setLinks(String links) {
-		this.links = links;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	public String getMetaData() {
 		return metaData;
@@ -35,12 +36,4 @@ public class ResponseEntity<T> implements Serializable {
 	public void setData(T data) {
 		this.data = data;
 	}
-	@Override
-	public String toString() {
-		return "ResponseEntity [data=" + data + ", links=" + links + ", metaData=" + metaData + ", errorMessage="
-				+ errorMessage + "]";
-	}
-	
-	
-	
 }

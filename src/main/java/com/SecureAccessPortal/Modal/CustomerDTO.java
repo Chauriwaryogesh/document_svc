@@ -15,25 +15,7 @@ public class CustomerDTO {
 	private String smokerStatus;
 	private String adminAccess;
 	private Address address;
-	public String getDateOfBirth() {
-		return dateOfBirth;
-	}
-	public void setDateOfBirth(String dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
-	}
 	private ContactDetails  contactDetails;
-	public Address getAddress() {
-		return address;
-	}
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-	public ContactDetails getContactDetails() {
-		return contactDetails;
-	}
-	public void setContactDetails(ContactDetails contactDetails) {
-		this.contactDetails = contactDetails;
-	}
 	public String getName() {
 		return name;
 	}
@@ -58,13 +40,18 @@ public class CustomerDTO {
 	public void setAge(String age) {
 		this.age = age;
 	}
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
 	public String getGender() {
 		return gender;
 	}
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -77,23 +64,16 @@ public class CustomerDTO {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
-	/**
-	 * @return the customerNo
-	 */
 	public String getCustomerNo() {
 		return customerNo;
 	}
-	/**
-	 * @param customerNo the customerNo to set
-	 */
 	public void setCustomerNo(String customerNo) {
 		this.customerNo = customerNo;
 	}
-	public String getuserCode() {
+	public String getUserCode() {
 		return userCode;
 	}
-	public void setuserCode(String userCode) {
+	public void setUserCode(String userCode) {
 		this.userCode = userCode;
 	}
 	public String getSmokerStatus() {
@@ -108,5 +88,17 @@ public class CustomerDTO {
 	public void setAdminAccess(String adminAccess) {
 		this.adminAccess = adminAccess;
 	}
-
+	public Address getAddress() {
+		return address;
+	}
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+	public ContactDetails getContactDetails() {
+		return contactDetails;
+	}
+	public void setContactDetails(ContactDetails contactDetails) {
+		this.contactDetails = contactDetails;
+	}
+	
 }

@@ -26,13 +26,23 @@ public interface ISecurityRepo  extends JpaRepository<Security, Long>{
 	Security findByUserName(String userName, String deletedFlag);
 
 	@Query(value="Select * from security s where s.userCode=?1 AND s.deletedFlag = ?2",nativeQuery = true)
-	Optional<Security> findByuserCodeAndDeletedFlag(String userCode,String deletedFlag);
+	Optional<Security> findByUserCodeAndDeletedFlag(String userCode,String deletedFlag);
 
 	@Query(value="Select * from security s where s.userCode=?1",nativeQuery = true)
 	Security findByUserCode(String userCode);
 
 	@Query(value="Select * from security s where s.userCode=?1 and s.deletedFlag=?2",nativeQuery = true)
 	Security findByUserCodeDeletedN(String userCode, String string);
+
+	@Query("SELECT s FROM Security s WHERE s.email = :email AND s.deletedFlag = :deletedFlag")
+    Optional<Security> findByEmailAndDeletedFlag(String email, String deletedFlag);
+
+	
+//    @Query("SELECT s FROM Security s WHERE s.userCode = :userCode AND s.deletedFlag = :deletedFlag")
+//    Optional<Security> findByUserCodeAndDeletedFlag(String userCode, String deletedFlag);
+
+    @Query("SELECT s FROM Security s WHERE s.customerNo = :customerNo AND s.deletedFlag = :deletedFlag")
+    Optional<Security> findByCustomerNoAndDeletedFlag(String customerNo, String deletedFlag);
 
 
 }

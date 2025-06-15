@@ -40,9 +40,9 @@ import com.SecureAccessPortal.Repo.ISecurityRepo;
 	                 .filter(sec -> sec.getEndTime() != null)
 	                 .filter(sec -> {
 	                     try {
-	                         LocalDate endTimeDate = LocalDate.parse(sec.getEndTime());
+	                        // LocalDate endTimeDate = LocalDate.parse(sec.getEndTime());
 	                         LocalDate now = LocalDate.now();
-	                         return endTimeDate.isAfter(now);
+	                         return sec.getEndTime().isAfter(now);
 	                     } catch (Exception e) {
 	                         System.err.println("Error parsing date: " + sec.getEndTime() + " - " + e.getMessage());
 	                         return false;
@@ -71,12 +71,12 @@ import com.SecureAccessPortal.Repo.ISecurityRepo;
 			        .filter(sec -> {
 			            try {
 			                // Parse endTime as LocalDateTime
-			                LocalDateTime endTimeDateTime = LocalDateTime.parse(sec.getEndTime(), formatter);
+			               // LocalDateTime endTimeDateTime = LocalDateTime.parse(sec.getEndTime(), formatter);
 			                // Convert to LocalDate for comparison
-			                LocalDate endTimeDate = endTimeDateTime.toLocalDate();
+			               // LocalDate endTimeDate = endTimeDateTime.toLocalDate();
 			                // Compare with threshold (10 days from now)
 			                LocalDate thresholdDate = LocalDate.now().plusDays(10);
-			                return endTimeDate.isAfter(thresholdDate);
+			                return sec.getEndTime().isAfter(thresholdDate);
 			            } catch (DateTimeParseException e) {
 			                System.err.println("Error parsing endTime: " + sec.getEndTime() + " for user " + sec.getUserCode() + " - " + e.getMessage());
 			                return false;

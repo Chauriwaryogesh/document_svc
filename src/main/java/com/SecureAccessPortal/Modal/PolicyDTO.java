@@ -24,16 +24,15 @@ public class PolicyDTO {
     public void setAssociatedPolicyCount(String associatedPolicyCount) {
         this.associatedPolicyCount = associatedPolicyCount;
     }
+    public String getUserCode() {
+		return userCode;
+	}
 
-    public String getuserCode() {
-        return userCode;
-    }
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
 
-    public void setuserCode(String userCode) {
-        this.userCode = userCode;
-    }
-
-    public String getCustomerNo() {
+	public String getCustomerNo() {
         return customerNo;
     }
 

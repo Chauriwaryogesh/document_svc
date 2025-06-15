@@ -175,11 +175,11 @@
     const customErrorMessage = document.getElementById('customErrorMessage');
     const customErrorOkBtn = document.getElementById('customErrorOkBtn');
     async function registerEmail() {
-        const email = document.getElementById("emailInput").value;
-        const userCode = document.getElementById("userCode").value;
+        const email = document.getElementById("emailInput").value.trim();
+        const userCode = document.getElementById("userCode").value.trim();
 
         if (!email || !userCode) {
-            alert("Email or User ID is missing.");
+            showErrorAlert("Email or User ID is missing.");
             return;
         }
 
@@ -201,26 +201,30 @@
                 showErrorAlert("Server error. Please try again.");
                 return;
             }
-            const message = result.errorMessage || result.message || resultText;
-            if (message.includes("Successfully Register, Pending")) {
-               // showErrorAlert("Successfully Registered. Pending for Verification.");
-                showCustomAlert("Success", "Successfully Register, Pending for Verification", () => {
+
+            // Check for success or error
+            if (result.status && result.status.includes("Successfully registered, pending for verification")) {
+                const successMessage = `Successfully registered, pending for verification. Email: ${result.data.email}, UserCode: ${result.data.userCode}`;
+                showCustomAlert("Success", successMessage, () => {
                     window.location.href = "/login";
                 });
-            }else if (message.includes("User already Exist in")) {
-                showErrorAlert("User already Exist in System and Pending for Verification.");
-            }
-            else if (message.includes("Verified Please to go login Page")) {
-                showCustomAlert("Success", message, () => {
-                    window.location.href = "/login";
-                });
+            } else if (result.errorMessage) {
+                if (result.errorMessage.includes("User already exists in system and pending for verification")) {
+                    showErrorAlert("User already exists in system and pending for verification.");
+                } else if (result.errorMessage.includes("verified. Please go to login page")) {
+                    showCustomAlert("Success", result.errorMessage, () => {
+                        window.location.href = "/login";
+                    });
+                } else {
+                    showErrorAlert(result.errorMessage);
+                }
             } else {
-                showErrorAlert(message);
+                showErrorAlert("Unknown response from server.");
             }
 
         } catch (error) {
             console.error("Error registering email:", error);
-            alert("Registration failed.");
+            showErrorAlert("Registration failed: " + error.message);
         }
     }
 

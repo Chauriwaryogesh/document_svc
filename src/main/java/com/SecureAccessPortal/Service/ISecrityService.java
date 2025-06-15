@@ -20,9 +20,9 @@ public interface ISecrityService{
 	public byte[] fetchEmployeeDBforPDF(String id, String userCode) throws IOException;
 
 	public List<SecurityDTO> fetchListOfUsers(String id, String userCode);
-	public SecurityDTO createUser(SecurityDTO securityDTO, String userCode);
+	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> createUser(SecurityDTO securityDTO, String userCode);
 
-	public String registerUser(SecurityDTO securityDTO, String userCode);
+	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> registerUser(SecurityDTO securityDTO, String userCode);
 
 	public boolean deleteNoteById(Long id);
 

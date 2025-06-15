@@ -1881,8 +1881,7 @@
 			                <p class="text-sm text-gray-600 flex items-center truncate">
 			                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 			                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m0 0v14m-6-6h12M3 15h12" />
-			                  </svg>
-			                  console.log("item.phoneNumber",item.phoneNumber);
+			                  </svg>	             
 			                  <span class="font-medium">Phone:</span>
 			                  <span class="tooltip truncate ml-2" data-tooltip="${item.phoneNumber || 'N/A'}">${item.phoneNumber || 'N/A'}</span>
 			                </p>
@@ -2096,21 +2095,44 @@
 			          </button>
 			        </div>
 			        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 policy-details policy-details-${index} hidden">
-			          <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Work Item Ref No:</span> ${policy.workItemRefNo || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Created Date:</span> ${policy.createdDate || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Created By:</span> ${policy.createdBy || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.customerName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNumber || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
-			        </div>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Name:</span> ${policy.policyName || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Type:</span> ${policy.policyType || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Status:</span> ${policy.policyStatus || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Premium:</span> ${policy.policyPremium || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Coverage Amount:</span> ${policy.coverageAmount || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Premium Due Date:</span> ${policy.premiumDueDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Renewal Date:</span> ${policy.renewalDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Name:</span> ${policy.beneficiaryName || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Relationship:</span> ${policy.beneficiaryRelationship || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Term:</span> ${policy.policyTerm || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Compliance Flag:</span> ${policy.complianceFlag || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Payment Frequency:</span> ${policy.paymentFrequency || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Date:</span> ${policy.policyDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Due Date:</span> ${policy.dueDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Premium:</span> ${policy.premium || '0'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Total Amount:</span> ${policy.totalAmount || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Monthly Installment:</span> ${policy.monthlyInstallment || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Total Claimable:</span> ${policy.totalClaimableAmount || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Start Date:</span> ${policy.startDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">End Date:</span> ${policy.endDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Aadhaar:</span> ${policy.beneficiaryAadharNumber || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Nominee Contact:</span> ${policy.nomineeContactNumber || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Work Item Ref No:</span> ${Array.isArray(policy.workItemRefNo) ? policy.workItemRefNo.join(', ') : policy.workItemRefNo || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Created Date:</span> ${policy.createdDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Created By:</span> ${policy.createdBy || 'N/A'}</p>
+			        <p class="text-sm class="text-gray-600"><span class="font-medium">Updated By:</span> ${policy.updatedBy || 'N/A'}</p>
+			        <p class="text-sm class="text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.customerName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNumber || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
+			      </div>
 			        ${bankAccountsHtml}
 			      `;
 			      contentDiv.appendChild(card);
@@ -2219,21 +2241,44 @@
 			              </button>
 			            </div>
 			            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 policy-details policy-details-${index} hidden">
-			              <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Work Item Ref No:</span> ${policy.workItemRefNo || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Created Date:</span> ${policy.createdDate || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Created By:</span> ${policy.createdBy || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.customerName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNumber || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
-			            </div>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Name:</span> ${policy.policyName || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Type:</span> ${policy.policyType || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Status:</span> ${policy.policyStatus || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Premium:</span> ${policy.policyPremium || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Coverage Amount:</span> ${policy.coverageAmount || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Premium Due Date:</span> ${policy.premiumDueDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Renewal Date:</span> ${policy.renewalDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Name:</span> ${policy.beneficiaryName || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Relationship:</span> ${policy.beneficiaryRelationship || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Term:</span> ${policy.policyTerm || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Compliance Flag:</span> ${policy.complianceFlag || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Payment Frequency:</span> ${policy.paymentFrequency || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Date:</span> ${policy.policyDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Due Date:</span> ${policy.dueDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Premium:</span> ${policy.premium || '0'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Total Amount:</span> ${policy.totalAmount || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Monthly Installment:</span> ${policy.monthlyInstallment || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Total Claimable:</span> ${policy.totalClaimableAmount || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Start Date:</span> ${policy.startDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">End Date:</span> ${policy.endDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Aadhaar:</span> ${policy.beneficiaryAadharNumber || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Nominee Contact:</span> ${policy.nomineeContactNumber || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Work Item Ref No:</span> ${Array.isArray(policy.workItemRefNo) ? policy.workItemRefNo.join(', ') : policy.workItemRefNo || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Created Date:</span> ${policy.createdDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Created By:</span> ${policy.createdBy || 'N/A'}</p>
+			            <p class="text-sm class="text-gray-600"><span class="font-medium">Updated By:</span> ${policy.updatedBy || 'N/A'}</p>
+			            <p class="text-sm class="text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.customerName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNumber || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
+			          </div>
 			            ${bankAccountsHtml}
 			          `;
 			          contentDiv.appendChild(card);
@@ -2344,21 +2389,44 @@
 			                </button>
 			              </div>
 			              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 policy-details policy-details-${index} hidden">
-			                <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Work Item Ref No:</span> ${policy.workItemRefNo || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Created Date:</span> ${policy.createdDate || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Created By:</span> ${policy.createdBy || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.customerName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNumber || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
-			                <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
-			              </div>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Policy Name:</span> ${policy.policyName || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Policy Type:</span> ${policy.policyType || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Policy Status:</span> ${policy.policyStatus || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Policy Premium:</span> ${policy.policyPremium || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Coverage Amount:</span> ${policy.coverageAmount || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Premium Due Date:</span> ${policy.premiumDueDate || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Renewal Date:</span> ${policy.renewalDate || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Name:</span> ${policy.beneficiaryName || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Relationship:</span> ${policy.beneficiaryRelationship || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Policy Term:</span> ${policy.policyTerm || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Compliance Flag:</span> ${policy.complianceFlag || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Payment Frequency:</span> ${policy.paymentFrequency || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Policy Date:</span> ${policy.policyDate || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Due Date:</span> ${policy.dueDate || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Premium:</span> ${policy.premium || '0'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Total Amount:</span> ${policy.totalAmount || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Monthly Installment:</span> ${policy.monthlyInstallment || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Total Claimable:</span> ${policy.totalClaimableAmount || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Start Date:</span> ${policy.startDate || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">End Date:</span> ${policy.endDate || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Aadhaar:</span> ${policy.beneficiaryAadharNumber || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Nominee Contact:</span> ${policy.nomineeContactNumber || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Work Item Ref No:</span> ${Array.isArray(policy.workItemRefNo) ? policy.workItemRefNo.join(', ') : policy.workItemRefNo || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Created Date:</span> ${policy.createdDate || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Created By:</span> ${policy.createdBy || 'N/A'}</p>
+			              <p class="text-sm class="text-gray-600"><span class="font-medium">Updated By:</span> ${policy.updatedBy || 'N/A'}</p>
+			              <p class="text-sm class="text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.customerName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNumber || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
+			              <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
+			            </div>
 			              ${bankAccountsHtml}
 			            `;
 			            contentDiv.appendChild(card);
@@ -2430,13 +2498,13 @@
 
 			  showLoader();
 			  try {
-				  let endpoint;
-				    if (searchType === 'policy') {
-				      // Include allpolSearch parameter for policy search
-				      endpoint = `http://localhost:8081/policy/policy-details?policyNo=${encodeURIComponent(query)}&allpolSearch=${allpolSearch}`;
-				    } else {
-				      endpoint = `http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(query)}`;
-				    }
+			    let endpoint;
+			    if (searchType === 'policy') {
+			      // Include allpolSearch parameter for policy search
+			      endpoint = `http://localhost:8081/policy/policy-details?policyNo=${encodeURIComponent(query)}&allpolSearch=${allpolSearch}`;
+			    } else {
+			      endpoint = `http://localhost:8081/policy/policy-details?customerNo=${encodeURIComponent(query)}`;
+			    }
 			    const response = await fetch(endpoint, {
 			      method: 'GET',
 			      headers: { 'userCode': config.userCode },
@@ -2474,6 +2542,31 @@
 			              productCode: policy.productCode || 'N/A',
 			              polCompanyName: policy.polCompanyName || 'N/A',
 			              fcuFlag: policy.fcuFlag || 'N/A',
+			              policyType: policy.policyType || 'N/A',
+			              policyStatus: policy.policyStatus || 'N/A',
+			              policyPremium: policy.policyPremium || 'N/A',
+			              coverageAmount: policy.coverageAmount || 'N/A',
+			              premiumDueDate: policy.premiumDueDate || 'N/A',
+			              renewalDate: policy.renewalDate || 'N/A',
+			              beneficiaryName: policy.beneficiaryName || 'N/A',
+			              beneficiaryRelationship: policy.beneficiaryRelationship || 'N/A',
+			              policyTerm: policy.policyTerm || 'N/A',
+			              complianceFlag: policy.complianceFlag || 'N/A',
+			              paymentFrequency: policy.paymentFrequency || 'N/A',
+			              policyDate: policy.policyDate || 'N/A',
+			              dueDate: policy.dueDate || 'N/A',
+			              premium: policy.premium || '0',
+			              totalAmount: policy.totalAmount || 'N/A',
+			              monthlyInstallment: policy.monthlyInstallment || 'N/A',
+			              totalClaimableAmount: policy.totalClaimableAmount || 'N/A',
+			              startDate: policy.startDate || 'N/A',
+			              endDate: policy.endDate || 'N/A',
+			              beneficiaryAadharNumber: policy.beneficiaryAadharNumber || 'N/A',
+			              nomineeContactNumber: policy.nomineeContactNumber || 'N/A',
+			              workItemRefNo: Array.isArray(policy.workItemRefNo) ? policy.workItemRefNo.join(', ') : policy.workItemRefNo || 'N/A',
+			              createdDate: policy.createdDate || 'N/A',
+			              createdBy: policy.createdBy || 'N/A',
+			              updatedBy: policy.updatedBy || 'N/A',
 			              customerNo: item.customerNo || 'N/A',
 			              custName: item.custName || 'N/A',
 			              middleName: item.middleName || '',
@@ -2504,9 +2597,7 @@
 			        console.log('Customer search data:', normalizedData); // Debugging
 			      }
 
-			      config.current
-
-			Data = normalizedData;
+			      config.currentData = normalizedData;
 			      renderResults(normalizedData);
 			    } else {
 			      const errorText = await response.text();
@@ -2622,18 +2713,44 @@ if (policy.bankAccounts && policy.bankAccounts.length > 0) {
 			          </button>
 			        </div>
 			        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 policy-details policy-details-${index} hidden">
-			          <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.customerName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNumber || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
-			          <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
-			        </div>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Name:</span> ${policy.policyName || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Type:</span> ${policy.policyType || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Status:</span> ${policy.policyStatus || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Premium:</span> ${policy.policyPremium || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Coverage Amount:</span> ${policy.coverageAmount || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Premium Due Date:</span> ${policy.premiumDueDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Renewal Date:</span> ${policy.renewalDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Name:</span> ${policy.beneficiaryName || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Relationship:</span> ${policy.beneficiaryRelationship || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Term:</span> ${policy.policyTerm || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Compliance Flag:</span> ${policy.complianceFlag || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Payment Frequency:</span> ${policy.paymentFrequency || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Policy Date:</span> ${policy.policyDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Due Date:</span> ${policy.dueDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Premium:</span> ${policy.premium || '0'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Total Amount:</span> ${policy.totalAmount || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Monthly Installment:</span> ${policy.monthlyInstallment || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Total Claimable:</span> ${policy.totalClaimableAmount || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Start Date:</span> ${policy.startDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">End Date:</span> ${policy.endDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Aadhaar:</span> ${policy.beneficiaryAadharNumber || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Nominee Contact:</span> ${policy.nomineeContactNumber || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Work Item Ref No:</span> ${Array.isArray(policy.workItemRefNo) ? policy.workItemRefNo.join(', ') : policy.workItemRefNo || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Created Date:</span> ${policy.createdDate || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Created By:</span> ${policy.createdBy || 'N/A'}</p>
+			        <p class="text-sm class="text-gray-600"><span class="font-medium">Updated By:</span> ${policy.updatedBy || 'N/A'}</p>
+			        <p class="text-sm class="text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.customerName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNumber || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
+			        <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
+			      </div>
 			        ${bankAccountsHtml}
 			      `;
 			      contentDiv.appendChild(card);
@@ -2730,18 +2847,44 @@ if (policy.bankAccounts && policy.bankAccounts.length > 0) {
 			              </button>
 			            </div>
 			            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 policy-details policy-details-${index} hidden">
-			              <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.custName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNum || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
-			              <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
-			            </div>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Number:</span> ${policy.policyNumber || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Name:</span> ${policy.policyName || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Product Code:</span> ${policy.productCode || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Company:</span> ${policy.polCompanyName || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Type:</span> ${policy.policyType || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Status:</span> ${policy.policyStatus || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Premium:</span> ${policy.policyPremium || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Coverage Amount:</span> ${policy.coverageAmount || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Premium Due Date:</span> ${policy.premiumDueDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Renewal Date:</span> ${policy.renewalDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Name:</span> ${policy.beneficiaryName || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Relationship:</span> ${policy.beneficiaryRelationship || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Term:</span> ${policy.policyTerm || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Compliance Flag:</span> ${policy.complianceFlag || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Payment Frequency:</span> ${policy.paymentFrequency || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Policy Date:</span> ${policy.policyDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Due Date:</span> ${policy.dueDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Premium:</span> ${policy.premium || '0'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Total Amount:</span> ${policy.totalAmount || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Monthly Installment:</span> ${policy.monthlyInstallment || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Total Claimable:</span> ${policy.totalClaimableAmount || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Start Date:</span> ${policy.startDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">End Date:</span> ${policy.endDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Beneficiary Aadhaar:</span> ${policy.beneficiaryAadharNumber || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Nominee Contact:</span> ${policy.nomineeContactNumber || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">FCU Flag:</span> ${policy.fcuFlag || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Work Item Ref No:</span> ${Array.isArray(policy.workItemRefNo) ? policy.workItemRefNo.join(', ') : policy.workItemRefNo || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Created Date:</span> ${policy.createdDate || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Created By:</span> ${policy.createdBy || 'N/A'}</p>
+			            <p class="text-sm class="text-gray-600"><span class="font-medium">Updated By:</span> ${policy.updatedBy || 'N/A'}</p>
+			            <p class="text-sm class="text-gray-600"><span class="font-medium">Customer No:</span> ${customer.customerNo || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Customer Name:</span> ${customer.customerName || 'N/A'} ${customer.middleName || ''} ${customer.surname || ''}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Phone:</span> ${customer.phoneNumber || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Email:</span> ${customer.email || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Smoker Status:</span> ${customer.smokerStatus || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Date of Birth:</span> ${customer.dateOfBirth || 'N/A'}</p>
+			            <p class="text-sm text-gray-600"><span class="font-medium">Gender:</span> ${customer.gender || 'N/A'}</p>
+			          </div>
 			            ${bankAccountsHtml}
 			          `;
 			          contentDiv.appendChild(card);

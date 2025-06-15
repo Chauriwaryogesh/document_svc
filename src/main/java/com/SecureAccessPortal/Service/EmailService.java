@@ -1,5 +1,6 @@
 package com.SecureAccessPortal.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.ZoneId;
@@ -22,6 +23,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
@@ -29,6 +31,7 @@ import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Email;
 import com.SecureAccessPortal.Entity.OtpStore;
 import com.SecureAccessPortal.Entity.Security;
+import com.SecureAccessPortal.Exception.DuplicateEntryException;
 import com.SecureAccessPortal.Modal.Address;
 import com.SecureAccessPortal.Modal.ContactDetails;
 import com.SecureAccessPortal.Modal.CustomerDTO;
@@ -497,7 +500,7 @@ public class EmailService {
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
-			custDTO.setuserCode(cust.getUserCode());
+			custDTO.setUserCode(cust.getUserCode());
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
 			custDTO.setDateOfBirth(cust.getDateOfBirth());
 			// mapping for address
@@ -532,7 +535,7 @@ public class EmailService {
 			custDTO.setName(cust.getName());
 			custDTO.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setSurname(cust.getSurname());
-			custDTO.setuserCode(cust.getUserCode());
+			custDTO.setUserCode(cust.getUserCode());
 			custDTO.setSmokerStatus(cust.getSmokerStatus());
 			custDTO.setDateOfBirth(cust.getDateOfBirth());
 			// mapping for address
@@ -555,104 +558,134 @@ public class EmailService {
 		return customerList;
 	}
 
-	public String updateCustomerDetails(CustomerDTO cust, String userCode) {
-		String message = "";
-		try {
+	@Transactional
+    public String updateCustomerDetails(CustomerDTO cust, String userCode) {
+        try {
+            // Validate input
+            if (cust == null) {
+                return "Failed, customer details cannot be null";
+            }
+            if (cust.getName() == null || cust.getName().trim().isEmpty()) {
+                return "Failed, name is required";
+            }
+            if (!Pattern.matches("^[A-Za-z\\s]+$", cust.getName()) || cust.getName().trim().toLowerCase().equals("xxxx")) {
+                return "Failed, name must contain only letters and spaces, and 'xxxx' is not allowed";
+            }
+            if (cust.getPhoneNumber() == null || cust.getPhoneNumber().trim().isEmpty()) {
+                return "Failed, phone number is required";
+            }
+            if (!Pattern.matches("^\\d{10}$", cust.getPhoneNumber())) {
+                return "Failed, phone number must be exactly 10 digits";
+            }
+            if (cust.getEmail() == null || cust.getEmail().trim().isEmpty()) {
+                return "Failed, email is required";
+            }
+            if (!Pattern.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", cust.getEmail())) {
+                return "Failed, invalid email format";
+            }
+            if (cust.getUserCode() == null || cust.getUserCode().trim().isEmpty()) {
+                return "Failed, userCode is required";
+            }
+            Address address = cust.getAddress();
+            if (address != null && address.getZipCode() != null && !address.getZipCode().trim().isEmpty()) {
+                if (!Pattern.matches("^\\d{5,6}$", address.getZipCode())) {
+                    return "Failed, zip code must be 5 or 6 digits";
+                }
+            }
 
-			if (cust == null) {
-				return message = "Failed, customer details cannot be null";
-			}
-			if (cust.getName() == null || cust.getName().trim().isEmpty()) {
-				return message = "Failed, name is required";
-			}
-			if (!Pattern.matches("^[A-Za-z\\s]+$", cust.getName())
-					|| cust.getName().trim().toLowerCase().equals("xxxx")) {
-				message = "Failed, name must contain only letters and spaces, and 'xxxx' is not allowed";
-			}
-			if (cust.getPhoneNumber() == null || cust.getPhoneNumber().trim().isEmpty()) {
-				return message = "Failed, phone number is required";
-			}
-			if (!Pattern.matches("^\\d{10}$", cust.getPhoneNumber())) {
-				return message = "Failed, phone number must be exactly 10 digits";
-			}
-			if (cust.getEmail() == null || cust.getEmail().trim().isEmpty()) {
-				return message = "Failed, email is required";
-			}
-			// Check for existing email if provided
-		    if (cust.getEmail() != null && !cust.getEmail().isEmpty()) {
-		        Optional<Customer> byEmail = customerRepo.findByEmail(cust.getEmail());
-		        if (byEmail.isPresent()) {
-		            return "email already exist in System please contact admin.";
-		        }
-		    }
-		    
-			if (!Pattern.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", cust.getEmail())) {
-				return message = "Failed, email must contain '@' and follow a valid format (e.g., example@domain.com)";
-			}
-			Address address = cust.getAddress();
-			if (address != null && address.getZipCode() != null && !address.getZipCode().trim().isEmpty()) {
-				if (!Pattern.matches("^\\d{5,6}$", address.getZipCode())) {
-					return message = "Failed, zip code must contain only numbers and be 5 or 6 digits";
-				}
-			}
+            // Check for duplicate email and userCode
+            Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(cust.getEmail());
+            Optional<Security> existingSecurityByEmail = securityRepo.findByEmailAndDeletedFlag(cust.getEmail(), "N");
+            Optional<Customer> existingCustomerByUserCode = customerRepo.findByUserCode(cust.getUserCode());
+            Optional<Security> existingSecurityByUserCode = securityRepo.findByUserCodeAndDeletedFlag(cust.getUserCode(), "N");
 
-			Customer existingCustomer = null;
-			if (cust.getCustomerNo() != null && !cust.getCustomerNo().isEmpty()) {
-				existingCustomer = customerRepo.findByCustomerNoNew(cust.getCustomerNo());
-			}
+            Customer existingCustomer = null;
+            if (cust.getCustomerNo() != null && !cust.getCustomerNo().isEmpty()) {
+                existingCustomer = customerRepo.findByCustomerNoNew(cust.getCustomerNo());
+            }
 
-			Customer custDTO;
-			if (existingCustomer != null) {
-				custDTO = existingCustomer;
-			} else {
-				custDTO = new Customer();
-				custDTO.setCustomerNo(generateCustomerNumber());
-			}
-			custDTO.setAdminAccess(cust.getAdminAccess());
-			custDTO.setAge(cust.getAge());
-			custDTO.setEmail(cust.getEmail());
-			custDTO.setGender(cust.getGender());
-			custDTO.setDateOfBirth(cust.getDateOfBirth());
-			custDTO.setMiddleName(cust.getMiddleName());
-			custDTO.setName(cust.getName());
-			custDTO.setPhoneNumber(cust.getPhoneNumber());
-			custDTO.setSurname(cust.getSurname());
-			custDTO.setUserCode(cust.getuserCode());
-			custDTO.setSmokerStatus(cust.getSmokerStatus());
-			custDTO.setCreatedBy(userCode);
-			custDTO.setCreatedTime(LocalDateTime.now());
+            // Allow updating existing customer without duplicate error
+            if (existingCustomer != null) {
+                if (!existingCustomer.getEmail().equals(cust.getEmail()) && 
+                    (existingCustomerByEmail.isPresent() || existingSecurityByEmail.isPresent())) {
+                    throw new DuplicateEntryException("Email '" + cust.getEmail() + "' already exists in system");
+                }
+                if (!existingCustomer.getUserCode().equals(cust.getUserCode()) && 
+                    (existingCustomerByUserCode.isPresent() || existingSecurityByUserCode.isPresent())) {
+                    throw new DuplicateEntryException("UserCode '" + cust.getUserCode() + "' already exists in system");
+                }
+            } else {
+                if (existingCustomerByEmail.isPresent() || existingSecurityByEmail.isPresent()) {
+                    throw new DuplicateEntryException("Email '" + cust.getEmail() + "' already exists in system");
+                }
+                if (existingCustomerByUserCode.isPresent() || existingSecurityByUserCode.isPresent()) {
+                    throw new DuplicateEntryException("UserCode '" + cust.getUserCode() + "' already exists in system");
+                }
+            }
 
-			// Map address
-			if (address != null) {
-				custDTO.setCity(address.getCity());
-				custDTO.setCountry(address.getCountry());
-				custDTO.setState(address.getState());
-				custDTO.setStreet(address.getStreet());
-				custDTO.setZipCode(address.getZipCode());
-			}
-			// Map contact details
-			ContactDetails contact = cust.getContactDetails();
-			if (contact != null) {
-				custDTO.setAlternateEmail(contact.getAlternateEmail());
-				custDTO.setEmergencyContactName(contact.getEmergencyContactName());
-				custDTO.setEmergencyContactPhone(contact.getEmergencyContactPhone());
-				custDTO.setPhoneCountryCode(contact.getPhoneCountryCode());
-				custDTO.setPhoneNumber(cust.getPhoneNumber());
-			}
-			// Save or update the customer
-			try {
-				customerRepo.save(custDTO);
-				message = "Success, person " + custDTO.getCustomerNo() + " created/updated successfully";
-			} catch (Exception e) {
-				e.printStackTrace();
-				message = "Failed to update/create customer details: " + e.getMessage();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			message = "Failed to update/create customer details: " + e.getMessage();
-		}
-		return message;
-	}
+            // Create or update Customer
+            Customer custDTO = existingCustomer != null ? existingCustomer : new Customer();
+            if (existingCustomer == null) {
+                custDTO.setCustomerNo(generateCustomerNumber());
+            }
+            custDTO.setAdminAccess(cust.getAdminAccess());
+            custDTO.setAge(cust.getAge());
+            custDTO.setEmail(cust.getEmail());
+            custDTO.setGender(cust.getGender());
+            custDTO.setDateOfBirth(cust.getDateOfBirth());
+            custDTO.setMiddleName(cust.getMiddleName());
+            custDTO.setName(cust.getName());
+            custDTO.setPhoneNumber(cust.getPhoneNumber());
+            custDTO.setSurname(cust.getSurname());
+            custDTO.setUserCode(cust.getUserCode()); // Fixed typo: getuserCode -> getUserCode
+            custDTO.setSmokerStatus(cust.getSmokerStatus());
+            custDTO.setCreatedBy(userCode);
+            custDTO.setCreatedTime(LocalDateTime.now());
+
+            // Map address
+            if (address != null) {
+                custDTO.setCity(address.getCity());
+                custDTO.setCountry(address.getCountry());
+                custDTO.setState(address.getState());
+                custDTO.setStreet(address.getStreet());
+                custDTO.setZipCode(address.getZipCode());
+            }
+
+            // Map contact details
+            ContactDetails contact = cust.getContactDetails();
+            if (contact != null) {
+                custDTO.setAlternateEmail(contact.getAlternateEmail());
+                custDTO.setEmergencyContactName(contact.getEmergencyContactName());
+                custDTO.setEmergencyContactPhone(contact.getEmergencyContactPhone());
+                custDTO.setPhoneCountryCode(contact.getPhoneCountryCode());
+            }
+
+            // Create or update corresponding Security record
+            Optional<Security> existingSecurity = securityRepo.findByCustomerNoAndDeletedFlag(custDTO.getCustomerNo(), "N");
+            Security security = existingSecurity.orElse(new Security());
+            security.setEmail(cust.getEmail());
+            security.setUserCode(cust.getUserCode());
+            security.setCustomerNo(custDTO.getCustomerNo());
+            security.setIsEmailVerified(existingSecurity.isPresent() ? security.getIsEmailVerified() : "N");
+            security.setIsUserCodeVerified(existingSecurity.isPresent() ? security.getIsUserCodeVerified() : "N");
+            security.setDeletedFlag("N");
+            security.setUpdateBy(userCode);
+            security.setUpdateTime(LocalDate.now());
+            security.setEndTime(existingSecurity.isPresent() && security.getEndTime() != null 
+                    ? security.getEndTime() : LocalDate.now().plusDays(5));
+
+            // Save both records
+            customerRepo.save(custDTO);
+            securityRepo.save(security);
+
+            return "Success, person " + custDTO.getCustomerNo() + " created/updated successfully";
+        } catch (DuplicateEntryException e) {
+            return "Failed: " + e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Failed to update/create customer details: " + e.getMessage();
+        }
+    }
 
 	public String generateCustomerNumber() {
 		String numberFormatted = "";
@@ -675,7 +708,7 @@ public class EmailService {
 
 	public boolean fingerprintLogin(String userCode) {
 		try {
-			Optional<Security> securityOpt = securityRepo.findByuserCodeAndDeletedFlag(userCode, "N");
+			Optional<Security> securityOpt = securityRepo.findByUserCodeAndDeletedFlag(userCode, "N");
 			if (!securityOpt.isPresent()) {
 				return false; 
 			}

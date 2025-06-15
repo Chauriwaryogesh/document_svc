@@ -2223,7 +2223,6 @@
                 });
             }
         }
-
         function updateUserStatsUI(stats) {
             document.getElementById('active-users-count').textContent = stats.activeUsers || 0;
             document.getElementById('email-verified-count').textContent = stats.emailVerified || 0;
@@ -2254,15 +2253,19 @@
                     headers: { 'Content-Type': 'application/json', 'userCode': authuserCode },
                     body: JSON.stringify(userData)
                 });
-                showLoadingSpinner(false);
+                showLoadingSpinner(false);              
+                const responseData = await response.json().catch(() => ({}));
+                if (responseData.errorMessage) {
+                    showGlobalErrorAlert(responseData.errorMessage);
+                    return;
+                }
                 if (response.ok) {
                     showGlobalCustomAlert("Success", successMsg, () => {
                         if (callback) callback();
                         initialLoad();
                     });
                 } else {
-                    const error = await response.json().catch(() => ({ errorMessage: "Operation failed." }));
-                    showGlobalErrorAlert(error.errorMessage || `Failed. Status: ${response.status}`);
+                    showGlobalErrorAlert(responseData.errorMessage || `Failed. Status: ${response.status}`);
                 }
             } catch (error) {
                 showLoadingSpinner(false);
