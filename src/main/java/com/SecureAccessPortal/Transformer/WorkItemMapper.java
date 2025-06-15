@@ -14,7 +14,7 @@ public class WorkItemMapper {
 		workItem.setComment(repoData.getComment());
 		workItem.setCreatedBy(repoData.getCreatedBy());
 		workItem.setCreatedTime(String.valueOf( repoData.getCreatedTime()));
-		workItem.setuserCode(repoData.getuserCode());
+		workItem.setuserCode(repoData.getUserCode());
 		workItem.setWorkItemName(repoData.getWorkItemName());
 		workItem.setWorkType(repoData.getWorkType());
 		workItem.setWorkItemReferenceNumber(repoData.getWorkItemRefNumber());

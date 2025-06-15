@@ -578,6 +578,14 @@ public class EmailService {
 			if (cust.getEmail() == null || cust.getEmail().trim().isEmpty()) {
 				return message = "Failed, email is required";
 			}
+			// Check for existing email if provided
+		    if (cust.getEmail() != null && !cust.getEmail().isEmpty()) {
+		        Optional<Customer> byEmail = customerRepo.findByEmail(cust.getEmail());
+		        if (byEmail.isPresent()) {
+		            return "email already exist in System please contact admin.";
+		        }
+		    }
+		    
 			if (!Pattern.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", cust.getEmail())) {
 				return message = "Failed, email must contain '@' and follow a valid format (e.g., example@domain.com)";
 			}
@@ -622,7 +630,6 @@ public class EmailService {
 				custDTO.setStreet(address.getStreet());
 				custDTO.setZipCode(address.getZipCode());
 			}
-
 			// Map contact details
 			ContactDetails contact = cust.getContactDetails();
 			if (contact != null) {
@@ -632,7 +639,6 @@ public class EmailService {
 				custDTO.setPhoneCountryCode(contact.getPhoneCountryCode());
 				custDTO.setPhoneNumber(cust.getPhoneNumber());
 			}
-
 			// Save or update the customer
 			try {
 				customerRepo.save(custDTO);

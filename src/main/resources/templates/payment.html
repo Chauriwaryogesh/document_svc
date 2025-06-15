@@ -478,7 +478,7 @@
 
     <main class="w-full max-w-7xl flex flex-col flex-grow p-4 sm:p-6 mt-16 sm:mt-20" aria-label="main-content">
       <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <button onclick="navigateTo('dashboard')" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700 w-full sm:w-auto" aria-label="Back to dashboard">
+        <button onclick="redirectToDashboard()" class="btn-neutral bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700 w-full sm:w-auto" aria-label="Back to dashboard">
           Back to Dashboard
         </button>
         <button id="bulk-verify" class="btn-neutral bg-green-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-green-600 hidden w-full sm:w-auto" aria-label="Verify selected accounts">Verify Selected</button>
@@ -885,7 +885,7 @@
           <form id="verify-document-form" class="space-y-4">
             <div>
               <label for="verify-id" class="form-label block text-sm required">Verification ID</label>
-              <input type="number" id="verify-id" class="form-input mt-1 text-sm" placeholder="Enter verification ID" required aria-required="true">
+              <input type="text" id="verify-id" class="form-input mt-1 text-sm" placeholder="Enter verification ID" required aria-required="true">
             </div>
             <div>
               <label for="verify-action" class="form-label block text-sm required">Action</label>
@@ -961,7 +961,7 @@
     		  notes: true,
     		  actions: true
     		};
-
+    		function redirectToDashboard() { window.location.href = "dashboard"; }
     		const addBankAccountModalHTML = `
     		<div id="add-bank-account-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="add-bank-account-title" role="dialog" aria-modal="true">
     		  <div class="modal-content w-full max-w-2xl">
@@ -1516,7 +1516,7 @@
     			    params.policyNo = searchTerm;
     			  } else if (searchType === 'accountNo') {
     			    params.bankAccNo = searchTerm;
-    			  } else if (searchType === 'customerNo') { 
+    			  } else if (searchType === 'customerNumber') { 
     			    params.customerNumber = searchTerm;
     			  } else {
     			    throw new Error('Invalid search type');

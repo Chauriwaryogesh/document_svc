@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class VerificationRecordDTO {
-	private Long id;
+	private String id;
 	private String accountNo;
 	private String customerNo;
 	private String policyNumber;
@@ -85,11 +85,11 @@ public class VerificationRecordDTO {
 		this.userCode = userCode;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

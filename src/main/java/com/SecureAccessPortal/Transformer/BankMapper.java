@@ -15,10 +15,10 @@ public class BankMapper {
 		List<VerificationRecordDTO> listOfDocument= new ArrayList<>();
 		listOfDocument = verRecords.parallelStream().map(record -> {
 			VerificationRecordDTO dto = new VerificationRecordDTO();
-			dto.setId(record.getId());
+			dto.setId(record.getVerId());
 			dto.setAccountNo(record.getBankAccount().getAccountNo());
-			dto.setCustomerNo(record.getCustomerNo());
-			dto.setPolicyNumber(record.getPolicyNumber());
+			dto.setCustomerNo(record.getCustomer().getCustomerNo());
+			dto.setPolicyNumber(record.getPolicy().getPolicyNumber());
 			dto.setUserCode(record.getUserCode());
 			dto.setIdCertNo(record.getIdentity());
 			dto.setIdentityStatus(record.getIdentityStatus());

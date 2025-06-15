@@ -15,5 +15,9 @@ public class CommonConstant {
 	public static final String FAILURE = "Failure";
 	public static final String VERIFICATION_RECORD = "VERIFICATION_RECORD";
 	public static final String BANK_ACC_CREATED = "BANK_ACC_CREATED";
+	public static final String BANK_ACC_WORKITEM = "Bank Account Created";
+	public static final String VER_REC_WORKITEM = "Verification record Created";
+	public static final String NO = "NO";
+	public static final String YES = "YES";
 
 }

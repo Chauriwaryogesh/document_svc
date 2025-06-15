@@ -1072,6 +1072,106 @@
             </select>
             <label for="policy-gender" class="mandatory">Gender</label>
           </div>
+          <div class="input-group">
+            <select id="policy-term" required>
+              <option value="">Select policy term</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Quarterly">Quarterly</option>
+              <option value="Daily">Daily</option>
+              <option value="Yearly">Yearly</option>
+            </select>
+            <label for="policy-term" class="mandatory">Policy Term</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-frequency">
+              <option value="">Select frequency</option>
+              <option value="Single">Single</option>
+              <option value="Recurring">Recurring</option>
+            </select>
+            <label for="policy-frequency">Policy Frequency</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="policy-premium" placeholder=" " required>
+            <label for="policy-premium" class="mandatory">Policy Premium</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="policy-totalAmount" placeholder=" ">
+            <label for="policy-totalAmount">Total Policy Amount</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="policy-monthlyInstallment" placeholder=" " required>
+            <label for="policy-monthlyInstallment" class="mandatory">Monthly Installment</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="policy-totalClaimableAmount" placeholder=" " required>
+            <label for="policy-totalClaimableAmount" class="mandatory">Total Claimable Amount</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-policyDate" placeholder=" " required>
+            <label for="policy-policyDate" class="mandatory">Policy Date</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="policy-installmentCount" placeholder=" ">
+            <label for="policy-installmentCount">Installment Count</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-dueDate" placeholder=" ">
+            <label for="policy-dueDate">Due Date</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-startDate" placeholder=" " required>
+            <label for="policy-startDate" class="mandatory">Policy Start Date</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-endDate" placeholder=" ">
+            <label for="policy-endDate">Policy End Date</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-renewalDate" placeholder=" ">
+            <label for="policy-renewalDate">Policy Renewal Date</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-beneficiaryName" placeholder=" " required>
+            <label for="policy-beneficiaryName" class="mandatory">Beneficiary Name</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-beneficiaryAadharNumber" placeholder=" " required>
+            <label for="policy-beneficiaryAadharNumber" class="mandatory">Beneficiary Aadhar Number</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-beneficiaryRelationship" required>
+              <option value="">Select relationship</option>
+              <option value="Spouse">Spouse</option>
+              <option value="Parent">Parent</option>
+              <option value="Child">Child</option>
+              <option value="Sibling">Sibling</option>
+              <option value="Other">Other</option>
+            </select>
+            <label for="policy-beneficiaryRelationship" class="mandatory">Beneficiary Relationship</label>
+          </div>
+          <div class="input-group">
+            <input type="tel" id="policy-nomineeContactNumber" placeholder=" ">
+            <label for="policy-nomineeContactNumber">Nominee Contact Number</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-status" required>
+              <option value="">Select status</option>
+              <option value="Active">Active</option>
+              <option value="Pending">Pending</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+            <label for="policy-status" class="mandatory">Policy Status</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-type" required>
+              <option value="">Select policy type</option>
+              <option value="Life">Life</option>
+              <option value="Health">Health</option>
+              <option value="Auto">Auto</option>
+              <option value="Home">Home</option>
+            </select>
+            <label for="policy-type" class="mandatory">Policy Type</label>
+          </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -1554,7 +1654,7 @@
 
 		  showLoader();
 		  try {
-		    const response = await fetch('http://localhost:8081/policy/customer-details/update', {
+			  const response = await fetch('http://localhost:8081/policy/customer-details/update', {
 		      method: 'POST',
 		      headers: {
 		        'Content-Type': 'application/json',
@@ -1563,19 +1663,31 @@
 		      body: JSON.stringify(payload)
 		    });
 
+		    const responseData = await response.json();
+		    console.log('API Response:', responseData); // Debug log
+
 		    if (response.ok) {
-		      const { data } = await response.json();
-		      const customerNumberMatch = data.match(/Customer Number: (\d+)/);
-		      const customerNumber = customerNumberMatch ? customerNumberMatch[1] : null;
-		      showAlert('success', data || 'Party/Customer created successfully!', null, customerNumber);
-		      closeModal('create-party');
-		      resetPartyForm();
+		      const { data } = responseData;
+		      if (data) {
+		        const customerNumberMatch = data.match(/Customer Number: (\d+)/);
+		        const customerNumber = customerNumberMatch ? customerNumberMatch[1] : null;
+		        showAlert('success', data || 'Customer created successfully.', null, customerNumber);
+		        closeModal('customerDetails');
+		        resetPartyForm();
+		      } else {
+		        // Log warning for debugging
+		        console.warn('API returned null data for successful customer creation:', responseData);
+		        showAlert('error', responseData.errorMessage || 'Customer created, but no customer number returned.');
+		        closeModal('customerDetails');
+		        resetPartyForm();
+		      }
 		    } else {
-		      const errorText = await response.text();
-		      showAlert('error', errorText || 'Failed to create party/customer.');
+		      const errorMessage = responseData.errorMessage || `Failed to create customer (Status: ${response.status})`;
+		      showAlert('error', errorMessage);
 		    }
 		  } catch (error) {
-		    showAlert('error', 'An error occurred. Please try again.');
+		    const errorMessage = error.message || 'An error occurred. Please try again.';
+		    showAlert('error', errorMessage);
 		    console.error('API error:', error);
 		  } finally {
 		    hideLoader();
@@ -1583,107 +1695,73 @@
 		}
 
 		async function createPolicy() {
-		  const userCode = document.getElementById('policy-userCode').value;
-		  const productCode = document.getElementById('policy-productCode').value;
-		  const polCompanyName = document.getElementById('policy-polCompanyName').value;
-		  const policyName = document.getElementById('policy-policyName').value;
-		  const customerNo = document.getElementById('policy-customerNo').value.trim();
-		  const custName = document.getElementById('policy-custName').value;
-		  const middleName = document.getElementById('policy-middleName').value;
-		  const surname = document.getElementById('policy-surname').value;
-		  const fcuFlag = document.getElementById('policy-fcuFlag').value;
-		  const phoneNum = document.getElementById('policy-phoneNum').value;
-		  const email = document.getElementById('policy-email').value;
-		  const smokerStatus = document.getElementById('policy-smokerStatus').value;
-		  const dateOfBirth = document.getElementById('policy-dateOfBirth').value;
-		  const gender = document.getElementById('policy-gender').value;
+			  const payload = {
+			    userCode: document.getElementById('policy-userCode').value,
+			    productCode: document.getElementById('policy-productCode').value,
+			    polCompanyName: document.getElementById('policy-polCompanyName').value,
+			    policyName: document.getElementById('policy-policyName').value,
+			    customerNo: document.getElementById('policy-customerNo').value,
+			    custName: document.getElementById('policy-custName').value,
+			    middleName: document.getElementById('policy-middleName').value,
+			    surname: document.getElementById('policy-surname').value,
+			    fcuFlag: document.getElementById('policy-fcuFlag').value,
+			    phoneNum: document.getElementById('policy-phoneNum').value,
+			    email: document.getElementById('policy-email').value,
+			    smokerStatus: document.getElementById('policy-smokerStatus').value,
+			    dateOfBirth: document.getElementById('policy-dateOfBirth').value,
+			    gender: document.getElementById('policy-gender').value,
+			    term: document.getElementById('policy-term').value,
+			    frequency: document.getElementById('policy-frequency').value,
+			    premium: parseFloat(document.getElementById('policy-premium').value) || 0,
+			    totalAmount: parseFloat(document.getElementById('policy-totalAmount').value) || 0,
+			    monthlyInstallment: parseFloat(document.getElementById('policy-monthlyInstallment').value) || 0,
+			    totalClaimableAmount: parseFloat(document.getElementById('policy-totalClaimableAmount').value) || 0,
+			    policyDate: document.getElementById('policy-policyDate').value,
+			    installmentCount: parseInt(document.getElementById('policy-installmentCount').value) || 0,
+			    dueDate: document.getElementById('policy-dueDate').value,
+			    startDate: document.getElementById('policy-startDate').value,
+			    endDate: document.getElementById('policy-endDate').value,
+			    renewalDate: document.getElementById('policy-renewalDate').value,
+			    beneficiaryName: document.getElementById('policy-beneficiaryName').value,
+			    beneficiaryAadharNumber: document.getElementById('policy-beneficiaryAadharNumber').value,
+			    beneficiaryRelationship: document.getElementById('policy-beneficiaryRelationship').value,
+			    nomineeContactNumber: document.getElementById('policy-nomineeContactNumber').value,
+			    status: document.getElementById('policy-status').value,
+			    type: document.getElementById('policy-type').value
+			  };
 
-		  if (!userCode) {
-		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
-		    return;
-		  }
-		  if (!productCode) {
-		    showAlert('error', 'Product Code is required.');
-		    return;
-		  }
-		  if (!polCompanyName) {
-		    showAlert('error', 'Policy Company Name is required.');
-		    return;
-		  }
-		  if (!policyName) {
-		    showAlert('error', 'Policy Name is required.');
-		    return;
-		  }
-		  if (!customerNo) {
-		    showAlert('error', 'Customer Number is required.');
-		    return;
-		  }
-		  if (!custName) {
-		    showAlert('error', 'Customer Name is required.');
-		    return;
-		  }
-		  if (!fcuFlag) {
-		    showAlert('error', 'FCU Flag is required.');
-		    return;
-		  }
-		  if (!gender) {
-		    showAlert('error', 'Gender is required.');
-		    return;
-		  }
-		  if (!config.customerValidated) {
-		    showAlert('error', 'Please validate the Customer Number.');
-		    return;
-		  }
+			  showLoader();
+			  try {
+			    const response = await fetch('http://localhost:8081/policy/policy-create', {
+			      method: 'POST',
+			      headers: {
+			        'Content-Type': 'application/json',
+			        'userCode': config.userCode
+			      },
+			      body: JSON.stringify(payload)
+			    });
 
-		  const payload = {
-		    userCode,
-		    productCode,
-		    polCompanyName,
-		    policyName,
-		    customerNo,
-		    custName,
-		    middleName,
-		    surname,
-		    fcuFlag,
-		    phoneNum,
-		    email,
-		    smokerStatus,
-		    dateOfBirth,
-		    gender
-		  };
-
-		  showLoader();
-		  try {
-		    const response = await fetch('http://localhost:8081/policy/policy-create', {
-		      method: 'POST',
-		      headers: {
-		        'Content-Type': 'application/json',
-		        'userCode': config.userCode
-		      },
-		      body: JSON.stringify(payload)
-		    });
-
-		    if (response.ok) {
-		      const { data, errorMessage } = await response.json();
-		      if (errorMessage) {
-		        showAlert('error', errorMessage);
-		        return;
-		      }
-		      const message = data.policyNo ? `Policy ${data.policyNo} created successfully!` : 'Policy created successfully!';
-		      showAlert('success', message, null, null, data.policyNo);
-		      closeModal('create-policy');
-		      resetPolicyForm();
-		    } else {
-		      const errorText = await response.text();
-		      showAlert('error', errorText || 'Failed to create policy.');
-		    }
-		  } catch (error) {
-		    showAlert('error', 'An error occurred. Please try again.');
-		    console.error('Policy creation error:', error);
-		  } finally {
-		    hideLoader();
-		  }
-		}
+			    if (response.ok) {
+			      const { data, errorMessage } = await response.json();
+			      if (errorMessage) {
+			        showAlert('error', errorMessage);
+			        return;
+			      }
+			      const message = data.policyNo ? `Policy ${data.policyNo} created successfully!` : 'Policy created successfully!';
+			      showAlert('success', message, null, null, data.policyNo);
+			      closeModal('create-policy');
+			      resetPolicyForm();
+			    } else {
+			      const errorText = await response.text();
+			      showAlert('error', errorText || 'Failed to create policy.');
+			    }
+			  } catch (error) {
+			    showAlert('error', 'An error occurred. Please try again.');
+			    console.error('Policy creation error:', error);
+			  } finally {
+			    hideLoader();
+			  }
+			}
 
 		function copyCustomerNumber() {
 		  const numberInput = document.getElementById('customer-number');

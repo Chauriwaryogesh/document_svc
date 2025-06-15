@@ -1,5 +1,6 @@
 package com.SecureAccessPortal.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
@@ -10,8 +11,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.management.RuntimeErrorException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +20,17 @@ import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Policy;
+import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.BankAccountDTO;
 import com.SecureAccessPortal.Modal.PolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyList;
 import com.SecureAccessPortal.Modal.PolicyRequest;
 import com.SecureAccessPortal.Modal.ResponseDTO;
-import com.SecureAccessPortal.Modal.WorkItemDTO;
 import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.IPolicyRepo;
+import com.SecureAccessPortal.Repo.WorkItemRepo;
+import com.SecureAccessPortal.util.DateUtil;
 
 import jakarta.transaction.Transactional;
 
@@ -49,44 +50,65 @@ public class PolicyService {
 
 	@Autowired
 	private BankAccountRepo bankAccountRepository;
+	
+	@Autowired
+	private WorkItemRepo workItemRepo;
+	
+	@Autowired
+	private DateUtil dateUtil;
 
 	public ResponseDTO createPolicy(PolicyRequest policyDTO, String userCode) {
 		ResponseDTO response = new ResponseDTO();
+		Customer customer= null;
 		try {
 			Policy policy = new Policy();
 			policy.setCreatedBy(userCode);
 			policy.setCreatedDate(LocalDateTime.now());
-			policy.setCustomerNo(policyDTO.getCustomerNo());
+			if(policyDTO.getCustomerNo() != null) {
+				customer= customerRepo.findByCustomerNoNew(policyDTO.getCustomerNo());
+				policy.setCustomer(customer);
+			}
 			policy.setDeletedFlag("N");
 			policy.setPolCompanyName(policyDTO.getPolCompanyName());
 			policy.setPolicyName(policyDTO.getPolicyName());
 			policy.setProductCode(policyDTO.getProductCode());
 			policy.setUpdatedBy(userCode);
-			policy.setuserCode(userCode);
+			policy.setUserCode(userCode);
 			policy.setFcuFlag(policyDTO.getFcuFlag());
-
 			String newPolicyNumber = generatePolicyNumber();
 			policy.setPolicyNumber(newPolicyNumber);
-			// call workitem Service to generate WIrefNo.
-
-			WorkItemDTO workItemRequest = new WorkItemDTO();
-			workItemRequest.setComment("Policy is created " + newPolicyNumber + "for the customer");
-			workItemRequest.setCreatedBy(userCode);
-			workItemRequest.setuserCode(userCode);
-			workItemRequest.setWorkItemName(CommonConstant.POLICY_CREATED);
-			workItemRequest.setCreatedTime(String.valueOf(LocalDateTime.now()));
-			workItemRequest.setWorkType(CommonConstant.ADD_POL);
-			workItemRequest.setStatus(CommonConstant.OPEN);
-			workItemRequest.setQueue(CommonConstant.TEAM_MEMBER);
-			WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userCode);
-			if (workItem != null) {
-				policy.setWorkItemRefNo(workItem.getWorkItemReferenceNumber());
-				logger.info("WorkItemcreated succesfully");
-
-			} else {
-				new RuntimeErrorException(null, "Error while creating WorkItem");
-			}
+			
+			
+			policy.setBeneficiaryContactNumber(policyDTO.getNomineeContactNumber());
+			policy.setBeneficiaryIdentityNumber(policyDTO.getBeneficiaryAadharNumber());
+			policy.setBeneficiaryName(policyDTO.getBeneficiaryName());
+			policy.setBeneficiaryRelationship(policyDTO.getBeneficiaryRelationship());
+			policy.setComplianceFlag(CommonConstant.NO);
+			policy.setCoverageAmount(BigDecimal.valueOf(policyDTO.getTotalAmount()));
+			policy.setMonthlyInstallment(policyDTO.getMonthlyInstallment());
+			policy.setPaymentFrequency(policyDTO.getTerm());
+			
+			policy.setPolicyEndDate(dateUtil.stringToLocalDateConvert(policyDTO.getEndDate()));
+			policy.setPolicyfrequency(policyDTO.getTerm());
+			policy.setPolicyPremium(BigDecimal.valueOf(policyDTO.getPremium()));
+			policy.setPolicyStartDate(dateUtil.stringToLocalDateConvert(policyDTO.getStartDate()));
+			policy.setPolicyStatus(policyDTO.getStatus());
+			policy.setPolicyTerm(policyDTO.getFrequency());
+			policy.setPolicyType(policyDTO.getType());
+			policy.setPremiumDueDate(dateUtil.stringToLocalDateConvert(policyDTO.getDueDate()));
+			policy.setRenewalDate(dateUtil.stringToLocalDateConvert(policyDTO.getRenewalDate()));
+			policy.setSmokerStatus(policyDTO.getSmokerStatus());
+			policy.setTotalAmount(policyDTO.getTotalAmount());
+			policy.setTotalClaimableAmount(policyDTO.getTotalClaimableAmount());
+			
+			
 			policyRepository.save(policy);
+			// call workitem Service to generate WIrefNo.
+			String workType = CommonConstant.ADD_POL;
+			String workItemName = CommonConstant.POLICY_CREATED;
+			String comment="Policy is created " + policy.getPolicyNumber() + "for the customer";
+			workItemService.mapRequetforWorkItem(userCode, policy, customer, workType, workItemName,comment,null,null);
+
 			response.setPolicyNo(newPolicyNumber);
 			response.setStatus(CommonConstant.SUCCESS);
 		} catch (Exception e) {
@@ -95,6 +117,7 @@ public class PolicyService {
 		}
 		return response;
 	}
+
 
 	@Transactional
 	public synchronized String generatePolicyNumber() {
@@ -128,7 +151,7 @@ public class PolicyService {
 				return resp;
 			}
 			if (allpol != null && allpol.equalsIgnoreCase("Y")) {
-				String custNo = policy.getCustomerNo();
+				String custNo = policy.getCustomer().getCustomerNo();
 				if (custNo == null) {
 					resp.setErrorMessage("No customer associated with policy number: " + policyNo);
 					return resp;
@@ -141,7 +164,7 @@ public class PolicyService {
 				}
 				resp.setData(response);
 			} else {
-				Optional<Customer> customerDtls = customerRepo.findByCustomerNo(policy.getCustomerNo());
+				Optional<Customer> customerDtls = customerRepo.findByCustomerNo(policy.getCustomer().getCustomerNo());
 				if (customerDtls.isPresent()) {
 					Customer customer = customerDtls.get();
 					PolicyDTO policyDTO = new PolicyDTO();
@@ -168,7 +191,7 @@ public class PolicyService {
 					pol.setCreatedDate(policy.getCreatedDate() != null
 							? policy.getCreatedDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 							: "");
-					pol.setWorkItemRefNo(policy.getWorkItemRefNo() != null ? policy.getWorkItemRefNo() : "");
+					pol.setWorkItemRefNo(policy.getWorkitems().get(0).getWorkItemRefNumber());
 
 					List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber());
 					List<BankAccountDTO> bankAccountDTOs = bankAccounts != null
@@ -215,9 +238,33 @@ public class PolicyService {
 				resp.setData(response);
 			}
 		} else if (workItemRefNo != null && !workItemRefNo.isEmpty()) {
-			List<Policy> policies = policyRepository.findByWorkItemRefNum(workItemRefNo);
+			if (workItemRefNo == null || workItemRefNo.isEmpty()) {
+				resp.setErrorMessage("Work item reference number cannot be null or empty");
+				return resp;
+			}
+			Optional<Workitem> byWiRefNum = workItemRepo.findByWiRefNum(workItemRefNo);
+			if (!byWiRefNum.isPresent()) {
+				resp.setErrorMessage("No work item found for reference number: " + workItemRefNo);
+				return resp;
+			}
+			Workitem workitem = byWiRefNum.get();
+			Policy policy = workitem.getPolicy();
+			if (policy == null) {
+				resp.setErrorMessage("No policy associated with work item reference number: " + workItemRefNo);
+				return resp;
+			}
+			Customer customer = policy.getCustomer();
+			if (customer == null || customer.getCustomerNo() == null) {
+				resp.setErrorMessage("No customer associated with policy: " + policy.getPolicyNumber());
+				return resp;
+			}
+			// Fetch all policies for the customer
+			List<Policy> policies = policyRepository.findByCustomerNo(customer.getCustomerNo());
+			if (policies.isEmpty()) {
+				resp.setErrorMessage("No policies found for customer number: " + customer.getCustomerNo());
+			}
 			if (policies != null && !policies.isEmpty()) {
-				String custNo = policies.get(0).getCustomerNo();
+				String custNo = policies.get(0).getCustomer().getCustomerNo();
 				if (custNo == null) {
 					resp.setErrorMessage("No customer associated with work item reference number: " + workItemRefNo);
 					return resp;
@@ -232,6 +279,7 @@ public class PolicyService {
 			} else {
 				resp.setErrorMessage("No policies found for work item reference number: " + workItemRefNo);
 			}
+
 		} else {
 			resp.setErrorMessage("At least one parameter (policyNo, customerNo, workItemRefNo) is required");
 		}
@@ -239,7 +287,7 @@ public class PolicyService {
 	}
 
 	private List<PolicyDTO> mapPolicyListDetails(List<Policy> policies, String userCode) {
-		return policies.stream().collect(Collectors.groupingBy(Policy::getCustomerNo)).entrySet().stream()
+		return policies.stream().collect(Collectors.groupingBy(policy -> policy.getCustomer().getCustomerNo())).entrySet().stream()
 				.map(entry -> {
 					String customerNo = entry.getKey();
 					List<Policy> customerPolicies = entry.getValue();
@@ -274,7 +322,7 @@ public class PolicyService {
 						pol.setCreatedDate(policy.getCreatedDate() != null
 								? policy.getCreatedDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 								: "");
-						pol.setWorkItemRefNo(policy.getWorkItemRefNo() != null ? policy.getWorkItemRefNo() : "");
+						pol.setWorkItemRefNo(policy.getWorkitems() != null ? policy.getWorkitems().get(0).getWorkItemRefNumber() : "");
 
 						List<BankAccount> bankAccounts = bankAccountRepository
 								.findByPolicyNumber(policy.getPolicyNumber());
@@ -369,5 +417,6 @@ public class PolicyService {
 		}
 		return productCode;
 	}
+	
 
 }

@@ -2,6 +2,7 @@ package com.SecureAccessPortal.Entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -25,33 +26,34 @@ public class BankAccount {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "account_number", nullable = false, unique = true)
+    @Column(name = "accountNo", unique = true)
     private String accountNo;
 
-    @Column(name = "ifsc_code", nullable = false)
+    @Column(name = "ifscCode")
     private String ifscCode;
 
-    @Column(name = "bank_name", nullable = false)
+    @Column(name = "bankName")
     private String bankName;
 
-    @Column(name = "account_type")
+    @Column(name = "accountType")
     private String accountType;
 
     @Column(name = "status")
     private String status;
 
-    // Relationship with Customer
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerNo", nullable = false, referencedColumnName = "customerNo")
+    @JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
     private Customer customer;
 
-    // Relationship with Policy
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "policy_number", nullable = false, referencedColumnName = "policyNumber")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "policy_number", referencedColumnName = "policyNumber")
     private Policy policy;
-    
-    @OneToMany(mappedBy = "bankAccount", fetch = FetchType.EAGER ,cascade = CascadeType.ALL)
-    private List<VerificationRecord> verificationRecord;
+
+    @OneToMany(mappedBy = "bankAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<VerificationRecord> verificationRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "bankAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Workitem> workitems = new ArrayList<>();
 
     @Column(name = "last_verification_date")
     private LocalDateTime lastVerificationDate;
@@ -60,7 +62,7 @@ public class BankAccount {
     private String createdBy;
 
     @Column(name = "created_date")
-    private LocalDateTime createdDate; // Changed to LocalDateTime for consistency
+    private LocalDateTime createdDate;
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
@@ -78,7 +80,7 @@ public class BankAccount {
     private String paymentMethodStatus;
 
     @Column(name = "last_payment_date")
-    private LocalDateTime lastPaymentDate; // Changed to LocalDateTime for consistency
+    private LocalDateTime lastPaymentDate;
 
     @Column(name = "aml_status")
     private String amlStatus;
@@ -91,27 +93,8 @@ public class BankAccount {
 
     @Column(name = "verification_attempts")
     private Integer verificationAttempts;
-    
-    @Column(name = "work_item_ref_no")
-    private String workItemRefNo;
- 
-	public String getWorkItemRefNo() {
-		return workItemRefNo;
-	}
 
-	public void setWorkItemRefNo(String workItemRefNo) {
-		this.workItemRefNo = workItemRefNo;
-	}
-
-	public List<VerificationRecord> getVerificationRecord() {
-		return verificationRecord;
-	}
-
-	public void setVerificationRecord(List<VerificationRecord> verificationRecord) {
-		this.verificationRecord = verificationRecord;
-	}
-
-	// Getters and Setters
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -174,6 +157,22 @@ public class BankAccount {
 
     public void setPolicy(Policy policy) {
         this.policy = policy;
+    }
+
+    public List<VerificationRecord> getVerificationRecords() {
+        return verificationRecords;
+    }
+
+    public void setVerificationRecords(List<VerificationRecord> verificationRecords) {
+        this.verificationRecords = verificationRecords;
+    }
+
+    public List<Workitem> getWorkitems() {
+        return workitems;
+    }
+
+    public void setWorkitems(List<Workitem> workitems) {
+        this.workitems = workitems;
     }
 
     public LocalDateTime getLastVerificationDate() {
@@ -278,5 +277,16 @@ public class BankAccount {
 
     public void setVerificationAttempts(Integer verificationAttempts) {
         this.verificationAttempts = verificationAttempts;
+    }
+
+    // Helper methods to maintain bidirectional relationships
+    public void addVerificationRecord(VerificationRecord verificationRecord) {
+        verificationRecords.add(verificationRecord);
+        verificationRecord.setBankAccount(this);
+    }
+
+    public void addWorkitem(Workitem workitem) {
+        workitems.add(workitem);
+        workitem.setBankAccount(this);
     }
 }

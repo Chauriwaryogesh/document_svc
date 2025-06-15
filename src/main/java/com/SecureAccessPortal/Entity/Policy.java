@@ -6,12 +6,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -24,11 +27,21 @@ public class Policy {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "policyNumber", unique = true, nullable = false, length = 12)
+    @Column(name = "policyNumber", unique = true, length = 12)
     private String policyNumber;
 
-    @OneToMany(mappedBy = "policy", fetch = FetchType.LAZY)
-    private List<BankAccount> bankAccounts = new ArrayList<>(); // Initialized to avoid null issues
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
+    private Customer customer;
+
+    @OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<BankAccount> bankAccounts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<VerificationRecord> verificationRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Workitem> workitems = new ArrayList<>();
 
     @Column(name = "created_date")
     private LocalDateTime createdDate;
@@ -54,12 +67,6 @@ public class Policy {
     @Column(name = "policy_name")
     private String policyName;
 
-    @Column(name = "customerNo")
-    private String customerNo;
-
-    @Column(name = "work_item_ref_no")
-    private String workItemRefNo;
-
     @Column(name = "fcu_details")
     private String fcuFlag;
 
@@ -67,7 +74,7 @@ public class Policy {
     private String policyType;
 
     @Column(name = "policy_premium")
-    private BigDecimal policyPremium; // Changed to BigDecimal for currency precision
+    private BigDecimal policyPremium;
 
     @Column(name = "policy_status")
     private String policyStatus;
@@ -88,15 +95,105 @@ public class Policy {
     private String beneficiaryRelationship;
 
     @Column(name = "policy_term")
-    private Integer policyTerm; // Changed to Integer for consistency
+    private String policyTerm;
 
     @Column(name = "compliance_flag")
     private String complianceFlag;
 
-    @Column(name = "payment_frequency")
-    private String paymentFrequency;
+	@Column(name = "payment_frequency")
+	private String paymentFrequency;
+	
+	@Column(name = "smoker_status")
+	private String smokerStatus;
+	@Column(name = "policy_frequency")
+	private String policyfrequency;
+	@Column(name = "total_amount")
+	private int totalAmount;
+	@Column(name = "monthly_installment")
+	private int monthlyInstallment;
+	@Column(name = "total_claimableAmount")
+	private int totalClaimableAmount;
+	@Column(name = "policy_startDate")
+	private LocalDate policyStartDate;
+	@Column(name = "policy_endDate")
+	private LocalDate policyEndDate;
+	@Column(name = "beneficiary_identityNumber")
+	private String beneficiaryIdentityNumber;
+	@Column(name = "beneficiary_contactNumber")
+	private String beneficiaryContactNumber;
+    public String getSmokerStatus() {
+		return smokerStatus;
+	}
 
-    // Getters and Setters
+	public void setSmokerStatus(String smokerStatus) {
+		this.smokerStatus = smokerStatus;
+	}
+
+	public String getPolicyfrequency() {
+		return policyfrequency;
+	}
+
+	public void setPolicyfrequency(String policyfrequency) {
+		this.policyfrequency = policyfrequency;
+	}
+
+	public int getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(int totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public int getMonthlyInstallment() {
+		return monthlyInstallment;
+	}
+
+	public void setMonthlyInstallment(int monthlyInstallment) {
+		this.monthlyInstallment = monthlyInstallment;
+	}
+
+	public int getTotalClaimableAmount() {
+		return totalClaimableAmount;
+	}
+
+	public void setTotalClaimableAmount(int totalClaimableAmount) {
+		this.totalClaimableAmount = totalClaimableAmount;
+	}
+
+	public LocalDate getPolicyStartDate() {
+		return policyStartDate;
+	}
+
+	public void setPolicyStartDate(LocalDate policyStartDate) {
+		this.policyStartDate = policyStartDate;
+	}
+
+	public LocalDate getPolicyEndDate() {
+		return policyEndDate;
+	}
+
+	public void setPolicyEndDate(LocalDate policyEndDate) {
+		this.policyEndDate = policyEndDate;
+	}
+
+	public String getBeneficiaryIdentityNumber() {
+		return beneficiaryIdentityNumber;
+	}
+
+	public void setBeneficiaryIdentityNumber(String beneficiaryIdentityNumber) {
+		this.beneficiaryIdentityNumber = beneficiaryIdentityNumber;
+	}
+
+	public String getBeneficiaryContactNumber() {
+		return beneficiaryContactNumber;
+	}
+
+	public void setBeneficiaryContactNumber(String beneficiaryContactNumber) {
+		this.beneficiaryContactNumber = beneficiaryContactNumber;
+	}
+
+	// Getters and Setters
     public Long getId() {
         return id;
     }
@@ -113,12 +210,36 @@ public class Policy {
         this.policyNumber = policyNumber;
     }
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
     public List<BankAccount> getBankAccounts() {
         return bankAccounts;
     }
 
     public void setBankAccounts(List<BankAccount> bankAccounts) {
         this.bankAccounts = bankAccounts;
+    }
+
+    public List<VerificationRecord> getVerificationRecords() {
+        return verificationRecords;
+    }
+
+    public void setVerificationRecords(List<VerificationRecord> verificationRecords) {
+        this.verificationRecords = verificationRecords;
+    }
+
+    public List<Workitem> getWorkitems() {
+        return workitems;
+    }
+
+    public void setWorkitems(List<Workitem> workitems) {
+        this.workitems = workitems;
     }
 
     public LocalDateTime getCreatedDate() {
@@ -161,11 +282,11 @@ public class Policy {
         this.updatedBy = updatedBy;
     }
 
-    public String getuserCode() {
+    public String getUserCode() {
         return userCode;
     }
 
-    public void setuserCode(String userCode) {
+    public void setUserCode(String userCode) {
         this.userCode = userCode;
     }
 
@@ -183,22 +304,6 @@ public class Policy {
 
     public void setPolicyName(String policyName) {
         this.policyName = policyName;
-    }
-
-    public String getCustomerNo() {
-        return customerNo;
-    }
-
-    public void setCustomerNo(String customerNo) {
-        this.customerNo = customerNo;
-    }
-
-    public String getWorkItemRefNo() {
-        return workItemRefNo;
-    }
-
-    public void setWorkItemRefNo(String workItemRefNo) {
-        this.workItemRefNo = workItemRefNo;
     }
 
     public String getFcuFlag() {
@@ -273,11 +378,11 @@ public class Policy {
         this.beneficiaryRelationship = beneficiaryRelationship;
     }
 
-    public Integer getPolicyTerm() {
+    public String getPolicyTerm() {
         return policyTerm;
     }
 
-    public void setPolicyTerm(Integer policyTerm) {
+    public void setPolicyTerm(String policyTerm) {
         this.policyTerm = policyTerm;
     }
 
@@ -297,9 +402,19 @@ public class Policy {
         this.paymentFrequency = paymentFrequency;
     }
 
-    // Helper method to maintain bidirectional relationship
+    // Helper methods to maintain bidirectional relationships
     public void addBankAccount(BankAccount bankAccount) {
         bankAccounts.add(bankAccount);
         bankAccount.setPolicy(this);
+    }
+
+    public void addVerificationRecord(VerificationRecord verificationRecord) {
+        verificationRecords.add(verificationRecord);
+        verificationRecord.setPolicy(this);
+    }
+
+    public void addWorkitem(Workitem workitem) {
+        workitems.add(workitem);
+        workitem.setPolicy(this);
     }
 }

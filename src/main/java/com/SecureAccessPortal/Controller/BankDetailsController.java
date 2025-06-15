@@ -165,7 +165,7 @@ public class BankDetailsController {
 	}
 
 	@GetMapping("/{id}/document")
-	public org.springframework.http.ResponseEntity<byte[]> getVerificationDocument(@PathVariable Long id,
+	public org.springframework.http.ResponseEntity<byte[]> getVerificationDocument(@PathVariable String id,
 			@RequestParam("action") String action, @RequestParam("userCode") String userCode) {
 
 		try {
@@ -181,10 +181,11 @@ public class BankDetailsController {
 		}
 	}
 	@PostMapping("/{id}/updateStatus")
-	public org.springframework.http.ResponseEntity<String> updateStatus(@PathVariable Long id,
-			@RequestBody VerificationRecordDTO verificationRecordDTO) {
+	public org.springframework.http.ResponseEntity<String> updateStatus(@PathVariable String id,
+			@RequestBody VerificationRecordDTO verificationRecordDTO, 
+			@RequestHeader (value= "userCode", required =false) String userCode) {
 		try {
-			String message  = bankDetailsService.updateStatus(id, verificationRecordDTO);
+			String message  = bankDetailsService.updateStatus(id, verificationRecordDTO,userCode);
 			return new org.springframework.http.ResponseEntity<>(message, HttpStatus.OK);
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(e.getMessage());

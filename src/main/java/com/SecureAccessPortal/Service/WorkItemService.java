@@ -10,11 +10,17 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.ActivityDtls;
+import com.SecureAccessPortal.Entity.BankAccount;
+import com.SecureAccessPortal.Entity.Customer;
+import com.SecureAccessPortal.Entity.Policy;
+import com.SecureAccessPortal.Entity.VerificationRecord;
 import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.ActivityDetailsDTO;
 import com.SecureAccessPortal.Modal.Queue;
@@ -46,9 +52,9 @@ public class WorkItemService implements IWorkItemService {
 			workItem.setCreatedBy(userCode);
 			workItem.setCreatedTime(LocalDateTime.now());
 			if (userCode != null) {
-				workItem.setuserCode(userCode);
+				workItem.setUserCode(userCode);
 			} else {
-				workItem.setuserCode(workItemRequest.getCreatedBy());
+				workItem.setUserCode(workItemRequest.getCreatedBy());
 			}
 			workItem.setWorkItemName(workItemRequest.getWorkItemName());
 			workItem.setWorkType(workItemRequest.getWorkType());
@@ -65,7 +71,6 @@ public class WorkItemService implements IWorkItemService {
 			if (repoData == null) {
 				workItemDTO.setComment("failed to create WorkItem");
 			} else {
-				// MApping for Response
 				workItemDTO = workItemMapper.workItemMApper(repoData);
 			}
 
@@ -122,7 +127,7 @@ public class WorkItemService implements IWorkItemService {
 					workItem.setComment(workItems.getComment());
 					workItem.setCreatedBy(workItems.getCreatedBy());
 					workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
-					workItem.setuserCode(workItems.getuserCode());
+					workItem.setuserCode(workItems.getUserCode());
 					workItem.setWorkItemName(workItems.getWorkItemName());
 					workItem.setWorkType(workItems.getWorkType());
 					workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
@@ -138,7 +143,7 @@ public class WorkItemService implements IWorkItemService {
 					workItem.setComment(workItems.getComment());
 					workItem.setCreatedBy(workItems.getCreatedBy());
 					workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
-					workItem.setuserCode(workItems.getuserCode());
+					workItem.setuserCode(workItems.getUserCode());
 					workItem.setWorkItemName(workItems.getWorkItemName());
 					workItem.setWorkType(workItems.getWorkType());
 					workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
@@ -203,6 +208,41 @@ public class WorkItemService implements IWorkItemService {
 		workItemCount.setRejected(String.valueOf(rejected));
 		workItemCount.setQueue(queue);
 		return workItemCount;
+	}
+
+	@Override
+	public Workitem mapRequetforWorkItem(String userCode, Policy policy, Customer customer, String workType,
+			String workItemName, String comment, BankAccount bankAccount,VerificationRecord verificationRecord) {
+		com.SecureAccessPortal.Entity.Workitem workItem = new com.SecureAccessPortal.Entity.Workitem();
+		workItem.setWorkItemId(String.valueOf(UUID.randomUUID()));
+		workItem.setComment(comment);
+		workItem.setCreatedBy(userCode);
+		workItem.setCreatedTime(LocalDateTime.now());
+		workItem.setUserCode(userCode);
+
+		workItem.setWorkItemName(workItemName);
+		workItem.setWorkType(workType);
+		String refNo = generateRandomWorkItemRefNumber();
+		workItem.setWorkItemRefNumber(refNo);
+		workItem.setQueue(CommonConstant.TEAM_MEMBER);
+		workItem.setStatus(CommonConstant.OPEN);
+		if(customer != null) {
+			workItem.setCustomer(customer);
+		}
+		if(policy != null) {
+			workItem.setPolicy(policy);
+		}
+		if(bankAccount != null) {
+			workItem.setBankAccount(bankAccount);
+		}
+		if(verificationRecord != null) {
+			workItem.setVerificationRecord(verificationRecord);
+		}
+		Workitem repoData = workItemRepo.save(workItem);
+		if (repoData == null) {
+			new RuntimeErrorException(null, "Error while creating WorkItem");
+		}
+		return repoData;
 	}
 
 }

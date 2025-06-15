@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,14 +15,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "Customer")
 public class Customer {
 
-    @Column
-    @NotEmpty
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column( unique = true)
+    @NotBlank
+    private String customerNo;
+
+    @NotBlank
+    @Column( unique = true)
     private String email;
 
     @Column
@@ -34,29 +43,19 @@ public class Customer {
     private String surname;
 
     @Column
-    private String age;
-
+    private String age; 
     
     @Column
-    private String dateOfBirth; // Consider changing to LocalDate for better date handling
+    private String dateOfBirth; // Changed to LocalDate for better date handling
 
-   
     @Column
     private String gender;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String customerNo;
 
     @Column
     private String createdBy;
 
     @Column
-    private LocalDateTime createdTime; // Changed to LocalDateTime for consistency
+    private LocalDateTime createdTime;
 
     @Column
     private String userCode;
@@ -118,10 +117,44 @@ public class Customer {
     @Column
     private LocalDate documentExpiryDate;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
-    private List<BankAccount> bankAccounts = new ArrayList<>(); // Initialized to avoid null issues
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Policy> policies = new ArrayList<>();
 
-    // Getters and Setters
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<BankAccount> bankAccounts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<VerificationRecord> verificationRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Workitem> workitems = new ArrayList<>();
+
+    
+    public String getAge() {
+		return age;
+	}
+
+	public void setAge(String age) {
+		this.age = age;
+	}
+
+	// Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCustomerNo() {
+        return customerNo;
+    }
+
+    public void setCustomerNo(String customerNo) {
+        this.customerNo = customerNo;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -154,44 +187,21 @@ public class Customer {
         this.surname = surname;
     }
 
-    public String getAge() {
-        return age;
-    }
-
-    public void setAge(String age) {
-        this.age = age;
-    }
 
     public String getDateOfBirth() {
-        return dateOfBirth;
-    }
+		return dateOfBirth;
+	}
 
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
 
-    public String getGender() {
+	public String getGender() {
         return gender;
     }
 
     public void setGender(String gender) {
         this.gender = gender;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCustomerNo() {
-        return customerNo;
-    }
-
-    public void setCustomerNo(String customerNo) {
-        this.customerNo = customerNo;
     }
 
     public String getCreatedBy() {
@@ -211,14 +221,14 @@ public class Customer {
     }
 
     public String getUserCode() {
-		return userCode;
-	}
+        return userCode;
+    }
 
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
-	}
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
+    }
 
-	public String getSmokerStatus() {
+    public String getSmokerStatus() {
         return smokerStatus;
     }
 
@@ -370,6 +380,14 @@ public class Customer {
         this.documentExpiryDate = documentExpiryDate;
     }
 
+    public List<Policy> getPolicies() {
+        return policies;
+    }
+
+    public void setPolicies(List<Policy> policies) {
+        this.policies = policies;
+    }
+
     public List<BankAccount> getBankAccounts() {
         return bankAccounts;
     }
@@ -378,9 +396,40 @@ public class Customer {
         this.bankAccounts = bankAccounts;
     }
 
-    // Helper method to maintain bidirectional relationship
+    public List<VerificationRecord> getVerificationRecords() {
+        return verificationRecords;
+    }
+
+    public void setVerificationRecords(List<VerificationRecord> verificationRecords) {
+        this.verificationRecords = verificationRecords;
+    }
+
+    public List<Workitem> getWorkitems() {
+        return workitems;
+    }
+
+    public void setWorkitems(List<Workitem> workitems) {
+        this.workitems = workitems;
+    }
+
+    // Helper methods to maintain bidirectional relationships
+    public void addPolicy(Policy policy) {
+        policies.add(policy);
+        policy.setCustomer(this);
+    }
+
     public void addBankAccount(BankAccount bankAccount) {
         bankAccounts.add(bankAccount);
         bankAccount.setCustomer(this);
+    }
+
+    public void addVerificationRecord(VerificationRecord verificationRecord) {
+        verificationRecords.add(verificationRecord);
+        verificationRecord.setCustomer(this);
+    }
+
+    public void addWorkitem(Workitem workitem) {
+        workitems.add(workitem);
+        workitem.setCustomer(this);
     }
 }

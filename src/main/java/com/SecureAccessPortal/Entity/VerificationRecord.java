@@ -1,6 +1,7 @@
 package com.SecureAccessPortal.Entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -17,230 +18,255 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "Verification_Records")
 public class VerificationRecord {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column
+    private Long id;
+    
+    @Column
+    private String verId;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column
-	private long id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
+    private Customer customer;
 
-	@ManyToOne
-	@JoinColumn(name = "accountNo", nullable = false, referencedColumnName = "account_number")
-	private BankAccount bankAccount;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "policy_number", referencedColumnName = "policyNumber")
+    private Policy policy;
 
-	@Column
-	private String customerNo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_number", referencedColumnName = "accountNo")
+    private BankAccount bankAccount;
 
-	@Column
-	private String policyNumber;
+    @OneToMany(mappedBy = "verificationRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Workitem> workitems = new ArrayList<>();
 
-	@Column
-	private String sanctions;
+    @Column
+    private String sanctions;
 
-	@Column(columnDefinition = "LONGBLOB")
-	@Lob
-	private byte[] sanctionsDocs;
-	@Column
-	private String sancStatus;
+    @Column(columnDefinition = "LONGBLOB")
+    @Lob
+    private byte[] sanctionsDocs;
 
-	@Column
-	private String identity;
+    @Column
+    private String sancStatus;
 
-	@Column(columnDefinition = "LONGBLOB")
-	@Lob
-	private byte[] identityDocs;
-	@Column
-	private String identityStatus;
+    @Column
+    private String identity;
 
-	@Column
-	private String death;
+    @Column(columnDefinition = "LONGBLOB")
+    @Lob
+    private byte[] identityDocs;
 
-	@Column(columnDefinition = "LONGBLOB")
-	@Lob
-	private byte[] deathDocs;
-	@Column
-	private String deathStatus;
+    @Column
+    private String identityStatus;
 
-	@Column
-	private String userCode;
-	@Column
-	private LocalDateTime createdTime;
+    @Column
+    private String death;
 
-	@Column
-	private String createdBy;
-	@Column
-	private LocalDateTime updatedTime;
-	@Column
-	private String updatedBy;
+    @Column(columnDefinition = "LONGBLOB")
+    @Lob
+    private byte[] deathDocs;
 
-	@Column(name = "work_item_ref_no")
-	private String workItemRefNo;
+    @Column
+    private String deathStatus;
 
-	public String getWorkItemRefNo() {
-		return workItemRefNo;
+    @Column
+    private String userCode;
+
+    @Column
+    private LocalDateTime createdTime;
+
+    @Column
+    private String createdBy;
+
+    @Column
+    private LocalDateTime updatedTime;
+
+    @Column
+    private String updatedBy;
+
+    @PrePersist
+    protected void onCreate() {
+        createdTime = LocalDateTime.now();
+        updatedTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedTime = LocalDateTime.now();
+    }
+    
+
+	public String getVerId() {
+		return verId;
 	}
 
-	public void setWorkItemRefNo(String workItemRefNo) {
-		this.workItemRefNo = workItemRefNo;
+	public void setVerId(String verId) {
+		this.verId = verId;
 	}
 
-	@PrePersist
-	protected void onCreate() {
-		createdTime = LocalDateTime.now();
-		updatedTime = LocalDateTime.now();
-	}
+	// Getters and Setters
+    public Long getId() {
+        return id;
+    }
 
-	@PreUpdate
-	protected void onUpdate() {
-		updatedTime = LocalDateTime.now();
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getSanctions() {
-		return sanctions;
-	}
+    public Customer getCustomer() {
+        return customer;
+    }
 
-	public void setSanctions(String sanctions) {
-		this.sanctions = sanctions;
-	}
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
-	public byte[] getSanctionsDocs() {
-		return sanctionsDocs;
-	}
+    public Policy getPolicy() {
+        return policy;
+    }
 
-	public void setSanctionsDocs(byte[] sanctionsDocs) {
-		this.sanctionsDocs = sanctionsDocs;
-	}
+    public void setPolicy(Policy policy) {
+        this.policy = policy;
+    }
 
-	public String getUserCode() {
-		return userCode;
-	}
+    public BankAccount getBankAccount() {
+        return bankAccount;
+    }
 
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
-	}
+    public void setBankAccount(BankAccount bankAccount) {
+        this.bankAccount = bankAccount;
+    }
 
-	public LocalDateTime getCreatedTime() {
-		return createdTime;
-	}
+    public List<Workitem> getWorkitems() {
+        return workitems;
+    }
 
-	public void setCreatedTime(LocalDateTime createdTime) {
-		this.createdTime = createdTime;
-	}
+    public void setWorkitems(List<Workitem> workitems) {
+        this.workitems = workitems;
+    }
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
+    public String getSanctions() {
+        return sanctions;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public void setSanctions(String sanctions) {
+        this.sanctions = sanctions;
+    }
 
-	public LocalDateTime getUpdatedTime() {
-		return updatedTime;
-	}
+    public byte[] getSanctionsDocs() {
+        return sanctionsDocs;
+    }
 
-	public void setUpdatedTime(LocalDateTime updatedTime) {
-		this.updatedTime = updatedTime;
-	}
+    public void setSanctionsDocs(byte[] sanctionsDocs) {
+        this.sanctionsDocs = sanctionsDocs;
+    }
 
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
+    public String getSancStatus() {
+        return sancStatus;
+    }
 
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
+    public void setSancStatus(String sancStatus) {
+        this.sancStatus = sancStatus;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public String getIdentity() {
+        return identity;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
 
-	public BankAccount getBankAccount() {
-		return bankAccount;
-	}
+    public byte[] getIdentityDocs() {
+        return identityDocs;
+    }
 
-	public void setBankAccount(BankAccount bankAccount) {
-		this.bankAccount = bankAccount;
-	}
+    public void setIdentityDocs(byte[] identityDocs) {
+        this.identityDocs = identityDocs;
+    }
 
-	public String getCustomerNo() {
-		return customerNo;
-	}
+    public String getIdentityStatus() {
+        return identityStatus;
+    }
 
-	public void setCustomerNo(String customerNo) {
-		this.customerNo = customerNo;
-	}
+    public void setIdentityStatus(String identityStatus) {
+        this.identityStatus = identityStatus;
+    }
 
-	public String getPolicyNumber() {
-		return policyNumber;
-	}
+    public String getDeath() {
+        return death;
+    }
 
-	public void setPolicyNumber(String policyNumber) {
-		this.policyNumber = policyNumber;
-	}
+    public void setDeath(String death) {
+        this.death = death;
+    }
 
-	public String getSancStatus() {
-		return sancStatus;
-	}
+    public byte[] getDeathDocs() {
+        return deathDocs;
+    }
 
-	public void setSancStatus(String sancStatus) {
-		this.sancStatus = sancStatus;
-	}
+    public void setDeathDocs(byte[] deathDocs) {
+        this.deathDocs = deathDocs;
+    }
 
-	public String getIdentity() {
-		return identity;
-	}
+    public String getDeathStatus() {
+        return deathStatus;
+    }
 
-	public void setIdentity(String identity) {
-		this.identity = identity;
-	}
+    public void setDeathStatus(String deathStatus) {
+        this.deathStatus = deathStatus;
+    }
 
-	public byte[] getIdentityDocs() {
-		return identityDocs;
-	}
+    public String getUserCode() {
+        return userCode;
+    }
 
-	public void setIdentityDocs(byte[] identityDocs) {
-		this.identityDocs = identityDocs;
-	}
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
+    }
 
-	public String getIdentityStatus() {
-		return identityStatus;
-	}
+    public LocalDateTime getCreatedTime() {
+        return createdTime;
+    }
 
-	public void setIdentityStatus(String identityStatus) {
-		this.identityStatus = identityStatus;
-	}
+    public void setCreatedTime(LocalDateTime createdTime) {
+        this.createdTime = createdTime;
+    }
 
-	public String getDeath() {
-		return death;
-	}
+    public String getCreatedBy() {
+        return createdBy;
+    }
 
-	public void setDeath(String death) {
-		this.death = death;
-	}
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
-	public byte[] getDeathDocs() {
-		return deathDocs;
-	}
+    public LocalDateTime getUpdatedTime() {
+        return updatedTime;
+    }
 
-	public void setDeathDocs(byte[] deathDocs) {
-		this.deathDocs = deathDocs;
-	}
+    public void setUpdatedTime(LocalDateTime updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 
-	public String getDeathStatus() {
-		return deathStatus;
-	}
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
 
-	public void setDeathStatus(String deathStatus) {
-		this.deathStatus = deathStatus;
-	}
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    // Helper method to maintain bidirectional relationship
+    public void addWorkitem(Workitem workitem) {
+        workitems.add(workitem);
+        workitem.setVerificationRecord(this);
+    }
 }

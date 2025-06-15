@@ -3,7 +3,9 @@ package com.SecureAccessPortal.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.VerificationRecord;
+import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Exception.ResourceNotFoundException;
 import com.SecureAccessPortal.Modal.BankDetailsDTO;
 import com.SecureAccessPortal.Modal.PolicyRequest;
@@ -32,7 +35,10 @@ import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.IPolicyRepo;
 import com.SecureAccessPortal.Repo.VerificationRecordRepo;
+import com.SecureAccessPortal.Repo.WorkItemRepo;
 import com.SecureAccessPortal.Transformer.BankMapper;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class BankDetailsService {
@@ -52,6 +58,9 @@ public class BankDetailsService {
     
     @Autowired
 	private IWorkItemService workItemService;
+    
+    @Autowired
+	private WorkItemRepo workItemRepo;
      
     @Autowired
     private VerificationRecordRepo verificationRecordRepository;
@@ -115,6 +124,8 @@ public class BankDetailsService {
 
 	public String addBankDetails(BankDetailsDTO bankAccount, String userCode) {
 		String message = "";
+		Customer customer= null;
+		Policy policy=null;
 		try {
 			BankAccount dto = new BankAccount();
 			dto.setAccountNo(bankAccount.getAccountNumber());
@@ -123,10 +134,13 @@ public class BankDetailsService {
 			dto.setAccountType(bankAccount.getAccountType());
 			dto.setStatus(bankAccount.getStatus());
 			if (bankAccount.getCustomerNumber() != null) {
-				Customer customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber());
+				 customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber());
 				dto.setCustomer(customer);
 			}
-			
+			if(bankAccount.getPolicyNumber() != null) {
+				policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber());
+				dto.setPolicy(policy);
+			}
 			dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
 			dto.setCreatedBy(bankAccount.getCreatedBy());
 			dto.setCreatedDate(bankAccount.getCreatedDate());
@@ -139,39 +153,17 @@ public class BankDetailsService {
 			dto.setAmlStatus(bankAccount.getAmlStatus());
 			dto.setAccountBalance(bankAccount.getAccountBalance());
 			dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
-			dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
-			if (bankAccount.getPolicyNumber() != null) {
-				Policy policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber());
-				dto.setPolicy(policy);
-			
-			//create workitem
-			WorkItemDTO workItemRequest = new WorkItemDTO();
-			workItemRequest.setComment("Bank Account is created " + dto.getCustomer().getName() + " "
-					+ dto.getCustomer().getSurname() + "for the customer");
-			workItemRequest.setCreatedBy(userCode);
-			workItemRequest.setuserCode(userCode);
-			workItemRequest.setWorkItemName(CommonConstant.BANK_ACC_CREATED);
-			workItemRequest.setCreatedTime(String.valueOf(LocalDateTime.now()));
-			workItemRequest.setWorkType(CommonConstant.BANK_ACC_CREATED);
-			workItemRequest.setStatus(CommonConstant.OPEN);
-			workItemRequest.setQueue(CommonConstant.TEAM_MEMBER);
-			WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userCode);
-			if (workItem != null) {
-				dto.setWorkItemRefNo(workItem.getWorkItemReferenceNumber());
-				logger.info("WorkItemcreated succesfully");
-				if (workItem != null) {
-					policy.setWorkItemRefNo(workItem.getWorkItemReferenceNumber());
-					logger.info("WorkItemcreated succesfully");
-					policyRepo.save(policy);
-				}
-			} else {
-				new RuntimeErrorException(null, "Error while creating WorkItem");
-			}
-			}
+			dto.setVerificationAttempts(bankAccount.getVerificationAttempts());			
 			BankAccount save = bankAccountRepository.save(dto);
-			
+
+			// call workitem Service to generate WIrefNo.
+			String workType = CommonConstant.BANK_ACC_CREATED;
+			String workItemName = CommonConstant.BANK_ACC_WORKITEM;
+			String comment = "Bank Account is created " + save.getAccountNo()+" and customer Number is" +bankAccount.getCustomerNumber() ;
+			workItemService.mapRequetforWorkItem(userCode, policy, customer, workType, workItemName, comment,save,null);
+
 			message = "Bank details saved for customer " + save.getCustomer().getName() + " "
-					+ save.getCustomer().getSurname() + " " + save.getPolicy().getCustomerNo();
+					+ save.getCustomer().getSurname() + " " + save.getPolicy().getCustomer().getCustomerNo();
 		} catch (Exception e) {
 			e.getMessage();
 			message = "Customer Not identified";
@@ -193,12 +185,12 @@ public class BankDetailsService {
 		if (policyNo != null) {
 			Policy policyNum = policyRepo.findByPolicyNum(policyNo);
 			if(policyNum != null) {
-				Customer byCustomerNoNew = customerRepo.findByCustomerNoNew(policyNum.getCustomerNo());
+				Customer byCustomerNoNew = customerRepo.findByCustomerNoNew(policyNum.getCustomer().getCustomerNo());
 				customer.setCustName(byCustomerNoNew.getName() + " " + byCustomerNoNew.getSurname());
 				customer.setCustomerNo(byCustomerNoNew.getCustomerNo());
 				customer.setDateOfBirth(byCustomerNoNew.getDateOfBirth());
 				customer.setEmail(byCustomerNoNew.getEmail());
-				customer.setuserCode(byCustomerNoNew.getUserCode());	
+				customer.setUserCode(byCustomerNoNew.getUserCode());	
 			}
 		}
 		return customer;
@@ -219,14 +211,16 @@ public class BankDetailsService {
 			throw new IllegalArgumentException("Invalid status. Must be PENDING, PASS, FAIL, or IN_REVIEW");
 		}
 		BankAccount bankAccount = bankAccountRepository.findByAccountNo(accountNo);
-		if(bankAccount == null) {
+		if (bankAccount == null) {
 			throw new ResourceNotFoundException("Bank account not found for accountNo: " + accountNo);
 		}
 		VerificationRecord verificationRecord = new VerificationRecord();
 		verificationRecord.setBankAccount(bankAccount);
-		verificationRecord.setCustomerNo(customerNo != null ? customerNo : bankAccount.getCustomer().getCustomerNo());
-		verificationRecord.setPolicyNumber(policyNumber != null ? policyNumber : bankAccount.getPolicy().getPolicyNumber());
+		verificationRecord.setCustomer(bankAccount.getCustomer());
+		verificationRecord.setPolicy(bankAccount.getPolicy());
 		verificationRecord.setUserCode(userCode);
+		verificationRecord.setCreatedBy(userCode);
+		verificationRecord.setUpdatedBy(userCode);
 		switch (action.toUpperCase()) {
 		case "SANCTIONS":
 			verificationRecord.setSanctions(details);
@@ -258,28 +252,17 @@ public class BankDetailsService {
 		default:
 			throw new IllegalArgumentException("Invalid action type");
 		}
+		 verificationRecord.setVerId(generateVerId()); // Set ver
+		 VerificationRecord verificationRecordNew = verificationRecordRepository.save(verificationRecord);
+		// call workitem Service to generate WIrefNo.
+		String workType = CommonConstant.VERIFICATION_RECORD;
+		String workItemName = CommonConstant.VER_REC_WORKITEM;
+		String comment = "Verification Record  is created " + verificationRecordNew.getId() + " and customer Number is"
+				+ bankAccount.getCustomer().getCustomerNo();
+		workItemService.mapRequetforWorkItem(userCode, bankAccount.getPolicy(), bankAccount.getCustomer(), workType,
+				workItemName, comment,verificationRecordNew.getBankAccount(),verificationRecordNew );
 
-		//create workitem
-		WorkItemDTO workItemRequest = new WorkItemDTO();
-		workItemRequest.setComment("Verification Record Created for "+action+" Account is created "+ customerNo + "for the customer");
-		workItemRequest.setCreatedBy(userCode);
-		workItemRequest.setuserCode(userCode);
-		workItemRequest.setWorkItemName(CommonConstant.VERIFICATION_RECORD);
-		workItemRequest.setCreatedTime(String.valueOf(LocalDateTime.now()));
-		workItemRequest.setWorkType(CommonConstant.VERIFICATION_RECORD);
-		workItemRequest.setStatus(CommonConstant.OPEN);
-		workItemRequest.setQueue(CommonConstant.TEAM_MEMBER);
-		WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, userCode);
-		if (workItem != null) {
-			verificationRecord.setWorkItemRefNo(workItem.getWorkItemReferenceNumber());
-			logger.info("WorkItemcreated succesfully");
-
-		} else {
-			new RuntimeErrorException(null, "Error while creating WorkItem");
-		}
-		
-		verificationRecord = verificationRecordRepository.save(verificationRecord);
-		return mapToDTO(verificationRecord, action);
+		return mapToDTO(verificationRecordNew, action);
 	}
 
 	public Page<VerificationRecordDTO> getVerificationRecords(String accountNo, String action, String status,
@@ -315,12 +298,15 @@ public class BankDetailsService {
 		return verificationRecords.map(record -> mapToDTO(record, action != null ? action : determineAction(record)));
 	}
 
-	public byte[] getVerificationDocument(Long id, String action, String userCode) {
+	public byte[] getVerificationDocument(String id, String action, String userCode) {
 		if (!isValidAction(action)) {
 			throw new IllegalArgumentException("Invalid action type. Must be SANCTIONS, ID, or DEATH");
 		}
-		VerificationRecord verificationRecord = verificationRecordRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Verification record not found for id: " + id));
+		Optional<VerificationRecord> verRec = verificationRecordRepository.findByVerId(id);
+		if(verRec.isEmpty()) {
+			throw new ResourceNotFoundException("Verification record not found for id: " + id);
+		}
+		VerificationRecord verificationRecord= verRec.get();			
 		switch (action.toUpperCase()) {
 		case "SANCTIONS":
 			if (verificationRecord.getSanctionsDocs() == null) {
@@ -358,10 +344,10 @@ public class BankDetailsService {
 	}
 	private VerificationRecordDTO mapToDTO(VerificationRecord record, String action) {
 		VerificationRecordDTO dto = new VerificationRecordDTO();
-		dto.setId(record.getId());
+		dto.setId(record.getVerId());
 		dto.setAccountNo(record.getBankAccount().getAccountNo());
-		dto.setCustomerNo(record.getCustomerNo());
-		dto.setPolicyNumber(record.getPolicyNumber());
+		dto.setCustomerNo(record.getCustomer().getCustomerNo());
+		dto.setPolicyNumber(record.getPolicy().getPolicyNumber());
 		dto.setAction(action.toUpperCase());
         dto.setUserCode(record.getUserCode());
 		switch (action.toUpperCase()) {
@@ -396,10 +382,10 @@ public class BankDetailsService {
 		return "UNKNOWN";
 	}
 
-	public String updateStatus(Long id, VerificationRecordDTO verificationRecordDTO) {
+	public String updateStatus(String id, VerificationRecordDTO verificationRecordDTO,String userCode) {
 		String message = "";
 		try {
-			Optional<VerificationRecord> record = verificationRecordRepository.findById(id);
+			Optional<VerificationRecord> record = verificationRecordRepository.findByVerId(id);
 			VerificationRecord verificationRecord = record.get();
 			if ("ID".equalsIgnoreCase(verificationRecordDTO.getAction())) {
 				verificationRecord.setIdentityStatus(verificationRecordDTO.getStatus());
@@ -409,29 +395,12 @@ public class BankDetailsService {
 				verificationRecord.setSancStatus(verificationRecordDTO.getStatus());
 			}
 			verificationRecordRepository.save(verificationRecord);
-			//create workitem
-			WorkItemDTO workItemRequest = new WorkItemDTO();
-			workItemRequest.setComment("Verification for "+ verificationRecordDTO.getAction() + verificationRecordDTO.getStatus() + " for the customer"
-					
-					+ verificationRecord.getCustomerNo() + "for the customer");
-			workItemRequest.setCreatedBy(verificationRecord.getCreatedBy());
-			workItemRequest.setuserCode(verificationRecord.getCreatedBy());
-			workItemRequest.setWorkItemName(CommonConstant.POLICY_CREATED);
-			workItemRequest.setCreatedTime(String.valueOf(LocalDateTime.now()));
-			workItemRequest.setWorkType(CommonConstant.ADD_POL);
-			workItemRequest.setStatus(CommonConstant.OPEN);
-			workItemRequest.setQueue(CommonConstant.TEAM_MEMBER);
-			WorkItemDTO workItem = workItemService.createWorkItem(workItemRequest, verificationRecord.getCreatedBy());
-			if (workItem != null) {
-				verificationRecord.setWorkItemRefNo(workItem.getWorkItemReferenceNumber());
-				logger.info("WorkItemcreated succesfully");
-
-			} else {
-				new RuntimeErrorException(null, "Error while creating WorkItem");
-			}
-			message = "Success";
-			// workitem create:
-			
+			String workType = CommonConstant.VERIFICATION_RECORD;
+			String workItemName = CommonConstant.VER_REC_WORKITEM;
+			 message = "Verification Record is created " + verificationRecord.getId() + " and customer Number is"
+					+ verificationRecord.getCustomer().getCustomerNo()+ "action is"+ verificationRecordDTO.getAction() +"Status is"+verificationRecordDTO.getStatus();
+			workItemService.mapRequetforWorkItem(userCode, verificationRecord.getPolicy(), verificationRecord.getCustomer(), workType,
+					workItemName, message,verificationRecord.getBankAccount(),verificationRecord);
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
@@ -457,5 +426,23 @@ public class BankDetailsService {
 		}
 		 return listOfDocument;
 	}
+	
+	@Transactional
+    public synchronized String generateVerId() {
+        String lastVerId = verificationRecordRepository.findTopVerId();
+        int nextSequenceNumber = 1;
+        if (lastVerId != null && lastVerId.startsWith("REC_")) {
+            try {
+                String numberPart = lastVerId.substring(4); // Extract number after "REC_"
+                nextSequenceNumber = Integer.parseInt(numberPart) + 1;
+            } catch (NumberFormatException e) {
+                logger.warn("Could not parse sequence number from last ver_Id: {}. Starting sequence from 1.", lastVerId, e);
+                nextSequenceNumber = 1;
+            }
+        }
+        String newVerId = String.format("REC_%d", nextSequenceNumber);
+        logger.info("Generated new ver_Id: {}", newVerId);
+        return newVerId;
+    }
 }
 
