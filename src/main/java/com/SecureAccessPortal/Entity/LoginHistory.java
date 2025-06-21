@@ -1,9 +1,7 @@
 package com.SecureAccessPortal.Entity;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
-import io.lettuce.core.dynamic.annotation.CommandNaming.Strategy;
-import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -39,7 +37,7 @@ public class LoginHistory {
 	private Timestamp loginTime;
 	
 	@Column(name = "userCode")
-	private Timestamp userCode;
+	private String userCode;
 
 	@Column(name = "success")
 	private boolean success;
@@ -107,11 +105,11 @@ public class LoginHistory {
 		this.loginTime = loginTime;
 	}
 
-	public Timestamp getUserCode() {
+	public String getUserCode() {
 		return userCode;
 	}
 
-	public void setUserCode(Timestamp userCode) {
+	public void setUserCode(String userCode) {
 		this.userCode = userCode;
 	}
 

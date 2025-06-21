@@ -34,6 +34,9 @@ public interface ISecrityService{
 	public com.SecureAccessPortal.Service.ResponseEntity<String> setPassword(SetPasswordRequest request,
 			String userCode);
 
+	public com.SecureAccessPortal.Service.ResponseEntity<String> loginUsingPassword(String email, String userCode,
+			String password);
+
 	
 
 }

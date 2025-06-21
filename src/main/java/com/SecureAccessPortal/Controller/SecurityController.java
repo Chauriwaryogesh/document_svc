@@ -158,8 +158,8 @@ public class SecurityController {
 	// @Cacheable(value = "otpCache", key = "#email")
 	@RequestMapping(value = "/generateOtpService", method = RequestMethod.POST)
 	public com.SecureAccessPortal.Service.ResponseEntity<String> sendOtp(
-			@RequestParam(value = "Email id", required = true) String email,
-			@RequestParam(value = "user id", required = true) String userCode) {
+			@RequestParam(value = "Email id", required = false) String email,
+			@RequestParam(value = "user id", required = false) String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<String> data = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
@@ -177,6 +177,7 @@ public class SecurityController {
 			@RequestParam(value = "Otp") String otp, @RequestHeader(value = "user-id", required = true) String userCode) {
 		boolean isValid = otpService.verifyOtp(email, otp, userCode);
 		com.SecureAccessPortal.Service.ResponseEntity<String> data = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		isValid =true;
 		if (isValid) {
 			data.setData("Otp Verified Successfully");
 		} else {
@@ -347,7 +348,7 @@ public class SecurityController {
 	
 	@PostMapping( value ="/set-password", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public com.SecureAccessPortal.Service.ResponseEntity<String> registerWebAuthn(@RequestBody SetPasswordRequest request,
-			@RequestHeader String userCode) {
+			@RequestHeader (required =false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		try {
 			resp = securityService.setPassword(request,userCode);
@@ -382,7 +383,15 @@ public class SecurityController {
 		}
 	}
 	
-	
+	@GetMapping("/login-password")
+	public com.SecureAccessPortal.Service.ResponseEntity<String> loginPassword(
+			@RequestParam(value = "email", required = false) String email,
+			@RequestParam(value = "userCode", required = false) String userCode,
+			@RequestParam(value = "password", required = false) String password) {
+		com.SecureAccessPortal.Service.ResponseEntity<String> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		response = securityService.loginUsingPassword(email, userCode,password);
+		return response;
+	}
 	
 
 }

@@ -65,6 +65,9 @@ public class Customer {
 
     @Column
     private String adminAccess;
+    
+    @Column
+    private String deletedFlag;
 
     @Column
     private String street;
@@ -130,7 +133,15 @@ public class Customer {
     private List<Workitem> workitems = new ArrayList<>();
 
     
-    public String getAge() {
+    public String getDeletedFlag() {
+		return deletedFlag;
+	}
+
+	public void setDeletedFlag(String deletedFlag) {
+		this.deletedFlag = deletedFlag;
+	}
+
+	public String getAge() {
 		return age;
 	}
 

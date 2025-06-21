@@ -15,7 +15,7 @@
         body {
             margin: 0;
             font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); /* Refined gradient */
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
             background-size: 400% 400%;
             animation: gradientShift 20s ease infinite;
             min-height: 100vh;
@@ -24,7 +24,7 @@
             align-items: center;
             padding-bottom: 80px;
             position: relative;
-            color: #34495e; /* Slightly softer default text color */
+            color: #34495e;
         }
 
         @keyframes gradientShift {
@@ -37,10 +37,10 @@
         .main-header {
             width: 100%;
             padding: 20px 30px;
-            background: #2c3e50; /* Kept solid dark for contrast */
+            background: #2c3e50;
             color: #ffffff;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Slightly softer shadow */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 40px;
@@ -50,7 +50,7 @@
             justify-content: center;
             align-items: center;
             text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-            border-bottom: 3px solid #007bff; /* Accent border */
+            border-bottom: 3px solid #007bff;
         }
 
         .main-header .header-title {
@@ -76,7 +76,7 @@
 
         .main-header .header-actions i:hover {
             color: #ffffff;
-            transform: scale(1.15) rotate(5deg); /* More engaging hover */
+            transform: scale(1.15) rotate(5deg);
         }
 
         /* --- Main Content --- */
@@ -93,13 +93,13 @@
         .login-card {
             background: #ffffff;
             padding: 2.5rem;
-            border-radius: 16px; /* Slightly larger radius */
+            border-radius: 16px;
             width: 100%;
             max-width: 420px;
-            box-shadow: 0 12px 30px rgba(44, 62, 80, 0.15), 0 0 0 1px rgba(0,0,0,0.02); /* More defined shadow */
+            box-shadow: 0 12px 30px rgba(44, 62, 80, 0.15), 0 0 0 1px rgba(0,0,0,0.02);
             animation: fadeInUp 0.8s ease-out;
-            border-top: 4px solid #007bff; /* Accent top border */
-            position: relative; /* For potential pseudo-elements if needed */
+            border-top: 4px solid #007bff;
+            position: relative;
         }
 
         @keyframes fadeInUp {
@@ -109,16 +109,16 @@
 
         .login-card h2 {
             text-align: center;
-            margin-bottom: 2rem; /* More space */
+            margin-bottom: 2rem;
             color: #2c3e50;
-            font-weight: 700; /* Bolder */
-            font-size: 1.9rem; /* Slightly larger */
+            font-weight: 700;
+            font-size: 1.9rem;
         }
 
         /* --- Input Groups and Fields --- */
         .input-group {
             position: relative;
-            margin-bottom: 1.3rem; /* More space */
+            margin-bottom: 1.3rem;
         }
 
         .login-card input,
@@ -127,12 +127,12 @@
             display: block;
             width: 100%;
             box-sizing: border-box;
-            padding: 0.95rem 1.1rem; /* Slightly more padding */
-            padding-right: 45px; /* Ensure space for toggle icon */
+            padding: 0.95rem 1.1rem;
+            padding-right: 45px;
             border-radius: 8px;
             font-size: 1rem;
-            border: 1px solid #d0d9e0; /* Softer border */
-            background-color: #f9fafb; /* Very light background */
+            border: 1px solid #d0d9e0;
+            background-color: #f9fafb;
             color: #34495e;
             transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         }
@@ -140,7 +140,7 @@
         .login-card input::placeholder,
         .input-group input::placeholder,
         .enhanced-input::placeholder {
-            color: #7f8c8d; /* Softer placeholder */
+            color: #7f8c8d;
         }
 
         .login-card input:focus,
@@ -148,14 +148,13 @@
         .enhanced-input:focus {
             border-color: #007bff;
             outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.2); /* Softer focus shadow */
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.2);
             background-color: #ffffff;
         }
-        /* Removed redundant width calc for #email, #userCode as base style covers it */
 
         .toggle-visibility {
             position: absolute;
-            right: 15px; /* Adjusted position */
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
@@ -175,24 +174,23 @@
         .otp-popup-box button,
         .qr-popup-box button,
         .security-tips-popup-box button,
-        .forgot-credentials-popup-box button,
         .fingerprint-popup-box button,
         .custom-alert-buttons button {
             display: block;
             width: 100%;
             margin: 0.8rem 0;
-            padding: 0.95rem 1rem; /* Consistent padding */
+            padding: 0.95rem 1rem;
             border-radius: 8px;
             font-size: 1rem;
-            font-weight: 600; /* Bolder buttons */
+            font-weight: 600;
             border: none;
-            background-image: linear-gradient(to bottom, #007bff, #0056b3); /* Gradient background */
+            background-image: linear-gradient(to bottom, #007bff, #0056b3);
             color: white;
             cursor: pointer;
             text-align: center;
             transition: background-image 0.3s ease, box-shadow 0.2s ease, transform 0.1s ease;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-            text-shadow: 0 1px 1px rgba(0,0,0,0.2); /* Text shadow for depth */
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
         }
 
         .login-card button:hover,
@@ -200,31 +198,34 @@
         .otp-popup-box button:hover,
         .qr-popup-box button:hover,
         .security-tips-popup-box button:hover,
-        .forgot-credentials-popup-box button:hover,
         .fingerprint-popup-box button:hover,
         .custom-alert-buttons button:hover {
-            background-image: linear-gradient(to bottom, #0069d9, #004085); /* Darker gradient on hover */
+            background-image: linear-gradient(to bottom, #0069d9, #004085);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            transform: translateY(-1px); /* Slight lift */
+            transform: translateY(-1px);
         }
-         .login-card button:active,
+
+        .login-card button:active,
         .popper-btn:active,
         .otp-popup-box button:active,
         .qr-popup-box button:active,
         .security-tips-popup-box button:active,
-        .forgot-credentials-popup-box button:active,
         .fingerprint-popup-box button:active,
         .custom-alert-buttons button:active {
             transform: scale(0.98) translateY(0px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
 
-        /* Specific button types */
+        .custom-error-overlay {
+            z-index: 10002 !important;
+        }
+
         .popper-btn.cancel,
         .custom-alert-buttons button#customAlertOkBtn,
         .custom-alert-buttons button#customErrorOkBtn {
             background-image: linear-gradient(to bottom, #6c757d, #545b62);
         }
+
         .popper-btn.cancel:hover,
         .custom-alert-buttons button#customAlertOkBtn:hover,
         .custom-alert-buttons button#customErrorOkBtn:hover {
@@ -234,6 +235,7 @@
         .popper-btn.verify {
             background-image: linear-gradient(to bottom, #28a745, #1e7e34);
         }
+
         .popper-btn.verify:hover {
             background-image: linear-gradient(to bottom, #218838, #155d27);
         }
@@ -242,7 +244,7 @@
         .social-login {
             display: flex;
             justify-content: space-between;
-            margin: 1.8rem 0; /* More space */
+            margin: 1.8rem 0;
         }
 
         .social-login button {
@@ -250,7 +252,7 @@
             background: #4267B2;
             color: white;
             font-weight: 500;
-            padding: 0.75rem; /* Slightly more padding */
+            padding: 0.75rem;
             font-size: 0.9rem;
             border-radius: 6px;
             display: flex;
@@ -258,16 +260,17 @@
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid transparent; /* For consistency */
+            border: 1px solid transparent;
         }
-        .social-login button:hover{
+
+        .social-login button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
         .social-login .google { background: #DB4437; }
         .social-login .google:hover { background: #c23321; }
-        .social-login button i { margin-right: 10px; font-size: 1rem; }
+        .social-login button i { margin-right:0; padding-right: 10px; font-size: 1rem; }
 
         .chatbot-hint {
             text-align: center;
@@ -284,7 +287,7 @@
         footer {
             background-color: #2c3e50;
             color: #bdc3c7;
-            padding: 1.2rem 2rem; /* More padding */
+            padding: 1.2rem 2rem;
             text-align: center;
             width: 100%;
             font-size: 0.9rem;
@@ -292,7 +295,7 @@
             bottom: 0;
             left: 0;
             z-index: 100;
-            box-shadow: 0 -3px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 -3px 8px rgba(0,0,0,0);
         }
         footer a { color: #ffffff; text-decoration: none; }
         footer a:hover { text-decoration: underline; }
@@ -300,79 +303,143 @@
         footer:hover .fa-heart { transform: scale(1.2); }
 
 
-        /* --- Bubbles --- */
-        .bubble {
-            position: absolute;
-            border-radius: 50%;
-            background-color: rgba(0, 123, 255, 0.12); /* Slightly more visible */
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-            animation: floatBubble linear infinite;
-            z-index: 0;
-        }
-
-        /* Updated floatBubble animation, moved from JS to CSS */
-        @keyframes floatBubble {
-            0% { transform: translateY(0) scale(0.5); opacity: 0; }
-            20% { opacity: 0.3; }
-            90% { opacity: 0.1; }
-            100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
-        }
-
         /* --- Loading Overlay --- */
         .loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(255, 255, 255, 0.92); /* Slightly more opaque */
-            display: flex; justify-content: center; align-items: center;
-            z-index: 9999; opacity: 0; visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,255,255,0.92);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity ease-in-out0.3s ease-in-out, visibility 0s linear;
+            transition: ease-in-out0.3s;
         }
-        .loading-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.3s ease-in-out, visibility 0s linear 0s; }
-        .loader {
-            border: 7px solid #f0f4f8; /* Lighter track */
-            border-top: 7px solid #007bff;
-            border-radius: 50%; width: 55px; height: 55px;
-            animation: spin 1.2s linear infinite; /* Slightly faster, smoother spin */
+         .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease-in-out, visibility 0s linear 0s;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- Custom Alerts & Popups --- */
-        .custom-alert-overlay, .otp-popup, .qr-popup, .security-tips-popup,
-        .forgot-credentials-popup, .fingerprint-popup, .contact-support-popup {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(44, 62, 80, 0.7); /* Darker, branded overlay */
-            display: none; justify-content: center; align-items: center;
-            z-index: 10001; padding: 20px;
+          .loader {
+            border: 7px solid #f0f4f8;
+            border-top: 7px solid #007bff;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            animation: spin 1.2s linear infinite;
         }
-        .custom-alert-overlay.active, .otp-popup.active, .qr-popup.active, .security-tips-popup.active,
-        .forgot-credentials-popup.active, .fingerprint-popup.active, .contact-support-popup.active {
-            display: flex; animation: popupFadeIn 0.35s ease-out;
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
+
+       .custom-alert-overlay,
+        .otp-popup,
+        .qr-popup,
+        .security-tips-popup,
+        .forgot-credentials-popup,
+        .fingerprint-popup,
+        .contact-support-popup,
+        .password-login-popup,
+        .forget-password-popup,
+        .set-password-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(44, 62, 80, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10003;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .custom-alert-overlay.active,
+        .otp-popup.active,
+        .qr-popup.active,
+        .security-tips-popup.active,
+        .forgot-credentials-popup.active,
+        .fingerprint-popup.active,
+        .contact-support-popup.active,
+        .password-login-popup.active,
+        .forget-password-popup.active,
+        .set-password-popup.active {
+            display: flex !important;
+            z-index: 10003 !important;
+            opacity: 1;
+            background-color: rgba(44, 62, 80, 0.85) !important;
+            animation: popupFadeIn 0.35s ease-out;
+        }
+
+        .custom-alert-overlay.active {
+            z-index: 10005 !important; /* Higher z-index for alert */
+        }
+
+        .custom-alert-box,
+        .otp-popup-box,
+        .qr-popup-box,
+        .security-tips-popup-box,
+        .forgot-credentials-popup-box,
+        .fingerprint-popup-box,
+        .contact-support-popup-box,
+        .password-login-popup-box,
+        .forget-password-popup-box,
+        .set-password-popup-box {
+            background-color: #ffffff;
+            min-width: 320px;
+            max-width: 480px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-top: 4px solid #007bff;
+            position: relative;
+            z-index: 10004; /* Ensure box is above overlay */
+        }
+
         @keyframes popupFadeIn {
-            from { opacity: 0; transform: translateY(-10px) scale(0.97); } /* Slide in from top slightly */
+            from { opacity: 0; transform: translateY(-10px) scale(0.97); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .custom-alert-box, .otp-popup-box, .qr-popup-box, .security-tips-popup-box,
-        .forgot-credentials-popup-box, .fingerprint-popup-box, .contact-support-popup-box {
-            background-color: #fff;
-            border-radius: 12px; /* Consistent with login card */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            padding: 30px; /* More padding */
-            text-align: center;
-            min-width: 320px; /* Min width */
-            width: auto; max-width: 480px; /* Max width */
-            border-top: 4px solid #007bff; /* Accent consistent with login card */
+        .custom-alert-header,
+        .otp-popup-box h3,
+        .qr-popup-box h3,
+        .security-tips-popup-box h3,
+        .forgot-credentials-popup-box h3,
+        .fingerprint-popup-box h3,
+        .contact-support-popup-box h3,
+        .password-login-popup-box h3,
+        .forget-password-popup-box h3,
+        .set-password-popup-box h3 {
+            font-size: 1.6em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
         }
 
-        .custom-alert-header, .otp-popup-box h3, .qr-popup-box h3, .security-tips-popup-box h3,
-        .forgot-credentials-popup-box h3, .fingerprint-popup-box h3, .contact-support-popup-box h3 {
-            font-size: 1.6em; /* Larger header */
-            font-weight: 600; margin-bottom: 20px; color: #2c3e50;
-        }
-        .custom-alert-header i, .otp-popup-box h3 i, .qr-popup-box h3 i, .security-tips-popup-box h3 i,
-        .forgot-credentials-popup-box h3 i, .fingerprint-popup-box h3 i, .contact-support-popup-box h3 i {
+        .custom-alert-header i,
+        .otp-popup-box h3 i,
+        .qr-popup-box h3 i,
+        .security-tips-popup-box h3 i,
+        .forgot-credentials-popup-box h3 i,
+        .fingerprint-popup-box h3 i,
+        .contact-support-popup-box h3 i,
+        .password-login-popup-box h3 i,
+        .forget-password-popup-box h3 i,
+        .set-password-popup-box h3 i {
             margin-right: 10px;
-            color: #007bff; /* Icon color matching accent */
+            color: #007bff;
         }
 
         .custom-alert-header.error { color: #e74c3c; }
@@ -380,38 +447,95 @@
         .custom-alert-message { color: #555; margin-bottom: 25px; font-size: 1.05rem; line-height: 1.6; }
         .custom-alert-message.error { color: #e74c3c; }
 
-        .qr-popup-box #qrCode { margin: 25px auto; border: 1px solid #e0e0e0; padding: 12px; display: inline-block; border-radius: 8px; background: #fff; }
-        .security-tips-popup-box ul { text-align: left; margin-bottom: 25px; padding-left: 20px; color: #495057; font-size: 1rem; line-height: 1.7; }
-        .security-tips-popup-box ul li { margin-bottom: 10px; padding-left: 10px; position: relative; }
+        .qr-popup-box #qrCode {
+            margin: 25px auto;
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            display: inline-block;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .security-tips-popup-box ul { text-align: left;
+            margin-bottom: 25px;
+            padding-left: 20px;
+            color: #495057;
+            font-size: 1rem;
+            line-height: 1.7;
+            ;
+        }
+        .security-tips-popup-box ul li { margin-bottom: 10px;
+            padding-left: 10px;
+            position: relative;
+            ;
+        }
         .security-tips-popup-box ul li::before {
-            content: "\f058"; /* FontAwesome check circle */
+            content: "\f058";
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
             position: absolute;
             left: -10px;
-            color: #28a745; /* Green check */
+            color: #28a745;
+            ;
         }
 
-        .contact-support-popup-box .contact-info p { color: #495057; margin-bottom: 15px; font-size: 1rem; display: flex; align-items: center; justify-content: flex-start; text-align: left; }
-        .contact-support-popup-box .contact-info i { margin-right: 12px; color: #007bff; width: 22px; text-align: center; }
-        .contact-support-popup-box .contact-info a { color: #007bff; text-decoration: none; font-weight: 500; }
-        .contact-support-popup-box .contact-info a:hover { text-decoration: underline; color: #0056b3; }
+        .contact-support-popup-box .contact-info p { color: #495057;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: left;
+            ;
+        }
+        .contact-support-popup-box .contact-info i { margin-right: 12px;
+            color: #007bff;
+            width: 22px;
+            text-align: center;
+            ;
+        }
+        .contact-support-popup-box .contact-info a { color: #007bff;
+            text-decoration: none;
+            font-weight: bold500;
+            ;
+        }
+        .contact-support-popup-box .contact-info a:hover { text-decoration: underline;
+            color: #0056b3;
+            }
 
-        .fingerprint-verification { text-align: center; }
-        .fingerprint-animation { position: relative; margin: 30px auto; width: 130px; height: 130px; }
+        .fingerprint-verification { text-align: center;
+            }
+
+        .fingerprint-animation { position: relative;
+            margin: 30px auto;
+            width: 130px;
+            height: 130px;
+            ;
+        }
         .fingerprint-icon i {
-            font-size: 75px; color: #007bff; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); z-index: 2; cursor: pointer;
-            transition: transform 0.2s ease;
+            font-size: 75px;
+            color: #007bff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            z-index: 2;
+            cursor: pointer;
+            transition: transform ease-in0.2s ease-in-out;
+            ;
         }
-        .fingerprint-icon i:hover { transform: translate(-50%, -50%) scale(1.1); }
+        .fingerprint-icon i:hover { transform: translate(-50%,-50%) scale(1.1);
+        }
         .fingerprint-pulse {
-            position: absolute; top: 50%; left: 50%;
-            width: 110px; height: 110px;
-            background: rgba(0, 123, 255, 0.15); /* Softer pulse */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 110px;
+            height: 110px;
+            background-color: rgba(0,123,255,0.15);
             border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite; /* Slower, smoother pulse */
+            animation: pulse ease-in-out2s ease-in-out infinite;
             z-index: 1;
+            ;
         }
         @keyframes pulse {
             0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.75; }
@@ -420,60 +544,110 @@
         }
         .fingerprint-popup-box p { color: #495057; font-size: 1rem; margin-bottom: 25px; }
 
-        /* --- FAB (Floating Action Button) & Menu --- */
+        /* --- FAB (Floating Action Button) & Menu --- --- */
         .fab-container { position: fixed; bottom: 100px; right: 30px; z-index: 1000; }
         .fab {
-            background-color: #007bff; color: white; width: 60px; height: 60px; /* Slightly larger */
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 1.8rem; cursor: pointer;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
-            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s ease, box-shadow 0.2s ease;
+            background-color: #007bff;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+            transition: transform cubic-bezier(0.175,0.885,0.32,1.275)0.25s cubic-bezier(0.175,0.885,0.32,1.275), background-color ease0.2s ease, box-shadow ease0.2s ease;
+            ;
         }
         .fab:hover {
             background-color: #0056b3;
-            transform: scale(1.1) rotate(20deg); /* More dynamic hover */
+            transform: scale(1.1) rotate(20deg);
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            ;
         }
-        .fab i.rotated { transform: rotate(135deg); transition: transform 0.3s ease-out; } /* Smoother rotation */
-        .fab i { transition: transform 0.3s ease-out; }
+        .fab i.rotated { transform: rotate(135deg);
+            transition: transform ease-out0.3s ease-out;
+            ;
+        }
+        .fab i { transition: transform ease-out0.3s ease-out; }
 
 
         .action-menu {
-            position: fixed; bottom: 170px; right: 30px;
-            background-color: #ffffff; border-radius: 10px; /* Softer radius */
-            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.2); /* Enhanced shadow */
-            display: none; flex-direction: column; width: 240px; /* Wider */
-            padding: 10px 0; opacity: 0;
-            transform-origin: bottom right; /* Animation origin */
+            position: fixed;
+            bottom: 170px;
+            right: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(44,62,80,0.2);
+            display: none;
+            flex-direction: column;
+            width: 240px;
+            padding: 10px 0;
+            opacity: 0;
+            transform-origin: bottom right;
             transform: translateY(15px) scale(0.9);
-            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 999; border: 1px solid #e7eaf3;
+            transition: opacity ease0.3s ease, transform cubic-bezier(0.175,0.885,0.32,1.275)0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+            z-index: 999;
+            border: 1px solid #e7eaf3;
+            ;
         }
-        .action-menu.active { display: flex; opacity: 1; transform: translateY(0) scale(1); }
+        .action-menu.active { display: flex;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            ;
+        }
         .action-menu button {
-            background: none; border: none; padding: 14px 20px; /* More padding */
-            font-size: 1rem; color: #34495e; text-align: left; cursor: pointer;
-            display: flex; align-items: center;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            width: 100%; margin: 0; border-radius: 0; box-shadow: none;
+            background: none;
+            border: none;
+            padding: 14px 20px;
+            font-size: 1rem;
+            color: #34495e;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color ease0.2s ease, color ease0.2s ease;
+            width: 100%;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+            ;
         }
         .action-menu button i {
-            margin-right: 15px; font-size: 1.1rem; color: #007bff;
-            width: 24px; text-align: center;
-            transition: transform 0.2s ease;
+            margin-right: 15px;
+            font-size: 1.1rem;
+            color: #007bff;
+            width: 24px;
+            text-align: center;
+            transition: transform ease0.2s ease;
+            ;
         }
-        .action-menu button:hover { background-color: #f0f4f8; color: #0056b3; }
-        .action-menu button:hover i { color: #0056b3; transform: scale(1.1); }
+        .action-menu button:hover { background-color: #f0f4f8;
+            color: #0056b3;
+            ;
+        }
+        .action-menu button:hover i { color: #0056b3;
+            transform: scale(1.1);
+            ;
+        }
 
         .popper-btn .btn-loader {
-            border: 3px solid rgba(255,255,255,0.35); border-top: 3px solid #fff;
-            border-radius: 50%; width: 18px; height: 18px;
-            animation: spin 1s linear infinite; margin-left: 10px;
-            display: inline-block; vertical-align: middle;
+            border: 3px solid rgba(255,255,255,0.35);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin linear1s linear infinite;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+            ;
         }
         .popper-btn .btn-loader.hidden { display: none; }
 
-        /* --- Responsive Adjustments --- */
+        /* --- Responsive Adjustments --- --- */
         @media (max-width: 600px) {
             .main-header { padding: 15px 20px; font-size: 20px; }
             .main-header .header-actions { right: 15px; }
@@ -486,11 +660,11 @@
             .fab { width: 54px; height: 54px; font-size: 1.6rem; }
             .action-menu { bottom: 155px; right: 20px; width: 220px; }
             .custom-alert-box, .otp-popup-box, .qr-popup-box, .security-tips-popup-box,
-            .forgot-credentials-popup-box, .fingerprint-popup-box, .contact-support-popup-box {
+            .fingerprint-popup-box, .contact-support-popup-box {
                 padding: 25px; width: 90%;
             }
             .custom-alert-header, .otp-popup-box h3, .qr-popup-box h3, .security-tips-popup-box h3,
-            .forgot-credentials-popup-box h3, .fingerprint-popup-box h3, .contact-support-popup-box h3 {
+            .fingerprint-popup-box h3, .contact-support-popup-box h3 {
                 font-size: 1.4em;
             }
         }
@@ -499,9 +673,55 @@
             .login-card h2 { font-size: 1.5rem; }
             .login-card input, .popper-btn, .login-card button { padding: 0.85rem; font-size: 0.95rem; }
             .social-login button { padding: 0.7rem; font-size: 0.9rem; }
-            .action-menu { width: calc(100% - 40px); } /* Full width action menu on small screens */
+            .action-menu { width: calc(100% - 40px); }
         }
 
+        .password-login-popup, .forgot-password-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(44, 62, 80, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            padding: 20px;
+        }
+
+        .password-login-popup.active, .forgot-password-popup.active {
+            display: flex;
+            animation: popupFadeIn 0.35s ease-out;
+        }
+
+        .password-login-popup-box, .forgot-password-popup-box {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            text-align: center;
+            min-width: 320px;
+            width: auto;
+            max-width: 480px;
+            border-top: 4px solid #007bff;
+        }
+
+        .password-login-popup-box .popper-btn {
+            margin: 0.8rem 0;
+        }
+
+        .password-login-popup-box .popper-btn.cancel {
+            background-image: linear-gradient(to bottom, #6c757d, #545b62);
+        }
+
+        .password-login-popup-box .popper-btn.cancel:hover {
+            background-image: linear-gradient(to bottom, #5a6268, #474c51);
+        }
+
+        .password-login-popup-box .popper-btn:not(:last-child) {
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 
@@ -572,18 +792,37 @@
         </div>
     </div>
 
-    <div id="forgotCredentialsPopup" class="forgot-credentials-popup">
-        <div class="forgot-credentials-popup-box">
-            <h3><i class="fas fa-question-circle"></i> Forgot User ID/Email</h3>
-            <p>Enter your email to receive recovery instructions.</p>
+    <div id="passwordLoginPopup" class="password-login-popup">
+        <div class="password-login-popup-box">
+            <h3><i class="fas fa-lock"></i> Login with Password</h3>
             <div class="input-group">
-                <input type="email" id="recoveryEmail" placeholder="Enter your registered email" required class="enhanced-input" />
+                <input type="email" id="loginEmail" placeholder="Enter Email or User ID" required class="enhanced-input" />
             </div>
-            <button class="popper-btn" id="submitForgotBtn" onclick="submitForgotCredentials()">
+            <div class="input-group">
+                <input type="password" id="loginPassword" placeholder="Enter Password" required class="enhanced-input" />
+                <span class="toggle-visibility" onclick="toggleVisibility('loginPassword', this.querySelector('i'))"><i class="fas fa-eye"></i></span>
+            </div>
+            <button class="popper-btn" onclick="loginWithPassword()">
+                <span class="btn-text">Login</span>
+                <span class="btn-loader hidden"></span>
+            </button>
+            <button class="popper-btn cancel" onclick="redirectToForgotCredentials()">Forgot User ID/Email</button>
+            <button class="popper-btn cancel" onclick="closePasswordLoginPopup()">Cancel</button>
+        </div>
+    </div>
+
+    <div id="forgotPasswordPopup" class="forgot-password-popup">
+        <div class="forgot-password-popup-box">
+            <h3><i class="fas fa-lock"></i> Forgot Password</h3>
+            <p>Enter your email or User ID to receive password reset instructions.</p>
+            <div class="input-group">
+                <input type="text" id="forgotPasswordInput" placeholder="Enter Email or User ID" required class="enhanced-input" />
+            </div>
+            <button class="popper-btn" onclick="submitForgotPassword()">
                 <span class="btn-text">Submit</span>
                 <span class="btn-loader hidden"></span>
             </button>
-            <button class="popper-btn cancel" onclick="closeForgotCredentialsPopup()">Cancel</button>
+            <button class="popper-btn cancel" onclick="closeForgotPasswordPopup()">Cancel</button>
         </div>
     </div>
 
@@ -604,7 +843,7 @@
                 </div>
                 <p>Click the fingerprint icon to simulate sensor touch.</p>
             </div>
-             <button class="popper-btn cancel" onclick="closeFingerprintPopup()">Cancel</button>
+            <button class="popper-btn cancel" onclick="closeFingerprintPopup()">Cancel</button>
         </div>
     </div>
 
@@ -627,7 +866,7 @@
             </div>
             <div class="input-group">
                 <input type="text" id="userCode" placeholder="User ID" required />
-                </div>
+            </div>
             <button onclick="sendOtp()"><i class="fas fa-paper-plane" style="margin-right: 8px;"></i>Send OTP</button>
             <button class="popper-btn" onclick="showFingerprintPopup()">
                 <i class="fas fa-fingerprint"></i> Login with Fingerprint
@@ -647,9 +886,13 @@
     </div>
 
     <div class="fab-container">
-        <div class="fab" onclick="toggleActionMenu()"> <i class="fas fa-plus"></i>
+        <div class="fab" onclick="toggleActionMenu()">
+            <i class="fas fa-plus"></i>
         </div>
         <div id="actionMenu" class="action-menu">
+            <button onclick="showPasswordLoginPopup()">
+                <i class="fas fa-key"></i> Login with Password
+            </button>
             <button onclick="showQrPopup()">
                 <i class="fas fa-qrcode"></i> Login with QR Code
             </button>
@@ -664,9 +907,6 @@
             </button>
             <button onclick="contactSupport()">
                 <i class="fas fa-headset"></i> Contact Support
-            </button>
-            <button onclick="showForgotCredentialsPopup()">
-                <i class="fas fa-key"></i> Forgot Credentials
             </button>
             <button onclick="redirectToRegister()">
                 <i class="fas fa-user-plus"></i> Register New Account
@@ -687,19 +927,19 @@
         const customAlertOkBtn = document.getElementById('customAlertOkBtn');
 
         const customErrorOverlay = document.getElementById('customErrorOverlay');
-        // const customErrorHeader = document.getElementById('customErrorHeader'); // ID is in HTML, not strictly needed here
         const customErrorMessage = document.getElementById('customErrorMessage');
         const customErrorOkBtn = document.getElementById('customErrorOkBtn');
 
         const otpPopup = document.getElementById('otpPopup');
         const qrPopup = document.getElementById('qrPopup');
         const securityTipsPopup = document.getElementById('securityTipsPopup');
-        const forgotCredentialsPopup = document.getElementById('forgotCredentialsPopup');
         const fingerprintPopup = document.getElementById('fingerprintPopup');
         const contactSupportPopup = document.getElementById('contactSupportPopup');
+        const passwordLoginPopup = document.getElementById('passwordLoginPopup');
+        const forgotPasswordPopup = document.getElementById('forgotPasswordPopup');
 
         const actionMenu = document.getElementById('actionMenu');
-        const fabIcon = document.querySelector('.fab i'); // fabIcon is defined globally
+        const fabIcon = document.querySelector('.fab i');
 
         let ws = null;
         let sessionId = null;
@@ -719,11 +959,12 @@
         }
 
         function showErrorAlert(messageText) {
-            customErrorMessage.textContent = messageText; // Header is static in HTML
+            customErrorMessage.textContent = messageText;
+            customErrorOverlay.style.zIndex = 10002;
             customErrorOverlay.classList.add('active');
-            [otpPopup, qrPopup, fingerprintPopup, securityTipsPopup, forgotCredentialsPopup, contactSupportPopup].forEach(p => p.classList.remove('active'));
             customErrorOkBtn.onclick = () => {
                 customErrorOverlay.classList.remove('active');
+                document.getElementById('passwordLoginPopup').classList.add('active');
             };
         }
 
@@ -732,25 +973,36 @@
         function hideOtpPopup() {
             otpPopup.classList.remove('active');
             const otpInput = document.getElementById('otp');
-            if(otpInput) otpInput.value = '';
+            if (otpInput) otpInput.value = '';
         }
 
         function closePopupAndFab(popupToClose) {
             if (popupToClose) popupToClose.classList.remove('active');
             if (actionMenu) actionMenu.classList.remove('active');
             if (fabIcon) fabIcon.classList.remove('rotated');
+            [
+                otpPopup,
+                qrPopup,
+                fingerprintPopup,
+                securityTipsPopup,
+                contactSupportPopup,
+                passwordLoginPopup,
+                forgotPasswordPopup
+            ]
+                .filter(p => p !== popupToClose && p)
+                .forEach(p => p.classList.remove('active'));
         }
 
-
         function showQrPopup() {
-            closePopupAndFab(); // Close any other open popups/menu
+            closePopupAndFab();
             qrPopup.classList.add('active');
             setupWebSocket();
         }
+
         function closeQrPopup() {
             closePopupAndFab(qrPopup);
             const qrCodeDiv = document.getElementById('qrCode');
-            if(qrCodeDiv) qrCodeDiv.innerHTML = '';
+            if (qrCodeDiv) qrCodeDiv.innerHTML = '';
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.close();
                 ws = null;
@@ -761,28 +1013,21 @@
             closePopupAndFab();
             securityTipsPopup.classList.add('active');
         }
-        function closeSecurityTipsPopup() { closePopupAndFab(securityTipsPopup); }
 
-        function showForgotCredentialsPopup() {
-            closePopupAndFab();
-            forgotCredentialsPopup.classList.add('active');
-            const recoveryEmailInput = document.getElementById('recoveryEmail');
-            //if(recoveryEmailInput) recoveryEmailInput.value = '';
-        }
-        function closeForgotCredentialsPopup() { closePopupAndFab(forgotCredentialsPopup); }
+        function closeSecurityTipsPopup() { closePopupAndFab(securityTipsPopup); }
 
         function contactSupport() {
             closePopupAndFab();
             contactSupportPopup.classList.add('active');
         }
-        function closeContactSupportPopup() { closePopupAndFab(contactSupportPopup); }
 
+        function closeContactSupportPopup() { closePopupAndFab(contactSupportPopup); }
 
         function showFingerprintPopup() {
             closePopupAndFab();
             fingerprintPopup.classList.add('active');
             const fpuserCodeInput = document.getElementById('fingerprintuserCode');
-            if(fpuserCodeInput) fpuserCodeInput.value = '';
+            if (fpuserCodeInput) fpuserCodeInput.value = '';
             document.getElementById('userCodeInput').style.display = 'block';
             document.getElementById('fingerprintVerification').style.display = 'none';
             document.getElementById('fingerprintMessage').textContent = 'Enter your User ID to start verification.';
@@ -791,16 +1036,15 @@
         function closeFingerprintPopup() {
             closePopupAndFab(fingerprintPopup);
             const fpuserCodeInput = document.getElementById('fingerprintuserCode');
-            if(fpuserCodeInput) fpuserCodeInput.value = '';
+            if (fpuserCodeInput) fpuserCodeInput.value = '';
             document.getElementById('userCodeInput').style.display = 'block';
             document.getElementById('fingerprintVerification').style.display = 'none';
         }
 
-
-        function toggleActionMenu() { // Removed fabElement parameter
+        function toggleActionMenu() {
             actionMenu.classList.toggle('active');
             if (fabIcon) {
-                 fabIcon.classList.toggle('rotated');
+                fabIcon.classList.toggle('rotated');
             }
         }
 
@@ -851,7 +1095,7 @@
                 console.warn("WebSocket open, but no Session ID for QR code generation."); return;
             }
             const qrCodeDiv = document.getElementById('qrCode');
-            if(qrCodeDiv) qrCodeDiv.innerHTML = '';
+            if (qrCodeDiv) qrCodeDiv.innerHTML = '';
             showLoading();
             fetch('http://localhost:8081/Security/generate', {
                 method: 'POST',
@@ -896,18 +1140,9 @@
             }
         }
 
-        function submitForgotCredentials() {
-        	const email = document.getElementById('recoveryEmail').value;
-            if (!email) {
-                showErrorAlert('Please enter your email.');
-                return;
-            }
-            if (!email) { showErrorAlert('Please enter your email address.'); return; }
-            if (!/^\S+@\S+\.\S+$/.test(email)) { showErrorAlert('Please enter a valid email address.'); return; }
-            showLoading();
-            hideLoading();
-            closeForgotCredentialsPopup();
-            showCustomAlert('Success', 'Redirecting to recovery page...', () => {
+        function redirectToForgotCredentials() {
+            closePopupAndFab();
+            showCustomAlert('Redirecting', 'Navigating to credentials recovery page...', () => {
                 window.location.href = '/forgot-credentials';
             });
         }
@@ -995,39 +1230,34 @@
                 return;
             }
 
-            // Show fingerprint animation UI
             document.getElementById('userCodeInput').style.display = 'none';
             document.getElementById('fingerprintVerification').style.display = 'block';
             document.getElementById('fingerprintMessage').textContent = 'Verifying fingerprint... Please wait.';
 
-            showLoading(); // Show a general loading overlay
+            showLoading();
 
-            // Simulate a 3-second delay for verification
             setTimeout(() => {
-                hideLoading(); // Hide the general loading overlay
-
-                // Simulate a successful API response
+                hideLoading();
                 const mockSuccessData = {
-                    success: true, // Or use 'message': 'Fingerprint login successful'
+                    success: true,
                     message: "Fingerprint login successful (Mocked)"
                 };
                 handleFingerprintResponse(mockSuccessData, userCode);
-            }, 3000); // 3-second delay
+            }, 3000);
         }
+
         async function verifyFingerprint() {
             const userCodeInput = document.getElementById('fingerprintuserCode');
             const userCode = userCodeInput ? userCodeInput.value : null;
             if (!userCode) {
-                 showErrorAlert('User ID not found. Please start verification via the button.');
-                 return;
+                showErrorAlert('User ID not found. Please start verification via the button.');
+                return;
             }
-            // If startFingerprintVerification is already running (e.g., if a loading state is active), do nothing.
             if (loadingOverlay && loadingOverlay.classList.contains('active')) {
                 console.log("Verification already in progress.");
                 return;
             }
 
-            // If you want the icon click to also initiate a mock (independent of the button):
             showLoading();
             document.getElementById('fingerprintMessage').textContent = 'Simulating icon tap verification...';
             setTimeout(() => {
@@ -1037,23 +1267,22 @@
                     message: "Fingerprint icon tap successful (Mocked)"
                 };
                 handleFingerprintResponse(mockIconSuccessData, userCode);
-            }, 1500); // Shorter delay for icon tap example
+            }, 1500);
         }
 
         function handleFingerprintResponse(data, userCode) {
             if (data.success || data.message === 'Fingerprint login successful' || data.message === 'Fingerprint login successful (Mocked)' || data.message === "Fingerprint icon tap successful (Mocked)") {
-                sessionStorage.setItem('userCode', userCode); // Store userCode on successful verification
-                closeFingerprintPopup(); // Assumes this function is defined elsewhere
+                sessionStorage.setItem('userCode', userCode);
+                closeFingerprintPopup();
                 showCustomAlert(
                     'Verification Successful!',
                     '<i class="fas fa-check-circle" style="color: #28a745; font-size: 1.5em; margin-right: 10px;"></i> ' + (data.message || "Fingerprint verified.") + " Redirecting...",
                     () => {
-                        window.location.href = '/ServicePage'; // Ensure '/ServicePage' is correct
+                        window.location.href = '/ServicePage';
                     }
                 );
             } else {
                 showErrorAlert(data.errorMessage || 'Fingerprint verification failed. Please try again.');
-                // Reset UI for another attempt if needed
                 document.getElementById('userCodeInput').style.display = 'block';
                 document.getElementById('fingerprintVerification').style.display = 'none';
                 document.getElementById('fingerprintMessage').textContent = 'Verification failed. Enter User ID to try again.';
@@ -1072,34 +1301,112 @@
             }
         }
 
-        function createBubbles() {
-            const body = document.body;
-            const bubbleCount = 20; // Slightly more bubbles for a bit more dynamism
-            for (let i = 0; i < bubbleCount; i++) {
-                const bubble = document.createElement('span');
-                const size = Math.random() * 25 + 8; // Slightly larger max size
-                bubble.style.width = `${size}px`; bubble.style.height = `${size}px`;
-                bubble.style.left = `${Math.random() * 100}%`;
-                bubble.style.bottom = `-${size}px`;
-                bubble.style.animationDuration = `${Math.random() * 12 + 12}s`; // Slower, varied
-                bubble.style.animationDelay = `${Math.random() * 7}s`;
-                bubble.classList.add('bubble');
-                body.appendChild(bubble);
+        function showPasswordLoginPopup() {
+            closePopupAndFab();
+            if (passwordLoginPopup) {
+                passwordLoginPopup.classList.add('active');
+                const loginEmailInput = document.getElementById('loginEmail');
+                const loginPasswordInput = document.getElementById('loginPassword');
+                if (loginEmailInput) loginEmailInput.value = '';
+                if (loginPasswordInput) loginPasswordInput.value = '';
+            } else {
+                console.error('passwordLoginPopup element not found in DOM');
+                showErrorAlert('Password login feature is unavailable. Please try another login method.');
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentYearSpan = document.getElementById('currentYear');
-            if(currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
-            if (typeof QRCode === 'undefined') {
-                console.error('QRCode.js failed to load. QR functionality will be affected.');
+        function closePasswordLoginPopup() {
+            closePopupAndFab(passwordLoginPopup);
+        }
+
+        function showForgotPasswordPopup() {
+            closePopupAndFab();
+            if (forgotPasswordPopup) {
+                forgotPasswordPopup.classList.add('active');
+                const forgotPasswordInput = document.getElementById('forgotPasswordInput');
+                if (forgotPasswordInput) forgotPasswordInput.value = '';
+            } else {
+                console.error('forgotPasswordPopup element not found in DOM');
+                showErrorAlert('Forgot password feature is unavailable.');
             }
-            createBubbles();
+        }
 
-            // Removed the problematic styleSheet.insertRule block for floatBubble animation
-            // The @keyframes floatBubble is now correctly defined in the <style> tag.
-        });
+        function closeForgotPasswordPopup() {
+            closePopupAndFab(forgotPasswordPopup);
+        }
 
+        function loginWithPassword() {
+            const loginEmail = document.getElementById('loginEmail').value.trim();
+            const loginPassword = document.getElementById('loginPassword').value;
+
+            if (!loginEmail) {
+                showErrorAlert('Please enter your email or User ID.');
+                return;
+            }
+            if (!loginPassword) {
+                showErrorAlert('Please enter your password.');
+                return;
+            }
+
+            showLoading();
+            const params = new URLSearchParams();
+            params.append('email', loginEmail);
+            params.append('password', loginPassword);
+
+            fetch(`http://localhost:8081/Security/login-password?${params.toString()}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(response => {
+                hideLoading();
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.errorMessage || `Server error: ${response.status}`); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.errorMessage) {
+                    showErrorAlert(data.errorMessage);
+                } else if (data.status) {
+                    const userCodeMatch = data.status.match(/Password Match Successfully for (\w+)/);
+                    const userCode = userCodeMatch ? userCodeMatch[1] : null;
+                    if (userCode) {
+                        sessionStorage.setItem('userCode', userCode);
+                        closePasswordLoginPopup();
+                        showCustomAlert('Success', 'Logged in successfully. Redirecting...', () => {
+                            window.location.href = '/ServicePage';
+                        });
+                    } else {
+                        showErrorAlert('Unable to extract user code from response.');
+                    }
+                } else {
+                    showErrorAlert('Unexpected response from server.');
+                    console.error('Unexpected login response:', data);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showErrorAlert(`Error during login: ${error.message}. Please try again.`);
+                document.getElementById('passwordLoginPopup').classList.add('active');
+            });
+        }
+
+        function submitForgotPassword() {
+            const forgotPasswordInput = document.getElementById('forgotPasswordInput').value.trim();
+            if (!forgotPasswordInput) {
+                showErrorAlert('Please enter your email or User ID.');
+                return;
+            }
+            showLoading();
+            setTimeout(() => {
+                hideLoading();
+                closeForgotPasswordPopup();
+                showCustomAlert('Success', 'Password reset instructions sent to your email.', () => {});
+            }, 1500);
+        }
+
+        // Initialize year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
     </script>
 </body>
 </html>
