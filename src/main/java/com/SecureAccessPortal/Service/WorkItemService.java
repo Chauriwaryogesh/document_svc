@@ -16,18 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
-import com.SecureAccessPortal.Entity.ActivityDtls;
 import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.OtpStore;
 import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.VerificationRecord;
 import com.SecureAccessPortal.Entity.Workitem;
-import com.SecureAccessPortal.Modal.ActivityDetailsDTO;
 import com.SecureAccessPortal.Modal.Queue;
 import com.SecureAccessPortal.Modal.WorkItemCount;
 import com.SecureAccessPortal.Modal.WorkItemDTO;
-import com.SecureAccessPortal.Repo.ActivityDtlsRepo;
 import com.SecureAccessPortal.Repo.WorkItemRepo;
 import com.SecureAccessPortal.Transformer.WorkItemMapper;
 
@@ -40,8 +37,6 @@ public class WorkItemService implements IWorkItemService {
 	@Autowired
 	private WorkItemMapper workItemMapper;
 
-	@Autowired
-	private ActivityDtlsRepo activityDtlsRepo;
 
 	@Override
 	public WorkItemDTO createWorkItem(WorkItemDTO workItemRequest, String userCode) {
@@ -86,34 +81,6 @@ public class WorkItemService implements IWorkItemService {
 
 		long randomNumber = 1000000000L + new Random().nextLong(9000000000L); // ensures 10 digits
 		return "WI" + year + randomNumber;
-	}
-
-	@Override
-	public ResponseEntity<List<ActivityDetailsDTO>> getActivityDtls(String userCode) {
-		ResponseEntity<List<ActivityDetailsDTO>> response = new ResponseEntity<List<ActivityDetailsDTO>>();
-		List<ActivityDtls> activityDtls = activityDtlsRepo.findByuserCode(userCode);
-		if (activityDtls != null && !activityDtls.isEmpty()) {
-			List<ActivityDetailsDTO> activityList = activityDtls.stream().map(activity -> {
-				ActivityDetailsDTO activityDetailsDTO = new ActivityDetailsDTO();
-				activityDetailsDTO.setActivityTime(activity.getActivityTime());
-				activityDetailsDTO.setActivityType(activity.getActivityType());
-				activityDetailsDTO.setDetails(activity.getDetails());
-				activityDetailsDTO.setEmail(activity.getEmail());
-				activityDetailsDTO.setId(String.valueOf(activity.getId()));
-				activityDetailsDTO.setIpAddress(activity.getIpAddress());
-				activityDetailsDTO.setScreenName(activity.getScreenName());
-				activityDetailsDTO.setTimeSpentSeconds(activity.getTimeSpentSeconds());
-				activityDetailsDTO.setuserCode(activity.getuserCode());
-				return activityDetailsDTO;
-			}).collect(Collectors.toList());
-
-			response.setData(activityList);
-
-		} else {
-			response.setErrorMessage("Not activity Found");
-		}
-
-		return response;
 	}
 
 	@Override

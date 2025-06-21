@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,13 +25,11 @@
             position: relative;
             color: #34495e;
         }
-
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
         /* --- Main Header --- */
         .main-header {
             width: 100%;
@@ -52,20 +49,17 @@
             text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
             border-bottom: 3px solid #007bff;
         }
-
         .main-header .header-title {
             margin: 0;
             flex: 1;
             text-align: center;
         }
-
         .main-header .header-actions {
             display: flex;
             align-items: center;
             position: absolute;
             right: 30px;
         }
-
         .main-header .header-actions i {
             margin: 0 12px;
             font-size: 1.5rem;
@@ -73,12 +67,10 @@
             color: #bdc3c7;
             transition: color 0.3s ease, transform 0.3s ease;
         }
-
         .main-header .header-actions i:hover {
             color: #ffffff;
             transform: scale(1.15) rotate(5deg);
         }
-
         /* --- Main Content --- */
         main {
             flex: 1;
@@ -88,7 +80,6 @@
             width: 100%;
             padding: 20px;
         }
-
         /* --- Login Card --- */
         .login-card {
             background: #ffffff;
@@ -101,12 +92,10 @@
             border-top: 4px solid #007bff;
             position: relative;
         }
-
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(25px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .login-card h2 {
             text-align: center;
             margin-bottom: 2rem;
@@ -114,13 +103,11 @@
             font-weight: 700;
             font-size: 1.9rem;
         }
-
         /* --- Input Groups and Fields --- */
         .input-group {
             position: relative;
             margin-bottom: 1.3rem;
         }
-
         .login-card input,
         .input-group input,
         .enhanced-input {
@@ -136,13 +123,11 @@
             color: #34495e;
             transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         }
-
         .login-card input::placeholder,
         .input-group input::placeholder,
         .enhanced-input::placeholder {
             color: #7f8c8d;
         }
-
         .login-card input:focus,
         .input-group input:focus,
         .enhanced-input:focus {
@@ -151,7 +136,6 @@
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.2);
             background-color: #ffffff;
         }
-
         .toggle-visibility {
             position: absolute;
             right: 15px;
@@ -163,11 +147,9 @@
             user-select: none;
             transition: color 0.3s ease;
         }
-
         .toggle-visibility:hover {
             color: #007bff;
         }
-
         /* --- Buttons --- */
         .login-card button,
         .popper-btn,
@@ -192,7 +174,6 @@
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
             text-shadow: 0 1px 1px rgba(0,0,0,0.2);
         }
-
         .login-card button:hover,
         .popper-btn:hover,
         .otp-popup-box button:hover,
@@ -204,7 +185,6 @@
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
             transform: translateY(-1px);
         }
-
         .login-card button:active,
         .popper-btn:active,
         .otp-popup-box button:active,
@@ -215,38 +195,31 @@
             transform: scale(0.98) translateY(0px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
-
         .custom-error-overlay {
             z-index: 10002 !important;
         }
-
         .popper-btn.cancel,
         .custom-alert-buttons button#customAlertOkBtn,
         .custom-alert-buttons button#customErrorOkBtn {
             background-image: linear-gradient(to bottom, #6c757d, #545b62);
         }
-
         .popper-btn.cancel:hover,
         .custom-alert-buttons button#customAlertOkBtn:hover,
         .custom-alert-buttons button#customErrorOkBtn:hover {
             background-image: linear-gradient(to bottom, #5a6268, #474c51);
         }
-
         .popper-btn.verify {
             background-image: linear-gradient(to bottom, #28a745, #1e7e34);
         }
-
         .popper-btn.verify:hover {
             background-image: linear-gradient(to bottom, #218838, #155d27);
         }
-
         /* Social Login Buttons */
         .social-login {
             display: flex;
             justify-content: space-between;
             margin: 1.8rem 0;
         }
-
         .social-login button {
             width: calc(50% - 0.5rem);
             background: #4267B2;
@@ -262,16 +235,13 @@
             transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
             border: 1px solid transparent;
         }
-
         .social-login button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
-
         .social-login .google { background: #DB4437; }
         .social-login .google:hover { background: #c23321; }
         .social-login button i { margin-right:0; padding-right: 10px; font-size: 1rem; }
-
         .chatbot-hint {
             text-align: center;
             font-size: 0.9rem;
@@ -280,9 +250,7 @@
             animation: fadeIn 1s ease-out;
         }
         .chatbot-hint i { margin-right: 5px; color: #007bff; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
         /* --- Footer --- */
         footer {
             background-color: #2c3e50;
@@ -301,8 +269,6 @@
         footer a:hover { text-decoration: underline; }
         footer .fa-heart { transition: transform 0.3s ease; }
         footer:hover .fa-heart { transform: scale(1.2); }
-
-
         /* --- Loading Overlay --- */
         .loading-overlay {
             position: fixed;
@@ -320,13 +286,12 @@
             transition: opacity ease-in-out0.3s ease-in-out, visibility 0s linear;
             transition: ease-in-out0.3s;
         }
-         .loading-overlay.active {
+        .loading-overlay.active {
             opacity: 1;
             visibility: visible;
             transition: opacity 0.3s ease-in-out, visibility 0s linear 0s;
         }
-
-          .loader {
+        .loader {
             border: 7px solid #f0f4f8;
             border-top: 7px solid #007bff;
             border-radius: 50%;
@@ -334,13 +299,11 @@
             height: 55px;
             animation: spin 1.2s linear infinite;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-       .custom-alert-overlay,
+        .custom-alert-overlay,
         .otp-popup,
         .qr-popup,
         .security-tips-popup,
@@ -364,7 +327,6 @@
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
         }
-
         .custom-alert-overlay.active,
         .otp-popup.active,
         .qr-popup.active,
@@ -381,11 +343,9 @@
             background-color: rgba(44, 62, 80, 0.85) !important;
             animation: popupFadeIn 0.35s ease-out;
         }
-
         .custom-alert-overlay.active {
             z-index: 10005 !important; /* Higher z-index for alert */
         }
-
         .custom-alert-box,
         .otp-popup-box,
         .qr-popup-box,
@@ -406,12 +366,10 @@
             position: relative;
             z-index: 10004; /* Ensure box is above overlay */
         }
-
         @keyframes popupFadeIn {
             from { opacity: 0; transform: translateY(-10px) scale(0.97); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         .custom-alert-header,
         .otp-popup-box h3,
         .qr-popup-box h3,
@@ -427,7 +385,6 @@
             margin-bottom: 20px;
             color: #2c3e50;
         }
-
         .custom-alert-header i,
         .otp-popup-box h3 i,
         .qr-popup-box h3 i,
@@ -441,12 +398,10 @@
             margin-right: 10px;
             color: #007bff;
         }
-
         .custom-alert-header.error { color: #e74c3c; }
         .custom-alert-header.error i { color: #e74c3c; }
         .custom-alert-message { color: #555; margin-bottom: 25px; font-size: 1.05rem; line-height: 1.6; }
         .custom-alert-message.error { color: #e74c3c; }
-
         .qr-popup-box #qrCode {
             margin: 25px auto;
             border: 1px solid #e0e0e0;
@@ -455,18 +410,18 @@
             border-radius: 8px;
             background: #fff;
         }
-        .security-tips-popup-box ul { text-align: left;
+        .security-tips-popup-box ul {
+            text-align: left;
             margin-bottom: 25px;
             padding-left: 20px;
             color: #495057;
             font-size: 1rem;
             line-height: 1.7;
-            ;
         }
-        .security-tips-popup-box ul li { margin-bottom: 10px;
+        .security-tips-popup-box ul li {
+            margin-bottom: 10px;
             padding-left: 10px;
             position: relative;
-            ;
         }
         .security-tips-popup-box ul li::before {
             content: "\f058";
@@ -475,41 +430,39 @@
             position: absolute;
             left: -10px;
             color: #28a745;
-            ;
         }
-
-        .contact-support-popup-box .contact-info p { color: #495057;
+        .contact-support-popup-box .contact-info p {
+            color: #495057;
             margin-bottom: 15px;
             font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: flex-start;
             text-align: left;
-            ;
         }
-        .contact-support-popup-box .contact-info i { margin-right: 12px;
+        .contact-support-popup-box .contact-info i {
+            margin-right: 12px;
             color: #007bff;
             width: 22px;
             text-align: center;
-            ;
         }
-        .contact-support-popup-box .contact-info a { color: #007bff;
+        .contact-support-popup-box .contact-info a {
+            color: #007bff;
             text-decoration: none;
             font-weight: bold500;
-            ;
         }
-        .contact-support-popup-box .contact-info a:hover { text-decoration: underline;
+        .contact-support-popup-box .contact-info a:hover {
+            text-decoration: underline;
             color: #0056b3;
-            }
-
-        .fingerprint-verification { text-align: center;
-            }
-
-        .fingerprint-animation { position: relative;
+        }
+        .fingerprint-verification {
+            text-align: center;
+        }
+        .fingerprint-animation {
+            position: relative;
             margin: 30px auto;
             width: 130px;
             height: 130px;
-            ;
         }
         .fingerprint-icon i {
             font-size: 75px;
@@ -521,9 +474,9 @@
             z-index: 2;
             cursor: pointer;
             transition: transform ease-in0.2s ease-in-out;
-            ;
         }
-        .fingerprint-icon i:hover { transform: translate(-50%,-50%) scale(1.1);
+        .fingerprint-icon i:hover {
+            transform: translate(-50%,-50%) scale(1.1);
         }
         .fingerprint-pulse {
             position: absolute;
@@ -535,17 +488,24 @@
             border-radius: 50%;
             animation: pulse ease-in-out2s ease-in-out infinite;
             z-index: 1;
-            ;
         }
         @keyframes pulse {
             0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.75; }
             70% { transform: translate(-50%, -50%) scale(1.7); opacity: 0; }
             100% { transform: translate(-50%, -50%) scale(0.85); opacity: 0; }
         }
-        .fingerprint-popup-box p { color: #495057; font-size: 1rem; margin-bottom: 25px; }
-
+        .fingerprint-popup-box p {
+            color: #495057;
+            font-size: 1rem;
+            margin-bottom: 25px;
+        }
         /* --- FAB (Floating Action Button) & Menu --- --- */
-        .fab-container { position: fixed; bottom: 100px; right: 30px; z-index: 1000; }
+        .fab-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            z-index: 1000;
+        }
         .fab {
             background-color: #007bff;
             color: white;
@@ -559,21 +519,19 @@
             cursor: pointer;
             box-shadow: 0 8px 16px rgba(0,0,0,0.25);
             transition: transform cubic-bezier(0.175,0.885,0.32,1.275)0.25s cubic-bezier(0.175,0.885,0.32,1.275), background-color ease0.2s ease, box-shadow ease0.2s ease;
-            ;
         }
         .fab:hover {
             background-color: #0056b3;
             transform: scale(1.1) rotate(20deg);
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            ;
         }
-        .fab i.rotated { transform: rotate(135deg);
+        .fab i.rotated {
+            transform: rotate(135deg);
             transition: transform ease-out0.3s ease-out;
-            ;
         }
-        .fab i { transition: transform ease-out0.3s ease-out; }
-
-
+        .fab i {
+            transition: transform ease-out0.3s ease-out;
+        }
         .action-menu {
             position: fixed;
             bottom: 170px;
@@ -591,12 +549,11 @@
             transition: opacity ease0.3s ease, transform cubic-bezier(0.175,0.885,0.32,1.275)0.3s cubic-bezier(0.175,0.885,0.32,1.275);
             z-index: 999;
             border: 1px solid #e7eaf3;
-            ;
         }
-        .action-menu.active { display: flex;
+        .action-menu.active {
+            display: flex;
             opacity: 1;
             transform: translateY(0) scale(1);
-            ;
         }
         .action-menu button {
             background: none;
@@ -613,7 +570,6 @@
             margin: 0;
             border-radius: 0;
             box-shadow: none;
-            ;
         }
         .action-menu button i {
             margin-right: 15px;
@@ -622,17 +578,15 @@
             width: 24px;
             text-align: center;
             transition: transform ease0.2s ease;
-            ;
         }
-        .action-menu button:hover { background-color: #f0f4f8;
+        .action-menu button:hover {
+            background-color: #f0f4f8;
             color: #0056b3;
-            ;
         }
-        .action-menu button:hover i { color: #0056b3;
+        .action-menu button:hover i {
+            color: #0056b3;
             transform: scale(1.1);
-            ;
         }
-
         .popper-btn .btn-loader {
             border: 3px solid rgba(255,255,255,0.35);
             border-top: 3px solid #fff;
@@ -643,10 +597,10 @@
             margin-left: 10px;
             display: inline-block;
             vertical-align: middle;
-            ;
         }
-        .popper-btn .btn-loader.hidden { display: none; }
-
+        .popper-btn .btn-loader.hidden {
+            display: none;
+        }
         /* --- Responsive Adjustments --- --- */
         @media (max-width: 600px) {
             .main-header { padding: 15px 20px; font-size: 20px; }
@@ -675,7 +629,6 @@
             .social-login button { padding: 0.7rem; font-size: 0.9rem; }
             .action-menu { width: calc(100% - 40px); }
         }
-
         .password-login-popup, .forgot-password-popup {
             position: fixed;
             top: 0;
@@ -689,12 +642,10 @@
             z-index: 10001;
             padding: 20px;
         }
-
         .password-login-popup.active, .forgot-password-popup.active {
             display: flex;
             animation: popupFadeIn 0.35s ease-out;
         }
-
         .password-login-popup-box, .forgot-password-popup-box {
             background-color: #fff;
             border-radius: 12px;
@@ -706,25 +657,20 @@
             max-width: 480px;
             border-top: 4px solid #007bff;
         }
-
         .password-login-popup-box .popper-btn {
             margin: 0.8rem 0;
         }
-
         .password-login-popup-box .popper-btn.cancel {
             background-image: linear-gradient(to bottom, #6c757d, #545b62);
         }
-
         .password-login-popup-box .popper-btn.cancel:hover {
             background-image: linear-gradient(to bottom, #5a6268, #474c51);
         }
-
         .password-login-popup-box .popper-btn:not(:last-child) {
             margin-bottom: 0.5rem;
         }
     </style>
 </head>
-
 <body>
     <div id="customAlertOverlay" class="custom-alert-overlay">
         <div id="customAlertBox" class="custom-alert-box">
@@ -735,7 +681,6 @@
             </div>
         </div>
     </div>
-
     <div id="customErrorOverlay" class="custom-alert-overlay error">
         <div id="customErrorBox" class="custom-alert-box">
             <div id="customErrorHeader" class="custom-alert-header error"><i class="fas fa-exclamation-triangle"></i> Error</div>
@@ -745,7 +690,6 @@
             </div>
         </div>
     </div>
-
     <div id="otpPopup" class="otp-popup">
         <div class="otp-popup-box">
             <h3><i class="fas fa-key"></i> Enter OTP</h3>
@@ -757,7 +701,6 @@
             <button class="popper-btn cancel" onclick="hideOtpPopup()">Cancel</button>
         </div>
     </div>
-
     <div id="qrPopup" class="qr-popup">
         <div class="qr-popup-box">
             <h3><i class="fas fa-qrcode"></i> Login with QR Code</h3>
@@ -766,7 +709,6 @@
             <button class="popper-btn cancel" onclick="closeQrPopup()">Close</button>
         </div>
     </div>
-
     <div id="securityTipsPopup" class="security-tips-popup">
         <div class="security-tips-popup-box">
             <h3><i class="fas fa-shield-alt"></i> Security Tips</h3>
@@ -780,7 +722,6 @@
             <button class="popper-btn cancel" onclick="closeSecurityTipsPopup()">Close</button>
         </div>
     </div>
-
     <div id="contactSupportPopup" class="contact-support-popup">
         <div class="contact-support-popup-box">
             <h3><i class="fas fa-headset"></i> Contact Support</h3>
@@ -788,10 +729,9 @@
                 <p><i class="fas fa-envelope"></i> <a href="mailto:chauriwaryogesh@gmail.com">chauriwaryogesh@gmail.com</a></p>
                 <p><i class="fas fa-phone"></i> 8208247944</p>
             </div>
-            <button class="popper-btn cancel" onclick="closeContactSupportPopup()">Close</button>
+            <button class="popper-btn cancel" onclick="closeContactSupportPopup()">Cancel</button>
         </div>
     </div>
-
     <div id="passwordLoginPopup" class="password-login-popup">
         <div class="password-login-popup-box">
             <h3><i class="fas fa-lock"></i> Login with Password</h3>
@@ -810,7 +750,6 @@
             <button class="popper-btn cancel" onclick="closePasswordLoginPopup()">Cancel</button>
         </div>
     </div>
-
     <div id="forgotPasswordPopup" class="forgot-password-popup">
         <div class="forgot-password-popup-box">
             <h3><i class="fas fa-lock"></i> Forgot Password</h3>
@@ -825,28 +764,27 @@
             <button class="popper-btn cancel" onclick="closeForgotPasswordPopup()">Cancel</button>
         </div>
     </div>
-
     <div id="fingerprintPopup" class="fingerprint-popup">
-        <div class="fingerprint-popup-box">
-            <h3><i class="fas fa-fingerprint"></i> Login with Fingerprint</h3>
-            <p id="fingerprintMessage">Enter your User ID to start verification.</p>
-            <div id="userCodeInput" class="input-group">
-                <input type="text" id="fingerprintuserCode" placeholder="Enter User ID" required class="enhanced-input" />
-                <button class="popper-btn" onclick="startFingerprintVerification()">
-                    <span class="btn-text">Start Verification</span>
-                </button>
-            </div>
-            <div id="fingerprintVerification" class="fingerprint-verification" style="display: none;">
-                <div class="fingerprint-animation">
-                    <i class="fas fa-fingerprint fingerprint-icon" onclick="verifyFingerprint()"></i>
-                    <div class="fingerprint-pulse"></div>
-                </div>
-                <p>Click the fingerprint icon to simulate sensor touch.</p>
-            </div>
-            <button class="popper-btn cancel" onclick="closeFingerprintPopup()">Cancel</button>
+    <div class="fingerprint-popup-box">
+        <h3><i class="fas fa-fingerprint"></i> Login with Fingerprint</h3>
+        <p id="fingerprintMessage">Enter your User ID and Email to start verification.</p>
+        <div id="userCodeInput" class="input-group">
+            <input type="text" id="fingerprintuserCode" placeholder="Enter User ID" required class="enhanced-input" />
+            <input type="email" id="fingerprintEmail" placeholder="Enter Email" required class="enhanced-input" />
+            <button class="popper-btn" onclick="startFingerprintVerification()">
+                <span class="btn-text">Start Verification</span>
+            </button>
         </div>
+        <div id="fingerprintVerification" class="fingerprint-verification" style="display: none;">
+            <div class="fingerprint-animation">
+                <i class="fas fa-fingerprint fingerprint-icon" onclick="verifyFingerprint()"></i>
+                <div class="fingerprint-pulse"></div>
+            </div>
+            <p>Click the fingerprint icon to simulate sensor touch.</p>
+        </div>
+        <button class="popper-btn cancel" onclick="closeFingerprintPopup()">Cancel</button>
     </div>
-
+</div>
     <header class="main-header">
         <div class="header-title">Secure Access Portal</div>
         <div class="header-actions">
@@ -856,7 +794,6 @@
             <i class="fas fa-question-circle" title="Help/FAQ"></i>
         </div>
     </header>
-
     <main>
         <div class="login-card">
             <h2>Login to Continue</h2>
@@ -880,11 +817,9 @@
             </div>
         </div>
     </main>
-
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loader"></div>
     </div>
-
     <div class="fab-container">
         <div class="fab" onclick="toggleActionMenu()">
             <i class="fas fa-plus"></i>
@@ -913,11 +848,9 @@
             </button>
         </div>
     </div>
-
     <footer>
         © Secure Access Portal <span id="currentYear"></span> | Designed with <i class="fas fa-heart" style="color: #e74c3c;"></i>
     </footer>
-
     <script>
         // --- DOM Elements ---
         const loadingOverlay = document.getElementById('loadingOverlay');
@@ -925,11 +858,9 @@
         const customAlertHeader = document.getElementById('customAlertHeader');
         const customAlertMessage = document.getElementById('customAlertMessage');
         const customAlertOkBtn = document.getElementById('customAlertOkBtn');
-
         const customErrorOverlay = document.getElementById('customErrorOverlay');
         const customErrorMessage = document.getElementById('customErrorMessage');
         const customErrorOkBtn = document.getElementById('customErrorOkBtn');
-
         const otpPopup = document.getElementById('otpPopup');
         const qrPopup = document.getElementById('qrPopup');
         const securityTipsPopup = document.getElementById('securityTipsPopup');
@@ -937,17 +868,14 @@
         const contactSupportPopup = document.getElementById('contactSupportPopup');
         const passwordLoginPopup = document.getElementById('passwordLoginPopup');
         const forgotPasswordPopup = document.getElementById('forgotPasswordPopup');
-
         const actionMenu = document.getElementById('actionMenu');
         const fabIcon = document.querySelector('.fab i');
-
         let ws = null;
         let sessionId = null;
-
+        let isOtpError = false; // Flag to track OTP errors
         // --- Utility Functions ---
         function showLoading() { loadingOverlay.classList.add('active'); }
         function hideLoading() { loadingOverlay.classList.remove('active'); }
-
         function showCustomAlert(headerText, messageText, callback) {
             customAlertHeader.innerHTML = `<i class="fas fa-info-circle"></i> ${headerText || "Notification"}`;
             customAlertMessage.innerHTML = messageText;
@@ -957,25 +885,30 @@
                 if (callback) callback();
             };
         }
-
         function showErrorAlert(messageText) {
             customErrorMessage.textContent = messageText;
             customErrorOverlay.style.zIndex = 10002;
             customErrorOverlay.classList.add('active');
             customErrorOkBtn.onclick = () => {
                 customErrorOverlay.classList.remove('active');
-                document.getElementById('passwordLoginPopup').classList.add('active');
+                customErrorMessage.textContent = '';
+                if (isOtpError) {
+                    otpPopup.classList.add('active'); // Keep OTP popup open
+                } else {
+                    passwordLoginPopup.classList.add('active'); // Default to password login
+                }
             };
         }
-
         // --- Popup Management ---
         function showOtpPopup() { otpPopup.classList.add('active'); }
         function hideOtpPopup() {
             otpPopup.classList.remove('active');
             const otpInput = document.getElementById('otp');
-            if (otpInput) otpInput.value = '';
+            if (otpInput) {
+                otpInput.value = '';
+                otpInput.style.borderColor = '#d0d9e0'; // Reset border
+            }
         }
-
         function closePopupAndFab(popupToClose) {
             if (popupToClose) popupToClose.classList.remove('active');
             if (actionMenu) actionMenu.classList.remove('active');
@@ -992,13 +925,11 @@
                 .filter(p => p !== popupToClose && p)
                 .forEach(p => p.classList.remove('active'));
         }
-
         function showQrPopup() {
             closePopupAndFab();
             qrPopup.classList.add('active');
             setupWebSocket();
         }
-
         function closeQrPopup() {
             closePopupAndFab(qrPopup);
             const qrCodeDiv = document.getElementById('qrCode');
@@ -1008,21 +939,16 @@
                 ws = null;
             }
         }
-
         function showSecurityTipsPopup() {
             closePopupAndFab();
             securityTipsPopup.classList.add('active');
         }
-
         function closeSecurityTipsPopup() { closePopupAndFab(securityTipsPopup); }
-
         function contactSupport() {
             closePopupAndFab();
             contactSupportPopup.classList.add('active');
         }
-
         function closeContactSupportPopup() { closePopupAndFab(contactSupportPopup); }
-
         function showFingerprintPopup() {
             closePopupAndFab();
             fingerprintPopup.classList.add('active');
@@ -1032,7 +958,6 @@
             document.getElementById('fingerprintVerification').style.display = 'none';
             document.getElementById('fingerprintMessage').textContent = 'Enter your User ID to start verification.';
         }
-
         function closeFingerprintPopup() {
             closePopupAndFab(fingerprintPopup);
             const fpuserCodeInput = document.getElementById('fingerprintuserCode');
@@ -1040,14 +965,12 @@
             document.getElementById('userCodeInput').style.display = 'block';
             document.getElementById('fingerprintVerification').style.display = 'none';
         }
-
         function toggleActionMenu() {
             actionMenu.classList.toggle('active');
             if (fabIcon) {
                 fabIcon.classList.toggle('rotated');
             }
         }
-
         // --- API Calls & Logic ---
         function setupWebSocket() {
             if (ws && ws.readyState !== WebSocket.CLOSED) { ws.close(); }
@@ -1085,7 +1008,6 @@
                 closeQrPopup();
             };
         }
-
         function generateQrCode() {
             if (!sessionId && (!ws || ws.readyState !== WebSocket.OPEN)) {
                 console.log("Attempting to re-initiate WebSocket for QR.");
@@ -1118,7 +1040,6 @@
                 closeQrPopup();
             });
         }
-
         function generateQrCodeFromToken(token) {
             const qrCodeDiv = document.getElementById('qrCode');
             if (!qrCodeDiv) return;
@@ -1139,28 +1060,37 @@
                 showErrorAlert('Failed to display QR code. Please try again.'); closeQrPopup();
             }
         }
-
         function redirectToForgotCredentials() {
             closePopupAndFab();
             showCustomAlert('Redirecting', 'Navigating to credentials recovery page...', () => {
                 window.location.href = '/forgot-credentials';
             });
         }
-
         function redirectToHome() { window.location.href = '/home'; }
         function redirectToGuest() { window.location.href = '/dashboard'; }
         function redirectToRegister() { window.location.href = 'register'; }
-
         function sendOtp() {
             const emailInput = document.getElementById("email");
             const userCodeInput = document.getElementById("userCode");
             const email = emailInput ? emailInput.value : null;
             const userCode = userCodeInput ? userCodeInput.value : null;
-
-            if (!email) { showErrorAlert("Email is required."); return; }
-            if (!userCode) { showErrorAlert("User ID is required."); return; }
-            if (!/^\S+@\S+\.\S+$/.test(email)) { showErrorAlert('Please enter a valid email address.'); return; }
-
+            if (!email) {
+                emailInput.style.borderColor = '#e74c3c';
+                showErrorAlert("Email is required.");
+                return;
+            }
+            if (!userCode) {
+                userCodeInput.style.borderColor = '#e74c3c';
+                showErrorAlert("User ID is required.");
+                return;
+            }
+            if (!/^\S+@\S+\.\S+$/.test(email)) {
+                emailInput.style.borderColor = '#e74c3c';
+                showErrorAlert('Please enter a valid email address.');
+                return;
+            }
+            emailInput.style.borderColor = '#d0d9e0';
+            userCodeInput.style.borderColor = '#d0d9e0';
             const params = new URLSearchParams();
             params.append("Email id", email);
             params.append("user id", userCode);
@@ -1182,17 +1112,23 @@
                 showErrorAlert(`Error sending OTP: ${error.message}. Please try again.`);
             });
         }
-
         function verifyOtp() {
             const email = document.getElementById("email") ? document.getElementById("email").value : null;
             const otpInput = document.getElementById("otp");
             const otp = otpInput ? otpInput.value : null;
             const userCode = document.getElementById("userCode") ? document.getElementById("userCode").value : null;
-
-            if (!otp) { showErrorAlert("OTP is required."); return; }
-            if (otp.length < 4 || otp.length > 6 || !/^\d+$/.test(otp)) {
-                showErrorAlert("Please enter a valid OTP (4-6 digits)."); return;
+            isOtpError = true; // Set flag for OTP error handling
+            if (!otp) {
+                otpInput.style.borderColor = '#e74c3c';
+                showErrorAlert("OTP is required.");
+                return;
             }
+            if (otp.length < 4 || otp.length > 6 || !/^\d+$/.test(otp)) {
+                otpInput.style.borderColor = '#e74c3c';
+                showErrorAlert("Please enter a valid OTP (4-6 digits).");
+                return;
+            }
+            otpInput.style.borderColor = '#d0d9e0';
             const params = new URLSearchParams();
             params.append("Email id", email);
             params.append("Otp", otp);
@@ -1205,59 +1141,80 @@
                 return response.json();
             })
             .then(data => {
-                hideLoading();
-                if (data && data.errorMessage) { showErrorAlert(data.errorMessage); }
-                else if (data && (data.successMessage || data.redirectUrl || !data.errorMessage)) {
-                    sessionStorage.setItem('userCode', userCode);
-                    hideOtpPopup();
-                    showCustomAlert("Verification Successful!", data.successMessage || "OTP verified. Redirecting...", () => {
-                        window.location.href = data.redirectUrl || "/ServicePage";
-                    });
-                } else { showErrorAlert("Unexpected response from server during OTP verification."); console.error("Unexpected OTP verify response:", data); }
-            })
+    hideLoading();
+    isOtpError = false;
+    if (data && data.errorMessage) {
+        otpInput.style.borderColor = '#e74c3c';
+        showErrorAlert(data.errorMessage);
+    }
+    else if (data && (data.successMessage || data.redirectUrl || !data.errorMessage)) {
+        sessionStorage.setItem('userCode', userCode);
+        sessionStorage.setItem('email', email); // Store email
+        console.log('Stored in sessionStorage:', { userCode, email });
+        hideOtpPopup();
+        showCustomAlert("Verification Successful!", data.successMessage || "OTP verified. Redirecting...", () => {
+            window.location.href = data.redirectUrl || "/ServicePage";
+        });
+    } else {
+        otpInput.style.borderColor = '#e74c3c';
+        showErrorAlert("Unexpected response from server during OTP verification.");
+        console.error("Unexpected OTP verify response:", data);
+    }
+})
             .catch(error => {
-                hideLoading(); console.error("Error verifying OTP:", error);
+                hideLoading();
+                otpInput.style.borderColor = '#e74c3c';
                 showErrorAlert(`Error verifying OTP: ${error.message}. Please try again.`);
+                console.error("Error verifying OTP:", error);
             });
         }
-
         function startFingerprintVerification() {
             const userCodeInput = document.getElementById('fingerprintuserCode');
+            const emailInput = document.getElementById('fingerprintEmail');
             const userCode = userCodeInput ? userCodeInput.value : null;
-
+            const email = emailInput ? emailInput.value : null;
             if (!userCode) {
+                userCodeInput.style.borderColor = '#e74c3c';
                 showErrorAlert('Please enter your User ID to start fingerprint verification.');
                 return;
             }
-
+            if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+                emailInput.style.borderColor = '#e74c3c';
+                showErrorAlert('Please enter a valid email address.');
+                return;
+            }
+            userCodeInput.style.borderColor = '#d0d9e0';
+            emailInput.style.borderColor = '#d0d9e0';
             document.getElementById('userCodeInput').style.display = 'none';
             document.getElementById('fingerprintVerification').style.display = 'block';
             document.getElementById('fingerprintMessage').textContent = 'Verifying fingerprint... Please wait.';
-
             showLoading();
-
             setTimeout(() => {
                 hideLoading();
                 const mockSuccessData = {
                     success: true,
                     message: "Fingerprint login successful (Mocked)"
                 };
-                handleFingerprintResponse(mockSuccessData, userCode);
+                handleFingerprintResponse(mockSuccessData, userCode, email);
             }, 3000);
         }
-
         async function verifyFingerprint() {
             const userCodeInput = document.getElementById('fingerprintuserCode');
+            const emailInput = document.getElementById('fingerprintEmail');
             const userCode = userCodeInput ? userCodeInput.value : null;
+            const email = emailInput ? emailInput.value : null;
             if (!userCode) {
                 showErrorAlert('User ID not found. Please start verification via the button.');
+                return;
+            }
+            if (!email) {
+                showErrorAlert('Email not found. Please start verification via the button.');
                 return;
             }
             if (loadingOverlay && loadingOverlay.classList.contains('active')) {
                 console.log("Verification already in progress.");
                 return;
             }
-
             showLoading();
             document.getElementById('fingerprintMessage').textContent = 'Simulating icon tap verification...';
             setTimeout(() => {
@@ -1266,13 +1223,14 @@
                     success: true,
                     message: "Fingerprint icon tap successful (Mocked)"
                 };
-                handleFingerprintResponse(mockIconSuccessData, userCode);
+                handleFingerprintResponse(mockIconSuccessData, userCode, email);
             }, 1500);
         }
-
-        function handleFingerprintResponse(data, userCode) {
+        function handleFingerprintResponse(data, userCode, email) {
             if (data.success || data.message === 'Fingerprint login successful' || data.message === 'Fingerprint login successful (Mocked)' || data.message === "Fingerprint icon tap successful (Mocked)") {
                 sessionStorage.setItem('userCode', userCode);
+                sessionStorage.setItem('email', email); // Store email
+                console.log('Stored in sessionStorage:', { userCode, email });
                 closeFingerprintPopup();
                 showCustomAlert(
                     'Verification Successful!',
@@ -1288,7 +1246,6 @@
                 document.getElementById('fingerprintMessage').textContent = 'Verification failed. Enter User ID to try again.';
             }
         }
-
         function toggleVisibility(fieldId, iconElement) {
             const field = document.getElementById(fieldId);
             if (!field || !iconElement) return;
@@ -1300,59 +1257,67 @@
                 iconElement.classList.remove('fa-eye-slash'); iconElement.classList.add('fa-eye');
             }
         }
-
         function showPasswordLoginPopup() {
             closePopupAndFab();
             if (passwordLoginPopup) {
                 passwordLoginPopup.classList.add('active');
                 const loginEmailInput = document.getElementById('loginEmail');
                 const loginPasswordInput = document.getElementById('loginPassword');
-                if (loginEmailInput) loginEmailInput.value = '';
-                if (loginPasswordInput) loginPasswordInput.value = '';
+                if (loginEmailInput) {
+                    loginEmailInput.value = '';
+                    loginEmailInput.style.borderColor = '#d0d9e0';
+                }
+                if (loginPasswordInput) {
+                    loginPasswordInput.value = '';
+                    loginPasswordInput.style.borderColor = '#d0d9e0';
+                }
             } else {
                 console.error('passwordLoginPopup element not found in DOM');
                 showErrorAlert('Password login feature is unavailable. Please try another login method.');
             }
         }
-
         function closePasswordLoginPopup() {
             closePopupAndFab(passwordLoginPopup);
         }
-
         function showForgotPasswordPopup() {
             closePopupAndFab();
             if (forgotPasswordPopup) {
                 forgotPasswordPopup.classList.add('active');
                 const forgotPasswordInput = document.getElementById('forgotPasswordInput');
-                if (forgotPasswordInput) forgotPasswordInput.value = '';
+                if (forgotPasswordInput) {
+                    forgotPasswordInput.value = '';
+                    forgotPasswordInput.style.borderColor = '#d0d9e0';
+                }
             } else {
                 console.error('forgotPasswordPopup element not found in DOM');
                 showErrorAlert('Forgot password feature is unavailable.');
             }
         }
-
         function closeForgotPasswordPopup() {
             closePopupAndFab(forgotPasswordPopup);
         }
-
         function loginWithPassword() {
             const loginEmail = document.getElementById('loginEmail').value.trim();
             const loginPassword = document.getElementById('loginPassword').value;
-
+            const loginEmailInput = document.getElementById('loginEmail');
+            const loginPasswordInput = document.getElementById('loginPassword');
+            isOtpError = false; // Reset flag for non-OTP errors
             if (!loginEmail) {
+                loginEmailInput.style.borderColor = '#e74c3c';
                 showErrorAlert('Please enter your email or User ID.');
                 return;
             }
             if (!loginPassword) {
+                loginPasswordInput.style.borderColor = '#e74c3c';
                 showErrorAlert('Please enter your password.');
                 return;
             }
-
+            loginEmailInput.style.borderColor = '#d0d9e0';
+            loginPasswordInput.style.borderColor = '#d0d9e0';
             showLoading();
             const params = new URLSearchParams();
             params.append('email', loginEmail);
             params.append('password', loginPassword);
-
             fetch(`http://localhost:8081/Security/login-password?${params.toString()}`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -1365,47 +1330,39 @@
                 return response.json();
             })
             .then(data => {
-                if (data.errorMessage) {
-                    showErrorAlert(data.errorMessage);
-                } else if (data.status) {
-                    const userCodeMatch = data.status.match(/Password Match Successfully for (\w+)/);
-                    const userCode = userCodeMatch ? userCodeMatch[1] : null;
-                    if (userCode) {
-                        sessionStorage.setItem('userCode', userCode);
-                        closePasswordLoginPopup();
-                        showCustomAlert('Success', 'Logged in successfully. Redirecting...', () => {
-                            window.location.href = '/ServicePage';
-                        });
-                    } else {
-                        showErrorAlert('Unable to extract user code from response.');
-                    }
-                } else {
-                    showErrorAlert('Unexpected response from server.');
-                    console.error('Unexpected login response:', data);
-                }
-            })
+    if (data.errorMessage) {
+        showErrorAlert(data.errorMessage);
+    } else if (data.status) {
+        const userCodeMatch = data.status.match(/Password Match Successfully for (\w+)/);
+        const userCode = userCodeMatch ? userCodeMatch[1] : null;
+        if (userCode) {
+            // Validate loginEmail as email format
+            const emailRegex = /^\S+@\S+\.\S+$/;
+            const emailToStore = emailRegex.test(loginEmail) ? loginEmail : null;
+            if (emailToStore) {
+                sessionStorage.setItem('userCode', userCode);
+                sessionStorage.setItem('email', emailToStore); // Store email
+                console.log('Stored in sessionStorage:', { userCode, email: emailToStore });
+                closePasswordLoginPopup();
+                showCustomAlert('Success', 'Logged in successfully. Redirecting...', () => {
+                    window.location.href = '/ServicePage';
+                });
+            } else {
+                showErrorAlert('Invalid email format. Please use OTP or fingerprint login.');
+            }
+        } else {
+            showErrorAlert('Unable to extract user code from response.');
+        }
+    } else {
+        showErrorAlert('Unexpected response from server.');
+        console.error('Unexpected login response:', data);
+    }
+})
             .catch(error => {
                 hideLoading();
                 showErrorAlert(`Error during login: ${error.message}. Please try again.`);
-                document.getElementById('passwordLoginPopup').classList.add('active');
             });
         }
-
-        function submitForgotPassword() {
-            const forgotPasswordInput = document.getElementById('forgotPasswordInput').value.trim();
-            if (!forgotPasswordInput) {
-                showErrorAlert('Please enter your email or User ID.');
-                return;
-            }
-            showLoading();
-            setTimeout(() => {
-                hideLoading();
-                closeForgotPasswordPopup();
-                showCustomAlert('Success', 'Password reset instructions sent to your email.', () => {});
-            }, 1500);
-        }
-
-        // Initialize year in footer
         document.getElementById('currentYear').textContent = new Date().getFullYear();
     </script>
 </body>

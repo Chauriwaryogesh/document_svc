@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Activity Details</title>
+    <title>Activity and Login History Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -11,23 +11,22 @@
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
-            padding-top: 5rem;
-            padding-bottom: 4rem;
-            background-color: #f3f4f6;
+            min-height: 100vh;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #1f2937;
         }
         .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background-color: #ffffff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            z-index: 1000;
-            padding: 1rem 2.5rem;
+            width: 100%;
+            background: #ffffff;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background-color 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         .header-logo {
             font-size: 1.75rem;
@@ -41,20 +40,20 @@
         .header-nav {
             display: flex;
             align-items: center;
+            gap: 1.5rem;
         }
         .header-nav a, .header-nav button {
-            margin-left: 1.75rem;
-            color: #4b5563;
+            color: #1f2937;
             text-decoration: none;
-            transition: color 0.2s, transform 0.2s;
             font-weight: 500;
+            transition: color 0.2s, transform 0.2s;
         }
         .header-nav a:hover, .header-nav button:hover {
             color: #4f46e5;
             transform: translateY(-1px);
         }
         .header-button {
-            background-color: #4f46e5;
+            background-color: #dc2626;
             color: white;
             padding: 0.6rem 1.2rem;
             border-radius: 0.375rem;
@@ -63,8 +62,8 @@
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         .header-button:hover {
-            background-color: #4338ca;
-            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+            background-color: #b91c1c;
+            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
         }
         .profile-icon-button {
             background: none;
@@ -78,31 +77,38 @@
         .profile-icon-button i {
             width: 24px;
             height: 24px;
+            stroke: #1f2937;
+        }
+        .main-content {
+            width: 90%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin: 2rem 0;
+            animation: fadeInCard 0.5s ease-out;
+        }
+        @keyframes fadeInCard {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .footer {
-            background-color: #111827;
-            color: #9ca3af;
-            padding: 2rem 1.5rem;
+            background-color: #ffffff;
+            color: #6b7280;
+            padding: 1rem;
             text-align: center;
-            position: relative;
-            bottom: 0;
             width: 100%;
-            border-top: 3px solid #4f46e5;
-        }
-        .footer p {
-            margin-bottom: 0.75rem;
-            font-size: 0.875rem;
+            margin-top: auto;
         }
         .footer a {
-            color: #a5b4fc;
+            color: #4f46e5;
             text-decoration: none;
-            margin: 0 1.25rem;
-            transition: color 0.2s, text-shadow 0.2s;
-            font-weight: 500;
+            margin: 0 1rem;
+            transition: color 0.2s;
         }
         .footer a:hover {
-            color: #ffffff;
-            text-shadow: 0 0 8px rgba(165, 180, 252, 0.7);
+            color: #4338ca;
         }
         .loader {
             position: fixed;
@@ -122,10 +128,10 @@
             pointer-events: none;
         }
         .spinner {
-            width: 3.5rem;
-            height: 3.5rem;
-            border: 5px solid #4f46e5;
-            border-top: 5px solid transparent;
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #4f46e5;
+            border-top: 4px solid transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -134,66 +140,55 @@
             100% { transform: rotate(360deg); }
         }
         .card {
-            background-color: white;
+            background-color: #ffffff;
             border-radius: 0.75rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            margin-bottom: 2rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
             overflow: hidden;
         }
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-        }
         .card-header {
-            padding: 1.75rem;
+            padding: 1.5rem;
             border-bottom: 1px solid #e5e7eb;
             background-color: #f9fafb;
         }
         .card-title {
-            font-size: 1.65rem;
+            font-size: 1.5rem;
             font-weight: 600;
             color: #1f2937;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
         .card-description {
             color: #6b7280;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-        }
-        .card-content {
-            padding: 1.75rem;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
         }
         .badge {
             display: inline-flex;
             align-items: center;
             padding: 0.5rem 1rem;
-            border-radius: 1.5rem;
+            border-radius: 9999px;
             font-size: 0.875rem;
             font-weight: 500;
-            margin-right: 0.75rem;
+            margin-right: 0.5rem;
             margin-bottom: 0.5rem;
             background-color: #e0e7ff;
             color: #4f46e5;
-            border: 1px solid transparent;
             transition: background-color 0.2s, transform 0.2s;
         }
         .badge:hover {
             background-color: #c7d2fe;
-            transform: translateY(-1px);
+            transform: scale(1.05);
         }
         .badge i {
-            margin-right: 0.35rem;
+            margin-right: 0.25rem;
         }
         .table-container {
-            max-height: 24rem;
+            max-height: 32rem;
             overflow-y: auto;
             border: 1px solid #e5e7eb;
             border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 1rem;
         }
         .table {
             width: 100%;
@@ -207,7 +202,7 @@
             border-bottom: 2px solid #e5e7eb;
         }
         .table-header-cell {
-            padding: 0.75rem 1.25rem;
+            padding: 0.75rem 1rem;
             font-weight: 600;
             text-align: left;
             color: #374151;
@@ -224,32 +219,33 @@
         .table-body-row:hover {
             background-color: #eff6ff;
         }
-        .table-body-row:last-child {
-            border-bottom: none;
-        }
         .table-cell {
-            padding: 0.75rem 1.25rem;
+            padding: 0.75rem 1rem;
             text-align: left;
             color: #1f2937;
             font-size: 0.875rem;
-            vertical-align: middle;
         }
         .table-cell.email {
-            min-width: 200px;
-            max-width: 250px;
-            white-space: normal;
+            min-width: 180px;
+            max-width: 220px;
             word-break: break-all;
+        }
+        .table-cell.session-id {
+            min-width: 160px;
+            max-width: 200px;
+            word-break: break-all;
+        }
+        .table-cell.ip-address {
+            min-width: 100px;
         }
         .table-cell.screen-time {
             text-align: center;
-            width: 60px;
+            width: 50px;
         }
         .pagination {
             display: flex;
             justify-content: center;
-            align-items: center;
             gap: 0.5rem;
-            margin-top: 1rem;
             padding: 0.5rem;
         }
         .pagination button {
@@ -257,16 +253,18 @@
             border: 1px solid #e5e7eb;
             color: #4b5563;
             padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
+            border-radius: 9999px;
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+            transition: all 0.2s;
+            min-width: 2.5rem;
+            text-align: center;
         }
         .pagination button:hover:not(:disabled) {
             background-color: #4f46e5;
             color: #ffffff;
-            transform: translateY(-1px);
+            transform: scale(1.1);
         }
         .pagination button:disabled {
             background-color: #f3f4f6;
@@ -278,7 +276,43 @@
             color: #ffffff;
             border-color: #4f46e5;
         }
-        /* Profile Popup Styles */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e5e7eb;
+            background-color: #f9fafb;
+            padding: 0.5rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        .tab {
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: #4b5563;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab:hover {
+            color: #4f46e5;
+            background-color: #eff6ff;
+            transform: scale(1.05);
+        }
+        .tab.active {
+            color: #4f46e5;
+            border-bottom: 3px solid #4f46e5;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+            padding: 1.5rem;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .profile-popup-overlay {
             position: fixed;
             top: 0;
@@ -300,13 +334,12 @@
         }
         .profile-popup {
             background-color: white;
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 0.75rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             width: 90%;
-            max-width: 450px;
+            max-width: 400px;
             text-align: left;
-            position: relative;
             transform: scale(0.95);
             transition: transform 0.3s ease-in-out;
         }
@@ -317,12 +350,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
         }
         .profile-popup-title {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 600;
             color: #1f2937;
             display: flex;
@@ -332,7 +363,7 @@
         .profile-popup-close {
             background: none;
             border: none;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             cursor: pointer;
             color: #6b7280;
             transition: color 0.2s;
@@ -341,24 +372,20 @@
             color: #1f2937;
         }
         .profile-popup-content p {
-            font-size: 1rem;
+            font-size: 0.875rem;
             color: #4b5563;
-            margin-bottom: 1rem;
-            line-height: 1.6;
+            margin-bottom: 0.75rem;
         }
         .profile-popup-content strong {
             color: #374151;
-            font-weight: 500;
         }
         .profile-popup-content .data-field {
             background-color: #f3f4f6;
-            padding: 0.75rem 1rem;
+            padding: 0.5rem 0.75rem;
             border-radius: 0.375rem;
-            margin-top: 0.25rem;
             font-family: monospace;
             word-break: break-all;
         }
-        /* Error Popup Styles */
         .error-popup-overlay {
             position: fixed;
             top: 0;
@@ -380,13 +407,12 @@
         }
         .error-popup {
             background-color: white;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 0.75rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             width: 90%;
-            max-width: 400px;
+            max-width: 350px;
             text-align: center;
-            position: relative;
             transform: scale(0.95);
             transition: transform 0.3s ease-in-out;
         }
@@ -396,12 +422,12 @@
         .error-popup-header {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
         .error-popup-close {
             background: none;
             border: none;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             cursor: pointer;
             color: #6b7280;
             transition: color 0.2s;
@@ -410,16 +436,13 @@
             color: #1f2937;
         }
         .error-popup-content {
-            font-size: 1.125rem;
+            font-size: 1rem;
             color: #dc2626;
             font-weight: 500;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
         .error-popup-content i {
-            margin-right: 0.5rem;
-        }
-        .error-popup-footer {
-            margin-top: 1rem;
+            margin-right: 0.25rem;
         }
         .error-popup-footer a {
             color: #4f46e5;
@@ -429,67 +452,47 @@
         }
         .error-popup-footer a:hover {
             color: #4338ca;
-            text-decoration: underline;
         }
-        /* Other utility classes */
-        .font-medium { font-weight: 500; }
-        .text-gray-500 { color: #6b7280; }
-        .text-gray-900 { color: #1f2937; }
-        .flex { display: flex; align-items: center; }
-        .gap-1 { gap: 0.25rem; } .gap-2 { gap: 0.5rem; } .gap-4 { gap: 1rem; }
-        .mt-2 { margin-top: 0.5rem; } .mb-6 { margin-bottom: 1.5rem; }
-        .text-red-600 { color: #dc2626; } .text-red-500 { color: #ef4444; }
-        .border-red-500 { border-color: #ef4444; }
-        .bg-red-50\/50 { background-color: rgba(254, 226, 226, 0.5); }
-        .h-64 { height: 16rem; }
-        .items-center { align-items: center; }
-        .justify-center { justify-content: center; }
-        .rounded-full { border-radius: 9999px; }
-        .border-blue-500 { border-color: #4f46e5; }
-        .border-t-2 { border-top-width: 2px; } .border-b-2 { border-bottom-width: 2px; }
-        .truncate { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        .max-w-\[200px\] { max-width: 12.5rem; }
-        .overflow-hidden { overflow: hidden; }
-        .time-circle { width: 40px; height: 40px; transform: rotate(-90deg); }
+        .time-circle { width: 36px; height: 36px; transform: rotate(-90deg); }
         .time-circle-bg { fill: none; stroke: #e5e7eb; stroke-width: 4; }
         .time-circle-progress { fill: none; stroke-linecap: round; stroke-width: 4; transition: stroke-dashoffset 0.5s ease; }
-        /* Responsive adjustments */
         @media (max-width: 768px) {
+            .main-content {
+                width: 95%;
+                padding: 1rem;
+            }
             .table-header-cell, .table-cell {
                 font-size: 0.75rem;
                 padding: 0.5rem;
             }
-            .table-cell.email {
+            .table-cell.email, .table-cell.session-id {
                 min-width: 120px;
                 max-width: 150px;
             }
-            .table-cell.screen-time {
-                width: 50px;
+            .tabs {
+                flex-direction: column;
             }
-            .time-circle {
-                width: 32px;
-                height: 32px;
+            .tab {
+                width: 100%;
+                text-align: left;
+                padding: 0.5rem;
             }
             .pagination button {
                 padding: 0.4rem 0.8rem;
                 font-size: 0.75rem;
+                min-width: 2rem;
             }
-            .error-popup {
-                padding: 1.5rem;
-                max-width: 300px;
-            }
-            .error-popup-content {
-                font-size: 1rem;
+            .table-container {
+                max-height: 24rem;
             }
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body>
     <header class="header">
-        <div class="header-logo">Activity Tracker</div>
+        <div class="header-logo">Activity Monitor</div>
         <nav class="header-nav">
             <a href="#home" onclick="redirectToDashBoard()">Home</a>
-            <a href="#activity">Activity</a>
             <button class="profile-icon-button" id="profileButton" aria-label="View Profile">
                 <i data-lucide="user-circle-2"></i>
             </button>
@@ -501,31 +504,29 @@
         <div class="spinner"></div>
     </div>
 
-    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-            <i data-lucide="list-checks" class="w-8 h-8 text-indigo-600"></i> User Activity Details
+    <main class="main-content">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <i data-lucide="list-checks" class="w-7 h-7 text-indigo-600"></i> Activity and Login History Monitor
         </h1>
 
-        <div class="mb-8">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i data-lucide="user" class="text-indigo-600"></i> User Information
-                    </h2>
-                    <p class="card-description">Key details of the user's profile and recent activity.</p>
-                </div>
-                <div class="card-content">
-                    <div class="flex flex-wrap gap-4">
-                        <span class="badge">
-                            <i data-lucide="shield-check"></i> User Code: <strong id="userCode" class="ml-1">Loading...</strong>
-                        </span>
-                        <span class="badge">
-                            <i data-lucide="mail"></i> Email: <strong id="email" class="ml-1">Loading...</strong>
-                        </span>
-                        <span class="badge">
-                            <i data-lucide="clock-3"></i> Last Activity: <strong id="lastActivity" class="ml-1">Loading...</strong>
-                        </span>
-                    </div>
+        <div class="card mb-6">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i data-lucide="user" class="text-indigo-600"></i> User Information
+                </h2>
+                <p class="card-description">Key details of the user's profile and recent activity.</p>
+            </div>
+            <div class="card-content p-4">
+                <div class="flex flex-wrap gap-3">
+                    <span class="badge">
+                        <i data-lucide="shield-check"></i> User Code: <strong id="user-code" class="ml-1">Loading...</strong>
+                    </span>
+                    <span class="badge">
+                        <i data-lucide="mail"></i> Email: <strong id="user-email" class="ml-1">Loading...</strong>
+                    </span>
+                    <span class="badge">
+                        <i data-lucide="clock-3"></i> Last Activity: <strong id="last-activity" class="ml-1">Loading...</strong>
+                    </span>
                 </div>
             </div>
         </div>
@@ -533,11 +534,16 @@
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title">
-                    <i data-lucide="history" class="text-indigo-600"></i> Activity Log
+                    <i data-lucide="history" class="text-indigo-600"></i> Activity Overview
                 </h2>
-                <p class="card-description">A detailed chronological record of user interactions.</p>
+                <p class="card-description">View detailed records of user interactions, login history, and events.</p>
             </div>
-            <div class="card-content">
+            <div class="tabs">
+                <div class="tab active" data-tab="activity">Activity Log</div>
+                <div class="tab" data-tab="login">Login History</div>
+                <div class="tab" data-tab="timeline">Timeline of Events</div>
+            </div>
+            <div class="tab-content active" id="activityTab">
                 <div class="table-container">
                     <table class="table">
                         <thead>
@@ -553,16 +559,43 @@
                                 <th class="table-header-cell">Details</th>
                             </tr>
                         </thead>
-                        <tbody class="table-body" id="activityTableBody"></tbody>
+                        <tbody id="activityTableBody"></tbody>
                     </table>
                 </div>
-                <div class="pagination" id="pagination"></div>
+                <div class="pagination" id="activityPagination"></div>
+            </div>
+            <div class="tab-content" id="loginTab">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr class="table-header-row">
+                                <th class="table-header-cell">ID</th>
+                                <th class="table-header-cell">Login Time</th>
+                                <th class="table-header-cell">Logout Time</th>
+                                <th class="table-header-cell">Screen Time</th>
+                                <th class="table-header-cell">Status</th>
+                                <th class="table-header-cell">Method</th>
+                                <th class="table-header-cell">IP Address</th>
+                                <th class="table-header-cell">Device</th>
+                                <th class="table-header-cell">Session ID</th>
+                                <th class="table-header-cell">Location</th>
+                                <th class="table-header-cell">Risk Score</th>
+                                <th class="table-header-cell">MFA Used</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loginHistoryTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="loginHistoryPagination"></div>
+            </div>
+            <div class="tab-content" id="timelineTab">
+                <p class="text-gray-500 text-center py-4">Timeline feature implemented soon...</p>
             </div>
         </div>
-    </div>
+    </main>
 
     <div class="profile-popup-overlay" id="profilePopupOverlay">
-        <div class="profile-popup" id="profilePopup">
+        <div class="profile-popup">
             <div class="profile-popup-header">
                 <h3 class="profile-popup-title">
                     <i data-lucide="user-check" class="text-indigo-600"></i> User Profile
@@ -574,25 +607,25 @@
             <div class="profile-popup-content">
                 <p><strong>User Code:</strong></p>
                 <div class="data-field" id="popupUserCode">N/A</div>
-                <p class="mt-4"><strong>Email:</strong></p>
+                <p class="mt-3"><strong>Email:</strong></p>
                 <div class="data-field" id="popupUserEmail">N/A</div>
             </div>
         </div>
     </div>
 
     <div class="error-popup-overlay" id="errorPopupOverlay">
-        <div class="error-popup" id="errorPopup">
+        <div class="error-popup">
             <div class="error-popup-header">
                 <button class="error-popup-close" id="closeErrorPopup" aria-label="Close error popup">
                     <i data-lucide="x"></i>
                 </button>
             </div>
-            <div class="error-popup-content">
+            <div class="error-popup-content" id="errorPopupMessage">
                 <i data-lucide="alert-triangle" class="text-red-600"></i>
-                User Id/Email Not Found
+                User Id Not Found
             </div>
             <div class="error-popup-footer">
-                <p>Please <a href="login">log in</a> to continue.</p>
+                <p>Please <a href="/login" class="text-indigo-600 hover:underline">log in</a> to continue.</p>
             </div>
         </div>
     </div>
@@ -606,21 +639,28 @@
     </footer>
 
     <script>
-    function redirectToDashBoard() {
-        window.location.href = '/dashboard';
-    }
-        const API_ENDPOINT = 'http://localhost:8081/get-ActivityDtls';
+        function redirectToDashBoard() {
+            console.log('Redirecting to dashboard');
+            window.location.href = '/dashboard';
+        }
+
+        const ACTIVITY_API = 'http://localhost:8081/get-ActivityDtls';
+        const LOGIN_HISTORY_API = 'http://localhost:8081/login-history';
         const MAX_SCREEN_TIME = 1500;
-        const ITEMS_PER_PAGE = 10;
+        const ITEMS_PER_PAGE = 15;
         let currentUserData = null;
         let allActivityData = [];
-        let currentPage = 1;
+        let allLoginHistoryData = [];
+        let activityCurrentPage = 1;
+        let loginHistoryCurrentPage = 1;
 
         function showLoader() {
+            console.log('Showing loader');
             document.getElementById('loader').classList.remove('hidden');
         }
 
         function hideLoader() {
+            console.log('Hiding loader');
             const loader = document.getElementById('loader');
             loader.classList.add('hidden');
             setTimeout(() => {
@@ -631,173 +671,159 @@
         }
 
         function logout() {
+            console.log('Logging out: Clearing sessionStorage and redirecting to /login');
             sessionStorage.removeItem('userCode');
+            sessionStorage.removeItem('email');
             currentUserData = null;
             allActivityData = [];
-            window.location.href = 'login';
+            allLoginHistoryData = [];
+            window.location.href = '/login';
         }
 
-        function showErrorPopup() {
+        function showErrorPopup(message, redirectUrl) {
+            console.log(`Showing error popup: ${message}`);
             const errorPopupOverlay = document.getElementById('errorPopupOverlay');
+            const errorPopupMessage = document.getElementById('errorPopupMessage');
+            errorPopupMessage.innerHTML = `<i data-lucide="alert-triangle" class="text-red-600"></i> ${message}`;
             errorPopupOverlay.classList.add('active');
             lucide.createIcons();
+            if (redirectUrl) {
+                setTimeout(() => {
+                    console.log(`Redirecting to ${redirectUrl}`);
+                    window.location.href = redirectUrl;
+                }, 3000);
+            }
         }
 
         function hideErrorPopup() {
-            const errorPopupOverlay = document.getElementById('errorPopupOverlay');
-            errorPopupOverlay.classList.remove('active');
+            console.log('Hiding error popup');
+            document.getElementById('errorPopupOverlay').classList.remove('active');
         }
 
-        function displayActivityDetails(userCode) {
-            if (!userCode) {
+        function escapeHtml(unsafe) {
+            if (unsafe === null || typeof unsafe === 'undefined') return '';
+            return String(unsafe)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        function format(date, formatStr) {
+            const optionsDate = { year: 'numeric', month: 'short', day: 'numeric' };
+            const optionsTime = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+            let formattedDate = date.toLocaleDateString('en-US', optionsDate);
+            let formattedTime = date.toLocaleTimeString('en-US', optionsTime);
+            if (formatStr === 'PPPpp') {
+                return `${formattedDate}, ${formattedTime}`;
+            }
+            return date.toISOString();
+        }
+
+        function formatDistanceToNow(date) {
+            const now = new Date();
+            const diffInSeconds = Math.round(Math.abs(now - date) / 1000);
+            const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+            if (diffInSeconds < 60) {
+                return rtf.format(-diffInSeconds, 'second');
+            } else if (diffInSeconds < 3600) {
+                return rtf.format(-Math.floor(diffInSeconds / 60), 'minute');
+            } else if (diffInSeconds < 86400) {
+                return rtf.format(-Math.floor(diffInSeconds / 3600), 'hour');
+            } else if (diffInSeconds < 2592000) {
+                return rtf.format(-Math.floor(diffInSeconds / 86400), 'day');
+            } else if (diffInSeconds < 31536000) {
+                return rtf.format(-Math.floor(diffInSeconds / 2592000), 'month');
+            } else {
+                return rtf.format(-Math.floor(diffInSeconds / 31536000), 'year');
+            }
+        }
+
+        function displayActivityDetails() {
+            const userCode = sessionStorage.getItem('userCode');
+            const email = sessionStorage.getItem('email');
+            if (!userCode || !email) {
                 hideLoader();
-                showErrorPopup();
+                showErrorPopup('Session expired. Please log in.', '/login');
                 return;
             }
-
             showLoader();
-            console.log(`Fetching activity data for userCode: ${userCode}`);
-            fetch(API_ENDPOINT, {
+            fetch(`${ACTIVITY_API}?userCode=${encodeURIComponent(userCode)}&email=${encodeURIComponent(email)}`, {
                 method: 'GET',
-                headers: {
-                    'userCode': userCode,
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'userCode': userCode }
             })
                 .then(response => {
-                    console.log('Response status:', response.status);
+                    console.log(`Activity API response status: ${response.status}`);
                     if (!response.ok) {
-                        return response.text().then(text => {
-                            try {
-                                const errorJson = JSON.parse(text);
-                                throw new Error(`HTTP error! status: ${response.status}, message: ${errorJson.errorMessage || text}`);
-                            } catch (e) {
-                                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
-                            }
+                        return response.json().then(err => {
+                            throw new Error(err.errorMessage || `Server error: ${response.status}`);
                         });
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('API response:', data);
-                    hideLoader();
+                    console.log('Activity API response data:', data);
                     if (data.errorMessage) {
-                        displayErrorMessage(data.errorMessage);
+                        displayErrorMessage(data.errorMessage, 'activity');
                     } else if (!data.data || data.data.length === 0) {
-                        displayNoDataMessage(userCode);
+                        displayNoDataMessage(userCode, 'activity');
                     } else {
-                        currentUserData = data.data[0];
-                        allActivityData = data.data;
-                        currentPage = 1;
+                        allActivityData = data.data || [];
+                        currentUserData = {
+                            userCode,
+                            email,
+                            activityTime: allActivityData.length > 0 ? allActivityData[0].activityTime : new Date().toISOString()
+                        };
                         populateActivityDetails();
-                        updateProfilePopupData();
+                        fetchLoginHistory(email, userCode);
                     }
                 })
                 .catch(error => {
-                    console.error("Failed to fetch activity data:", error);
+                    console.error('Failed to fetch activity data:', error);
+                    displayErrorMessage(`Failed to load activity data: ${error.message}`, 'activity');
+                    fetchLoginHistory(email, userCode);
+                })
+                .finally(() => {
                     hideLoader();
-                    displayErrorMessage(`Failed to load activity data: ${error.message}. Check network connection and API endpoint.`);
                 });
         }
 
-        function displayErrorMessage(message) {
-            const mainContentArea = document.querySelector('.container.mx-auto');
-            mainContentArea.innerHTML = '';
-            const errorCard = document.createElement('div');
-            errorCard.className = 'card border-red-500 bg-red-50/50 my-10';
-            errorCard.innerHTML = `
-                <div class="card-header items-center">
-                    <h2 class="card-title text-red-600 flex items-center gap-2">
-                        <i data-lucide="alert-triangle"></i> Error
-                    </h2>
-                </div>
-                <div class="card-content">
-                    <p class="card-description text-red-500 text-lg">
-                        ${message}
-                    </p>
-                    <p class="mt-4 text-gray-600">
-                        Please try refreshing the page or <a href="login" class="text-indigo-600 hover:underline">log in again</a>.
-                        If the issue persists, contact support.
-                    </p>
-                </div>
-            `;
-            mainContentArea.appendChild(errorCard);
-            lucide.createIcons();
-        }
-
-        function displayNoDataMessage(userCode) {
-            const mainContentArea = document.querySelector('.container.mx-auto');
-            const activityLogCard = mainContentArea.querySelector('.card:nth-of-type(2)');
-            if (currentUserData) {
-                document.getElementById('userCode').textContent = currentUserData.userCode || 'N/A';
-                document.getElementById('email').textContent = currentUserData.email || 'N/A';
-                document.getElementById('lastActivity').textContent = 'No activity yet';
-            } else if (userCode) {
-                document.getElementById('userCode').textContent = userCode;
-                document.getElementById('email').textContent = 'N/A (no activity data)';
-                document.getElementById('lastActivity').textContent = 'N/A';
-            }
-            if (activityLogCard) {
-                activityLogCard.innerHTML = `
-                    <div class="card-header">
-                        <h2 class="card-title flex items-center gap-2">
-                            <i data-lucide="info" class="text-indigo-600"></i> No Activity Found
-                        </h2>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description text-center text-gray-500 py-8 text-lg">
-                            There is no activity data to display for this user yet.
-                        </p>
-                    </div>`;
-            } else {
-                const noDataCard = document.createElement('div');
-                noDataCard.className = 'card my-10';
-                noDataCard.innerHTML = `
-                    <div class="card-header">
-                        <h2 class="card-title flex items-center gap-2">
-                            <i data-lucide="info" class="text-indigo-600"></i> No Activity
-                        </h2>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description text-center text-gray-500 py-8 text-lg">
-                            There is no activity data to display.
-                        </p>
-                    </div>
-                `;
-                mainContentArea.appendChild(noDataCard);
-            }
-            lucide.createIcons();
-        }
-
         function populateActivityDetails() {
+            console.log('Populating activity details');
             const activityTableBody = document.getElementById('activityTableBody');
             activityTableBody.innerHTML = '';
 
             if (allActivityData.length === 0) {
+                console.log('No activity data to display');
                 const row = document.createElement('tr');
                 row.innerHTML = `<td colspan="9" class="table-cell text-center text-gray-500 py-4">No activity records found.</td>`;
                 activityTableBody.appendChild(row);
-                updatePagination();
+                updateActivityPagination();
                 return;
             }
 
-            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const start = (activityCurrentPage - 1) * ITEMS_PER_PAGE;
             const end = start + ITEMS_PER_PAGE;
             const paginatedData = allActivityData.slice(start, end);
 
             if (currentUserData) {
-                document.getElementById('userCode').textContent = currentUserData.userCode;
-                document.getElementById('email').textContent = currentUserData.email;
-                document.getElementById('lastActivity').textContent = formatDistanceToNow(
-                    new Date(currentUserData.activityTime.replace(' ', 'T')),
-                    { addSuffix: true }
-                );
+                const userCodeEl = document.getElementById('user-code');
+                const userEmailEl = document.getElementById('user-email');
+                const lastActivityEl = document.getElementById('last-activity');
+
+                if (userCodeEl) userCodeEl.textContent = currentUserData.userCode || 'N/A';
+                if (userEmailEl) userEmailEl.textContent = currentUserData.email || 'N/A';
+                if (lastActivityEl) {
+                    lastActivityEl.textContent = formatDistanceToNow(
+                        new Date(currentUserData.activityTime.replace(' ', 'T'))
+                    );
+                }
             }
 
             paginatedData.forEach(activity => {
                 const timeSpent = parseInt(activity.timeSpentSeconds) || 0;
                 const percentage = Math.min((timeSpent / MAX_SCREEN_TIME) * 100, 100);
-                const circumference = 2 * Math.PI * 18;
+                const circumference = 2 * Math.PI * 16;
                 const offset = circumference - (percentage / 100) * circumference;
                 const strokeColor = timeSpent > MAX_SCREEN_TIME * 0.8 ? (timeSpent > MAX_SCREEN_TIME ? '#ef4444' : '#f59e0b') : '#4f46e5';
 
@@ -817,27 +843,26 @@
                     </td>
                     <td class="table-cell">${activity.timeSpentSeconds ? activity.timeSpentSeconds + 's' : '-'}</td>
                     <td class="table-cell screen-time">
-                        <div class="flex items-center justify-center w-10 h-10">
-                            <svg class="time-circle" viewBox="0 0 40 40">
-                                <circle class="time-circle-bg" cx="20" cy="20" r="18"/>
-                                <circle class="time-circle-progress" cx="20" cy="20" r="18"
-                                        stroke="${strokeColor}" stroke-dasharray="${circumference}"
-                                        stroke-dashoffset="${offset}"/>
-                            </svg>
-                        </div>
+                        <svg class="time-circle" viewBox="0 0 36 36">
+                            <circle class="time-circle-bg" cx="18" cy="18" r="16"></circle>
+                            <circle class="time-circle-progress" cx="18" cy="18" r="16"
+                                    stroke="${strokeColor}" stroke-dasharray="${circumference}"
+                                    stroke-dashoffset="${offset}"></circle>
+                        </svg>
                     </td>
                     <td class="table-cell">
-                        ${activity.details && activity.details !== "{}" && activity.details.trim() !== "" ? `<span class="badge truncate max-w-[200px] overflow-hidden" title="${escapeHtml(activity.details)}">${escapeHtml(activity.details)}</span>` : '<span class="text-gray-400">-</span>'}
+                        ${activity.details && activity.details !== "{}" && activity.details.trim() !== "" ? `<span class="badge truncate max-w-[180px]" title="${escapeHtml(activity.details)}">${escapeHtml(activity.details)}</span>` : '<span class="text-gray-400">-</span>'}
                     </td>
                 `;
                 activityTableBody.appendChild(row);
             });
             lucide.createIcons();
-            updatePagination();
+            updateActivityPagination();
         }
 
-        function updatePagination() {
-            const paginationContainer = document.getElementById('pagination');
+        function updateActivityPagination() {
+            console.log('Updating activity pagination');
+            const paginationContainer = document.getElementById('activityPagination');
             paginationContainer.innerHTML = '';
             const totalPages = Math.ceil(allActivityData.length / ITEMS_PER_PAGE);
 
@@ -845,17 +870,17 @@
 
             const prevButton = document.createElement('button');
             prevButton.textContent = 'Previous';
-            prevButton.disabled = currentPage === 1;
+            prevButton.disabled = activityCurrentPage === 1;
             prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
+                if (activityCurrentPage > 1) {
+                    activityCurrentPage--;
                     populateActivityDetails();
                 }
             });
             paginationContainer.appendChild(prevButton);
 
             const maxVisiblePages = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let startPage = Math.max(1, activityCurrentPage - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
             if (endPage - startPage + 1 < maxVisiblePages) {
                 startPage = Math.max(1, endPage - maxVisiblePages + 1);
@@ -864,9 +889,9 @@
             for (let i = startPage; i <= endPage; i++) {
                 const pageButton = document.createElement('button');
                 pageButton.textContent = i;
-                pageButton.className = i === currentPage ? 'active' : '';
+                pageButton.className = i === activityCurrentPage ? 'active' : '';
                 pageButton.addEventListener('click', () => {
-                    currentPage = i;
+                    activityCurrentPage = i;
                     populateActivityDetails();
                 });
                 paginationContainer.appendChild(pageButton);
@@ -874,119 +899,283 @@
 
             const nextButton = document.createElement('button');
             nextButton.textContent = 'Next';
-            nextButton.disabled = currentPage === totalPages;
+            nextButton.disabled = activityCurrentPage === totalPages;
             nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
+                if (activityCurrentPage < totalPages) {
+                    activityCurrentPage++;
                     populateActivityDetails();
                 }
             });
             paginationContainer.appendChild(nextButton);
         }
 
-        function escapeHtml(unsafe) {
-            if (unsafe === null || typeof unsafe === 'undefined') return '';
-            return String(unsafe)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+        function fetchLoginHistory(email, userCode) {
+            console.log(`Fetching login history for email: ${email}, userCode: ${userCode}`);
+            showLoader();
+            fetch(`${LOGIN_HISTORY_API}?email=${encodeURIComponent(email)}`, {
+                method: 'GET',
+                headers: {
+                    'userCode': userCode,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    console.log(`Login history API response status: ${response.status}`);
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.errorMessage || `Server error: ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Login history API response data:', data);
+                    if (data.errorMessage) {
+                        displayErrorMessage(data.errorMessage, 'login');
+                    } else if (!data.data || data.data.length === 0) {
+                        displayNoDataMessage(userCode, 'login');
+                    } else {
+                        allLoginHistoryData = data.data;
+                        loginHistoryCurrentPage = 1;
+                        populateLoginHistory();
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to fetch login history:', error);
+                    displayErrorMessage(`Failed to load login history: ${error.message}`, 'login');
+                })
+                .finally(() => {
+                    hideLoader();
+                });
         }
 
-        function format(date, formatStr) {
-            const optionsDate = { year: 'numeric', month: 'short', day: 'numeric' };
-            const optionsTime = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
-            let formattedDate = date.toLocaleDateString('en-US', optionsDate);
-            let formattedTime = date.toLocaleTimeString('en-US', optionsTime);
-            if (formatStr === 'PPPpp') {
-                return `${formattedDate}, ${formattedTime}`;
+        function populateLoginHistory() {
+            console.log('Populating login history');
+            const loginHistoryTableBody = document.getElementById('loginHistoryTableBody');
+            loginHistoryTableBody.innerHTML = '';
+
+            if (allLoginHistoryData.length === 0) {
+                console.log('No login history data to display');
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="12" class="table-cell text-center text-gray-500 py-4">No login history found.</td>`;
+                loginHistoryTableBody.appendChild(row);
+                updateLoginHistoryPagination();
+                return;
             }
-            return date.toISOString();
+
+            const start = (loginHistoryCurrentPage - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const paginatedData = allLoginHistoryData.slice(start, end);
+
+            paginatedData.forEach(record => {
+                const row = document.createElement('tr');
+                row.className = 'table-body-row';
+                row.innerHTML = `
+                    <td class="table-cell font-medium">${record.id || '-'}</td>
+                    <td class="table-cell">${record.loginTime ? format(new Date(record.loginTime), 'PPPpp') : '-'}</td>
+                    <td class="table-cell">${record.logoutTime ? format(new Date(record.logoutTime), 'PPPpp') : '-'}</td>
+                    <td class="table-cell">${record.totalScreenTime || '-'}</td>
+                    <td class="table-cell">${record.loggedinStatus || '-'}</td>
+                    <td class="table-cell">${record.loginMethod || '-'}</td>
+                    <td class="table-cell ip-address">${record.ipAddress || '-'}</td>
+                    <td class="table-cell">${record.deviceInfo || '-'}</td>
+                    <td class="table-cell session-id">${record.sessionId || '-'}</td>
+                    <td class="table-cell">${record.location || '-'}</td>
+                    <td class="table-cell">${record.riskScore || '0'}</td>
+                    <td class="table-cell">${record.mfaUsed ? 'Yes' : 'No'}</td>
+                `;
+                loginHistoryTableBody.appendChild(row);
+            });
+            lucide.createIcons();
+            updateLoginHistoryPagination();
         }
 
-        function formatDistanceToNow(date, { addSuffix } = {}) {
-            const now = new Date();
-            const diffInSeconds = Math.round(Math.abs(now - date) / 1000);
-            const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
-            if (diffInSeconds < 60) {
-                return rtf.format(-diffInSeconds, 'second');
-            } else if (diffInSeconds < 3600) {
-                return rtf.format(-Math.floor(diffInSeconds / 60), 'minute');
-            } else if (diffInSeconds < 86400) {
-                return rtf.format(-Math.floor(diffInSeconds / 3600), 'hour');
-            } else if (diffInSeconds < 2592000) {
-                return rtf.format(-Math.floor(diffInSeconds / 86400), 'day');
-            } else if (diffInSeconds < 31536000) {
-                return rtf.format(-Math.floor(diffInSeconds / 2592000), 'month');
-            } else {
-                return rtf.format(-Math.floor(diffInSeconds / 31536000), 'year');
+        function updateLoginHistoryPagination() {
+            console.log('Updating login history pagination');
+            const paginationContainer = document.getElementById('loginHistoryPagination');
+            paginationContainer.innerHTML = '';
+            const totalPages = Math.ceil(allLoginHistoryData.length / ITEMS_PER_PAGE);
+
+            if (totalPages <= 1) {
+                console.log('No pagination needed for login history (1 page or less)');
+                return;
+            }
+
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'Previous';
+            prevButton.disabled = loginHistoryCurrentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (loginHistoryCurrentPage > 1) {
+                    loginHistoryCurrentPage--;
+                    populateLoginHistory();
+                }
+            });
+            paginationContainer.appendChild(prevButton);
+
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, loginHistoryCurrentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = i === loginHistoryCurrentPage ? 'active' : '';
+                pageButton.addEventListener('click', () => {
+                    loginHistoryCurrentPage = i;
+                    populateLoginHistory();
+                });
+                paginationContainer.appendChild(pageButton);
+            }
+
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Next';
+            nextButton.disabled = loginHistoryCurrentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (loginHistoryCurrentPage < totalPages) {
+                    loginHistoryCurrentPage++;
+                    populateLoginHistory();
+                }
+            });
+            paginationContainer.appendChild(nextButton);
+        }
+
+        // Timeline implementation coming soon...
+        function populateTimeline() {
+            console.log('Populating timeline');
+            const timelineTab = document.getElementById('timelineTab');
+            timelineTab.innerHTML = `<p class="text-gray-500 text-center py-4">Timeline feature implemented soon...</p>`;
+        }
+
+        function displayErrorMessage(message, section) {
+            console.log(`Displaying error message for ${section}: ${message}`);
+            const targetTab = document.getElementById(`${section}Tab`);
+            if (targetTab) {
+                targetTab.innerHTML = `
+                    <div class="p-4">
+                        <p class="text-red-500 text-lg flex items-center gap-2">
+                            <i data-lucide="alert-triangle"></i> ${message}
+                        </p>
+                        <p class="mt-4 text-gray-600">
+                            Please try refreshing the page or <a href="/login" class="text-indigo-600 hover:underline">log in again</a>.
+                            If the issue persists, contact support.
+                        </p>
+                    </div>`;
+                lucide.createIcons();
             }
         }
 
-        // Profile Popup Logic
-        const profileButton = document.getElementById('profileButton');
-        const profilePopupOverlay = document.getElementById('profilePopupOverlay');
-        const profilePopup = document.getElementById('profilePopup');
-        const closeProfilePopup = document.getElementById('closeProfilePopup');
+        function displayNoDataMessage(userCode, section) {
+            console.log(`Displaying no data message for ${section}, userCode: ${userCode}`);
+            const targetTab = document.getElementById(`${section}Tab`);
+            if (section === 'activity' && currentUserData) {
+                document.getElementById('user-code').textContent = currentUserData.userCode || 'N/A';
+                document.getElementById('user-email').textContent = currentUserData.email || 'N/A';
+                document.getElementById('last-activity').textContent = 'No activity yet';
+            } else if (section === 'activity' && userCode) {
+                document.getElementById('user-code').textContent = userCode;
+                document.getElementById('user-email').textContent = 'N/A (no activity data)';
+                document.getElementById('last-activity').textContent = 'N/A';
+            }
+            if (targetTab) {
+                targetTab.innerHTML = `
+                    <div class="p-4">
+                        <p class="text-center text-gray-500 py-8 text-lg">
+                            No ${section === 'activity' ? 'activity' : section === 'login' ? 'login history' : 'events'} data to display.
+                        </p>
+                    </div>`;
+            }
+        }
 
         function updateProfilePopupData() {
+            console.log('Updating profile popup data');
             if (currentUserData) {
                 document.getElementById('popupUserCode').textContent = currentUserData.userCode || 'N/A';
                 document.getElementById('popupUserEmail').textContent = currentUserData.email || 'N/A';
             } else {
-                document.getElementById('popupUserCode').textContent = 'Loading...';
-                document.getElementById('popupUserEmail').textContent = 'Loading...';
+                document.getElementById('popupUserCode').textContent = sessionStorage.getItem('userCode') || 'Loading...';
+                document.getElementById('popupUserEmail').textContent = sessionStorage.getItem('email') || 'Loading...';
             }
         }
 
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}Tab`).classList.add('active');
+                if (tab.dataset.tab === 'timeline') {
+                    populateTimeline();
+                }
+            });
+        });
+
+        const profileButton = document.getElementById('profileButton');
+        const profilePopupOverlay = document.getElementById('profilePopupOverlay');
+        const closeProfilePopup = document.getElementById('closeProfilePopup');
+
         profileButton.addEventListener('click', () => {
+            console.log('Profile button clicked');
             updateProfilePopupData();
             profilePopupOverlay.classList.add('active');
+            lucide.createIcons();
         });
 
         closeProfilePopup.addEventListener('click', () => {
+            console.log('Closing profile popup');
             profilePopupOverlay.classList.remove('active');
         });
 
         profilePopupOverlay.addEventListener('click', (event) => {
             if (event.target === profilePopupOverlay) {
+                console.log('Closing profile popup via overlay click');
                 profilePopupOverlay.classList.remove('active');
             }
         });
 
-        // Error Popup Logic
         const errorPopupOverlay = document.getElementById('errorPopupOverlay');
         const closeErrorPopup = document.getElementById('closeErrorPopup');
 
         closeErrorPopup.addEventListener('click', () => {
+            console.log('Closing error popup');
             hideErrorPopup();
         });
 
         errorPopupOverlay.addEventListener('click', (event) => {
             if (event.target === errorPopupOverlay) {
+                console.log('Closing error popup via overlay click');
                 hideErrorPopup();
             }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, checking session storage');
             lucide.createIcons();
             let userCode = sessionStorage.getItem('userCode');
-            console.log('Session userCode:', userCode);
+            let email = sessionStorage.getItem('email');
+            console.log('Session storage values:', { userCode, email });
+
             if (!userCode) {
+                console.log('No userCode in sessionStorage, checking URL params');
                 const urlParams = new URLSearchParams(window.location.search);
                 userCode = urlParams.get('userCode');
-                console.log('URL userCode:', userCode);
                 if (userCode) {
+                    console.log(`Found userCode in URL: ${userCode}, setting in sessionStorage`);
                     sessionStorage.setItem('userCode', userCode);
                 }
             }
-            if (userCode) {
-                displayActivityDetails(userCode);
-            } else {
+
+            if (!userCode) {
+                console.error('No userCode found in sessionStorage or URL');
                 hideLoader();
-                showErrorPopup();
+                showErrorPopup('User ID not found. Please log in.', '/login');
+                return;
             }
+
+            console.log(`Proceeding with userCode: ${userCode}, email: ${email || 'to be fetched'}`);
+            displayActivityDetails();
         });
     </script>
 </body>

@@ -768,12 +768,19 @@ public class SecurityService implements ISecrityService {
 	private void logLoginAttempt(String email, String userCode, boolean success, String reason) {
 		try {
 			LoginHistory loginHistory = new LoginHistory();
-			loginHistory.setId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
+			//loginHistory.setId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
 			Optional<Security> existingSecurityByEmail = securityRepository.findByEmailAndDeletedFlag(email, "N");
 			Security security = existingSecurityByEmail.get();
 			loginHistory.setSecurity(security);
-			loginHistory.setUserCode(userCode);
+			loginHistory.setUserCode(security.getUserCode());
 			loginHistory.setLoginTime(Timestamp.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+			
+			Timestamp loginTimestamp = Timestamp.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
+			if (loginTimestamp != null) {
+				LocalDateTime loginTime = loginTimestamp.toLocalDateTime();
+				LocalDateTime logoutTime = loginTime.plusMinutes(30);
+				loginHistory.setLogoutTime(Timestamp.valueOf(logoutTime));
+			}
 			loginHistory.setSuccess(success);
 			loginHistory.setIpAddress("0.0.0.0"); // Placeholder; use actual IP in production
 			loginHistory.setDeviceInfo("Unknown"); // Placeholder; capture from request
@@ -781,9 +788,9 @@ public class SecurityService implements ISecrityService {
 			loginHistory.setLoginMethod("Password");
 			loginHistory.setRiskScore(0); // Placeholder; calculate based on logic
 			loginHistory.setDeletedFlag("N");
-			loginHistory.setCreatedBy(userCode != null ? userCode : "system");
+			loginHistory.setCreatedBy(security.getUserCode());
 			loginHistory.setCreatedTime(Timestamp.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-			loginHistory.setUpdatedBy(userCode != null ? userCode : "system");
+			loginHistory.setUpdatedBy(security.getUserCode());
 			loginHistory.setUpdatedTime(Timestamp.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 			loginHistory.setMfaUsed(false);
 			loginHistoryRepository.save(loginHistory);

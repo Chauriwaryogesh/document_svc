@@ -23,5 +23,6 @@ public class CommonConstant {
 	public static final String OTP_SEND_WORKITEM = "OTP SEND WORKITEM";
 	public static final String OTP_VERIFIED = "OTP_VERIFIED";
 	public static final String OTP_VERIFIED_WORKITEM = "OTP Verified Successfully";
+	public static final String N = "N";
 
 }
