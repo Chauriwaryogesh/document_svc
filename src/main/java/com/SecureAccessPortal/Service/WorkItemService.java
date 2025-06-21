@@ -19,6 +19,7 @@ import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.ActivityDtls;
 import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
+import com.SecureAccessPortal.Entity.OtpStore;
 import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.VerificationRecord;
 import com.SecureAccessPortal.Entity.Workitem;
@@ -237,6 +238,37 @@ public class WorkItemService implements IWorkItemService {
 		}
 		if(verificationRecord != null) {
 			workItem.setVerificationRecord(verificationRecord);
+		}
+		Workitem repoData = workItemRepo.save(workItem);
+		if (repoData == null) {
+			new RuntimeErrorException(null, "Error while creating WorkItem");
+		}
+		return repoData;
+	}
+
+	@Override
+	public Workitem mapRequetforWorkItemOtpService(String userCode, Customer customer, String workType,
+			String workItemName, String comment, OtpStore otpStore) {
+		
+
+		com.SecureAccessPortal.Entity.Workitem workItem = new com.SecureAccessPortal.Entity.Workitem();
+		workItem.setWorkItemId(String.valueOf(UUID.randomUUID()));
+		workItem.setComment(comment);
+		workItem.setCreatedBy(userCode);
+		workItem.setCreatedTime(LocalDateTime.now());
+		workItem.setUserCode(userCode);
+
+		workItem.setWorkItemName(workItemName);
+		workItem.setWorkType(workType);
+		String refNo = generateRandomWorkItemRefNumber();
+		workItem.setWorkItemRefNumber(refNo);
+		workItem.setQueue(CommonConstant.TEAM_MEMBER);
+		workItem.setStatus(CommonConstant.OPEN);
+		if(customer != null) {
+			workItem.setCustomer(customer);
+		}
+		if(otpStore != null) {
+			workItem.setOtpStore(otpStore);
 		}
 		Workitem repoData = workItemRepo.save(workItem);
 		if (repoData == null) {

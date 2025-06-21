@@ -36,6 +36,10 @@ public class Workitem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "verificationRecordVerId", referencedColumnName = "verId")
     private VerificationRecord verificationRecord;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "otpEmail", referencedColumnName = "email")
+    private OtpStore otpStore;
 
     @Column
     private String workItemId;
@@ -67,8 +71,16 @@ public class Workitem {
 
     @Column
     private String queue;
+    
+    public OtpStore getOtpStore() {
+		return otpStore;
+	}
 
-    // Getters and Setters
+	public void setOtpStore(OtpStore otpStore) {
+		this.otpStore = otpStore;
+	}
+
+	// Getters and Setters
     public String getWorkItemRefNumber() {
         return workItemRefNumber;
     }

@@ -1,10 +1,15 @@
 package com.SecureAccessPortal.Entity;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,99 +20,93 @@ public class OtpStore {
 	@Column
 	private String email;
 	@Column
+	private String userCode;
+	@Column
 	private Long id;
+
+	@OneToMany(mappedBy = "otpStore", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Workitem> workitem = new ArrayList<>();
+
 	@Column
 	private String otp;
-
 	@Column
 	private String createdBy;
 	@Column
-	private Long createdTime;
+	private LocalDateTime createdTime;
 	@Column
-	private Long expiryTime;
-
-	/**
-	 * @return the email
-	 */
+	private String updatedBy;
+	@Column
+	private LocalDateTime updatedTime;
+	@Column
+	private LocalDateTime expiryTime;
+	@Column
+	private String deletedFlag;
+	
+	
+	public String getDeletedFlag() {
+		return deletedFlag;
+	}
+	public void setDeletedFlag(String deletedFlag) {
+		this.deletedFlag = deletedFlag;
+	}
 	public String getEmail() {
 		return email;
 	}
-
-	/**
-	 * @param email the email to set
-	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	/**
-	 * @return the id
-	 */
+	public String getUserCode() {
+		return userCode;
+	}
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
 	public Long getId() {
 		return id;
 	}
-
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	/**
-	 * @return the otp
-	 */
+	public List<Workitem> getWorkitem() {
+		return workitem;
+	}
+	public void setWorkitem(List<Workitem> workitem) {
+		this.workitem = workitem;
+	}
 	public String getOtp() {
 		return otp;
 	}
-
-	/**
-	 * @param otp the otp to set
-	 */
 	public void setOtp(String otp) {
 		this.otp = otp;
 	}
-
-	/**
-	 * @return the createdBy
-	 */
 	public String getCreatedBy() {
 		return createdBy;
 	}
-
-	/**
-	 * @param createdBy the createdBy to set
-	 */
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-
-	/**
-	 * @return the createdTime
-	 */
-	public Long getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
-
-	/**
-	 * @param createdTime the createdTime to set
-	 */
-	public void setCreatedTime(Long createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
-
-	/**
-	 * @return the expiryTime
-	 */
-	public long getExpiryTime() {
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+	public LocalDateTime getUpdatedTime() {
+		return updatedTime;
+	}
+	public void setUpdatedTime(LocalDateTime updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+	public LocalDateTime getExpiryTime() {
 		return expiryTime;
 	}
-
-	/**
-	 * @param expiryTime the expiryTime to set
-	 */
-	public void setExpiryTime(long expiryTime) {
+	public void setExpiryTime(LocalDateTime expiryTime) {
 		this.expiryTime = expiryTime;
 	}
-
 }

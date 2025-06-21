@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import com.SecureAccessPortal.Modal.EmpRequestforUpdate;
 import com.SecureAccessPortal.Modal.EmployeeDTO;
 import com.SecureAccessPortal.Modal.SecurityDTO;
+import com.SecureAccessPortal.Modal.SetPasswordRequest;
 
 public interface ISecrityService{
 
@@ -28,7 +29,10 @@ public interface ISecrityService{
 
 	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> searchUserFromList(SecurityDTO searchRequest, String userCode);
 
-	public String registerWebAuthnCredentials(SecurityDTO request);
+	public com.SecureAccessPortal.Service.ResponseEntity<String> registerWebAuthnCredentials(SecurityDTO request);
+
+	public com.SecureAccessPortal.Service.ResponseEntity<String> setPassword(SetPasswordRequest request,
+			String userCode);
 
 	
 

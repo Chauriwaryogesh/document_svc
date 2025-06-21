@@ -30,8 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.SecureAccessPortal.Configuration.QrCodeWebSocketHandlerConfig;
 import com.SecureAccessPortal.Modal.CustomerDTO;
 import com.SecureAccessPortal.Modal.EmailDTO;
-import com.SecureAccessPortal.Modal.EmployeeDTO;
 import com.SecureAccessPortal.Modal.SecurityDTO;
+import com.SecureAccessPortal.Modal.SetPasswordRequest;
 import com.SecureAccessPortal.Service.EmailService;
 import com.SecureAccessPortal.Service.ISecrityService;
 import com.SecureAccessPortal.Service.QrCodeService;
@@ -322,17 +322,11 @@ public class SecurityController {
 			@RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		try {
-			String updatedSecurity = securityService.registerWebAuthnCredentials(request);
-			if (updatedSecurity.contains("Success")) {
-				resp.setData(updatedSecurity);
-			} else {
-				resp.setErrorMessage(updatedSecurity);
-			}
+			resp = securityService.registerWebAuthnCredentials(request);
 		} catch (Exception e) {
 			e.getMessage();
 		}
 		return resp;
-
 	}
 
 	@PostMapping("/login-fingerprint")
@@ -348,6 +342,21 @@ public class SecurityController {
 			return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
 		}
 	}
+	
+	
+	
+	@PostMapping( value ="/set-password", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public com.SecureAccessPortal.Service.ResponseEntity<String> registerWebAuthn(@RequestBody SetPasswordRequest request,
+			@RequestHeader String userCode) {
+		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		try {
+			resp = securityService.setPassword(request,userCode);
+		} catch (Exception e) {
+			e.getMessage();
+		}
+		return resp;
+	}
+	
 
 	public static class SuccessResponse {
 		private String message;
@@ -372,5 +381,8 @@ public class SecurityController {
 			return errorMessage;
 		}
 	}
+	
+	
+	
 
 }

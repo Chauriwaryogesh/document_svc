@@ -1,7 +1,9 @@
 package com.SecureAccessPortal.Entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -24,6 +27,10 @@ public class Security {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo", insertable = false, updatable = false)
 	private Customer customer;
+	
+	@OneToMany( mappedBy = "security" ,fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	//@JoinColumn(name = "email", referencedColumnName = "email")
+	private List<PasswordHistory> passwordHistory;
 
 	@Column(name = "email")
 	private String email;
@@ -72,6 +79,15 @@ public class Security {
 
 	@Column(name = "signatureCounter")
 	private Long signatureCounter; // Signature counter for anti-replay
+
+	
+	public List<PasswordHistory> getPasswordHistory() {
+		return passwordHistory;
+	}
+
+	public void setPasswordHistory(List<PasswordHistory> passwordHistory) {
+		this.passwordHistory = passwordHistory;
+	}
 
 	public Customer getCustomer() {
 		return customer;

@@ -44,5 +44,10 @@ public interface ISecurityRepo  extends JpaRepository<Security, Long>{
     @Query("SELECT s FROM Security s WHERE s.customerNo = :customerNo AND s.deletedFlag = :deletedFlag")
     Optional<Security> findByCustomerNoAndDeletedFlag(String customerNo, String deletedFlag);
 
+    @Query("SELECT s FROM Security s WHERE s.email = :email AND s.userCode = :userCode AND s.deletedFlag = :deletedFlag")
+	boolean existsByEmailOrUserCode(String email, String userCode ,String deletedFlag);
+
+    @Query("SELECT s FROM Security s WHERE (s.email = :email OR s.userCode = :userCode) AND s.deletedFlag = :deletedflag")
+	Optional<Security> findByEmailOrUserCodeAndDeletedFlag(String email, String userCode,String deletedflag);
 
 }

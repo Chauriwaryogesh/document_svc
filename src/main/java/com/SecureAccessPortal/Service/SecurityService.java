@@ -5,12 +5,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,17 +22,21 @@ import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Employees;
+import com.SecureAccessPortal.Entity.OtpStore;
+import com.SecureAccessPortal.Entity.PasswordHistory;
 import com.SecureAccessPortal.Entity.PersonSequence;
 import com.SecureAccessPortal.Entity.Security;
 import com.SecureAccessPortal.Exception.BadRequestException;
-import com.SecureAccessPortal.Exception.DuplicateEntryException;
 import com.SecureAccessPortal.Modal.EmpRequestforUpdate;
 import com.SecureAccessPortal.Modal.EmployeeDTO;
 import com.SecureAccessPortal.Modal.SecurityDTO;
+import com.SecureAccessPortal.Modal.SetPasswordRequest;
 import com.SecureAccessPortal.Modal.WorkItemDTO;
 import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.IEmployeeRepo;
 import com.SecureAccessPortal.Repo.ISecurityRepo;
+import com.SecureAccessPortal.Repo.OtpStoreRepo;
+import com.SecureAccessPortal.Repo.PasswordHistoryRepo;
 import com.SecureAccessPortal.Repo.PersonSequenceRepository;
 import com.SecureAccessPortal.Transformer.IEmployeeMapper;
 import com.SecureAccessPortal.Transformer.SecurityMapper;
@@ -49,7 +56,7 @@ public class SecurityService implements ISecrityService {
 	private IEmployeeMapper employeeMapper;
 
 	@Autowired
-	private ISecurityRepo securityRepo;
+	private ISecurityRepo securityRepository;
 
 	@Autowired
 	private SecurityMapper securityMapper;
@@ -68,6 +75,15 @@ public class SecurityService implements ISecrityService {
 	
 	@Autowired
 	private DateUtil dateUtil;
+	
+	@Autowired
+	private OtpStoreRepo otpStoreRepository;
+	
+	@Autowired
+	private PasswordHistoryRepo passwordHistoryRepository;
+	
+//	@Autowired
+//    private BCryptPasswordEncoder passwordEncoder;
 
 	@Override
 	public List<EmployeeDTO> fetchEmpList(String id, String userCode) {
@@ -78,7 +94,7 @@ public class SecurityService implements ISecrityService {
 		// Long employeeId = Long.parseLong(id);
 		try {
 			// for Security
-			List<Security> security = securityRepo.findAll();
+			List<Security> security = securityRepository.findAll();
 			boolean Notfound = security.stream().anyMatch(user -> user.getUserCode().equalsIgnoreCase(userCode));
 
 			if (!Notfound) {
@@ -106,7 +122,7 @@ public class SecurityService implements ISecrityService {
 		EmployeeDTO employeeDTO = new EmployeeDTO();
 		try {
 			// for Security
-			List<Security> security = securityRepo.findAll();
+			List<Security> security = securityRepository.findAll();
 			boolean Notfound = security.stream().anyMatch(user -> user.getUserCode().equalsIgnoreCase(userCode));
 
 			if (!Notfound) {
@@ -164,7 +180,7 @@ public class SecurityService implements ISecrityService {
 	public List<EmployeeDTO> fetchAllEmployee(String userCode) {
 		try {
 			// for Security
-			List<Security> security = securityRepo.findAll();
+			List<Security> security = securityRepository.findAll();
 			boolean Notfound = security.stream().anyMatch(user -> user.getUserCode().equalsIgnoreCase(userCode));
 
 			if (!Notfound) {
@@ -189,7 +205,7 @@ public class SecurityService implements ISecrityService {
 
 		try {
 			// for Security
-			List<Security> security = securityRepo.findAll();
+			List<Security> security = securityRepository.findAll();
 			boolean Notfound = security.stream().anyMatch(user -> user.getUserCode().equalsIgnoreCase(userCode));
 
 			if (!Notfound) {
@@ -269,10 +285,10 @@ public class SecurityService implements ISecrityService {
 		List<Security> securityList =new ArrayList<>();
 		try { 
 			if(id != null) {
-				Security security = securityRepo.findById(id, "N");
+				Security security = securityRepository.findById(id, "N");
 				securityList.add(security);
 			}else {
-				 securityList = securityRepo.findAll("N");
+				 securityList = securityRepository.findAll("N");
 			}
 			allUsers = securityMapper.mapSecurity(securityList,userCode);
 		} catch (Exception e) {
@@ -298,9 +314,9 @@ public class SecurityService implements ISecrityService {
 	            return response;
 	        }
 	        // Check for existing Security and Customer records
-	        Optional<Security> existingSecurityByEmail = securityRepo.findByEmailAndDeletedFlag(securityDTO.getEmail(), "N");
+	        Optional<Security> existingSecurityByEmail = securityRepository.findByEmailAndDeletedFlag(securityDTO.getEmail(), "N");
 	        Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail());
-	        Optional<Security> existingSecurityByUserCode = securityRepo.findByUserCodeAndDeletedFlag(securityDTO.getUserCode(), "N");
+	        Optional<Security> existingSecurityByUserCode = securityRepository.findByUserCodeAndDeletedFlag(securityDTO.getUserCode(), "N");
 	        Optional<Customer> existingCustomerByUserCode = customerRepo.findByUserCode(securityDTO.getUserCode());
 
 	        Security securityEntity;
@@ -388,7 +404,7 @@ public class SecurityService implements ISecrityService {
 	        if (customer != null) {
 	            customerRepo.save(customer);
 	        }
-	        securityRepo.save(securityEntity);
+	        securityRepository.save(securityEntity);
 
 	        response.setData(securityDTO);
 	        return response;
@@ -417,9 +433,9 @@ public class SecurityService implements ISecrityService {
         }
 
         // Check for existing Security and Customer records
-        Optional<Security> existingSecurityByEmail = securityRepo.findByEmailAndDeletedFlag(securityDTO.getEmail(), "N");
+        Optional<Security> existingSecurityByEmail = securityRepository.findByEmailAndDeletedFlag(securityDTO.getEmail(), "N");
         Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail());
-        Optional<Security> existingSecurityByUserCode = securityRepo.findByUserCodeAndDeletedFlag(securityDTO.getUserCode(), "N");
+        Optional<Security> existingSecurityByUserCode = securityRepository.findByUserCodeAndDeletedFlag(securityDTO.getUserCode(), "N");
         Optional<Customer> existingCustomerByUserCode = customerRepo.findByUserCode(securityDTO.getUserCode());
 
         if (existingSecurityByEmail.isPresent()) {
@@ -472,7 +488,7 @@ public class SecurityService implements ISecrityService {
         customer.setCreatedTime(LocalDateTime.now());
         securityEntity.setCustomerNo(customerNo);
         customerRepo.save(customer);
-        securityRepo.save(securityEntity);
+        securityRepository.save(securityEntity);
         response.setData(securityDTO);
         response.setStatus("Successfully registered, pending for verification");
         return response;
@@ -481,7 +497,7 @@ public class SecurityService implements ISecrityService {
 	@Override
 	public boolean deleteNoteById(Long id) {
 		if (id != null) {
-			securityRepo.deleteById(id);
+			securityRepository.deleteById(id);
 			return true;
 		}
 		return false;
@@ -494,7 +510,7 @@ public class SecurityService implements ISecrityService {
 		SecurityDTO securityDTO= new SecurityDTO();
 		
 		if(searchRequest.getUserName() != null) {
-			Security user= securityRepo.findByUserName(searchRequest.getUserName(),"N");
+			Security user= securityRepository.findByUserName(searchRequest.getUserName(),"N");
 			if(user != null) {
 				securityDTO.setEmail(user.getEmail());
 				securityDTO.setUserCode(user.getUserCode());
@@ -503,7 +519,7 @@ public class SecurityService implements ISecrityService {
 			serchResp.setErrorMessage("No user found");
 			}	
 		}else if(searchRequest.getEmail() != null) {
-			Security user= securityRepo.findByEmail(searchRequest.getEmail(),"N");
+			Security user= securityRepository.findByEmail(searchRequest.getEmail(),"N");
 			if(user != null) {
 				securityDTO.setEmail(user.getEmail());
 				securityDTO.setUserCode(user.getUserCode());
@@ -513,7 +529,7 @@ public class SecurityService implements ISecrityService {
 			}
 		}
 		else if(searchRequest.getUserCode() != null) {
-			Security user= securityRepo.findByUserCodeDeletedN(searchRequest.getUserCode(),"N");
+			Security user= securityRepository.findByUserCodeDeletedN(searchRequest.getUserCode(),"N");
 			if(user != null) {
 				securityDTO.setEmail(user.getEmail());
 				securityDTO.setUserCode(user.getUserCode());
@@ -525,26 +541,119 @@ public class SecurityService implements ISecrityService {
 		return serchResp;
 	}
 	
-	public String registerWebAuthnCredentials(SecurityDTO request) {
-        // Validate userCode
+	public com.SecureAccessPortal.Service.ResponseEntity<String> registerWebAuthnCredentials(SecurityDTO request) {
+		com.SecureAccessPortal.Service.ResponseEntity<String> response = new ResponseEntity<String>();
 		String message= "";
         if (request.getUserCode() == null) {
             throw new IllegalArgumentException("User ID is mandatory");
         }
-
-        Security security = securityRepo.findByUserCode(request.getUserCode());
-        
-        security.setCredentialId(request.getCredentialId());
-        security.setPublicKey(request.getPublicKey());
-        security.setUserHandle(request.getUserHandle());
-        security.setSignatureCounter(request.getSignatureCounter());
-        security.setUpdateTime(LocalDate.now()); 
-        security.setUpdateBy(request.getUserCode()); 
-        security.setDeletedFlag("N"); 
-        securityRepo.save(security);
-        message="Success, fngerprint added successfully";
-        return message;
+        Optional<Security> existingSecurityByUserCode = securityRepository.findByUserCodeAndDeletedFlag(request.getUserCode(), "N");
+        if (!existingSecurityByUserCode.isPresent()) {
+            response.setErrorMessage("UserCode '" + request.getUserCode() + "is not registerted in System");
+            return response;
+        }else {
+        	Security security = existingSecurityByUserCode.get();
+            security.setCredentialId(request.getCredentialId());
+            security.setPublicKey(request.getPublicKey());
+            security.setUserHandle(request.getUserHandle());
+            security.setSignatureCounter(request.getSignatureCounter());
+            security.setUpdateTime(LocalDate.now()); 
+            security.setUpdateBy(request.getUserCode()); 
+            security.setDeletedFlag("N"); 
+            securityRepository.save(security);
+            message="Success, fngerprint added successfully";
+            response.setStatus(message);
+        } 
+        return response;
     }
-	
 
+	@Override
+	public ResponseEntity<String> setPassword(SetPasswordRequest request, String userCode) {
+		
+		ResponseEntity<String> response = new ResponseEntity<String>();
+try {
+		Optional<Security> securityOpt = securityRepository.findByEmailOrUserCodeAndDeletedFlag(
+            request.getEmail() != null ? request.getEmail() : "", 
+            request.getUserCode() != null ? request.getUserCode() : "", 
+            "N"
+        );
+        if (securityOpt.isEmpty()) {
+        	response.setErrorMessage("User not found or deleted.");
+        }
+        Security security = securityOpt.get();
+        if (!"Y".equals(security.getIsEmailVerified()) || !"Y".equals(security.getIsUserCodeVerified())) {
+        	response.setErrorMessage("Account not verified.");
+        }
+
+        // Validate OTP
+        Optional<OtpStore> otpRecord = otpStoreRepository.findByEmailAndOtpAndDeletedFlag(security.getEmail(), request.getOtp(), "N"
+        );
+        if (otpRecord.isEmpty() || 
+            otpRecord.get().getCreatedTime().isAfter(LocalDateTime.now()) ||
+            otpRecord.get().getExpiryTime().isBefore(LocalDateTime.now())) {
+        	response.setErrorMessage("Invalid or expired OTP.");
+        }
+
+        // Mark OTP as used
+        OtpStore otp = otpRecord.get();
+        otp.setDeletedFlag("Y");
+        otpStoreRepository.save(otp);
+
+        // Validate password and confirmPassword
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+        	response.setErrorMessage("Passwords do not match.");
+        }
+
+        // Check last 5 passwords
+        List<PasswordHistory> passwordHistory = passwordHistoryRepository
+            .findTop5ByEmailAndIsCurrentFalseAndDeletedFlagOrderByCreatedTimeDesc(security.getEmail(), "N");
+        String newPasswordHash = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt(12));
+        for (PasswordHistory history : passwordHistory) {
+        	if (BCrypt.checkpw(request.getPassword(), history.getHashedPassword())) {
+            	response.setErrorMessage("Cannot reuse one of your last 5 passwords.");
+            }
+        }
+
+        // Update existing current password
+        passwordHistoryRepository.findByEmailAndIsCurrentTrueAndDeletedFlag(security.getEmail(), "N")
+            .ifPresent(current -> {
+                current.setCurrent(false);
+                current.setUpdatedBy(request.getUserCode() != null ? request.getUserCode() : "system");
+                current.setUpdatedTime(Timestamp.valueOf(LocalDateTime.now()));
+                passwordHistoryRepository.save(current);
+            });
+
+     // Save new password
+        PasswordHistory newPassword = new PasswordHistory();
+        newPassword.setSecurity(security);
+        //newPassword.setEmail(security.getEmail());
+        newPassword.setUserCode(security.getUserCode());
+        newPassword.setHashedPassword(newPasswordHash);
+        newPassword.setCurrent(true);
+        newPassword.setExpireTime(Timestamp.from(LocalDateTime.now().plusDays(30).atZone(ZoneId.systemDefault()).toInstant()));
+        newPassword.setCreatedTime(Timestamp.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+        newPassword.setCreatedBy(request.getUserCode() != null ? request.getUserCode() : "system");
+        newPassword.setUpdatedBy(request.getUserCode() != null ? request.getUserCode() : "system");
+        newPassword.setUpdatedTime(Timestamp.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+        newPassword.setPasswordChangeReason("otp-verified");
+        newPassword.setFailedLoginCount(0);
+        newPassword.setMfaEnabled(false);
+        newPassword.setBreachStatus(false);
+        newPassword.setDeletedFlag("N");
+        passwordHistoryRepository.save(newPassword);
+
+        // Maintain only 5 historical passwords
+        List<PasswordHistory> oldPasswords = passwordHistoryRepository
+            .findByEmailAndIsCurrentFalseAndDeletedFlagOrderByCreatedTimeAsc(security.getEmail(), "N");
+        if (oldPasswords.size() > 5) {
+            oldPasswords.get(0).setDeletedFlag("Y");
+            passwordHistoryRepository.save(oldPasswords.get(0));
+        }
+
+	        response.setStatus("Password set successfully.");
+}catch(Exception e) {
+	e.printStackTrace();
+}
+	        return response;
+	}
 }

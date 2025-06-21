@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -39,8 +40,8 @@ import com.SecureAccessPortal.Modal.EmailDTO;
 import com.SecureAccessPortal.Modal.WorkItemDTO;
 import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.IEmailRepo;
-import com.SecureAccessPortal.Repo.IOtpServiceDB;
 import com.SecureAccessPortal.Repo.ISecurityRepo;
+import com.SecureAccessPortal.Repo.OtpStoreRepo;
 
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -61,169 +62,169 @@ public class EmailService {
 	@Autowired
 	private ISecurityRepo securityRepo;
 
-	private final IOtpServiceDB IOtpServiceDB;
+	@Autowired
+	private  OtpStoreRepo otpStoreRepository;
+	
 	private final JavaMailSender mailSender;
 	private final Map<String, String> otpStore = new HashMap<>();
 
 	private static final AtomicInteger counter = new AtomicInteger(1);
 
-	public EmailService(JavaMailSender mailSender, IOtpServiceDB IOtpServiceDB) {
+	public EmailService(JavaMailSender mailSender, OtpStoreRepo otpStoreRepository) {
 		this.mailSender = mailSender;
-		this.IOtpServiceDB = IOtpServiceDB;
+		this.otpStoreRepository = otpStoreRepository;
 	}
 
 	public String sendOtp(String email, String userCode) {
-		String response = "";
-		String otp = generateOtp();
-		otpStore.put(email, otp);
+        String response = "";
+        String otp = generateOtp();
 
-		email = verifyEmail(email);
-		try {
-			// Check email status is Verified Y
-			Security security = securityRepo.findByEmail(email, "N");
-			if (security != null) {
-				if (security.getEmail().equalsIgnoreCase(email) && security.getUserCode().equalsIgnoreCase(userCode)
-						&& security.getIsEmailVerified().equals("Y") && security.getIsUserCodeVerified().equals("Y")) {
+        email = verifyEmail(email);
+        try {
+            // Check email status is Verified Y
+            Security security = securityRepo.findByEmail(email, "N");
+            if (security != null) {
+                if (security.getEmail().equalsIgnoreCase(email) && 
+                    security.getUserCode().equalsIgnoreCase(userCode) &&
+                    "Y".equals(security.getIsEmailVerified()) && 
+                    "Y".equals(security.getIsUserCodeVerified())) {
 
-					MimeMessage message = mailSender.createMimeMessage();
-					MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8"); // Enable multipart for
-																								// HTML
-					helper.setFrom(new InternetAddress("SecureAccessPortal@myCompany.com", "Secure Access Portal"));
-					helper.setTo(email);
-					helper.setSubject("🔒 Your One-Time Password (OTP) for Secure Login");
+                    // Mark existing OTPs as deleted
+                    otpStoreRepository.markAsDeletedByEmail(email, "Y",userCode, LocalDateTime.now());
 
-					// HTML email template
-					String htmlContent = "<!DOCTYPE html>\n" + "<html lang=\"en\">\n" + "<head>\n"
-							+ "    <meta charset=\"UTF-8\">\n"
-							+ "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
-							+ "    <title>Your One-Time Password (OTP)</title>\n" + "    <style>\n" + "        body {\n"
-							+ "            margin: 0;\n" + "            padding: 0;\n"
-							+ "            font-family: 'Arial', sans-serif;\n"
-							+ "            background-color: #f4f4f9;\n" + "            color: #333;\n" + "        }\n"
-							+ "        .container {\n" + "            max-width: 600px;\n"
-							+ "            margin: 20px auto;\n" + "            background-color: #ffffff;\n"
-							+ "            border-radius: 10px;\n" + "            overflow: hidden;\n"
-							+ "            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n" + "        }\n"
-							+ "        .header {\n"
-							+ "            background: linear-gradient(to right, #007bff, #0056b3);\n"
-							+ "            padding: 20px;\n" + "            text-align: center;\n"
-							+ "            color: white;\n" + "        }\n" + "        .header img {\n"
-							+ "            max-width: 150px;\n" + "            height: auto;\n" + "        }\n"
-							+ "        .content {\n" + "            padding: 30px;\n"
-							+ "            text-align: center;\n" + "        }\n" + "        .otp-box {\n"
-							+ "            background-color: #e9f7ff;\n" + "            border: 2px dashed #007bff;\n"
-							+ "            border-radius: 8px;\n" + "            padding: 20px;\n"
-							+ "            margin: 20px 0;\n" + "            font-size: 28px;\n"
-							+ "            font-weight: bold;\n" + "            color: #007bff;\n"
-							+ "            letter-spacing: 5px;\n" + "        }\n" + "        .copy-button {\n"
-							+ "            background-color: #28a745;\n" + "            color: white;\n"
-							+ "            border: none;\n" + "            padding: 10px 20px;\n"
-							+ "            border-radius: 5px;\n" + "            cursor: pointer;\n"
-							+ "            font-size: 16px;\n" + "            margin-top: 10px;\n"
-							+ "            text-decoration: none;\n" + "            display: inline-block;\n"
-							+ "        }\n" + "        .copy-button:hover {\n"
-							+ "            background-color: #1e7e34;\n" + "        }\n" + "        .clock {\n"
-							+ "            display: inline-flex;\n" + "            align-items: center;\n"
-							+ "            background-color: #fff3e0;\n" + "            border-radius: 50px;\n"
-							+ "            padding: 10px 20px;\n" + "            margin: 15px 0;\n"
-							+ "            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n" + "        }\n"
-							+ "        .clock img {\n" + "            width: 20px;\n" + "            height: 20px;\n"
-							+ "            margin-right: 10px;\n" + "        }\n" + "        .clock span {\n"
-							+ "            font-weight: bold;\n" + "            color: #ff9800;\n" + "        }\n"
-							+ "        .contact-info, .unsubscribe {\n" + "            background-color: #f9f9f9;\n"
-							+ "            padding: 20px;\n" + "            text-align: center;\n"
-							+ "            font-size: 14px;\n" + "            color: #555;\n" + "        }\n"
-							+ "        .contact-info a, .unsubscribe a {\n" + "            color: #007bff;\n"
-							+ "            text-decoration: none;\n" + "        }\n"
-							+ "        .contact-info a:hover, .unsubscribe a:hover {\n"
-							+ "            text-decoration: underline;\n" + "        }\n" + "        .footer {\n"
-							+ "            background-color: #e9ecef;\n" + "            padding: 15px;\n"
-							+ "            text-align: center;\n" + "            font-size: 12px;\n"
-							+ "            color: #555;\n" + "        }\n" + "        .footer img {\n"
-							+ "            width: 24px;\n" + "            height: 24px;\n"
-							+ "            margin: 0 10px;\n" + "            vertical-align: middle;\n" + "        }\n"
-							+ "        @media only screen and (max-width: 600px) {\n" + "            .container {\n"
-							+ "                margin: 10px;\n" + "            }\n" + "            .otp-box {\n"
-							+ "                font-size: 24px;\n" + "            }\n" + "        }\n"
-							+ "    </style>\n" + "</head>\n" + "<body>\n" + "    <div class=\"container\">\n"
-							+ "        <div class=\"header\">\n"
-							+ "            <img src=\"https://via.placeholder.com/150x50?text=Secure+Access+Portal\" alt=\"Secure Access Portal Logo\">\n"
-							+ "            <h1>Secure OTP Login</h1>\n" + "        </div>\n"
-							+ "        <div class=\"content\">\n" + "            <h2>Dear Customer,</h2>\n"
-							+ "            <p>Your One-Time Password (OTP) for secure login is:</p>\n"
-							+ "            <div class=\"otp-box\" id=\"otpValue\">" + otp + "</div>\n"
-							+ "            <button class=\"copy-button\" onclick=\"navigator.clipboard.writeText(&quot;"
-							+ otp + "&quot;)\">Copy OTP</button>\n"
-							+ "            <p>If the button doesn't work, manually copy the OTP: <strong>" + otp
-							+ "</strong></p>\n" + "            <div class=\"clock\">\n"
-							+ "                <img src=\"https://img.icons8.com/ios-filled/20/ff9800/clock.png\" alt=\"Clock\">\n"
-							+ "                <span>Expires in 30 minutes</span>\n" + "            </div>\n"
-							+ "            <p>Keep this OTP confidential and do not share it with anyone.</p>\n"
-							+ "        </div>\n" + "        <div class=\"contact-info\">\n"
-							+ "            <h3>Contact Us</h3>\n" + "            <p>\n"
-							+ "                <img src=\"https://img.icons8.com/ios-filled/16/007bff/email.png\" alt=\"Email\">\n"
-							+ "                <a href=\"mailto:support@mycompany.com\">support@mycompany.com</a>\n"
-							+ "            </p>\n" + "            <p>\n"
-							+ "                <img src=\"https://img.icons8.com/ios-filled/16/007bff/phone.png\" alt=\"Phone\">\n"
-							+ "                <a href=\"tel:+918208247944\">+91-820-824-7944</a> (24/7, Mon-Fri)\n"
-							+ "            </p>\n" + "        </div>\n" + "        <div class=\"unsubscribe\">\n"
-							+ "            <p>\n" + "                To stop receiving these emails, please\n"
-							+ "                <a href=\"https://mycompany.com/unsubscribe?email=" + email
-							+ "\">unsubscribe</a>\n" + "                or contact our support team.\n"
-							+ "            </p>\n" + "        </div>\n" + "        <div class=\"footer\">\n"
-							+ "            <p>Your Security, Our Priority - Secure Access Portal © 2025</p>\n"
-							+ "            <p>\n"
-							+ "                <a href=\"https://facebook.com/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/facebook.png\" alt=\"Facebook\"></a>\n"
-							+ "                <a href=\"https://twitter.com/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/twitter.png\" alt=\"Twitter\"></a>\n"
-							+ "                <a href=\"https://linkedin.com/company/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/linkedin.png\" alt=\"LinkedIn\"></a>\n"
-							+ "            </p>\n" + "        </div>\n" + "    </div>\n" + "</body>\n" + "</html>";
+                    // Create email content
+                    MimeMessage message = mailSender.createMimeMessage();
+                    MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
+                    helper.setFrom(new InternetAddress("SecureAccessPortal@myCompany.com", "Secure Access Portal"));
+                    helper.setTo(email);
+                    helper.setSubject("🔒 Your One-Time Password (OTP) for Secure Login");
 
-					// Plain text fallback for clients that don't support HTML
-					String plainTextContent = "Dear Customer,\n\n"
-							+ "Your One-Time Password (OTP) for secure login is: " + otp + "\n\n"
-							+ "This OTP is valid for 30 minutes. Keep it confidential and do not share it with anyone.\n\n"
-							+ "Contact Us:\n" + "Email: support@mycompany.com\n"
-							+ "Phone: +91-820-824-7944 (24/7, Mon-Fri)\n\n"
-							+ "To unsubscribe, reply with 'UNSUBSCRIBE' or contact support@mycompany.com.\n\n"
-							+ "Your Security, Our Priority - Secure Access Portal";
+                    String htmlContent = "<!DOCTYPE html>\n" +
+                        "<html lang=\"en\">\n" +
+                        "<head>\n" +
+                        "    <meta charset=\"UTF-8\">\n" +
+                        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                        "    <title>Your One-Time Password (OTP)</title>\n" +
+                        "    <style>\n" +
+                        "        body { margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #f4f4f9; color: #333; }\n" +
+                        "        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }\n" +
+                        "        .header { background: linear-gradient(to right, #007bff, #0056b3); padding: 20px; text-align: center; color: white; }\n" +
+                        "        .header img { max-width: 150px; height: auto; }\n" +
+                        "        .content { padding: 30px; text-align: center; }\n" +
+                        "        .otp-box { background-color: #e9f7ff; border: 2px dashed #007bff; border-radius: 8px; padding: 20px; margin: 20px 0; font-size: 28px; font-weight: bold; color: #007bff; letter-spacing: 5px; }\n" +
+                        "        .copy-button { background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; text-decoration: none; display: inline-block; }\n" +
+                        "        .copy-button:hover { background-color: #1e7e34; }\n" +
+                        "        .clock { display: inline-flex; align-items: center; background-color: #fff3e0; border-radius: 50px; padding: 10px 20px; margin: 15px 0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }\n" +
+                        "        .clock img { width: 20px; height: 20px; margin-right: 10px; }\n" +
+                        "        .clock span { font-weight: bold; color: #ff9800; }\n" +
+                        "        .contact-info, .unsubscribe { background-color: #f9f9f9; padding: 20px; text-align: center; font-size: 14px; color: #555; }\n" +
+                        "        .contact-info a, .unsubscribe a { color: #007bff; text-decoration: none; }\n" +
+                        "        .contact-info a:hover, .unsubscribe a:hover { text-decoration: underline; }\n" +
+                        "        .footer { background-color: #e9ecef; padding: 15px; text-align: center; font-size: 12px; color: #555; }\n" +
+                        "        .footer img { width: 24px; height: 24px; margin: 0 10px; vertical-align: middle; }\n" +
+                        "        @media only screen and (max-width: 600px) { .container { margin: 10px; } .otp-box { font-size: 24px; } }\n" +
+                        "    </style>\n" +
+                        "</head>\n" +
+                        "<body>\n" +
+                        "    <div class=\"container\">\n" +
+                        "        <div class=\"header\">\n" +
+                        "            <img src=\"https://via.placeholder.com/150x50?text=Secure+Access+Portal\" alt=\"Secure Access Portal Logo\">\n" +
+                        "            <h1>Secure OTP Login</h1>\n" +
+                        "        </div>\n" +
+                        "        <div class=\"content\">\n" +
+                        "            <h2>Dear Customer,</h2>\n" +
+                        "            <p>Your One-Time Password (OTP) for secure login is:</p>\n" +
+                        "            <div class=\"otp-box\" id=\"otpValue\">" + otp + "</div>\n" +
+                        "            <button class=\"copy-button\" onclick=\"navigator.clipboard.writeText('" + otp + "')\">Copy OTP</button>\n" +
+                        "            <p>If the button doesn't work, manually copy the OTP: <strong>" + otp + "</strong></p>\n" +
+                        "            <div class=\"clock\">\n" +
+                        "                <img src=\"https://img.icons8.com/ios-filled/20/ff9800/clock.png\" alt=\"Clock\">\n" +
+                        "                <span>Expires in 30 minutes</span>\n" +
+                        "            </div>\n" +
+                        "            <p>Keep this OTP confidential and do not share it with anyone.</p>\n" +
+                        "        </div>\n" +
+                        "        <div class=\"contact-info\">\n" +
+                        "            <h3>Contact Us</h3>\n" +
+                        "            <p>\n" +
+                        "                <img src=\"https://img.icons8.com/ios-filled/16/007bff/email.png\" alt=\"Email\">\n" +
+                        "                <a href=\"mailto:support@mycompany.com\">support@mycompany.com</a>\n" +
+                        "            </p>\n" +
+                        "            <p>\n" +
+                        "                <img src=\"https://img.icons8.com/ios-filled/16/007bff/phone.png\" alt=\"Phone\">\n" +
+                        "                <a href=\"tel:+918208247944\">+91-820-824-7944</a> (24/7, Mon-Fri)\n" +
+                        "            </p>\n" +
+                        "        </div>\n" +
+                        "        <div class=\"unsubscribe\">\n" +
+                        "            <p>\n" +
+                        "                To stop receiving these emails, please\n" +
+                        "                <a href=\"https://mycompany.com/unsubscribe?email=" + email + "\">unsubscribe</a>\n" +
+                        "                or contact our support team.\n" +
+                        "            </p>\n" +
+                        "        </div>\n" +
+                        "        <div class=\"footer\">\n" +
+                        "            <p>Your Security, Our Priority - Secure Access Portal © 2025</p>\n" +
+                        "            <p>\n" +
+                        "                <a href=\"https://facebook.com/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/facebook.png\" alt=\"Facebook\"></a>\n" +
+                        "                <a href=\"https://twitter.com/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/twitter.png\" alt=\"Twitter\"></a>\n" +
+                        "                <a href=\"https://linkedin.com/company/mycompany\"><img src=\"https://img.icons8.com/ios-filled/24/007bff/linkedin.png\" alt=\"LinkedIn\"></a>\n" +
+                        "            </p>\n" +
+                        "        </div>\n" +
+                        "    </div>\n" +
+                        "</body>\n" +
+                        "</html>";
 
-					helper.setText(plainTextContent, htmlContent); // Set plain text and HTML content
+                    String plainTextContent = "Dear Customer,\n\n" +
+                        "Your One-Time Password (OTP) for secure login is: " + otp + "\n\n" +
+                        "This OTP is valid for 30 minutes. Keep it confidential and do not share it with anyone.\n\n" +
+                        "Contact Us:\n" +
+                        "Email: support@mycompany.com\n" +
+                        "Phone: +91-820-824-7944 (24/7, Mon-Fri)\n\n" +
+                        "To unsubscribe, reply with 'UNSUBSCRIBE' or contact support@mycompany.com.\n\n" +
+                        "Your Security, Our Priority - Secure Access Portal";
 
-					// Call repo to store OTP in DB
-					OtpStore otpStore = new OtpStore();
-					otpStore.setId(nextcount());
-					otpStore.setOtp(otp);
-					otpStore.setEmail(email);
+                    helper.setText(plainTextContent, htmlContent);
 
-					LocalDateTime dateTime = LocalDateTime.now();
-					long epochMillis = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-					otpStore.setCreatedTime(epochMillis);
-					otpStore.setCreatedBy(userCode);
+                    // Store OTP in DB
+                    OtpStore otpStore = new OtpStore();
+                    otpStore.setId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE); // Generate unique ID
+                    otpStore.setOtp(otp);
+                    otpStore.setEmail(email);
+                    otpStore.setUserCode(userCode);
+                    otpStore.setCreatedTime(LocalDateTime.now());
+                    otpStore.setCreatedBy(userCode);
+                    otpStore.setExpiryTime(LocalDateTime.now().plusMinutes(30));
+                    otpStore.setDeletedFlag("N");
+                    OtpStore otpStoreDb = otpStoreRepository.save(otpStore);
 
-					LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(30);
-					long exp = expiryTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-					otpStore.setExpiryTime(exp);
-					IOtpServiceDB.save(otpStore);
+                    mailSender.send(message);
 
-					mailSender.send(message);
-					logger.info("OTP email sent successfully to {}", email);
-					response = "Success,Otp send SuccessFully";
-				} else {
-					logger.warn("Email verification failed for {}: Not verified or user code mismatch", email);
-					response = "Email is Not verified please connect with admin";
-				}
-			} else {
-				logger.warn("Email {} not registered in system", email);
-				response = "Email is Not Registered in System please connect with admin";
-			}
-		} catch (Exception e) {
-			logger.error("Failed to send OTP email to {}: {}", email, e.getMessage());
-			e.printStackTrace();
-			response = "Otp send faild";
-		}
-		return response;
-	}
+                    // Customer and workitem logic
+                    Optional<Customer> byEmail = customerRepo.findByEmail(email);
+                    if (byEmail.isPresent()) {
+                        Customer customer = byEmail.get();
+                        String workType = CommonConstant.OTP_CREATED;
+                        String workItemName = CommonConstant.OTP_SEND_WORKITEM;
+                        String comment = "OTP has been sent to customer " + customer.getCustomerNo() + 
+                            " for Email " + otpStoreDb.getEmail() + " and userCode is " + otpStoreDb.getUserCode();
+                        workItemService.mapRequetforWorkItemOtpService(userCode, customer, workType, workItemName, comment, otpStoreDb);
+                    }
 
+                    logger.info("OTP email sent successfully to {}", email);
+                    response = "Success, OTP sent successfully";
+                } else {
+                    logger.warn("Email verification failed for {}: Not verified or user code mismatch", email);
+                    response = "Email is not verified, please contact admin";
+                }
+            } else {
+                logger.warn("Email {} not registered in system", email);
+                response = "Email is not registered in system, please contact admin";
+            }
+        } catch (Exception e) {
+            logger.error("Failed to send OTP email to {}: {}", email, e.getMessage(), e);
+            response = "OTP send failed";
+        }
+        return response;
+    }
 	private String verifyEmail(String email) {
 		if (email.contains("@gmail.com")) {
 			return email;
@@ -239,19 +240,51 @@ public class EmailService {
 		return String.valueOf(otp);
 	}
 
-	public boolean verifyOtp(String email, String otp, String userCode) {
-		// call Repo
-		Optional<OtpStore> emailData = IOtpServiceDB.findById(email);
-		// OtpStore otpStore = emailData.get();
-		LocalDateTime dateTime = LocalDateTime.now();
-		Long epochMillis = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+ public boolean verifyOtp(String email, String otp, String userCode) {
+        // Validate OTP with deletedFlag = 'N'
+        Optional<OtpStore> emailData = otpStoreRepository.findByEmailAndOtpAndDeletedFlag(email, otp, "N");
+        if (emailData.isEmpty()) {
+            logger.warn("No valid OTP found for email: {}", email);
+            return false;
+        }
 
-		boolean found = emailData.stream()
-				.filter(data -> data != null && data.getEmail().equalsIgnoreCase(email) && data.getOtp() != null
-						&& data.getOtp().equalsIgnoreCase(otp) && epochMillis <= data.getExpiryTime())
-				.findAny().isPresent();
-		return found;
-	}
+        OtpStore otpStore = emailData.get();
+        LocalDateTime now = LocalDateTime.now();
+
+        // Check OTP validity and expiry
+        if (!otpStore.getEmail().equalsIgnoreCase(email) ||
+            !otpStore.getOtp().equalsIgnoreCase(otp) ||
+            !otpStore.getUserCode().equalsIgnoreCase(userCode) ||
+            now.isAfter(otpStore.getExpiryTime())) {
+            logger.warn("OTP verification failed for email: {}. Invalid OTP, userCode, or expired.", email);
+            return false;
+        }
+
+        // Mark OTP as used
+        otpStore.setDeletedFlag("Y");
+        otpStore.setUpdatedBy(userCode);
+        otpStore.setUpdatedTime(LocalDateTime.now());
+        otpStoreRepository.save(otpStore);
+
+        // Customer and workitem logic
+        Optional<Customer> byEmail = customerRepo.findByEmail(email);
+        if (byEmail.isPresent()) {
+            Customer customer = byEmail.get();
+            String workType = CommonConstant.OTP_VERIFIED;
+            String workItemName = CommonConstant.OTP_VERIFIED_WORKITEM;
+            String comment = "OTP has been verified successfully for customer " + 
+                             customer.getCustomerNo() + 
+                             " for email " + otpStore.getEmail() + 
+                             " and userCode " + otpStore.getUserCode();
+            // TODO: Add bank account policy check
+            workItemService.mapRequetforWorkItemOtpService(userCode, customer, workType, workItemName, comment, otpStore);
+        } else {
+            logger.warn("Customer not found for email: {}", email);
+        }
+
+        logger.info("OTP verified successfully for email: {}", email);
+        return true;
+    }
 
 	public long nextcount() {
 		return counter.getAndIncrement();
@@ -318,16 +351,10 @@ public class EmailService {
 			otpStore.setId(nextcount());
 			otpStore.setOtp(otp);
 			otpStore.setEmail(email);
-
-			LocalDateTime dateTime = LocalDateTime.now();
-			long epochMillis = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-			otpStore.setCreatedTime(epochMillis);
+			otpStore.setCreatedTime(LocalDateTime.now());
 			otpStore.setCreatedBy(userCode);
-
-			LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(30);
-			long exp = expiryTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-			otpStore.setExpiryTime(exp);
-			IOtpServiceDB.save(otpStore);
+			otpStore.setExpiryTime(LocalDateTime.now().plusMinutes(30));
+			otpStoreRepository.save(otpStore);
 
 			mailSender.send(message);
 			return "Otp send SuccessFully";
@@ -666,6 +693,7 @@ public class EmailService {
             security.setEmail(cust.getEmail());
             security.setUserCode(cust.getUserCode());
             security.setCustomerNo(custDTO.getCustomerNo());
+            security.setUserName(cust.getName()+" "+cust.getSurname());
             security.setIsEmailVerified(existingSecurity.isPresent() ? security.getIsEmailVerified() : "N");
             security.setIsUserCodeVerified(existingSecurity.isPresent() ? security.getIsUserCodeVerified() : "N");
             security.setDeletedFlag("N");

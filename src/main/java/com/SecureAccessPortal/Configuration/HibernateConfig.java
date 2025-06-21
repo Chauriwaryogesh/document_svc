@@ -42,4 +42,9 @@ public class HibernateConfig {
         em.setJpaProperties(properties);
         return em;
     }
+    
+//    @Bean
+//    public BCryptPasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 }
