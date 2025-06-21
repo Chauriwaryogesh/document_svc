@@ -86,18 +86,16 @@ public class EmailService {
 		String otp = generateOtp();
 		Security security = null;
 
-		email = verifyEmail(email);
 		try {
-			// Check email status is Verified Y
-			if (email != null) {
+			if (email != null && email.contains("@")) {
 				security = securityRepo.findByEmail(email, "N");
 			} else if (userCode != null) {
 				security = securityRepo.findByUserCodeDeletedN(userCode, "N");
-			} else {
-				logger.error("emal or userCode not found: {}");
-				response = "OTP send failed";
+			}else {
+				logger.error("Invalid email/userCode: {}");
+				response = "Invalid email/userCode";
+				return response;
 			}
-			// security = securityRepo.findByEmail(email, "N");
 			if (security != null) {
 				if (security.getEmail().equalsIgnoreCase(email) && "Y".equals(security.getIsEmailVerified())
 						&& "Y".equals(security.getIsUserCodeVerified())) {
@@ -241,14 +239,7 @@ public class EmailService {
 		return response;
 	}
 
-	private String verifyEmail(String email) {
-		if (email.contains("@gmail.com")) {
-			return email;
-		} else if (!email.contains("@gmail.com") && !email.contains("outlook.com")) {
-			email = email.concat("@gmail.com");
-		}
-		return email;
-	}
+	
 
 	private String generateOtp() {
 		Random random = new Random();
@@ -306,9 +297,12 @@ public class EmailService {
 	public String sendDetailEmail(String email, String id, WorkItemDTO workItem, String userCode) {
 		String otp = generateOtp();
 		otpStore.put(email, otp);
-
-		email = verifyEmail(email);
-
+		String messgae="";
+		if (!email.contains("@")) {
+			logger.warn("Invalid email address", email);
+			messgae = "Invalid email address, please enter correct email address";
+			return messgae;
+		} 
 		try {
 			jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");

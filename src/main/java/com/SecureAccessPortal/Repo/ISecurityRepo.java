@@ -13,7 +13,7 @@ import com.SecureAccessPortal.Entity.Security;
 @Repository
 public interface ISecurityRepo  extends JpaRepository<Security, Long>{
 
-	@Query(value="Select * from security s where s.email=?1 and s.deletedFlag=?2",nativeQuery = true)
+	@Query("SELECT s FROM Security s WHERE s.email = :email AND s.deletedFlag = :deletedFlag")
 	  Security findByEmail(String email, String deletedFlag);
 
 	@Query(value="Select * from security s where s.id=?1 and s.deletedFlag=?2",nativeQuery = true)

@@ -709,6 +709,7 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+
         function format(date, formatStr) {
             const optionsDate = { year: 'numeric', month: 'short', day: 'numeric' };
             const optionsTime = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
@@ -737,6 +738,19 @@
             } else {
                 return rtf.format(-Math.floor(diffInSeconds / 31536000), 'year');
             }
+        }
+
+        function updateUserInfoFromSession() {
+            console.log('Updating user info from sessionStorage');
+            const userCode = sessionStorage.getItem('userCode') || 'N/A';
+            const email = sessionStorage.getItem('email') || 'N/A';
+            const userCodeEl = document.getElementById('user-code');
+            const userEmailEl = document.getElementById('user-email');
+            const lastActivityEl = document.getElementById('last-activity');
+
+            if (userCodeEl) userCodeEl.textContent = userCode;
+            if (userEmailEl) userEmailEl.textContent = email;
+            if (lastActivityEl) lastActivityEl.textContent = 'Fetching login time...';
         }
 
         function displayActivityDetails() {
@@ -771,11 +785,9 @@
                         allActivityData = data.data || [];
                         currentUserData = {
                             userCode,
-                            email,
-                            activityTime: allActivityData.length > 0 ? allActivityData[0].activityTime : new Date().toISOString()
+                            email
                         };
-                        populateActivityDetails();
-                        fetchLoginHistory(email, userCode);
+                        populateActivityDetails();                      
                     }
                 })
                 .catch(error => {
@@ -805,20 +817,6 @@
             const start = (activityCurrentPage - 1) * ITEMS_PER_PAGE;
             const end = start + ITEMS_PER_PAGE;
             const paginatedData = allActivityData.slice(start, end);
-
-            if (currentUserData) {
-                const userCodeEl = document.getElementById('user-code');
-                const userEmailEl = document.getElementById('user-email');
-                const lastActivityEl = document.getElementById('last-activity');
-
-                if (userCodeEl) userCodeEl.textContent = currentUserData.userCode || 'N/A';
-                if (userEmailEl) userEmailEl.textContent = currentUserData.email || 'N/A';
-                if (lastActivityEl) {
-                    lastActivityEl.textContent = formatDistanceToNow(
-                        new Date(currentUserData.activityTime.replace(' ', 'T'))
-                    );
-                }
-            }
 
             paginatedData.forEach(activity => {
                 const timeSpent = parseInt(activity.timeSpentSeconds) || 0;
@@ -934,8 +932,17 @@
                         displayErrorMessage(data.errorMessage, 'login');
                     } else if (!data.data || data.data.length === 0) {
                         displayNoDataMessage(userCode, 'login');
+                        document.getElementById('last-activity').textContent = 'No login activity';
                     } else {
-                        allLoginHistoryData = data.data;
+                        allLoginHistoryData = data.data.sort((a, b) => 
+                            new Date(b.loginTime) - new Date(a.loginTime)
+                        );
+                        const lastActivityEl = document.getElementById('last-activity');
+                        if (allLoginHistoryData.length > 0 && lastActivityEl) {
+                            lastActivityEl.textContent = formatDistanceToNow(
+                                new Date(allLoginHistoryData[0].loginTime.replace(' ', 'T'))
+                            );
+                        }
                         loginHistoryCurrentPage = 1;
                         populateLoginHistory();
                     }
@@ -943,6 +950,7 @@
                 .catch(error => {
                     console.error('Failed to fetch login history:', error);
                     displayErrorMessage(`Failed to load login history: ${error.message}`, 'login');
+                    document.getElementById('last-activity').textContent = 'Failed to load';
                 })
                 .finally(() => {
                     hideLoader();
@@ -1077,7 +1085,7 @@
             } else if (section === 'activity' && userCode) {
                 document.getElementById('user-code').textContent = userCode;
                 document.getElementById('user-email').textContent = 'N/A (no activity data)';
-                document.getElementById('last-activity').textContent = 'N/A';
+                document.getElementById('last-activity').textContent = 'No activity yet';
             }
             if (targetTab) {
                 targetTab.innerHTML = `
@@ -1095,8 +1103,8 @@
                 document.getElementById('popupUserCode').textContent = currentUserData.userCode || 'N/A';
                 document.getElementById('popupUserEmail').textContent = currentUserData.email || 'N/A';
             } else {
-                document.getElementById('popupUserCode').textContent = sessionStorage.getItem('userCode') || 'Loading...';
-                document.getElementById('popupUserEmail').textContent = sessionStorage.getItem('email') || 'Loading...';
+                document.getElementById('popupUserCode').textContent = sessionStorage.getItem('userCode') || 'N/A';
+                document.getElementById('popupUserEmail').textContent = sessionStorage.getItem('email') || 'N/A';
             }
         }
 
@@ -1157,6 +1165,8 @@
             let email = sessionStorage.getItem('email');
             console.log('Session storage values:', { userCode, email });
 
+            updateUserInfoFromSession();
+
             if (!userCode) {
                 console.log('No userCode in sessionStorage, checking URL params');
                 const urlParams = new URLSearchParams(window.location.search);
@@ -1164,6 +1174,7 @@
                 if (userCode) {
                     console.log(`Found userCode in URL: ${userCode}, setting in sessionStorage`);
                     sessionStorage.setItem('userCode', userCode);
+                    updateUserInfoFromSession();
                 }
             }
 
@@ -1176,6 +1187,7 @@
 
             console.log(`Proceeding with userCode: ${userCode}, email: ${email || 'to be fetched'}`);
             displayActivityDetails();
+            fetchLoginHistory(email, userCode);
         });
     </script>
 </body>
