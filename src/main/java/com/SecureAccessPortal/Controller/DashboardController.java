@@ -70,4 +70,8 @@ public class DashboardController {
     public String verification(String userCode) {
         return "verification"; 
     }
+    @GetMapping("/bankAccount")
+    public String bakAccount(String userCode) {
+        return "bankAccount"; 
+    }
 }

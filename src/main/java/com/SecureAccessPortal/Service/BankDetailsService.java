@@ -160,7 +160,7 @@ public class BankDetailsService {
 			String workType = CommonConstant.BANK_ACC_CREATED;
 			String workItemName = CommonConstant.BANK_ACC_WORKITEM;
 			String comment = "Bank Account is created " + save.getAccountNo()+" and customer Number is" +bankAccount.getCustomerNumber() ;
-			workItemService.mapRequetforWorkItem(userCode, policy, customer, workType, workItemName, comment,save,null);
+			workItemService.mapRequetforWorkItem(userCode, policy, customer, workType, workItemName, comment,save,null,null);
 
 			message = "Bank details saved for customer " + save.getCustomer().getName() + " "
 					+ save.getCustomer().getSurname() + " " + save.getPolicy().getCustomer().getCustomerNo();
@@ -260,7 +260,7 @@ public class BankDetailsService {
 		String comment = "Verification Record  is created " + verificationRecordNew.getId() + " and customer Number is"
 				+ bankAccount.getCustomer().getCustomerNo();
 		workItemService.mapRequetforWorkItem(userCode, bankAccount.getPolicy(), bankAccount.getCustomer(), workType,
-				workItemName, comment,verificationRecordNew.getBankAccount(),verificationRecordNew );
+				workItemName, comment,verificationRecordNew.getBankAccount(),verificationRecordNew ,null);
 
 		return mapToDTO(verificationRecordNew, action);
 	}
@@ -400,7 +400,7 @@ public class BankDetailsService {
 			 message = "Verification Record is created " + verificationRecord.getId() + " and customer Number is"
 					+ verificationRecord.getCustomer().getCustomerNo()+ "action is"+ verificationRecordDTO.getAction() +"Status is"+verificationRecordDTO.getStatus();
 			workItemService.mapRequetforWorkItem(userCode, verificationRecord.getPolicy(), verificationRecord.getCustomer(), workType,
-					workItemName, message,verificationRecord.getBankAccount(),verificationRecord);
+					workItemName, message,verificationRecord.getBankAccount(),verificationRecord,null);
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}

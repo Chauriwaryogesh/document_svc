@@ -19,7 +19,7 @@ public class PolicyRequest {
 	private String smokerStatus;
 	private String policyAmount;
 	private String policyDate;
-	private String installmentCount;
+	private int installmentCount;
 	private String dueDate;
 	//new fields added
 	private String term;
@@ -182,11 +182,11 @@ public class PolicyRequest {
 		this.policyDate = policyDate;
 	}
 
-	public String getInstallmentCount() {
+	public int getInstallmentCount() {
 		return installmentCount;
 	}
 
-	public void setInstallmentCount(String installmentCount) {
+	public void setInstallmentCount(int installmentCount) {
 		this.installmentCount = installmentCount;
 	}
 

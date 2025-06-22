@@ -19,6 +19,7 @@ import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.OtpStore;
+import com.SecureAccessPortal.Entity.Payments;
 import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.VerificationRecord;
 import com.SecureAccessPortal.Entity.Workitem;
@@ -180,7 +181,7 @@ public class WorkItemService implements IWorkItemService {
 
 	@Override
 	public Workitem mapRequetforWorkItem(String userCode, Policy policy, Customer customer, String workType,
-			String workItemName, String comment, BankAccount bankAccount,VerificationRecord verificationRecord) {
+			String workItemName, String comment, BankAccount bankAccount,VerificationRecord verificationRecord,Payments payments) {
 		com.SecureAccessPortal.Entity.Workitem workItem = new com.SecureAccessPortal.Entity.Workitem();
 		workItem.setWorkItemId(String.valueOf(UUID.randomUUID()));
 		workItem.setComment(comment);
@@ -205,6 +206,9 @@ public class WorkItemService implements IWorkItemService {
 		}
 		if(verificationRecord != null) {
 			workItem.setVerificationRecord(verificationRecord);
+		}
+		if(payments != null) {
+			workItem.setPayment(payments);
 		}
 		Workitem repoData = workItemRepo.save(workItem);
 		if (repoData == null) {

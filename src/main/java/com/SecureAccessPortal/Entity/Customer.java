@@ -46,7 +46,7 @@ public class Customer {
     private String age; 
     
     @Column
-    private String dateOfBirth; // Changed to LocalDate for better date handling
+    private String dateOfBirth;
 
     @Column
     private String gender;
@@ -119,6 +119,9 @@ public class Customer {
 
     @Column
     private LocalDate documentExpiryDate;
+    
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Payments> payment = new ArrayList<>(); 
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Policy> policies = new ArrayList<>();
@@ -132,8 +135,16 @@ public class Customer {
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Workitem> workitems = new ArrayList<>();
 
-    
-    public String getDeletedFlag() {
+     
+    public List<Payments> getPayment() {
+		return payment;
+	}
+
+	public void setPayment(List<Payments> payment) {
+		this.payment = payment;
+	}
+
+	public String getDeletedFlag() {
 		return deletedFlag;
 	}
 

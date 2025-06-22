@@ -1,6 +1,7 @@
 package com.SecureAccessPortal.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Component;
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
+import com.SecureAccessPortal.Entity.PaymentSequence;
+import com.SecureAccessPortal.Entity.Payments;
 import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.Policy_Info;
 import com.SecureAccessPortal.Entity.Workitem;
@@ -32,6 +35,8 @@ import com.SecureAccessPortal.Modal.ResponseDTO;
 import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.IPolicyRepo;
+import com.SecureAccessPortal.Repo.PaymentSequenceRepo;
+import com.SecureAccessPortal.Repo.PaymentsRepo;
 import com.SecureAccessPortal.Repo.PolicyInfoRepo;
 import com.SecureAccessPortal.Repo.WorkItemRepo;
 import com.SecureAccessPortal.util.DateUtil;
@@ -50,7 +55,7 @@ public class PolicyService {
 	private IWorkItemService workItemService;
 
 	@Autowired
-	private CustomerRepo customerRepo;
+	private CustomerRepo customerRepository;
 
 	@Autowired
 	private BankAccountRepo bankAccountRepository;
@@ -60,69 +65,184 @@ public class PolicyService {
 
 	@Autowired
 	private PolicyInfoRepo policyInfoRepo;
+	
+	@Autowired
+	private PaymentsRepo paymentsRepository;
+	
+	@Autowired
+	private PaymentSequenceRepo paymentSequenceRepository;
 
 	@Autowired
 	private DateUtil dateUtil;
 
-	public ResponseDTO createPolicy(PolicyRequest policyDTO, String userCode) {
-		ResponseDTO response = new ResponseDTO();
-		Customer customer = null;
-		try {
-			Policy policy = new Policy();
-			policy.setCreatedBy(userCode);
-			policy.setCreatedDate(LocalDateTime.now());
-			if (policyDTO.getCustomerNo() != null) {
-				customer = customerRepo.findByCustomerNoNew(policyDTO.getCustomerNo());
-				policy.setCustomer(customer);
-			}
-			policy.setDeletedFlag("N");
-			policy.setPolCompanyName(policyDTO.getPolCompanyName());
-			policy.setPolicyName(policyDTO.getPolicyName());
-			policy.setProductCode(policyDTO.getProductCode());
-			policy.setUpdatedBy(userCode);
-			policy.setUserCode(userCode);
-			policy.setFcuFlag(policyDTO.getFcuFlag());
-			String newPolicyNumber = generatePolicyNumber();
-			policy.setPolicyNumber(newPolicyNumber);
+	 @Transactional
+	    public ResponseDTO createPolicy(PolicyRequest policyDTO, String userCode) {
+	        ResponseDTO response = new ResponseDTO();
+	        Customer customer = null;
 
-			policy.setBeneficiaryContactNumber(policyDTO.getNomineeContactNumber());
-			policy.setBeneficiaryIdentityNumber(policyDTO.getBeneficiaryAadharNumber());
-			policy.setBeneficiaryName(policyDTO.getBeneficiaryName());
-			policy.setBeneficiaryRelationship(policyDTO.getBeneficiaryRelationship());
-			policy.setComplianceFlag(CommonConstant.NO);
-			policy.setCoverageAmount(BigDecimal.valueOf(policyDTO.getTotalAmount()));
-			policy.setMonthlyInstallment(policyDTO.getMonthlyInstallment());
-			policy.setPaymentFrequency(policyDTO.getTerm());
+	        try {
+	            // Validate inputs
+	            if (policyDTO.getInstallmentCount() <= 0 || policyDTO.getMonthlyInstallment() <= 0) {
+	                throw new IllegalArgumentException("Invalid installment count or amount");
+	            }
+//	            if (policyDTO.getTotalAmount() != policyDTO.getMonthlyInstallment() * policyDTO.getInstallmentCount()) {
+//	                throw new IllegalArgumentException("Total amount does not match installments");
+//	            }
 
-			policy.setPolicyEndDate(dateUtil.stringToLocalDateConvert(policyDTO.getEndDate()));
-			policy.setPolicyfrequency(policyDTO.getTerm());
-			policy.setPolicyPremium(BigDecimal.valueOf(policyDTO.getPremium()));
-			policy.setPolicyStartDate(dateUtil.stringToLocalDateConvert(policyDTO.getStartDate()));
-			policy.setPolicyStatus(policyDTO.getStatus());
-			policy.setPolicyTerm(policyDTO.getFrequency());
-			policy.setPolicyType(policyDTO.getType());
-			policy.setPremiumDueDate(dateUtil.stringToLocalDateConvert(policyDTO.getDueDate()));
-			policy.setRenewalDate(dateUtil.stringToLocalDateConvert(policyDTO.getRenewalDate()));
-			policy.setSmokerStatus(policyDTO.getSmokerStatus());
-			policy.setTotalAmount(policyDTO.getTotalAmount());
-			policy.setTotalClaimableAmount(policyDTO.getTotalClaimableAmount());
+	            // Create Policy entity
+	            Policy policy = new Policy();
+	            policy.setCreatedBy(userCode);
+	            policy.setCreatedDate(LocalDateTime.now());
+	            if (policyDTO.getCustomerNo() != null) {
+	                customer = customerRepository.findByCustomerNoNew(policyDTO.getCustomerNo());
+	                if (customer == null) {
+	                    throw new IllegalArgumentException("Customer not found");
+	                }
+	                policy.setCustomer(customer);
+	            }
+	            policy.setDeletedFlag("N");
+	            policy.setPolCompanyName(policyDTO.getPolCompanyName());
+	            policy.setPolicyName(policyDTO.getPolicyName());
+	            policy.setProductCode(policyDTO.getProductCode());
+	            policy.setUpdatedBy(userCode);
+	            policy.setUserCode(userCode);
+	            policy.setFcuFlag(policyDTO.getFcuFlag());
+	            String newPolicyNumber = generatePolicyNumber();
+	            policy.setPolicyNumber(newPolicyNumber);
+	            policy.setBeneficiaryContactNumber(policyDTO.getNomineeContactNumber());
+	            policy.setBeneficiaryIdentityNumber(policyDTO.getBeneficiaryAadharNumber());
+	            policy.setBeneficiaryName(policyDTO.getBeneficiaryName());
+	            policy.setBeneficiaryRelationship(policyDTO.getBeneficiaryRelationship());
+	            policy.setComplianceFlag(CommonConstant.NO);
+	            policy.setCoverageAmount(BigDecimal.valueOf(policyDTO.getTotalClaimableAmount()));
+	            policy.setMonthlyInstallment(policyDTO.getMonthlyInstallment());
+	            policy.setPaymentFrequency(policyDTO.getTerm());
+	            policy.setPolicyEndDate(dateUtil.stringToLocalDateConvert(policyDTO.getEndDate()));
+	            policy.setPolicyfrequency(policyDTO.getTerm());
+	            policy.setPolicyPremium(BigDecimal.valueOf(policyDTO.getPremium()));
+	            policy.setPolicyStartDate(dateUtil.stringToLocalDateConvert(policyDTO.getStartDate()));
+	            policy.setPolicyStatus(policyDTO.getStatus());
+	            policy.setPolicyTerm(policyDTO.getFrequency());
+	            policy.setPolicyType(policyDTO.getType());
+	            policy.setPremiumDueDate(dateUtil.stringToLocalDateConvert(policyDTO.getDueDate()));
+	            policy.setRenewalDate(dateUtil.stringToLocalDateConvert(policyDTO.getRenewalDate()));
+	            policy.setSmokerStatus(policyDTO.getSmokerStatus());
+	            policy.setTotalAmount(policyDTO.getTotalAmount());
+	            policy.setTotalClaimableAmount(policyDTO.getTotalClaimableAmount());
 
-			policyRepository.save(policy);
-			// call workitem Service to generate WIrefNo.
-			String workType = CommonConstant.ADD_POL;
-			String workItemName = CommonConstant.POLICY_CREATED;
-			String comment = "Policy is created " + policy.getPolicyNumber() + "for the customer";
-			workItemService.mapRequetforWorkItem(userCode, policy, customer, workType, workItemName, comment, null,
-					null);
+	            // Save policy
+	            policy = policyRepository.save(policy);
 
-			response.setPolicyNo(newPolicyNumber);
-			response.setStatus(CommonConstant.SUCCESS);
-		} catch (Exception e) {
-			e.printStackTrace();
-			response.setStatus(CommonConstant.FAILURE);
-		}
-		return response;
-	}
+	            // Create payment entries
+	            createPaymentEntries(
+	                policy,
+	                customer != null ? customer.getCustomerNo() : policyDTO.getCustomerNo(),
+	                policyDTO.getProductCode(),
+	                policyDTO.getPolicyName(),
+	                BigDecimal.valueOf(policyDTO.getMonthlyInstallment()),
+	                policyDTO.getInstallmentCount(),
+	                dateUtil.stringToLocalDateConvert(policyDTO.getStartDate()),
+	                policyDTO.getTerm(),
+	                userCode,
+	                customer
+	            );
+
+	            // Create work item
+	            String workType = CommonConstant.ADD_POL;
+	            String workItemName = CommonConstant.POLICY_CREATED;
+	            String comment = "Policy is created " + policy.getPolicyNumber() + " for the customer";
+	            Workitem mapRequetforWorkItem = workItemService.mapRequetforWorkItem(
+	                userCode, policy, customer, workType, workItemName, comment, null, null,null
+	            );
+
+	            response.setPolicyNo(newPolicyNumber);
+	            response.setStatus(CommonConstant.SUCCESS);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            response.setStatus(CommonConstant.FAILURE);
+	          //  response.(e.getMessage());
+	        }
+	        return response;
+	    }
+	 
+	 private void createPaymentEntries(
+		        Policy policy,
+		        String customerNo,
+		        String productCode,
+		        String policyName,
+		        BigDecimal installmentAmount,
+		        int installmentCount,
+		        LocalDate policyStartDate,
+		        String term,
+		        String userCode,
+		        Customer customer
+		    ) {
+		        List<Payments> paymentsList = new ArrayList<>();
+		        LocalDate baseDueDate = policyStartDate.withDayOfMonth(1).plusMonths(1); // Start from 1st of next month
+
+		        for (int i = 0; i < installmentCount; i++) {
+		            Payments payment = new Payments();
+		            payment.setPaymentId(generatePaymentId());
+		            payment.setPolicy(policy);
+		            payment.setInstallmentCount(installmentCount);
+		            payment.setCustomer(customer);
+		            payment.setProductCode(productCode);
+		            payment.setPolicyName(policyName);
+		            payment.setInstallmentAmount(installmentAmount);
+		            payment.setDueDate(calculateDueDate(baseDueDate, term, i));
+		            payment.setStatus("Unpaid");
+		            payment.setTransactionId(null);
+		            payment.setEmailStatus("NotSent");
+		            payment.setCreatedBy(userCode);
+		            payment.setUpdatedBy(userCode);
+		            payment.setCreatedTime(LocalDateTime.now());
+		            payment.setUpdatedTime(LocalDateTime.now());
+		            paymentsList.add(payment);
+		        }
+
+		        List<Payments> paymentList = paymentsRepository.saveAll(paymentsList);
+		     // Create work item
+	            String workType = CommonConstant.PAYMENT_CREATED;
+	            String workItemName = CommonConstant.INSTALLEMT_CREATED;
+	            String comment = "Policy Amount "+installmentAmount +"and installemt are "+ installmentCount +"created for customer "+customerNo + customer.getName() +"and Policy No is"+policy.getPolicyNumber();
+	            workItemService.mapRequetforWorkItem(
+	                userCode, policy, customer, workType, workItemName, comment, null, null,paymentList.get(0)
+	            );
+		    }
+
+		    private LocalDate calculateDueDate(LocalDate baseDueDate, String term, int index) {
+		        switch (term.toLowerCase()) {
+		            case "monthly":
+		                return baseDueDate.plusMonths(index);
+		            case "quarterly":
+		                return baseDueDate.plusMonths(index * 3);
+		            case "yearly":
+		                return baseDueDate.plusYears(index);
+		            case "daily":
+		                return baseDueDate.plusDays(index);
+		            default:
+		                return baseDueDate.plusMonths(index);
+		        }
+		    }
+		    
+		    @Transactional
+		    private synchronized String generatePaymentId() {
+		        LocalDateTime now = LocalDateTime.now();
+		        String yearMonth = now.format(DateTimeFormatter.ofPattern("yyyyMM"));
+		        PaymentSequence sequence = paymentSequenceRepository.findByYearMonth(yearMonth)
+		            .orElseGet(() -> {
+		                PaymentSequence newSequence = new PaymentSequence();
+		                newSequence.setYearMonth(yearMonth);
+		                newSequence.setSequenceNumber(0L);
+		                return newSequence;
+		            });
+
+		        Long nextSequence = sequence.getSequenceNumber() + 1;
+		        sequence.setSequenceNumber(nextSequence);
+		        paymentSequenceRepository.save(sequence);
+
+		        return String.format("%s%03d", yearMonth, nextSequence);
+		    }
 
 	@Transactional
 	public synchronized String generatePolicyNumber() {
@@ -170,7 +290,7 @@ public class PolicyService {
 				resp.setData(response);
 			}
 		} else if (customerNo != null && !customerNo.isEmpty()) {
-			Optional<Customer> customerDtls = customerRepo.findByCustomerNo(customerNo);
+			Optional<Customer> customerDtls = customerRepository.findByCustomerNo(customerNo);
 			if (!customerDtls.isPresent()) {
 				resp.setErrorMessage("No customer found for customer number: " + customerNo);
 			} else {
@@ -233,7 +353,7 @@ public class PolicyService {
 				.entrySet().stream().map(entry -> {
 					String customerNo = entry.getKey();
 					List<Policy> customerPolicies = entry.getValue();
-					Optional<Customer> customerDtls = customerRepo.findByCustomerNo(customerNo);
+					Optional<Customer> customerDtls = customerRepository.findByCustomerNo(customerNo);
 					if (customerDtls.isEmpty()) {
 						return null;
 					}

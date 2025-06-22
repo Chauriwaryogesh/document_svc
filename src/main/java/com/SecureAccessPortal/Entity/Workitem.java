@@ -32,6 +32,10 @@ public class Workitem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_number", referencedColumnName = "accountNo")
     private BankAccount bankAccount;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "paymentId", referencedColumnName = "payment_id")
+    private Payments payment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "verificationRecordVerId", referencedColumnName = "verId")
@@ -72,7 +76,15 @@ public class Workitem {
     @Column
     private String queue;
     
-    public OtpStore getOtpStore() {
+    public Payments getPayment() {
+		return payment;
+	}
+
+	public void setPayment(Payments payment) {
+		this.payment = payment;
+	}
+
+	public OtpStore getOtpStore() {
 		return otpStore;
 	}
 

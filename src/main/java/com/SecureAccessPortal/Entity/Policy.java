@@ -22,87 +22,90 @@ import jakarta.persistence.Table;
 @Table(name = "Policy")
 public class Policy {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Long id;
 
-    @Column(name = "policyNumber", unique = true, length = 12)
-    private String policyNumber;
+	@Column(name = "policyNumber", unique = true, length = 12)
+	private String policyNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
-    private Customer customer;
+	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Payments> payments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<BankAccount> bankAccounts = new ArrayList<>();
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
+	private Customer customer;
 
-    @OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<VerificationRecord> verificationRecords = new ArrayList<>();
+	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<BankAccount> bankAccounts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Workitem> workitems = new ArrayList<>();
+	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<VerificationRecord> verificationRecords = new ArrayList<>();
 
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
+	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Workitem> workitems = new ArrayList<>();
 
-    @Column(name = "product_code")
-    private String productCode;
+	@Column(name = "created_date")
+	private LocalDateTime createdDate;
 
-    @Column(name = "policy_company_name")
-    private String polCompanyName;
+	@Column(name = "product_code")
+	private String productCode;
 
-    @Column(name = "created_by")
-    private String createdBy;
+	@Column(name = "policy_company_name")
+	private String polCompanyName;
 
-    @Column(name = "updated_by")
-    private String updatedBy;
+	@Column(name = "created_by")
+	private String createdBy;
 
-    @Column(name = "userCode")
-    private String userCode;
+	@Column(name = "updated_by")
+	private String updatedBy;
 
-    @Column(name = "deleted_flag")
-    private String deletedFlag;
+	@Column(name = "userCode")
+	private String userCode;
 
-    @Column(name = "policy_name")
-    private String policyName;
+	@Column(name = "deleted_flag")
+	private String deletedFlag;
 
-    @Column(name = "fcu_details")
-    private String fcuFlag;
+	@Column(name = "policy_name")
+	private String policyName;
 
-    @Column(name = "policy_type")
-    private String policyType;
+	@Column(name = "fcu_details")
+	private String fcuFlag;
 
-    @Column(name = "policy_premium")
-    private BigDecimal policyPremium;
+	@Column(name = "policy_type")
+	private String policyType;
 
-    @Column(name = "policy_status")
-    private String policyStatus;
+	@Column(name = "policy_premium")
+	private BigDecimal policyPremium;
 
-    @Column(name = "premium_due_date")
-    private LocalDate premiumDueDate;
+	@Column(name = "policy_status")
+	private String policyStatus;
 
-    @Column(name = "coverage_amount")
-    private BigDecimal coverageAmount;
+	@Column(name = "premium_due_date")
+	private LocalDate premiumDueDate;
 
-    @Column(name = "renewal_date")
-    private LocalDate renewalDate;
+	@Column(name = "coverage_amount")
+	private BigDecimal coverageAmount;
 
-    @Column(name = "beneficiary_name")
-    private String beneficiaryName;
+	@Column(name = "renewal_date")
+	private LocalDate renewalDate;
 
-    @Column(name = "beneficiary_relationship")
-    private String beneficiaryRelationship;
+	@Column(name = "beneficiary_name")
+	private String beneficiaryName;
 
-    @Column(name = "policy_term")
-    private String policyTerm;
+	@Column(name = "beneficiary_relationship")
+	private String beneficiaryRelationship;
 
-    @Column(name = "compliance_flag")
-    private String complianceFlag;
+	@Column(name = "policy_term")
+	private String policyTerm;
+
+	@Column(name = "compliance_flag")
+	private String complianceFlag;
 
 	@Column(name = "payment_frequency")
 	private String paymentFrequency;
-	
+
 	@Column(name = "smoker_status")
 	private String smokerStatus;
 	@Column(name = "policy_frequency")
@@ -121,7 +124,16 @@ public class Policy {
 	private String beneficiaryIdentityNumber;
 	@Column(name = "beneficiary_contactNumber")
 	private String beneficiaryContactNumber;
-    public String getSmokerStatus() {
+
+	public List<Payments> getPayments() {
+		return payments;
+	}
+
+	public void setPayments(List<Payments> payments) {
+		this.payments = payments;
+	}
+
+	public String getSmokerStatus() {
 		return smokerStatus;
 	}
 
@@ -194,227 +206,227 @@ public class Policy {
 	}
 
 	// Getters and Setters
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getPolicyNumber() {
-        return policyNumber;
-    }
+	public String getPolicyNumber() {
+		return policyNumber;
+	}
 
-    public void setPolicyNumber(String policyNumber) {
-        this.policyNumber = policyNumber;
-    }
+	public void setPolicyNumber(String policyNumber) {
+		this.policyNumber = policyNumber;
+	}
 
-    public Customer getCustomer() {
-        return customer;
-    }
+	public Customer getCustomer() {
+		return customer;
+	}
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 
-    public List<BankAccount> getBankAccounts() {
-        return bankAccounts;
-    }
+	public List<BankAccount> getBankAccounts() {
+		return bankAccounts;
+	}
 
-    public void setBankAccounts(List<BankAccount> bankAccounts) {
-        this.bankAccounts = bankAccounts;
-    }
+	public void setBankAccounts(List<BankAccount> bankAccounts) {
+		this.bankAccounts = bankAccounts;
+	}
 
-    public List<VerificationRecord> getVerificationRecords() {
-        return verificationRecords;
-    }
+	public List<VerificationRecord> getVerificationRecords() {
+		return verificationRecords;
+	}
 
-    public void setVerificationRecords(List<VerificationRecord> verificationRecords) {
-        this.verificationRecords = verificationRecords;
-    }
+	public void setVerificationRecords(List<VerificationRecord> verificationRecords) {
+		this.verificationRecords = verificationRecords;
+	}
 
-    public List<Workitem> getWorkitems() {
-        return workitems;
-    }
+	public List<Workitem> getWorkitems() {
+		return workitems;
+	}
 
-    public void setWorkitems(List<Workitem> workitems) {
-        this.workitems = workitems;
-    }
+	public void setWorkitems(List<Workitem> workitems) {
+		this.workitems = workitems;
+	}
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
+	}
 
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
+	public void setCreatedDate(LocalDateTime createdDate) {
+		this.createdDate = createdDate;
+	}
 
-    public String getProductCode() {
-        return productCode;
-    }
+	public String getProductCode() {
+		return productCode;
+	}
 
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
-    }
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
 
-    public String getPolCompanyName() {
-        return polCompanyName;
-    }
+	public String getPolCompanyName() {
+		return polCompanyName;
+	}
 
-    public void setPolCompanyName(String polCompanyName) {
-        this.polCompanyName = polCompanyName;
-    }
+	public void setPolCompanyName(String polCompanyName) {
+		this.polCompanyName = polCompanyName;
+	}
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+	public String getCreatedBy() {
+		return createdBy;
+	}
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
 
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
 
-    public String getUserCode() {
-        return userCode;
-    }
+	public String getUserCode() {
+		return userCode;
+	}
 
-    public void setUserCode(String userCode) {
-        this.userCode = userCode;
-    }
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
 
-    public String getDeletedFlag() {
-        return deletedFlag;
-    }
+	public String getDeletedFlag() {
+		return deletedFlag;
+	}
 
-    public void setDeletedFlag(String deletedFlag) {
-        this.deletedFlag = deletedFlag;
-    }
+	public void setDeletedFlag(String deletedFlag) {
+		this.deletedFlag = deletedFlag;
+	}
 
-    public String getPolicyName() {
-        return policyName;
-    }
+	public String getPolicyName() {
+		return policyName;
+	}
 
-    public void setPolicyName(String policyName) {
-        this.policyName = policyName;
-    }
+	public void setPolicyName(String policyName) {
+		this.policyName = policyName;
+	}
 
-    public String getFcuFlag() {
-        return fcuFlag;
-    }
+	public String getFcuFlag() {
+		return fcuFlag;
+	}
 
-    public void setFcuFlag(String fcuFlag) {
-        this.fcuFlag = fcuFlag;
-    }
+	public void setFcuFlag(String fcuFlag) {
+		this.fcuFlag = fcuFlag;
+	}
 
-    public String getPolicyType() {
-        return policyType;
-    }
+	public String getPolicyType() {
+		return policyType;
+	}
 
-    public void setPolicyType(String policyType) {
-        this.policyType = policyType;
-    }
+	public void setPolicyType(String policyType) {
+		this.policyType = policyType;
+	}
 
-    public BigDecimal getPolicyPremium() {
-        return policyPremium;
-    }
+	public BigDecimal getPolicyPremium() {
+		return policyPremium;
+	}
 
-    public void setPolicyPremium(BigDecimal policyPremium) {
-        this.policyPremium = policyPremium;
-    }
+	public void setPolicyPremium(BigDecimal policyPremium) {
+		this.policyPremium = policyPremium;
+	}
 
-    public String getPolicyStatus() {
-        return policyStatus;
-    }
+	public String getPolicyStatus() {
+		return policyStatus;
+	}
 
-    public void setPolicyStatus(String policyStatus) {
-        this.policyStatus = policyStatus;
-    }
+	public void setPolicyStatus(String policyStatus) {
+		this.policyStatus = policyStatus;
+	}
 
-    public LocalDate getPremiumDueDate() {
-        return premiumDueDate;
-    }
+	public LocalDate getPremiumDueDate() {
+		return premiumDueDate;
+	}
 
-    public void setPremiumDueDate(LocalDate premiumDueDate) {
-        this.premiumDueDate = premiumDueDate;
-    }
+	public void setPremiumDueDate(LocalDate premiumDueDate) {
+		this.premiumDueDate = premiumDueDate;
+	}
 
-    public BigDecimal getCoverageAmount() {
-        return coverageAmount;
-    }
+	public BigDecimal getCoverageAmount() {
+		return coverageAmount;
+	}
 
-    public void setCoverageAmount(BigDecimal coverageAmount) {
-        this.coverageAmount = coverageAmount;
-    }
+	public void setCoverageAmount(BigDecimal coverageAmount) {
+		this.coverageAmount = coverageAmount;
+	}
 
-    public LocalDate getRenewalDate() {
-        return renewalDate;
-    }
+	public LocalDate getRenewalDate() {
+		return renewalDate;
+	}
 
-    public void setRenewalDate(LocalDate renewalDate) {
-        this.renewalDate = renewalDate;
-    }
+	public void setRenewalDate(LocalDate renewalDate) {
+		this.renewalDate = renewalDate;
+	}
 
-    public String getBeneficiaryName() {
-        return beneficiaryName;
-    }
+	public String getBeneficiaryName() {
+		return beneficiaryName;
+	}
 
-    public void setBeneficiaryName(String beneficiaryName) {
-        this.beneficiaryName = beneficiaryName;
-    }
+	public void setBeneficiaryName(String beneficiaryName) {
+		this.beneficiaryName = beneficiaryName;
+	}
 
-    public String getBeneficiaryRelationship() {
-        return beneficiaryRelationship;
-    }
+	public String getBeneficiaryRelationship() {
+		return beneficiaryRelationship;
+	}
 
-    public void setBeneficiaryRelationship(String beneficiaryRelationship) {
-        this.beneficiaryRelationship = beneficiaryRelationship;
-    }
+	public void setBeneficiaryRelationship(String beneficiaryRelationship) {
+		this.beneficiaryRelationship = beneficiaryRelationship;
+	}
 
-    public String getPolicyTerm() {
-        return policyTerm;
-    }
+	public String getPolicyTerm() {
+		return policyTerm;
+	}
 
-    public void setPolicyTerm(String policyTerm) {
-        this.policyTerm = policyTerm;
-    }
+	public void setPolicyTerm(String policyTerm) {
+		this.policyTerm = policyTerm;
+	}
 
-    public String getComplianceFlag() {
-        return complianceFlag;
-    }
+	public String getComplianceFlag() {
+		return complianceFlag;
+	}
 
-    public void setComplianceFlag(String complianceFlag) {
-        this.complianceFlag = complianceFlag;
-    }
+	public void setComplianceFlag(String complianceFlag) {
+		this.complianceFlag = complianceFlag;
+	}
 
-    public String getPaymentFrequency() {
-        return paymentFrequency;
-    }
+	public String getPaymentFrequency() {
+		return paymentFrequency;
+	}
 
-    public void setPaymentFrequency(String paymentFrequency) {
-        this.paymentFrequency = paymentFrequency;
-    }
+	public void setPaymentFrequency(String paymentFrequency) {
+		this.paymentFrequency = paymentFrequency;
+	}
 
-    // Helper methods to maintain bidirectional relationships
-    public void addBankAccount(BankAccount bankAccount) {
-        bankAccounts.add(bankAccount);
-        bankAccount.setPolicy(this);
-    }
+	// Helper methods to maintain bidirectional relationships
+	public void addBankAccount(BankAccount bankAccount) {
+		bankAccounts.add(bankAccount);
+		bankAccount.setPolicy(this);
+	}
 
-    public void addVerificationRecord(VerificationRecord verificationRecord) {
-        verificationRecords.add(verificationRecord);
-        verificationRecord.setPolicy(this);
-    }
+	public void addVerificationRecord(VerificationRecord verificationRecord) {
+		verificationRecords.add(verificationRecord);
+		verificationRecord.setPolicy(this);
+	}
 
-    public void addWorkitem(Workitem workitem) {
-        workitems.add(workitem);
-        workitem.setPolicy(this);
-    }
+	public void addWorkitem(Workitem workitem) {
+		workitems.add(workitem);
+		workitem.setPolicy(this);
+	}
 }

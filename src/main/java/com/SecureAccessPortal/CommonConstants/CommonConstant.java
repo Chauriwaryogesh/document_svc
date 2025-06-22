@@ -24,5 +24,8 @@ public class CommonConstant {
 	public static final String OTP_VERIFIED = "OTP_VERIFIED";
 	public static final String OTP_VERIFIED_WORKITEM = "OTP Verified Successfully";
 	public static final String N = "N";
+	public static final String PAYMENT_CREATED = "PAYMENT_CREATED";
+	public static final String INSTALLEMT_CREATED = "Installemt has been created";
+	
 
 }

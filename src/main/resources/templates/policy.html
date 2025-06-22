@@ -1388,19 +1388,27 @@
 		function hideLoader() {
 		  document.getElementById('loader').classList.remove('active');
 		}
+		
 
 		function initializeuserCode() {
-		  config.userCode = sessionStorage.getItem('userCode') || 'default-user-id';
-		  config.email = sessionStorage.getItem('email') || 'default-email@example.com';
-		  return true;
-		}
+		    console.log('sessionStorage userCode:', sessionStorage.getItem('userCode'));
+		    config.userCode = sessionStorage.getItem('userCode');
+		    config.email = sessionStorage.getItem('email');
+		    if (!config.userCode) {
+		        showErrorAlert('User ID not found. Please log in again.');
+		        window.location.href = '/login';
+		        return null;
+		    }
+		    return config.userCode;
+		}		
 
 		function logout() {
-		  sessionStorage.removeItem('userCode');
-		  sessionStorage.removeItem('email');
-		  config.userCode = null;
-		  config.email = null;
-		  showAlert('success', 'Logged out successfully!', config.loginUrl);
+		    sessionStorage.removeItem('userCode');
+		    sessionStorage.removeItem('email');
+		    config.userCode = null;
+		    config.email = null;
+		    showAlert('success', 'Logged out successfully!', config.loginUrl);
+		    window.location.href = config.loginUrl; // Ensure redirect
 		}
 
 		function navigateTo(page) {

@@ -33,7 +33,7 @@ public class PolicyController {
 
 	@PostMapping(value = "/policy-create", consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ResponseDTO> fetchVideofromDir(@RequestBody PolicyRequest policyDTO,
+	public ResponseEntity<ResponseDTO> createPolicy(@RequestBody PolicyRequest policyDTO,
 			@RequestHeader String userCode) {
 		ResponseEntity<ResponseDTO> response = new ResponseEntity<ResponseDTO>();
 		ResponseDTO responseDTO = new ResponseDTO();
