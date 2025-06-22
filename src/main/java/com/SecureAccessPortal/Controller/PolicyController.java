@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.SecureAccessPortal.Modal.CustomerDTO;
+import com.SecureAccessPortal.Modal.GroupedPolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyRequest;
 import com.SecureAccessPortal.Modal.ResponseDTO;
@@ -77,17 +78,17 @@ public class PolicyController {
 		return resp;
 	}
 	@GetMapping("/policy-domain")
-	public com.SecureAccessPortal.Service.ResponseEntity<List<String>> getPolicyDomain(
-			@RequestParam(value = "value", required = true) String value,
-			@RequestHeader String userCode) {
-		com.SecureAccessPortal.Service.ResponseEntity<List<String>> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<String> policyDTO = policyService.getDoaminData(value, userCode);
+	public com.SecureAccessPortal.Service.ResponseEntity<List<GroupedPolicyDTO>> getPolicyDomain(
+			@RequestParam(value = "policyNo", required = false) String policyNo,
+			@RequestHeader(value="useCode", required=false) String userCode) {
+		com.SecureAccessPortal.Service.ResponseEntity<List<GroupedPolicyDTO>> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		List<GroupedPolicyDTO> policyDTO = policyService.getDomainData(policyNo, userCode);
 		if (policyDTO != null && !policyDTO.isEmpty()) {
-			emailResp.setData(policyDTO);
+			response.setData(policyDTO);
 		} else {
-			emailResp.setErrorMessage("Error while fetching damin data ");
+			response.setErrorMessage("Error while fetching domin data ");
 		}
-		return emailResp;
+		return response;
 	}
 	
 	@PostMapping("/policy-details/update")
@@ -104,4 +105,6 @@ public class PolicyController {
 		}
 		return resp;
 	}
+	
+	
 }
