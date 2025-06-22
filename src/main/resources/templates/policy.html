@@ -994,7 +994,7 @@
     </div>
   </div>
 
-  <div id="create-policy-modal" class="modal-base hidden">
+ <div id="create-policy-modal" class="modal-base hidden">
     <div class="modal-content-fullscreen">
       <div class="modal-header">
         <h3 class="text-2xl font-bold text-gray-800 gradient-text">Create Policy</h3>
@@ -1008,20 +1008,20 @@
         <form id="create-policy-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <input type="hidden" id="policy-userCode" value="">
           <div class="input-group">
-            <select id="policy-productCode" required>
+            <select id="policy-policyName" onchange="loadProductCodes()" required>
+              <option value="">Select policy name</option>
+            </select>
+            <label for="policy-policyName" class="mandatory">Policy Name</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-productCode" onchange="loadPolicyDetails()" required>
               <option value="">Select product code</option>
             </select>
             <label for="policy-productCode" class="mandatory">Product Code</label>
           </div>
           <div class="input-group">
-            <input type="text" id="policy-polCompanyName" value="Secure Life Limited" readonly required>
+            <input type="text" id="policy-polCompanyName" readonly required>
             <label for="policy-polCompanyName" class="mandatory">Policy Company Name</label>
-          </div>
-          <div class="input-group">
-            <select id="policy-policyName" required>
-              <option value="">Select policy name</option>
-            </select>
-            <label for="policy-policyName" class="mandatory">Policy Name</label>
           </div>
           <div class="input-group">
             <input type="text" id="policy-customerNo" placeholder=" " oninput="validateCustomerNo(this.value)" required>
@@ -1064,46 +1064,37 @@
             <label for="policy-dateOfBirth">Date of Birth</label>
           </div>
           <div class="input-group">
-            <select id="policy-gender" required>
-              <option value="">Select gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Can't Say">Can't Say</option>
-            </select>
+            <input type="text" id="policy-gender" readonly>
             <label for="policy-gender" class="mandatory">Gender</label>
           </div>
           <div class="input-group">
-            <select id="policy-term" required>
+            <select id="policy-term" onchange="updateInstallments()" required>
               <option value="">Select policy term</option>
-              <option value="Monthly">Monthly</option>
-              <option value="Quarterly">Quarterly</option>
-              <option value="Daily">Daily</option>
-              <option value="Yearly">Yearly</option>
             </select>
             <label for="policy-term" class="mandatory">Policy Term</label>
           </div>
           <div class="input-group">
-            <select id="policy-frequency">
+            <select id="policy-frequency" required>
               <option value="">Select frequency</option>
               <option value="Single">Single</option>
               <option value="Recurring">Recurring</option>
             </select>
-            <label for="policy-frequency">Policy Frequency</label>
+            <label for="policy-frequency" class="mandatory">Policy Frequency</label>
           </div>
           <div class="input-group">
-            <input type="number" id="policy-premium" placeholder=" " required>
+            <input type="number" id="policy-premium" placeholder=" " readonly required>
             <label for="policy-premium" class="mandatory">Policy Premium</label>
           </div>
           <div class="input-group">
-            <input type="number" id="policy-totalAmount" placeholder=" ">
-            <label for="policy-totalAmount">Total Policy Amount</label>
+            <input type="number" id="policy-totalAmount" placeholder=" " oninput="updateInstallments()" required>
+            <label for="policy-totalAmount" class="mandatory">Total Policy Amount</label>
           </div>
           <div class="input-group">
-            <input type="number" id="policy-monthlyInstallment" placeholder=" " required>
+            <input type="number" id="policy-monthlyInstallment" placeholder=" " readonly required>
             <label for="policy-monthlyInstallment" class="mandatory">Monthly Installment</label>
           </div>
           <div class="input-group">
-            <input type="number" id="policy-totalClaimableAmount" placeholder=" " required>
+            <input type="number" id="policy-totalClaimableAmount" placeholder=" " readonly required>
             <label for="policy-totalClaimableAmount" class="mandatory">Total Claimable Amount</label>
           </div>
           <div class="input-group">
@@ -1111,24 +1102,24 @@
             <label for="policy-policyDate" class="mandatory">Policy Date</label>
           </div>
           <div class="input-group">
-            <input type="number" id="policy-installmentCount" placeholder=" ">
-            <label for="policy-installmentCount">Installment Count</label>
+            <input type="number" id="policy-installmentCount" placeholder=" " readonly required>
+            <label for="policy-installmentCount" class="mandatory">Installment Count</label>
           </div>
           <div class="input-group">
-            <input type="date" id="policy-dueDate" placeholder=" ">
-            <label for="policy-dueDate">Due Date</label>
+            <input type="date" id="policy-dueDate" placeholder=" " readonly required>
+            <label for="policy-dueDate" class="mandatory">Due Date</label>
           </div>
           <div class="input-group">
-            <input type="date" id="policy-startDate" placeholder=" " required>
+            <input type="date" id="policy-startDate" placeholder=" " oninput="updateDates()" required>
             <label for="policy-startDate" class="mandatory">Policy Start Date</label>
           </div>
           <div class="input-group">
-            <input type="date" id="policy-endDate" placeholder=" ">
-            <label for="policy-endDate">Policy End Date</label>
+            <input type="date" id="policy-endDate" placeholder=" " readonly required>
+            <label for="policy-endDate" class="mandatory">Policy End Date</label>
           </div>
           <div class="input-group">
-            <input type="date" id="policy-renewalDate" placeholder=" ">
-            <label for="policy-renewalDate">Policy Renewal Date</label>
+            <input type="date" id="policy-renewalDate" placeholder=" " readonly required>
+            <label for="policy-renewalDate" class="mandatory">Policy Renewal Date</label>
           </div>
           <div class="input-group">
             <input type="text" id="policy-beneficiaryName" placeholder=" " required>
@@ -1150,8 +1141,8 @@
             <label for="policy-beneficiaryRelationship" class="mandatory">Beneficiary Relationship</label>
           </div>
           <div class="input-group">
-            <input type="tel" id="policy-nomineeContactNumber" placeholder=" ">
-            <label for="policy-nomineeContactNumber">Nominee Contact Number</label>
+            <input type="tel" id="policy-nomineeContactNumber" placeholder=" " required>
+            <label for="policy-nomineeContactNumber" class="mandatory">Nominee Contact Number</label>
           </div>
           <div class="input-group">
             <select id="policy-status" required>
@@ -1175,12 +1166,11 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button id="reset-policy-btn" class="btn-base btn-secondary">Reset</button>
-        <button id="submit-policy-btn" onclick="createPolicy()" class="btn-base btn-primary">Submit</button>
+        <button id="reset-policy-btn" class="btn-base btn-secondary" onclick="resetForm()">Reset</button>
+        <button id="submit-policy-btn" class="btn-base btn-primary" onclick="createPolicy()">Submit</button>
       </div>
     </div>
   </div>
-
   <div id="success-modal" class="modal-base hidden">
     <div class="modal-content p-6">
       <div class="flex justify-between items-center mb-6">
@@ -1255,6 +1245,7 @@
   </div>
 
  <script>
+ const API_URL = 'http://localhost:8081/policy/policy-domain';
  const config = {
 		  loginUrl: 'login',
 		  userCode: null,
@@ -1289,81 +1280,7 @@
 		function toggleSearchAllPolicies() {
 			  const searchType = elements.searchType.value;
 			  elements.searchAllPolicies.classList.toggle('hidden', searchType !== 'policy');
-			}
-		async function fetchProductCodes() {
-		  if (!config.userCode) {
-		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
-		    return;
-		  }
-		  showLoader();
-		  try {
-		    const response = await fetch('http://localhost:8081/policy/policy-domain?value=PRODUCT', {
-		      method: 'GET',
-		      headers: { 'userCode': config.userCode }
-		    });
-		    if (response.ok) {
-		      const { data } = await response.json();
-		      const productCodeSelect = document.getElementById('policy-productCode');
-		      productCodeSelect.innerHTML = '<option value="">Select product code</option>';
-		      if (data && data.length > 0) {
-		        data.forEach(code => {
-		          const option = document.createElement('option');
-		          option.value = code;
-		          option.textContent = code;
-		          productCodeSelect.appendChild(option);
-		        });
-		      } else {
-		        showAlert('error', 'No product codes available.');
-		      }
-		    } else {
-		      const errorText = await response.text();
-		      showAlert('error', errorText || 'Failed to fetch product codes.');
-		    }
-		  } catch (error) {
-		    showAlert('error', 'An error occurred while fetching product codes.');
-		    console.error('Product code fetch error:', error);
-		  } finally {
-		    hideLoader();
-		  }
-		}
-
-		async function fetchPolicyNames() {
-		  if (!config.userCode) {
-		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
-		    return;
-		  }
-		  showLoader();
-		  try {
-		    const response = await fetch('http://localhost:8081/policy/policy-domain?value=POLICY', {
-		      method: 'GET',
-		      headers: { 'userCode': config.userCode }
-		    });
-		    if (response.ok) {
-		      const { data } = await response.json();
-		      const policyNameSelect = document.getElementById('policy-policyName');
-		      policyNameSelect.innerHTML = '<option value="">Select policy name</option>';
-		      if (data && data.length > 0) {
-		        data.forEach(name => {
-		          const option = document.createElement('option');
-		          option.value = name;
-		          option.textContent = name;
-		          policyNameSelect.appendChild(option);
-		        });
-		      } else {
-		        showAlert('error', 'No policy names available.');
-		      }
-		    } else {
-		      const errorText = await response.text();
-		      showAlert('error', errorText || 'Failed to fetch policy names.');
-		    }
-		  } catch (error) {
-		    showAlert('error', 'An error occurred while fetching policy names.');
-		    console.error('Policy name fetch error:', error);
-		  } finally {
-		    hideLoader();
-		  }
-		}
-
+			}		
 		function openModal(modalId) {
 		  if (modalId === 'profile') {
 		    document.getElementById('profile-userCode').textContent = config.userCode || 'Not available';
@@ -1379,8 +1296,8 @@
 		    initializeuserCode();
 		    document.getElementById('policy-userCode').value = config.userCode;
 		    resetPolicyForm();
-		    fetchProductCodes();
-		    fetchPolicyNames();
+		    loadPolicyNames();
+		    loadPolicyDetails();   
 		  }
 		  elements.modals[modalId]?.classList.remove('hidden');
 		}
@@ -1532,6 +1449,112 @@
 		  nextBtn.classList.toggle('hidden', tabName === 'address');
 		  submitBtn.classList.toggle('hidden', tabName !== 'address');
 		}
+		
+		function loadPolicyNames() {
+		    fetch(API_URL)
+		      .then(response => response.json())
+		      .then(data => {
+		        const policyNameSelect = document.getElementById('policy-policyName');
+		        policyNameSelect.innerHTML = '<option value="">Select policy name</option>';
+		        const uniquePolicies = [...new Set(data.data.map(item => item.policyName))];
+		        uniquePolicies.forEach(policyName => {
+		          const option = document.createElement('option');
+		          option.value = policyName;
+		          option.text = policyName;
+		          policyNameSelect.appendChild(option);
+		        });
+		      })
+		      .catch(error => console.error('Error loading policy names:', error));
+		  }
+
+		  // Load product codes based on selected policy name
+		  function loadProductCodes() {
+		    const policyName = document.getElementById('policy-policyName').value;
+		    const productCodeSelect = document.getElementById('policy-productCode');
+		    productCodeSelect.innerHTML = '<option value="">Select product code</option>';
+		    if (!policyName) return;
+
+		    fetch(API_URL)
+		      .then(response => response.json())
+		      .then(data => {
+		        const filteredPolicies = data.data.filter(group => group.policyName === policyName);
+		        filteredPolicies.forEach(group => {
+		          group.policies.forEach(policy => {
+		            const option = document.createElement('option');
+		            option.value = policy.productCode;
+		            option.text = policy.productCode;
+		            productCodeSelect.appendChild(option);
+		          });
+		        });
+		      })
+		      .catch(error => console.error('Error loading product codes:', error));
+		  }
+
+		  // Load policy details based on selected product code
+		  function loadPolicyDetails() {
+		    const productCode = document.getElementById('policy-productCode').value;
+		    if (!productCode) return;
+
+		    fetch(`${API_URL}?productCode=${encodeURIComponent(productCode)}`)
+		      .then(response => response.json())
+		      .then(data => {
+		        const policy = data.data[0]?.policies[0];
+		        if (policy) {
+		          document.getElementById('policy-polCompanyName').value = policy.policyCompanyName || '';
+		          document.getElementById('policy-type').value = policy.policyType || '';
+		          const termSelect = document.getElementById('policy-term');
+		          termSelect.innerHTML = '<option value="">Select policy term</option>' + 
+		            policy.supportedTerms.split(',').map(term => `<option value="${term}">${term}</option>`).join('');
+		          document.getElementById('policy-frequency').value = policy.frequency || '';
+		          document.getElementById('policy-totalAmount').value = policy.minTotalAmount || '';
+		          document.getElementById('policy-totalClaimableAmount').value = policy.coverageAmount || '';
+		          document.getElementById('policy-startDate').value = policy.policyStartDate || '';
+		          document.getElementById('policy-endDate').value = policy.policyEndDate || '';
+		          document.getElementById('policy-renewalDate').value = policy.policyRenewalDate || '';
+		          document.getElementById('policy-dueDate').value = policy.policyStartDate || '';
+		          updateInstallments();
+		        }
+		      })
+		      .catch(error => console.error('Error loading policy details:', error));
+		  }
+
+		  // Update installment count and amount
+		  function updateInstallments() {
+		    const term = document.getElementById('policy-term').value;
+		    const totalAmount = parseFloat(document.getElementById('policy-totalAmount').value) || 0;
+		    const durationMonths = 12; // Default duration from API
+		    if (!term || !totalAmount) return;
+
+		    let installmentCount;
+		    switch (term.toLowerCase()) {
+		      case 'monthly': installmentCount = durationMonths; break;
+		      case 'quarterly': installmentCount = Math.ceil(durationMonths / 3); break;
+		      case 'yearly': installmentCount = 1; break;
+		      case 'daily': installmentCount = Math.round(durationMonths * 30.42); break;
+		      default: installmentCount = durationMonths;
+		    }
+
+		    const installmentAmount = (totalAmount / installmentCount).toFixed(2);
+		    document.getElementById('policy-installmentCount').value = installmentCount;
+		    document.getElementById('policy-monthlyInstallment').value = installmentAmount;
+		    document.getElementById('policy-premium').value = installmentAmount;
+		  }
+
+		  // Update end and renewal dates based on start date
+		  function updateDates() {
+		    const startDate = document.getElementById('policy-startDate').value;
+		    if (!startDate) return;
+
+		    const start = new Date(startDate);
+		    const durationMonths = 12; // Default duration from API
+		    const endDate = new Date(start.setMonth(start.getMonth() + durationMonths));
+		    const renewalDate = endDate.toISOString().split('T')[0];
+		    const expiryDate = new Date(endDate.setDate(endDate.getDate() + 30)).toISOString().split('T')[0];
+
+		    document.getElementById('policy-endDate').value = renewalDate;
+		    document.getElementById('policy-renewalDate').value = renewalDate;
+		    document.getElementById('policy-dueDate').value = startDate;
+		  }
 
 		async function validateCustomerNo(customerNo) {
 		  if (!customerNo.trim()) {
@@ -1560,8 +1583,9 @@
 		        document.getElementById('policy-email').value = customer.email || '';
 		        document.getElementById('policy-smokerStatus').value = customer.smokerStatus || '';
 		        document.getElementById('policy-dateOfBirth').value = customer.dateOfBirth || '';
+		        document.getElementById('policy-gender').value = customer.gender || '';
 
-		        const fields = ['custName', 'middleName', 'surname', 'phoneNum', 'email', 'smokerStatus', 'dateOfBirth'];
+		        const fields = ['custName', 'middleName', 'surname', 'phoneNum', 'email', 'smokerStatus', 'dateOfBirth','gender'];
 		        fields.forEach(field => {
 		          const element = document.getElementById(`policy-${field}`);
 		          element.setAttribute('readonly', 'true');

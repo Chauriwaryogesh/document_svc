@@ -377,11 +377,16 @@ public class PolicyService {
 		} else {
 			policies = policyInfoRepo.findAllByOrderByProductCode();
 		}
-		Map<String, List<PolicyInfoDTO>> groupedByPolicyName = policies.stream().map(this::mapToDTO)
-				.collect(Collectors.groupingBy(PolicyInfoDTO::getPolicyName));
-		return groupedByPolicyName.entrySet().stream()
-				.map(entry -> new GroupedPolicyDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+		Map<String, Map<String, List<PolicyInfoDTO>>> groupedByPolicyNameAndProductCode = policies.stream()
+				.map(this::mapToDTO).collect(Collectors.groupingBy(PolicyInfoDTO::getPolicyName,
+						Collectors.groupingBy(PolicyInfoDTO::getProductCode)));
+		return groupedByPolicyNameAndProductCode.entrySet().stream()
+				.flatMap(nameEntry -> nameEntry.getValue().entrySet().stream()
+						.map(productEntry -> new GroupedPolicyDTO(nameEntry.getKey(), productEntry.getKey(),
+								productEntry.getValue())))
+				.collect(Collectors.toList());
 	}
+	
 
 	private PolicyInfoDTO mapToDTO(Policy_Info policy) {
 		PolicyInfoDTO dto = new PolicyInfoDTO();

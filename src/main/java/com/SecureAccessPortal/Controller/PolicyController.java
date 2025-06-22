@@ -79,10 +79,16 @@ public class PolicyController {
 	}
 	@GetMapping("/policy-domain")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<GroupedPolicyDTO>> getPolicyDomain(
-			@RequestParam(value = "policyNo", required = false) String policyNo,
+			@RequestParam(value = "policyName", required = false) String policyName,
+			@RequestParam(value = "productCode", required = false) String productCode,
+			@RequestParam(value = "policyTAmount", required = false) String policyTAmount,
+			@RequestParam(value = "policyFrequency", required = false) String policyFrequency,
+			@RequestParam(value = "policyInstallment", required = false) String policyInstallment,
+			/*@RequestParam(value = "policyNo", required = false) String policyNo
+			@RequestParam(value = "policyNo", required = false) String policyNo*/
 			@RequestHeader(value="useCode", required=false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<GroupedPolicyDTO>> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<GroupedPolicyDTO> policyDTO = policyService.getDomainData(policyNo, userCode);
+		List<GroupedPolicyDTO> policyDTO = policyService.getDomainData(productCode, userCode);
 		if (policyDTO != null && !policyDTO.isEmpty()) {
 			response.setData(policyDTO);
 		} else {

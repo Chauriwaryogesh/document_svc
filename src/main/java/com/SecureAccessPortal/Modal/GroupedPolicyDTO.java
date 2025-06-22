@@ -10,16 +10,27 @@ import lombok.Data;
 public class GroupedPolicyDTO {
 
 	private String policyName;
+	private String productCode;
 	private List<PolicyInfoDTO> policies;
 	
 	 // Default constructor
     public GroupedPolicyDTO() {}
 
     // Constructor
-    public GroupedPolicyDTO(String policyName, List<PolicyInfoDTO> policies) {
+    public GroupedPolicyDTO(String policyName,String productCode, List<PolicyInfoDTO> policies) {
         this.policyName = policyName;
+        this. productCode= productCode;
         this.policies = policies;
     }
+    
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
 
 	public String getPolicyName() {
 		return policyName;
