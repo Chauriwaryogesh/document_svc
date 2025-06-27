@@ -3,752 +3,232 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Hub - Futuristic</title>
+  <title>Service Dashboard - Dashboard Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #e0e7ff 0%, #f9fafb 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      overflow-x: hidden;
-    }
-    #particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-    }
-    .text-hidden {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    .text-visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    .button-hidden {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    .button-visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    .btn-neutral {
-      transition: all 0.3s ease;
-      position: relative;
+    body, html {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f2f5;
+      height: 100vh;
       overflow: hidden;
     }
-    .btn-neutral::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(to right, transparent, currentColor, transparent);
-      transform: scaleX(0);
-      transform-origin: center;
-      transition: transform 0.3s ease;
-    }
-    .btn-neutral:hover::after {
-      transform: scaleX(1);
-    }
-    .btn-neutral:focus-visible {
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
-    }
-    .btn-bottom-group button:focus-visible {
-      outline: 2px solid #60a5fa;
-      outline-offset: 2px;
-    }
-    .modal {
-      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-    }
-    .modal.hidden {
-      opacity: 0;
-      transform: scale(0.95);
-      pointer-events: none;
-    }
-    .modal-content {
-      transition: transform 0.4s ease-out;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-      border-radius: 12px;
-      background: white;
-    }
-    .modal.hidden .modal-content {
-      transform: translateY(-20px);
-    }
-    .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
-    }
-    .gradient-text {
-      background: linear-gradient(to right, #3b82f6, #8b5cf6);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      position: relative;
-    }
-    .gradient-text::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(to right, #3b82f6, #8b5cf6);
-      animation: pulse 2s infinite;
-    }
-    .loader {
-      position: fixed;
-      inset: 0;
-      background: rgba(17, 24, 39, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      display: none;
-    }
-    .loader.active {
-      display: flex;
-    }
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 4px solid #e5e7eb;
-      border-top: 4px solid #3b82f6;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    .nav-popup {
-      position: fixed;
-      inset: 0;
-      background: rgba(17, 24, 39, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 60;
-      display: none;
-    }
-    .nav-popup.active {
-      display: flex;
-    }
-    .nav-popup-content {
-      background: white;
-      border-radius: 12px;
-      padding: 16px 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .glow:hover {
-      box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
-    }
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 64;
-      background: rgba(17, 24, 39, 0.95);
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-      z-index: 70;
-    }
-    .sidebar.active {
-      transform: translateX(0);
-    }
-    .sidebar-button {
-      width: 100%;
-      text-align: left;
-      padding: 8px 16px;
-      color: white;
-      transition: background 0.3s ease;
-    }
-    .sidebar-button:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #aeb9e1; border-radius: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #8895c4; } 
+    .main-content-scrollbar::-webkit-scrollbar-track { background: #e5e7eb; }
+    .main-content-scrollbar::-webkit-scrollbar-thumb { background: #9ca3af; }
+    .main-content-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+    /* === Sidebar === */
+    .sidebar { width: 260px; background: linear-gradient(180deg, #1a233a 0%, #101828 100%); transition: transform 0.3s ease-in-out; z-index: 100; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+    .sidebar-button { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: #aeb9e1; font-weight: 500; transition: all 0.2s ease; border-left: 3px solid transparent; }
+    .sidebar-button:hover { background-color: rgba(255, 255, 255, 0.05); color: #ffffff; border-left-color: #3b82f6; }
+    .sidebar-button.logout { color: #ef4444; }
+    .sidebar-button.logout:hover { background-color: rgba(239, 68, 68, 0.1); border-left-color: #ef4444; }
+
+    /* === Animations & Styling === */
+    .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.5s ease-out forwards; }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    .service-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .service-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+    .grid-container .fade-in-up { animation-delay: calc(0.05s * var(--i)); }
+
+    /* === Loader === */
+    .loader { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .loader.active { opacity: 1; pointer-events: all; }
+    .colorful-spinner { width: 60px; height: 60px; position: relative; animation: rotator 1.4s linear infinite; }
+    @keyframes rotator { 0% { transform: rotate(0deg); } 100% { transform: rotate(270deg); } }
+    .path { stroke-dasharray: 187; stroke-dashoffset: 0; transform-origin: center; animation: dash 1.4s ease-in-out infinite; }
+    @keyframes dash { 0% { stroke-dashoffset: 187; } 50% { stroke-dashoffset: 46.75; transform: rotate(135deg); } 100% { stroke-dashoffset: 187; transform: rotate(450deg); } }
+
+    /* === Modal === */
+    .modal { transition: opacity 0.2s ease, transform 0.2s ease; }
+    .modal.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
+
+    /* === Mobile Sidebar === */
+    @media (max-width: 1024px) {
+      .sidebar { position: fixed; transform: translateX(-100%); }
+      .sidebar.active { transform: translateX(0); }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center selection:bg-blue-500 selection:text-white relative">
-  <canvas id="particles"></canvas>
+<body class="bg-gray-100">
 
-  <button id="sidebar-toggle" class="fixed top-4 left-4 btn-neutral text-white bg-gray-900 rounded-full p-2 z-70 hover:bg-gray-800 focus:outline-none transition-all glow">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+  <div class="flex h-screen">
+    <div id="sidebar" class="sidebar text-white flex-shrink-0 flex flex-col lg:relative">
+      <div class="px-6 py-4 flex items-center gap-4 border-b border-gray-700">
+        <div class="bg-blue-600 p-2 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h1a2 2 0 002-2v-1a2 2 0 012-2h1.945M9 11V9a2 2 0 012-2h2a2 2 0 012 2v2m-6 9h6"/></svg></div>
+        <h2 class="text-2xl font-bold">Dashboard Hub</h2>
+      </div>
+
+      <nav class="flex-1 mt-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <button class="sidebar-button w-full" onclick="openModal('profile')">Profile</button>
+        <button class="sidebar-button w-full" onclick="openModal('contact')">Contact Us</button>
+        <button class="sidebar-button w-full" onclick="navigateTo('dashboard')">Dashboard Services</button>
+        <button class="sidebar-button w-full" onclick="navigateTo('workitems')">Workitems Services</button>
+        <button class="sidebar-button w-full" onclick="navigateTo('policy')">Policy Services</button>
+        <button class="sidebar-button w-full" onclick="navigateTo('bankAccount')">Banking Services</button>
+        <button class="sidebar-button w-full" onclick="navigateTo('payment')">Payment Services</button>
+        <button class="sidebar-button w-full" onclick="openModal('tasks')">Tasks</button>
+        <button class="sidebar-button w-full" onclick="showComingSoon()">User Management</button>
+        <button class="sidebar-button w-full" onclick="showComingSoon()">API Status</button>
+        <button class="sidebar-button w-full" onclick="openModal('reports')">Reports</button>
+        <button class="sidebar-button w-full" onclick="openModal('analytics')">Analytics</button>
+        <button class="sidebar-button w-full" onclick="openModal('notifications')">Notifications</button>
+        <button class="sidebar-button w-full" onclick="openModal('settings')">Settings</button>
+      </nav>
+
+      <div class="p-4 border-t border-gray-700">
+         <button class="sidebar-button w-full logout" onclick="navigateTo('logout')">Logout</button>
+      </div>
+    </div>
+
+    <div class="flex-1 flex flex-col h-screen">
+      <header class="bg-white p-4 flex-shrink-0 flex justify-between items-center border-b">
+        <button id="sidebar-toggle" class="lg:hidden text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg></button>
+        <div class="relative flex-1 max-w-xl">
+           <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
+           <input type="text" id="search-bar" placeholder="Search for customer, policy, services..." class="w-full pl-10 pr-4 py-2 border rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+        </div>
+        <div class="flex items-center gap-4 ml-4">
+            <div id="welcome-message" class="hidden md:block text-md font-medium text-gray-600"></div>
+            <button id="btn-profile" title="Profile" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></button>
+        </div>
+      </header>
+      
+      <main class="flex-1 p-6 lg:p-8 overflow-y-auto main-content-scrollbar">
+          <div class="fade-in-up" style="--i:1;">
+             <h1 class="text-3xl font-bold text-gray-800">Your Services Gateway</h1>
+             <p class="text-gray-500 mt-1">Access all your tools and services from one central place.</p>
+          </div>
+          
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div class="fade-in-up bg-white p-5 rounded-xl shadow-sm flex items-center gap-4" style="--i:2;"><div class="bg-blue-100 text-blue-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg></div><div><p class="text-sm text-gray-500">Active Policies</p><p class="text-2xl font-bold text-gray-800">1,420</p></div></div>
+              <div class="fade-in-up bg-white p-5 rounded-xl shadow-sm flex items-center gap-4" style="--i:3;"><div class="bg-green-100 text-green-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div><div><p class="text-sm text-gray-500">Workitems Solved</p><p class="text-2xl font-bold text-gray-800">893</p></div></div>
+              <div class="fade-in-up bg-white p-5 rounded-xl shadow-sm flex items-center gap-4" style="--i:4;"><div class="bg-yellow-100 text-yellow-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div><div><p class="text-sm text-gray-500">Pending Tasks</p><p class="text-2xl font-bold text-gray-800">27</p></div></div>
+              <div class="fade-in-up bg-white p-5 rounded-xl shadow-sm flex items-center gap-4" style="--i:5;"><div class="bg-red-100 text-red-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div><div><p class="text-sm text-gray-500">System Alerts</p><p class="text-2xl font-bold text-gray-800">3</p></div></div>
+          </div>
+
+          <h2 class="text-2xl font-bold text-gray-700 mt-10 mb-4 fade-in-up" style="--i:6;">Quick Access Services</h2>
+          <div class="grid-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+              <div class="fade-in-up service-card" style="--i:7;"><button onclick="navigateTo('dashboard')" class="w-full h-full text-left p-6 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl"><h3 class="text-xl font-bold">Dashboard</h3><p class="mt-1 text-sm opacity-80">View main dashboard</p></button></div>
+              <div class="fade-in-up service-card" style="--i:8;"><button onclick="navigateTo('workitems')" class="w-full h-full text-left p-6 bg-gradient-to-br from-teal-500 to-cyan-500 text-white rounded-xl"><h3 class="text-xl font-bold">Workitems</h3><p class="mt-1 text-sm opacity-80">Manage your workitems</p></button></div>
+              <div class="fade-in-up service-card" style="--i:9;"><button onclick="navigateTo('policy')" class="w-full h-full text-left p-6 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl"><h3 class="text-xl font-bold">Policy</h3><p class="mt-1 text-sm opacity-80">Access policy information</p></button></div>
+              <div class="fade-in-up service-card" style="--i:10;"><button onclick="navigateTo('bankAccount')" class="w-full h-full text-left p-6 bg-gradient-to-br from-green-500 to-lime-600 text-white rounded-xl"><h3 class="text-xl font-bold">Banking</h3><p class="mt-1 text-sm opacity-80">Link your bank accounts</p></button></div>
+              <div class="fade-in-up service-card" style="--i:11;"><button onclick="navigateTo('payment')" class="w-full h-full text-left p-6 bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-xl"><h3 class="text-xl font-bold">Payments</h3><p class="mt-1 text-sm opacity-80">Make and track payments</p></button></div>
+              <div class="fade-in-up service-card" style="--i:12;"><button onclick="openModal('tasks')" class="w-full h-full text-left p-6 bg-gradient-to-br from-rose-500 to-rose-600 text-white rounded-xl"><h3 class="text-xl font-bold">Tasks</h3><p class="mt-1 text-sm opacity-80">View and manage tasks</p></button></div>
+              <div class="fade-in-up service-card" style="--i:13;"><button onclick="openModal('reports')" class="w-full h-full text-left p-6 bg-gradient-to-br from-indigo-500 to-violet-600 text-white rounded-xl"><h3 class="text-xl font-bold">Reports</h3><p class="mt-1 text-sm opacity-80">Generate and view reports</p></button></div>
+              <div class="fade-in-up service-card" style="--i:14;"><button onclick="openModal('analytics')" class="w-full h-full text-left p-6 bg-gradient-to-br from-sky-500 to-sky-600 text-white rounded-xl"><h3 class="text-xl font-bold">Analytics</h3><p class="mt-1 text-sm opacity-80">View data insights</p></button></div>
+              <div class="fade-in-up service-card" style="--i:15;"><button onclick="openModal('notifications')" class="w-full h-full text-left p-6 bg-gradient-to-br from-fuchsia-500 to-fuchsia-600 text-white rounded-xl"><h3 class="text-xl font-bold">Notifications</h3><p class="mt-1 text-sm opacity-80">Check your alerts</p></button></div>
+              <div class="fade-in-up service-card" style="--i:16;"><button onclick="openModal('settings')" class="w-full h-full text-left p-6 bg-gradient-to-br from-gray-700 to-gray-800 text-white rounded-xl"><h3 class="text-xl font-bold">Settings</h3><p class="mt-1 text-sm opacity-80">Configure preferences</p></button></div>
+          </div>
+      </main>
+      <footer class="text-gray-600 text-center py-3 flex-shrink-0 bg-white border-t"><p class="text-sm">© Secure Access Limited 2025 • All Rights Reserved</p></footer>
+    </div>
+  </div>
+
+<div id="loader" class="loader hidden"> <svg class="colorful-spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+        <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30" stroke="#3b82f6"></circle>
     </svg>
-  </button>
-
-  <div id="sidebar" class="sidebar">
-    <div class="p-4">
-      <h2 class="text-xl font-bold text-white mb-4">Dashboard Hub</h2>
-      <button class="sidebar-button" onclick="openModal('profile')">Profile</button>
-      <button class="sidebar-button" onclick="openModal('contact')">Contact Us</button>
-      <button class="sidebar-button" onclick="navigateTo('dashboard')">Dashboard Services</button>
-      <button class="sidebar-button" onclick="navigateTo('workitems')">Workitems Services</button>
-      <button class="sidebar-button" onclick="navigateTo('policy')">Policy Services</button>
-      <button class="sidebar-button" onclick="navigateTo('bankAccount')">Banking Services</button>
-      <button class="sidebar-button" onclick="navigateTo('payment')">Payment Services</button>
-      <button class="sidebar-button" onclick="openModal('reports')">Reports</button>
-      <button class="sidebar-button" onclick="openModal('settings')">Settings</button>
-      <button class="sidebar-button" onclick="openModal('analytics')">Analytics</button>
-      <button class="sidebar-button" onclick="openModal('notifications')">Notifications</button>
-      <button class="sidebar-button text-red-400" onclick="navigateTo('logout')">Logout</button>
+</div>
+  <div class="modal-container">
+    <div id="coming-soon-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform"><h3 class="text-2xl font-bold text-gray-800">Coming Soon!</h3><p class="text-gray-600 my-4">This feature is under development and will be available shortly.</p><button data-close-modal="coming-soon" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none transition-colors">Got it!</button></div>
+    </div>
+    <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">User Profile</h3><button data-close-modal="profile" class="text-gray-500 hover:text-gray-700 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div class="text-gray-600 mb-6 space-y-2"><p><span class="font-medium">User ID:</span> <span id="profile-userCode">Not available</span></p><p><span class="font-medium">Email:</span> <span id="profile-email">Not available</span></p></div><button data-close-modal="profile" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none">Close</button></div>
+    </div>
+    <div id="contact-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Contact Us</h3><button data-close-modal="contact" class="text-gray-500 hover:text-gray-700 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><p class="text-gray-600 mb-6">Reach out to us at support@example.com or (555) 123-4567.</p><button data-close-modal="contact" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none">Close</button></div>
+    </div>
+    <div id="tasks-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Tasks</h3><button data-close-modal="tasks" class="text-gray-500 hover:text-gray-700 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><form class="space-y-4"><label class="block"><span class="text-gray-700">Task Name</span><input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Enter task name"></label><label class="block"><span class="text-gray-700">Due Date</span><input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></label></form><button data-close-modal="tasks" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Add Task</button></div>
+    </div>
+    <div id="reports-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Reports</h3><button data-close-modal="reports" class="text-gray-500 hover:text-gray-700 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><p class="text-gray-600">Report generation functionality placeholder.</p><button data-close-modal="reports" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Close</button></div>
+    </div>
+    <div id="analytics-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Analytics</h3><button data-close-modal="analytics" class="text-gray-500 hover:text-gray-700 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><p class="text-gray-600">Analytics dashboard placeholder.</p><button data-close-modal="analytics" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Close</button></div>
+    </div>
+    <div id="notifications-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Notifications</h3><button data-close-modal="notifications" class="text-gray-500 hover:text-gray-700 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div class="space-y-3"><p class="text-gray-600 border-b pb-2"><span class="font-medium text-green-600">System Update:</span> New features available!</p><p class="text-gray-600"><span class="font-medium text-yellow-600">Task Due:</span> Complete report by 5 PM.</p></div><button data-close-modal="notifications" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Close</button></div>
+    </div>
+    <div id="settings-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Settings</h3><button data-close-modal="settings" class="text-gray-500 hover:text-gray-700 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><p class="text-gray-600">User settings placeholder.</p><button data-close-modal="settings" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Save Settings</button></div>
     </div>
   </div>
-
-  <div class="absolute top-4 right-4 flex items-center space-x-3 sm:space-x-4 z-50">
-    <button id="btn-profile" title="Profile"
-      class="btn-neutral bg-white text-blue-600 font-semibold py-2 px-4 text-sm rounded-lg shadow-md border border-blue-200 hover:bg-blue-50 hover:border-blue-300 focus:outline-none transition-all glow flex items-center justify-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 sm:mr-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-      <span class="sm:hidden">Profile</span>
-    </button>
-    <button id="btn-contact"
-      class="btn-neutral bg-white text-blue-600 font-semibold py-2 px-4 text-sm rounded-lg shadow-md border border-blue-200 hover:bg-blue-50 hover:border-blue-300 focus:outline-none transition-all glow">
-      Contact Us
-    </button>
-    <button id="btn-logout" onclick="navigateTo('logout')"
-      class="btn-neutral bg-red-500 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-md border border-red-400 hover:bg-red-600 hover:border-red-500 focus:outline-none transition-all glow">
-      Logout
-    </button>
-  </div>
-
-  <main class="w-full max-w-6xl flex flex-col flex-grow p-6 mt-16">
-    <div class="flex-1 flex flex-col lg:flex-row items-stretch gap-6">
-      <div class="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 text-center card">
-        <div class="my-auto">
-          <h1 id="header-title" class="text-hidden text-4xl sm:text-5xl font-extrabold gradient-text mb-4">Dashboard Hub</h1>
-          <p id="header-subtitle" class="text-hidden text-lg sm:text-xl text-gray-600">Your gateway to seamless service access.</p>
-        </div>
-      </div>
-
-      <div class="w-full lg:w-1/2 flex flex-col items-center justify-center p-8">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-md">
-          <button id="btn-dashboard" onclick="navigateTo('dashboard')"
-            class="button-hidden btn-neutral w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg border border-blue-700 hover:from-blue-700 hover:to-indigo-700 focus:outline-none transition-all glow">
-            Dashboard Services
-          </button>
-          <button id="btn-workitems" onclick="navigateTo('workitems')"
-            class="button-hidden btn-neutral w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold py-4 px-6 rounded-xl shadow-lg border border-teal-600 hover:from-teal-600 hover:to-cyan-600 focus:outline-none transition-all glow">
-            Workitems Services
-          </button>
-          <button id="btn-policy" onclick="navigateTo('policy')"
-            class="button-hidden btn-neutral w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 px-6 rounded-xl shadow-lg border border-purple-600 hover:from-purple-600 hover:to-pink-600 focus:outline-none transition-all glow">
-            Policy Services
-          </button>
-          <button id="btn-bankAccount" onclick="navigateTo('bankAccount')"
-            class="button-hidden btn-neutral w-full bg-gradient-to-r from-green-500 to-lime-500 text-white font-semibold py-4 px-6 rounded-xl shadow-lg border border-green-600 hover:from-green-600 hover:to-lime-600 focus:outline-none transition-all glow">
-            Banking Services
-          </button>
-          <button id="btn-payment" onclick="navigateTo('payment')"
-            class="button-hidden btn-neutral w-full bg-gradient-to-r from-green-500 to-lime-500 text-white font-semibold py-4 px-6 rounded-xl shadow-lg border border-green-600 hover:from-green-600 hover:to-lime-600 focus:outline-none transition-all glow">
-            Payment Services
-          </button>
-          <button id="btn-tasks" onclick="openModal('tasks')"
-            class="button-hidden btn-neutral w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold py-4 px-6 rounded-xl shadow-lg border border-yellow-600 hover:from-yellow-600 hover:to-orange-600 focus:outline-none transition-all glow">
-            Tasks
-          </button>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <div class="w-full max-w-6xl px-6 pb-6 flex flex-col sm:flex-row justify-end items-center gap-4 btn-bottom-group">
-    <button id="btn-reports" onclick="openModal('reports')"
-      class="button-hidden btn-neutral w-full sm:w-auto bg-white text-orange-600 font-medium py-2 px-4 text-sm rounded-lg shadow-md border border-orange-200 hover:bg-orange-50 hover:border-orange-300 focus:outline-none transition-all glow">
-      Reports
-    </button>
-    <button id="btn-settings" onclick="openModal('settings')"
-      class="button-hidden btn-neutral w-full sm:w-auto bg-white text-blue-600 font-medium py-2 px-4 text-sm rounded-lg shadow-md border border-blue-200 hover:bg-blue-50 hover:border-blue-300 focus:outline-none transition-all glow">
-      Settings
-    </button>
-  </div>
-
-  <footer class="text-gray-600 text-center py-8 w-full">
-    <p class="text-sm">© Secure Access Limited 2025 • Made with ❤️</p>
-  </footer>
-
-  <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
-        <button id="close-profile-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="text-gray-600 mb-6 space-y-2">
-        <p><span class="font-medium">User ID:</span> <span id="profile-userCode">Not available</span></p>
-        <p><span class="font-medium">Email:</span> <span id="profile-email">Not available</span></p>
-      </div>
-      <button onclick="document.getElementById('close-profile-modal').click()"
-        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all">
-        Close
-      </button>
-    </div>
-  </div>
-
-  <div id="contact-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-gray-800">Contact Us</h3>
-        <button id="close-contact-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <p class="text-gray-600 mb-6">Reach out to us at support@example.com or (555) 123-4567.</p>
-      <form class="space-y-5">
-        <div>
-          <label for="contact-name" class="block text-sm font-medium text-gray-700">Name</label>
-          <input type="text" id="contact-name" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Your Name">
-        </div>
-        <div>
-          <label for="contact-email" class="block text-sm font-medium text-gray-700">Email</label>
-          <input type="email" id="contact-email" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="you@example.com">
-        </div>
-        <div>
-          <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
-          <textarea id="contact-message" rows="4" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Your message..."></textarea>
-        </div>
-      </form>
-      <button onclick="document.getElementById('close-contact-modal').click()"
-        class="mt-6 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all">
-        Send Message
-      </button>
-    </div>
-  </div>
-
-  <div id="error-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-red-600">Error</h3>
-        <button id="close-error-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <p id="error-message" class="text-gray-600 mb-6"></p>
-      <button id="error-ok-btn"
-        class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 rounded-lg hover:from-red-700 hover:to-red-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 transition-all">
-        OK
-      </button>
-    </div>
-  </div>
-
-  <div id="success-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-green-600">Success</h3>
-        <button id="close-success-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <p id="success-message" class="text-gray-600 mb-6"></p>
-      <button id="success-ok-btn"
-        class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-4 rounded-lg hover:from-green-700 hover:to-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 transition-all">
-        OK
-      </button>
-    </div>
-  </div>
-
-  <div id="reports-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-gray-800">Send Report</h3>
-        <button id="close-reports-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <form class="space-y-5">
-        <div>
-          <label for="report-title" class="block text-sm font-medium text-gray-700">Report Title</label>
-          <input type="text" id="report-title" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter report title">
-        </div>
-        <div>
-          <label for="report-description" class="block text-sm font-medium text-gray-700">Description</label>
-          <textarea id="report-description" rows="4" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Describe the report..."></textarea>
-        </div>
-      </form>
-      <button id="send-report-btn"
-        class="mt-6 w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-lg hover:from-orange-600 hover:to-orange-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 transition-all">
-        Send Report
-      </button>
-    </div>
-  </div>
-
-  <div id="settings-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-gray-800">Settings</h3>
-        <button id="close-settings-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <form class="space-y-4">
-        <div class="flex items-center justify-between">
-          <label for="setting-notifications" class="text-sm font-medium text-gray-700">Enable Notifications</label>
-          <div class="flex space-x-4">
-            <label><input type="radio" name="notifications" value="yes" class="mr-1"> Yes</label>
-            <label><input type="radio" name="notifications" value="no" class="mr-1" checked> No</label>
-          </div>
-        </div>
-        <div class="flex items-center justify-between">
-          <label for="setting-dark-mode" class="text-sm font-medium text-gray-700">Dark Mode</label>
-          <div class="flex space-x-4">
-            <label><input type="radio" name="dark-mode" value="yes" class="mr-1"> Yes</label>
-            <label><input type="radio" name="dark-mode" value="no" class="mr-1" checked> No</label>
-          </div>
-        </div>
-        <div class="flex items-center justify-between">
-          <label for="setting-auto-refresh" class="text-sm font-medium text-gray-700">Auto Refresh</label>
-          <div class="flex space-x-4">
-            <label><input type="radio" name="auto-refresh" value="yes" class="mr-1"> Yes</label>
-            <label><input type="radio" name="auto-refresh" value="no" class="mr-1" checked> No</label>
-          </div>
-        </div>
-        <div class="flex items-center justify-between">
-          <label for="setting-email-alerts" class="text-sm font-medium text-gray-700">Email Alerts</label>
-          <div class="flex space-x-4">
-            <label><input type="radio" name="email-alerts" value="yes" class="mr-1"> Yes</label>
-            <label><input type="radio" name="email-alerts" value="no" class="mr-1" checked> No</label>
-          </div>
-        </div>
-      </form>
-      <button id="save-settings-btn"
-        class="mt-6 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all">
-        Save Settings
-      </button>
-    </div>
-  </div>
-
-  <div id="analytics-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-gray-800">Analytics</h3>
-        <button id="close-analytics-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <p class="text-gray-600 mb-6">View your data insights and performance metrics here.</p>
-      <div class="bg-gray-100 p-4 rounded-lg">
-        <p class="text-gray-500 italic">Placeholder for charts or data visualizations.</p>
-      </div>
-      <button id="close-analytics-btn"
-        class="mt-6 w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 px-4 rounded-lg hover:from-purple-600 hover:to-pink-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 transition-all">
-        Close
-      </button>
-    </div>
-  </div>
-
-  <div id="notifications-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-gray-800">Notifications</h3>
-        <button id="close-notifications-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="space-y-4 mb-6">
-        <p class="text-gray-600"><span class="font-medium">System Update:</span> New features available!</p>
-        <p class="text-gray-600"><span class="font-medium">Task Due:</span> Complete report by 5 PM.</p>
-      </div>
-      <button id="close-notifications-btn"
-        class="w-full bg-gradient-to-r from-green-500 to-lime-500 text-white py-3 px-4 rounded-lg hover:from-green-600 hover:to-lime-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 transition-all">
-        Close
-      </button>
-    </div>
-  </div>
-
-  <div id="tasks-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-gray-800">Tasks</h3>
-        <button id="close-tasks-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <form class="space-y-5">
-        <div>
-          <label for="task-name" class="block text-sm font-medium text-gray-700">Task Name</label>
-          <input type="text" id="task-name" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter task name">
-        </div>
-        <div>
-          <label for="task-due" class="block text-sm font-medium text-gray-700">Due Date</label>
-          <input type="date" id="task-due" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-        </div>
-      </form>
-      <button id="add-task-btn"
-        class="mt-6 w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-3 px-4 rounded-lg hover:from-yellow-600 hover:to-orange-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 transition-all">
-        Add Task
-      </button>
-    </div>
-  </div>
-
-  <div id="nav-popup" class="nav-popup">
-    <div class="nav-popup-content">
-      <div class="spinner"></div>
-      <p id="nav-message" class="text-gray-800 font-medium"></p>
-    </div>
-  </div>
-
-  <div id="loader" class="loader">
-    <div class="spinner"></div>
-  </div>
-
+<script>
+    document.getElementById('loader').classList.add('hidden');
+    document.getElementById('loader').classList.remove('active'); // Ensure active is also removed
+</script>
   <script>
-    const config = {
-      loginUrl: 'login',
-      userCode: null,
-      email: null
-    };
-
+    const config = { loginUrl: 'login', userCode: null, email: null };
     const modals = {
       profile: document.getElementById('profile-modal'),
       contact: document.getElementById('contact-modal'),
-      error: document.getElementById('error-modal'),
-      success: document.getElementById('success-modal'),
+      tasks: document.getElementById('tasks-modal'),
       reports: document.getElementById('reports-modal'),
-      settings: document.getElementById('settings-modal'),
       analytics: document.getElementById('analytics-modal'),
       notifications: document.getElementById('notifications-modal'),
-      tasks: document.getElementById('tasks-modal')
+      settings: document.getElementById('settings-modal'),
+      'coming-soon': document.getElementById('coming-soon-modal'),
+    };
+    
+    window.showLoader = function() {
+        document.getElementById('loader').classList.remove('hidden');
+        document.getElementById('loader').classList.add('active');
+    };
+    window.hideLoader = function() {
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('loader').classList.remove('active');
     };
 
-    function openModal(modalId) {
-      if (modalId === 'profile') {
-        document.getElementById('profile-userCode').textContent = config.userCode || 'Not available';
-        document.getElementById('profile-email').textContent = config.email || 'Not available';
-      }
-      modals[modalId]?.classList.remove('hidden');
-    }
+    window.openModal = function(modalId) { modals[modalId]?.classList.remove('hidden'); };
+    window.closeModal = function(modalId) { modals[modalId]?.classList.add('hidden'); };
+    window.showComingSoon = function() { openModal('coming-soon'); }; // This one calls openModal, which is now global
 
-    function closeModal(modalId) {
-      modals[modalId]?.classList.add('hidden');
-    }
+    window.initializeUser = function() {
+      config.userCode = sessionStorage.getItem('userCode') || 'DEMO_USER';
+      config.email = sessionStorage.getItem('email') || 'demouser@example.com';
+      if (!config.userCode) return;
+      document.getElementById('welcome-message').textContent = `Welcome, ${config.email}!`;
+      document.getElementById('profile-userCode').textContent = config.userCode;
+      document.getElementById('profile-email').textContent = config.email;
+    };
 
-    function showAlert(type, message, redirectUrl = null) {
-      document.getElementById(`${type}-message`).textContent = message;
-      openModal(type);
-      if (redirectUrl) {
-        setTimeout(() => window.location.href = redirectUrl, 2000);
-      }
-    }
-
-    function showNavPopup(message) {
-      const popup = document.getElementById('nav-popup');
-      document.getElementById('nav-message').textContent = `Navigating to ${message}...`;
-      popup.classList.add('active');
-    }
-
-    function hideNavPopup() {
-      const popup = document.getElementById('nav-popup');
-      popup.classList.remove('active');
-    }
-
-    function showLoader() {
-      document.getElementById('loader').classList.add('active');
-    }
-
-    function hideLoader() {
-      document.getElementById('loader').classList.remove('active');
-    }
-
-    function showSidebar() {
-      document.getElementById('sidebar').classList.add('active');
-    }
-
-    function hideSidebar() {
-      document.getElementById('sidebar').classList.remove('active');
-    }
-
-    function initializeuserCode() {
-      config.userCode = sessionStorage.getItem('userCode');
-      config.email = sessionStorage.getItem('email');
-      if (!config.userCode) {
-        showAlert('error', 'Please log in to continue.', config.loginUrl);
-        return false;
-      }
-      return true;
-    }
-
-    function logout() {
-      sessionStorage.removeItem('userCode');
-      sessionStorage.removeItem('email');
-      config.userCode = null;
-      config.email = null;
-      showAlert('success', 'Logged out successfully!', config.loginUrl);
-    }
-
-    function navigateTo(page) {
-      if (page !== 'logout' && !config.userCode) {
-        showAlert('error', 'Please log in to access this page.', config.loginUrl);
-        return;
-      }
-      const pageUrls = {
-        dashboard: 'dashboard',
-        workitems: 'workItemServices',
-        policy: 'policy',
-        bankAccount:'bankAccount',
-        payment: 'payment',
-        logout: 'login'
+    window.navigateTo = function(page) {
+        if (page !== 'logout' && !config.userCode) return;
+        const pageUrls = { dashboard: 'dashboard', workitems: 'workItemServices', policy: 'policy', bankAccount:'bankAccount', payment: 'payment', logout: 'login' };
+        window.location.href = pageUrls[page]; 
       };
-      const url = pageUrls[page] || config.loginUrl;
-      showLoader();
-      showNavPopup(page);
-      setTimeout(() => {
-        hideNavPopup();
-        hideLoader();
-        if (page === 'logout') {
-          logout();
-        } else {
-          window.location.href = url;
-        }
-      }, 2000);
-    }
-
-    function initParticles() {
-      const canvas = document.getElementById('particles');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      const particles = [];
-      for (let i = 0; i < 30; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: Math.random() * 2 + 1,
-          vx: Math.random() * 0.3 - 0.15,
-          vy: Math.random() * 0.3 - 0.15
-        });
-      }
-
-      function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'rgba(59, 130, 246, 0.4)';
-        particles.forEach(p => {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fill();
-          p.x += p.vx;
-          p.y += p.vy;
-          if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-          if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        });
-        requestAnimationFrame(animate);
-      }
-      animate();
-    }
 
     document.addEventListener('DOMContentLoaded', () => {
-      if (!initializeuserCode()) return;
-
-      ['header-title', 'header-subtitle'].forEach((id, i) => {
-        const el = document.getElementById(id);
-        if (el) setTimeout(() => el.classList.replace('text-hidden', 'text-visible'), i * 400 + 200);
-      });
-
-      ['btn-dashboard', 'btn-workitems', 'btn-policy', 'btn-payment', 'btn-tasks'].forEach((id, i) => {
-        const btn = document.getElementById(id);
-        if (btn) setTimeout(() => btn.classList.replace('button-hidden', 'button-visible'), i * 200 + 800);
-      });
-
-      ['btn-reports', 'btn-settings'].forEach((id, i) => {
-        const btn = document.getElementById(id);
-        if (btn) setTimeout(() => btn.classList.replace('button-hidden', 'button-visible'), i * 200 + 1400);
-      });
-
-      const modalButtons = {
-        'btn-profile': () => openModal('profile'),
-        'btn-contact': () => openModal('contact'),
-        'close-profile-modal': () => closeModal('profile'),
-        'close-contact-modal': () => closeModal('contact'),
-        'close-error-modal': () => closeModal('error'),
-        'close-success-modal': () => closeModal('success'),
-        'close-reports-modal': () => closeModal('reports'),
-        'close-settings-modal': () => closeModal('settings'),
-        'close-analytics-modal': () => closeModal('analytics'),
-        'close-notifications-modal': () => closeModal('notifications'),
-        'close-tasks-modal': () => closeModal('tasks'),
-        'error-ok-btn': () => closeModal('error'),
-        'success-ok-btn': () => closeModal('success'),
-        'send-report-btn': () => closeModal('reports'),
-        'save-settings-btn': () => closeModal('settings'),
-        'close-analytics-btn': () => closeModal('analytics'),
-        'close-notifications-btn': () => closeModal('notifications'),
-        'add-task-btn': () => closeModal('tasks')
-      };
-
-      Object.entries(modalButtons).forEach(([id, handler]) => {
-        document.getElementById(id)?.addEventListener('click', handler);
-      });
-
+        initializeUser();
       document.getElementById('sidebar-toggle').addEventListener('click', () => {
         document.getElementById('sidebar').classList.toggle('active');
       });
+      document.getElementById('btn-profile').addEventListener('click', () => openModal('profile')); // This now refers to window.openModal
 
+      document.querySelector('.modal-container').addEventListener('click', (e) => {
+          if (e.target.dataset.closeModal) {
+              closeModal(e.target.dataset.closeModal); // This now refers to window.closeModal
+          }
+      });
+      
       window.addEventListener('click', (e) => {
-        Object.keys(modals).forEach((key) => {
-          if (e.target === modals[key]) closeModal(key);
-        });
         if (!e.target.closest('#sidebar') && !e.target.closest('#sidebar-toggle')) {
-          hideSidebar();
+            document.getElementById('sidebar').classList.remove('active');
         }
       });
 
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          Object.keys(modals).forEach((key) => closeModal(key));
-          hideSidebar();
-        }
+      document.getElementById('search-bar').addEventListener('keyup', (e) => {
+          if(e.key === 'Enter') {
+              alert(`Searching for: "${e.target.value}"`);
+              e.target.value = '';
+          }
       });
-
-      initParticles();
     });
   </script>
 </body>

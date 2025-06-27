@@ -7,6 +7,8 @@ public class PaymentDetails {
 	private String expiryDate;
 	private String otp;
 	private String checkNumber;
+	private String bankaccount;
+	private String ifscCode;
 
 	public String getCardNumber() {
 		return cardNumber;

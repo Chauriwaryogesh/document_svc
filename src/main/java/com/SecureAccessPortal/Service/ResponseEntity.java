@@ -8,10 +8,25 @@ public class ResponseEntity<T> implements Serializable {
 		super();
 	}
 	T data;
+	
 	String status;
 	String metaData;
 	String errorMessage;
-	
+	private long totalElements;
+    private int totalPages;
+    
+	public long getTotalElements() {
+		return totalElements;
+	}
+	public void setTotalElements(long totalElements) {
+		this.totalElements = totalElements;
+	}
+	public int getTotalPages() {
+		return totalPages;
+	}
+	public void setTotalPages(int totalPages) {
+		this.totalPages = totalPages;
+	}
 	public String getStatus() {
 		return status;
 	}
