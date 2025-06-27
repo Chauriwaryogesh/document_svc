@@ -38,5 +38,16 @@ public class ActivityMonitorController {
 
 		return listOfActiity;
 	}
+	
+	@GetMapping("/activity-tracing")
+	public ResponseEntity<LoginHistroryResponse> getActivityTrac(
+			@RequestParam(value="email",required= true ) String email,
+			@RequestHeader String userCode) {
+
+		ResponseEntity<LoginHistroryResponse> listOfActiity = new ResponseEntity<>();
+		listOfActiity = activityMonitorService.getLoginActTrac(email,userCode);
+
+		return listOfActiity;
+	}
 
 }

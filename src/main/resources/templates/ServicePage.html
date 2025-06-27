@@ -75,7 +75,7 @@
         <button class="sidebar-button w-full" onclick="showComingSoon()">User Management</button>
         <button class="sidebar-button w-full" onclick="showComingSoon()">API Status</button>
         <button class="sidebar-button w-full" onclick="openModal('reports')">Reports</button>
-        <button class="sidebar-button w-full" onclick="openModal('analytics')">Analytics</button>
+        <button class="sidebar-button w-full" onclick="navigateTo('admin')">Admin Module</button>
         <button class="sidebar-button w-full" onclick="openModal('notifications')">Notifications</button>
         <button class="sidebar-button w-full" onclick="openModal('settings')">Settings</button>
       </nav>
@@ -120,7 +120,7 @@
               <div class="fade-in-up service-card" style="--i:11;"><button onclick="navigateTo('payment')" class="w-full h-full text-left p-6 bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-xl"><h3 class="text-xl font-bold">Payments</h3><p class="mt-1 text-sm opacity-80">Make and track payments</p></button></div>
               <div class="fade-in-up service-card" style="--i:12;"><button onclick="openModal('tasks')" class="w-full h-full text-left p-6 bg-gradient-to-br from-rose-500 to-rose-600 text-white rounded-xl"><h3 class="text-xl font-bold">Tasks</h3><p class="mt-1 text-sm opacity-80">View and manage tasks</p></button></div>
               <div class="fade-in-up service-card" style="--i:13;"><button onclick="openModal('reports')" class="w-full h-full text-left p-6 bg-gradient-to-br from-indigo-500 to-violet-600 text-white rounded-xl"><h3 class="text-xl font-bold">Reports</h3><p class="mt-1 text-sm opacity-80">Generate and view reports</p></button></div>
-              <div class="fade-in-up service-card" style="--i:14;"><button onclick="openModal('analytics')" class="w-full h-full text-left p-6 bg-gradient-to-br from-sky-500 to-sky-600 text-white rounded-xl"><h3 class="text-xl font-bold">Analytics</h3><p class="mt-1 text-sm opacity-80">View data insights</p></button></div>
+              <div class="fade-in-up service-card" style="--i:14;"><button onclick="navigateTo('admin')" class="w-full h-full text-left p-6 bg-gradient-to-br from-sky-500 to-sky-600 text-white rounded-xl"><h3 class="text-xl font-bold">Admin Module </h3><p class="mt-1 text-sm opacity-80">View and Manage insights</p></button></div>
               <div class="fade-in-up service-card" style="--i:15;"><button onclick="openModal('notifications')" class="w-full h-full text-left p-6 bg-gradient-to-br from-fuchsia-500 to-fuchsia-600 text-white rounded-xl"><h3 class="text-xl font-bold">Notifications</h3><p class="mt-1 text-sm opacity-80">Check your alerts</p></button></div>
               <div class="fade-in-up service-card" style="--i:16;"><button onclick="openModal('settings')" class="w-full h-full text-left p-6 bg-gradient-to-br from-gray-700 to-gray-800 text-white rounded-xl"><h3 class="text-xl font-bold">Settings</h3><p class="mt-1 text-sm opacity-80">Configure preferences</p></button></div>
           </div>
@@ -170,7 +170,6 @@
       contact: document.getElementById('contact-modal'),
       tasks: document.getElementById('tasks-modal'),
       reports: document.getElementById('reports-modal'),
-      analytics: document.getElementById('analytics-modal'),
       notifications: document.getElementById('notifications-modal'),
       settings: document.getElementById('settings-modal'),
       'coming-soon': document.getElementById('coming-soon-modal'),
@@ -200,7 +199,7 @@
 
     window.navigateTo = function(page) {
         if (page !== 'logout' && !config.userCode) return;
-        const pageUrls = { dashboard: 'dashboard', workitems: 'workItemServices', policy: 'policy', bankAccount:'bankAccount', payment: 'payment', logout: 'login' };
+        const pageUrls = { dashboard: 'dashboard', workitems: 'workItemServices', policy: 'policy', bankAccount:'bankAccount', payment: 'payment', logout: 'login', admin:'AdminPanel' };
         window.location.href = pageUrls[page]; 
       };
 

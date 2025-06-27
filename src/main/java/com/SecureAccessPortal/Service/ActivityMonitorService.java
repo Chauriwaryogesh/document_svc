@@ -70,4 +70,16 @@ public class ActivityMonitorService {
 		return response;
 	}
 
+	public ResponseEntity<LoginHistroryResponse> getLoginActTrac(String email, String userCode) {
+		ResponseEntity<LoginHistroryResponse> response = new ResponseEntity<>();
+		LoginHistroryResponse resp = new LoginHistroryResponse();
+		LoginHistory loginHistoryList = loginHistoryRepository.findByEmailAndDeletedFlagLatest(email, userCode,
+				CommonConstant.N);
+
+		resp = activityMonitorMapper.mapLoginHistoryOneRec(loginHistoryList);
+		response.setData(resp);
+
+		return response;
+	}
+
 }

@@ -7,17 +7,65 @@ public class DashboardStats {
 	private int slaCrossed;
 	private int documentUpload;
 
-	//newly added for New email Counts tab.
+	// newly added for New email Counts tab.
 	private int verPending;
 	private int totalClosed;
 	private int corrospodnace;
-	
-	//new ly added for Usercount
+
+	// new ly added for Usercount
 	private int activeUsers;
 	private int inactiveUsers;
 	private int emailVerified;
 	private int userCodeVerified;
 	private int adminAccess;
+
+	// new fields
+	private long totalWorkItems;
+	private long totalPolicy;
+	private long totalUsers;
+	private long totalBankAccounts;
+	private long totalVerificationRecords;
+
+	public long getTotalWorkItems() {
+		return totalWorkItems;
+	}
+
+	public void setTotalWorkItems(long totalWorkItems) {
+		this.totalWorkItems = totalWorkItems;
+	}
+
+	public long getTotalPolicy() {
+		return totalPolicy;
+	}
+
+	public void setTotalPolicy(long totalPolicy) {
+		this.totalPolicy = totalPolicy;
+	}
+
+	public long getTotalUsers() {
+		return totalUsers;
+	}
+
+	public void setTotalUsers(long totalUsers) {
+		this.totalUsers = totalUsers;
+	}
+
+	public long getTotalBankAccounts() {
+		return totalBankAccounts;
+	}
+
+	public void setTotalBankAccounts(long totalBankAccounts) {
+		this.totalBankAccounts = totalBankAccounts;
+	}
+
+	public long getTotalVerificationRecords() {
+		return totalVerificationRecords;
+	}
+
+	public void setTotalVerificationRecords(long totalVerificationRecords) {
+		this.totalVerificationRecords = totalVerificationRecords;
+	}
+
 	public int getActiveUsers() {
 		return activeUsers;
 	}

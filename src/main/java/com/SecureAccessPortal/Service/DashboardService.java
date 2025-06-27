@@ -1,7 +1,6 @@
 package com.SecureAccessPortal.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -9,57 +8,66 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.SecureAccessPortal.Entity.CapturePhoto;
+import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
+import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.Security;
+import com.SecureAccessPortal.Entity.VerificationRecord;
+import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.DashboardStats;
+import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Repo.CustomerRepo;
-import com.SecureAccessPortal.Repo.ICapturePhtoRepo;
+import com.SecureAccessPortal.Repo.IPolicyRepo;
 import com.SecureAccessPortal.Repo.ISecurityRepo;
+import com.SecureAccessPortal.Repo.VerificationRecordRepo;
+import com.SecureAccessPortal.Repo.WorkItemRepo;
 
 
 	@Service
 	public class DashboardService {
-		
-		@Autowired
-		private ICapturePhtoRepo docRepo;
-		
 		@Autowired
 		private ISecurityRepo securityRepo;
 		
 		@Autowired
+		private WorkItemRepo workItem;
+		
+		@Autowired
+		private VerificationRecordRepo verfRec;
+		
+		@Autowired
+		private BankAccountRepo bankAcc;
+		
+		@Autowired
+		private IPolicyRepo policy;
+		
+		
+		@Autowired
 		private CustomerRepo customerRepo;
-	    public DashboardStats getDashboardStats(String userCode) {
-	        // Fetch stats for the dashboard based on the userCode
-	    	List<CapturePhoto> documents = docRepo.findAll();
-	    	 long docsCount=documents.stream().count();
-	    	
-	    	 List<Security> security = securityRepo.findAll();
-	    	 
-	    	 long expiryDaysCount = security.stream()
-	                 .filter(sec -> sec.getEndTime() != null)
-	                 .filter(sec -> {
-	                     try {
-	                        // LocalDate endTimeDate = LocalDate.parse(sec.getEndTime());
-	                         LocalDate now = LocalDate.now();
-	                         return sec.getEndTime().isAfter(now);
-	                     } catch (Exception e) {
-	                         System.err.println("Error parsing date: " + sec.getEndTime() + " - " + e.getMessage());
-	                         return false;
-	                     }
-	                 })
-	                 .count();
-	    	 long totalEmails = security.stream().map(mail -> mail.getEmail()).count();
-	        DashboardStats stats = new DashboardStats();
-	        // Example data
-	        stats.setTotalEmails((int)totalEmails);
-	        stats.setSlaCrossed((int)expiryDaysCount);
-	        stats.setDocumentUpload((int) docsCount);
-	        stats.setEmailsInDb(38);
-	        stats.setEmailsSent(44);
-	        
-	        return stats;
-	    }
+
+		public DashboardStats getDashboardStats(String userCode) {
+			DashboardStats stats = new DashboardStats();
+			List<Security> security = securityRepo.findAll();
+			long users = security.stream().count();
+
+			List<Workitem> workitem = workItem.findAll();
+			long workItem = workitem.stream().count();
+
+			List<Policy> pol = policy.findAll();
+			long polCnt = pol.stream().count();
+
+			List<BankAccount> bankAccount = bankAcc.findAll();
+			long bank = bankAccount.stream().count();
+
+			List<VerificationRecord> verf = verfRec.findAll();
+			long ver = verf.stream().count();
+
+			stats.setTotalBankAccounts(bank);
+			stats.setTotalPolicy(polCnt);
+			stats.setTotalUsers(users);
+			stats.setTotalWorkItems(workItem);
+			stats.setTotalVerificationRecords(ver);
+			return stats;
+		}
 
 		public DashboardStats getEmailCountStats(String userCode) {
 			DashboardStats stats = new DashboardStats();
