@@ -860,138 +860,144 @@
     </div>
   </div>
 
-  <div id="create-party-modal" class="modal-base hidden">
-    <div class="modal-content-fullscreen">
-      <div class="modal-header">
-        <h3 class="text-2xl font-bold text-gray-800 gradient-text">Create Party/Customer</h3>
-        <button id="close-create-party-modal" class="modal-close">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="flex border-b px-4 bg-white/80">
-        <button class="tab flex-1 text-center active" data-tab="personal">Personal Details</button>
-        <button class="tab flex-1 text-center" data-tab="contact">Contact Details</button>
-        <button class="tab flex-1 text-center" data-tab="address">Address Details</button>
-      </div>
-      <div class="modal-body">
-        <form id="create-party-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input type="hidden" id="party-userCode" value="">
-          <div id="personal-section" class="tab-content col-span-2">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="input-group">
-                <input type="text" id="party-name" placeholder=" " required>
-                <label for="party-name" class="mandatory">Customer Name</label>
-              </div>
-              <div class="input-group">
-                <input type="text" id="party-middleName" placeholder=" ">
-                <label for="party-middleName">Middle Name</label>
-              </div>
-              <div class="input-group">
-                <input type="text" id="party-surname" placeholder=" ">
-                <label for="party-surname">Surname</label>
-              </div>
-              <div class="input-group">
-                <input type="number" id="party-age" placeholder=" ">
-                <label for="party-age">Age</label>
-              </div>
-              <div class="input-group">
-                <input type="date" id="party-dob" placeholder=" " required>
-                <label for="party-dob" class="mandatory">Date of Birth</label>
-              </div>
-              <div class="input-group">
-                <select id="party-gender" required>
-                  <option value="">Select gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-                <label for="party-gender" class="mandatory">Gender</label>
-              </div>
-              <div class="input-group">
-                <select id="party-smokerStatus">
-                  <option value="">Select smoker status</option>
-                  <option value="Smoker">Smoker</option>
-                  <option value="Non-Smoker">Non-Smoker</option>
-                  <option value="Unknown">Unknown</option>
-                </select>
-                <label for="party-smokerStatus">Smoker Status</label>
-              </div>
-              <div class="input-group">
-                <select id="party-adminAccess">
-                  <option value="0">No</option>              
-                </select>
-                <label for="party-adminAccess">Admin Access</label>
-              </div>
+ <div id="create-party-modal" class="modal-base hidden">
+  <div class="modal-content-fullscreen">
+    <div class="modal-header">
+      <h3 class="text-2xl font-bold text-gray-800 gradient-text">Create Party/Customer</h3>
+      <button id="close-create-party-modal" class="modal-close">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="flex border-b px-4 bg-white/80">
+      <button class="tab flex-1 text-center active" data-tab="personal">Personal Details</button>
+      <button class="tab flex-1 text-center" data-tab="contact">Contact Details</button>
+      <button class="tab flex-1 text-center" data-tab="address">Address Details</button>
+    </div>
+    <div class="modal-body">
+      <form id="create-party-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div id="personal-section" class="tab-content col-span-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="input-group">
+              <input type="text" id="party-name" placeholder=" " required>
+              <label for="party-name" class="mandatory">Customer Name</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-middleName" placeholder=" ">
+              <label for="party-middleName">Middle Name</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-surname" placeholder=" ">
+              <label for="party-surname">Surname</label>
+            </div>
+            <div class="input-group">
+              <input type="number" id="party-age" placeholder=" ">
+              <label for="party-age">Age</label>
+            </div>
+            <div class="input-group">
+              <input type="date" id="party-dob" placeholder=" " required>
+              <label for="party-dob" class="mandatory">Date of Birth</label>
+            </div>
+            <div class="input-group">
+              <select id="party-gender" required>
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              <label for="party-gender" class="mandatory">Gender</label>
+            </div>
+            <div class="input-group">
+              <select id="party-smokerStatus">
+                <option value="">Select smoker status</option>
+                <option value="Smoker">Smoker</option>
+                <option value="Non-Smoker">Non-Smoker</option>
+                <option value="Unknown">Unknown</option>
+              </select>
+              <label for="party-smokerStatus">Smoker Status</label>
+            </div>
+            <div class="input-group">
+              <select id="party-adminAccess">
+                <option value="0">No</option>
+              </select>
+              <label for="party-adminAccess">Admin Access</label>
             </div>
           </div>
-          <div id="contact-section" class="tab-content col-span-2 hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="input-group">
-                <input type="tel" id="party-phone" placeholder=" " required>
-                <label for="party-phone" class="mandatory">Phone Number</label>
-              </div>
-              <div class="input-group">
-                <input type="email" id="party-email" placeholder=" " required>
-                <label for="party-email" class="mandatory">Email</label>
-              </div>
-              <div class="input-group">
-                <input type="email" id="party-alternateEmail" placeholder=" ">
-                <label for="party-alternateEmail">Alternate Email</label>
-              </div>
-              <div class="input-group">
-                <input type="text" id="party-phoneCountryCode" placeholder=" ">
-                <label for="party-phoneCountryCode">Phone Country Code</label>
-              </div>
-              <div class="input-group">
-                <input type="tel" id="party-secondaryPhone" placeholder=" ">
-                <label for="party-secondaryPhone">Secondary Phone</label>
-              </div>
-              <div class="input-group">
-                <input type="text" id="party-emergencyContactName" placeholder=" ">
-                <label for="party-emergencyContactName">Emergency Contact Name</label>
-              </div>
-              <div class="input-group">
-                <input type="tel" id="party-emergencyContactPhone" placeholder=" ">
-                <label for="party-emergencyContactPhone">Emergency Contact Phone</label>
-              </div>
+        </div>
+        <div id="contact-section" class="tab-content col-span-2 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="input-group">
+              <input type="tel" id="party-phone" placeholder=" " required pattern="[0-9]{10}" maxlength="10" oninput="validatePhoneNumber(this)">
+              <label for="party-phone" class="mandatory">Phone Number</label>
+              <span id="party-phone-feedback" class="text-sm text-red-500"></span>
+            </div>
+            <div class="input-group">
+              <input type="email" id="party-email" placeholder=" " required oninput="validateEmailOrUserCode('email', this.value)">
+              <label for="party-email" class="mandatory">Email</label>
+              <span id="party-email-feedback" class="text-sm"></span>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-userCode" placeholder=" " required oninput="validateEmailOrUserCode('userCode', this.value)">
+              <label for="party-userCode" class="mandatory">userCode</label>
+              <span id="party-userCode-feedback" class="text-sm"></span>
+            </div>
+            <div class="input-group">
+              <input type="email" id="party-alternateEmail" placeholder=" ">
+              <label for="party-alternateEmail">Alternate Email</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-phoneCountryCode" placeholder=" ">
+              <label for="party-phoneCountryCode">Phone Country Code</label>
+            </div>
+            <div class="input-group">
+              <input type="tel" id="party-secondaryPhone" placeholder=" ">
+              <label for="party-secondaryPhone">Secondary Phone</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-emergencyContactName" placeholder=" ">
+              <label for="party-emergencyContactName">Emergency Contact Name</label>
+            </div>
+            <div class="input-group">
+              <input type="tel" id="party-emergencyContactPhone" placeholder=" ">
+              <label for="party-emergencyContactPhone">Emergency Contact Phone</label>
             </div>
           </div>
-          <div id="address-section" class="tab-content col-span-2 hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="input-group">
-                <input type="text" id="party-street" placeholder=" ">
-                <label for="party-street">Street</label>
-              </div>
-              <div class="input-group">
-                <input type="text" id="party-city" placeholder=" ">
-                <label for="party-city">City</label>
-              </div>
-              <div class="input-group">
-                <input type="text" id="party-state" placeholder=" ">
-                <label for="party-state">State</label>
-              </div>
-              <div class="input-group">
-                <input type="text" id="party-zipCode" placeholder=" ">
-                <label for="party-zipCode">Zip Code</label>
-              </div>
-              <div class="input-group">
-                <input type="text" id="party-country" placeholder=" ">
-                <label for="party-country">Country</label>
-              </div>
+        </div>
+        <div id="address-section" class="tab-content col-span-2 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="input-group">
+              <input type="text" id="party-street" placeholder=" ">
+              <label for="party-street">Street</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-city" placeholder=" ">
+              <label for="party-city">City</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-state" placeholder=" ">
+              <label for="party-state">State</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-zipCode" placeholder=" ">
+              <label for="party-zipCode">Zip Code</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-country" placeholder=" ">
+              <label for="party-country">Country</label>
             </div>
           </div>
-        </form>
-      </div>
-      <div class="modal-footer" id="party-btn-container">
-        <button id="reset-party-btn" class="btn-base btn-secondary">Reset</button>
-        <button id="prev-tab-btn" class="btn-base btn-secondary" disabled>Previous</button>
-        <button id="next-tab-btn" class="btn-base btn-primary hidden">Next</button>
-        <button id="submit-party-btn" class="btn-base btn-primary hidden" onclick="createParty()">Submit</button>
-      </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer" id="party-btn-container">
+      <button id="reset-party-btn" class="btn-base btn-secondary">Reset</button>
+      <button id="prev-tab-btn" class="btn-base btn-secondary" disabled>Previous</button>
+      <button id="next-tab-btn" class="btn-base btn-primary hidden">Next</button>
+      <button id="submit-party-btn" class="btn-base btn-primary hidden" onclick="createParty()">Submit</button>
     </div>
   </div>
+</div>
 
  <div id="create-policy-modal" class="modal-base hidden">
     <div class="modal-content-fullscreen">
@@ -1245,18 +1251,20 @@
 
  <script>
  const API_URL = 'http://localhost:8081/policy/policy-domain';
+//Update config to track validation status
  const config = {
-		  loginUrl: 'login',
-		  userCode: null,
-		  email: null,
-		  itemsPerPage: 5,
-		  currentPage: 1,
-		  currentData: [],
-		  currentView: 'grid',
-		  currentTab: 'personal',
-		  customerValidated: false
-		};
-
+   loginUrl: 'login',
+   userCode: null,
+   email: null,
+   itemsPerPage: 5,
+   currentPage: 1,
+   currentData: [],
+   currentView: 'grid',
+   currentTab: 'personal',
+   customerValidated: false,
+   emailValidated: false,
+   userCodeValidated: false
+ };
 		const elements = {
 		  modals: {
 		    profile: document.getElementById('profile-modal'),
@@ -1332,24 +1340,29 @@
 		  });
 		  config.customerValidated = false;
 		}
-
+		// Update resetPartyForm to reset validation states
 		function resetPartyForm() {
 		  document.getElementById('create-party-form').reset();
 		  document.getElementById('party-userCode').value = config.userCode || '';
 		  const fields = [
 		    'name', 'middleName', 'surname', 'age', 'dob', 'gender', 'smokerStatus', 'adminAccess',
 		    'phone', 'email', 'alternateEmail', 'phoneCountryCode', 'secondaryPhone', 'emergencyContactName', 'emergencyContactPhone',
-		    'street', 'city', 'state', 'zipCode', 'country'
+		    'street', 'city', 'state', 'zipCode', 'country', 'userCode'
 		  ];
 		  fields.forEach(field => {
 		    const element = document.getElementById(`party-${field}`);
 		    if (element.tagName === 'SELECT') {
 		      element.value = '';
 		    }
+		    element.classList.remove('border-red-500', 'border-green-500');
 		  });
+		  ['phone', 'email', 'userCode'].forEach(field => {
+		    document.getElementById(`party-${field}-feedback`).textContent = '';
+		  });
+		  config.emailValidated = false;
+		  config.userCodeValidated = false;
 		  switchTab('personal');
 		}
-
 		function showAlert(type, message, redirectUrl = null, customerNumber = null, policyNumber = null) {
 		  document.getElementById(`${type}-message`).textContent = message;
 		  const numberContainer = document.getElementById('customer-number-container');
@@ -1618,112 +1631,175 @@
 		    hideLoader();
 		  }
 		}
+		function validatePhoneNumber(input) {
+			  const feedback = document.getElementById('party-phone-feedback');
+			  const value = input.value.trim();
+			  const isValid = /^\d{10}$/.test(value);
+			  input.classList.toggle('border-red-500', !isValid && value.length > 0);
+			  input.classList.toggle('border-green-500', isValid);
+			  feedback.textContent = isValid ? '✅ Valid' : value.length > 0 ? 'Phone number must be exactly 10 digits' : '';
+			  return isValid;
+			}
 
-		async function createParty() {
-		  const userCode = document.getElementById('party-userCode').value;
-		  const name = document.getElementById('party-name').value.trim();
-		  const middleName = document.getElementById('party-middleName').value.trim();
-		  const surname = document.getElementById('party-surname').value.trim();
-		  const age = document.getElementById('party-age').value.trim();
-		  const dateOfBirth = document.getElementById('party-dob').value;
-		  const gender = document.getElementById('party-gender').value;
-		  const phoneNumber = document.getElementById('party-phone').value.trim();
-		  const email = document.getElementById('party-email').value.trim();
-		  const smokerStatus = document.getElementById('party-smokerStatus').value;
-		  const adminAccess = document.getElementById('party-adminAccess').value;
-		  const alternateEmail = document.getElementById('party-alternateEmail').value.trim();
-		  const phoneCountryCode = document.getElementById('party-phoneCountryCode').value.trim();
-		  const secondaryPhone = document.getElementById('party-secondaryPhone').value.trim();
-		  const emergencyContactName = document.getElementById('party-emergencyContactName').value.trim();
-		  const emergencyContactPhone = document.getElementById('party-emergencyContactPhone').value.trim();
-		  const street = document.getElementById('party-street').value.trim();
-		  const city = document.getElementById('party-city').value.trim();
-		  const state = document.getElementById('party-state').value.trim();
-		  const zipCode = document.getElementById('party-zipCode').value.trim();
-		  const country = document.getElementById('party-country').value.trim();
+			async function validateEmailOrUserCode(type, value) {
+			  const feedbackId = `party-${type}-feedback`;
+			  const feedback = document.getElementById(feedbackId);
+			  const input = document.getElementById(`party-${type}`);
+			  if (!value.trim()) {
+			    feedback.textContent = '';
+			    input.classList.remove('border-red-500', 'border-green-500');
+			    config[`${type}Validated`] = false;
+			    return;
+			  }
 
-		  if (!userCode) {
-		    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
-		    return;
-		  }
-		  if (!name) {
-		    showAlert('error', 'Customer Name is required.');
-		    return;
-		  }
-		  if (!email) {
-		    showAlert('error', 'Email is required.');
-		    return;
-		  }
-		  if (!gender) {
-		    showAlert('error', 'Gender is required.');
-		    return;
-		  }
-		  if (!phoneNumber) {
-		    showAlert('error', 'Phone Number is required.');
-		    return;
-		  }
-		  if (!dateOfBirth) {
-		    showAlert('error', 'Date of Birth is required.');
-		    return;
-		  }
+			  showLoader();
+			  try {
+			    const param = type === 'email' ? `email=${encodeURIComponent(value)}` : `userCode=${encodeURIComponent(value)}`;
+			    const response = await fetch(`http://localhost:8081/policy/validate/EmailOrUserCode?${param}`, {
+			      method: 'GET',
+			      headers: { 'userCode': config.userCode }
+			    });
+			    const data = await response.json();
+			    
+			    if (response.ok && !data.errorMessage) {
+			      feedback.textContent = '✅ Valid';
+			      feedback.classList.add('text-green-500');
+			      feedback.classList.remove('text-red-500');
+			      input.classList.add('border-green-500');
+			      input.classList.remove('border-red-500');
+			      config[`${type}Validated`] = true;
+			    } else {
+			      feedback.textContent = data.errorMessage || 'Invalid input';
+			      feedback.classList.add('text-red-500');
+			      feedback.classList.remove('text-green-500');
+			      input.classList.add('border-red-500');
+			      input.classList.remove('border-green-500');
+			      config[`${type}Validated`] = false;
+			    }
+			  } catch (error) {
+			    feedback.textContent = 'Error validating input';
+			    feedback.classList.add('text-red-500');
+			    input.classList.add('border-red-500');
+			    input.classList.remove('border-green-500');
+			    config[`${type}Validated`] = false;
+			    console.error('Validation error:', error);
+			  } finally {
+			    hideLoader();
+			  }
+			}
 
-		  const payload = {
-		    userCode,
-		    name,
-		    middleName,
-		    surname,
-		    age,
-		    dateOfBirth,
-		    gender,
-		    phoneNumber,
-		    email,
-		    smokerStatus,
-		    adminAccess,
-		    address: { street, city, state, zipCode, country },
-		    contactDetails: { alternateEmail, phoneCountryCode, phoneNumber: secondaryPhone, emergencyContactName, emergencyContactPhone }
-		  };
+			async function createParty() {
+				  const userCode = document.getElementById('party-userCode').value;
+				  const name = document.getElementById('party-name').value.trim();
+				  const middleName = document.getElementById('party-middleName').value.trim();
+				  const surname = document.getElementById('party-surname').value.trim();
+				  const age = document.getElementById('party-age').value.trim();
+				  const dateOfBirth = document.getElementById('party-dob').value;
+				  const gender = document.getElementById('party-gender').value;
+				  const phoneNumber = document.getElementById('party-phone').value.trim();
+				  const email = document.getElementById('party-email').value.trim();
+				  const smokerStatus = document.getElementById('party-smokerStatus').value;
+				  const adminAccess = document.getElementById('party-adminAccess').value;
+				  const alternateEmail = document.getElementById('party-alternateEmail').value.trim();
+				  const phoneCountryCode = document.getElementById('party-phoneCountryCode').value.trim();
+				  const secondaryPhone = document.getElementById('party-secondaryPhone').value.trim();
+				  const emergencyContactName = document.getElementById('party-emergencyContactName').value.trim();
+				  const emergencyContactPhone = document.getElementById('party-emergencyContactPhone').value.trim();
+				  const street = document.getElementById('party-street').value.trim();
+				  const city = document.getElementById('party-city').value.trim();
+				  const state = document.getElementById('party-state').value.trim();
+				  const zipCode = document.getElementById('party-zipCode').value.trim();
+				  const country = document.getElementById('party-country').value.trim();
 
-		  showLoader();
-		  try {
-			  const response = await fetch('http://localhost:8081/policy/customer-details/update', {
-		      method: 'POST',
-		      headers: {
-		        'Content-Type': 'application/json',
-		        'userCode': config.userCode
-		      },
-		      body: JSON.stringify(payload)
-		    });
+				  if (!userCode) {
+				    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
+				    return;
+				  }
+				  if (!name) {
+				    showAlert('error', 'Customer Name is required.');
+				    return;
+				  }
+				  if (!email) {
+				    showAlert('error', 'Email is required.');
+				    return;
+				  }
+				  if (!config.emailValidated) {
+				    showAlert('error', 'Please enter a valid and unique email.');
+				    return;
+				  }
+				  if (!config.userCodeValidated) {
+				    showAlert('error', 'Please enter a valid and unique userCode.');
+				    return;
+				  }
+				  if (!gender) {
+				    showAlert('error', 'Gender is required.');
+				    return;
+				  }
+				  if (!phoneNumber || !validatePhoneNumber(document.getElementById('party-phone'))) {
+				    showAlert('error', 'Phone Number must be exactly 10 digits.');
+				    return;
+				  }
+				  if (!dateOfBirth) {
+				    showAlert('error', 'Date of Birth is required.');
+				    return;
+				  }
 
-		    const responseData = await response.json();
-		    console.log('API Response:', responseData); // Debug log
+				  const payload = {
+				    userCode,
+				    name,
+				    middleName,
+				    surname,
+				    age,
+				    dateOfBirth,
+				    gender,
+				    phoneNumber,
+				    email,
+				    smokerStatus,
+				    adminAccess,
+				    address: { street, city, state, zipCode, country },
+				    contactDetails: { alternateEmail, phoneCountryCode, phoneNumber: secondaryPhone, emergencyContactName, emergencyContactPhone }
+				  };
 
-		    if (response.ok) {
-		      const { data } = responseData;
-		      if (data) {
-		        const customerNumberMatch = data.match(/Customer Number: (\d+)/);
-		        const customerNumber = customerNumberMatch ? customerNumberMatch[1] : null;
-		        showAlert('success', data || 'Customer created successfully.', null, customerNumber);
-		        closeModal('customerDetails');
-		        resetPartyForm();
-		      } else {
-		        // Log warning for debugging
-		        console.warn('API returned null data for successful customer creation:', responseData);
-		        showAlert('error', responseData.errorMessage || 'Customer created, but no customer number returned.');
-		        closeModal('customerDetails');
-		        resetPartyForm();
-		      }
-		    } else {
-		      const errorMessage = responseData.errorMessage || `Failed to create customer (Status: ${response.status})`;
-		      showAlert('error', errorMessage);
-		    }
-		  } catch (error) {
-		    const errorMessage = error.message || 'An error occurred. Please try again.';
-		    showAlert('error', errorMessage);
-		    console.error('API error:', error);
-		  } finally {
-		    hideLoader();
-		  }
-		}
+				  showLoader();
+				  try {
+				    const response = await fetch('http://localhost:8081/policy/customer-details/update', {
+				      method: 'POST',
+				      headers: {
+				        'Content-Type': 'application/json',
+				        'userCode': config.userCode
+				      },
+				      body: JSON.stringify(payload)
+				    });
+
+				    const responseData = await response.json();
+				    console.log('API Response:', responseData);
+
+				    if (response.ok) {
+				      const { data } = responseData;
+				      if (data) {
+				        const customerNumberMatch = data.match(/Customer Number: (\d+)/);
+				        const customerNumber = customerNumberMatch ? customerNumberMatch[1] : null;
+				        showAlert('success', data || 'Customer created successfully.', null, customerNumber);
+				        closeModal('create-party');
+				        resetPartyForm();
+				      } else {
+				        console.warn('API returned null data for successful customer creation:', responseData);
+				        showAlert('error', responseData.errorMessage || 'Customer created, but no customer number returned.');
+				        closeModal('create-party');
+				        resetPartyForm();
+				      }
+				    } else {
+				      const errorMessage = responseData.errorMessage || `Failed to create customer (Status: ${response.status})`;
+				      showAlert('error', errorMessage);
+				    }
+				  } catch (error) {
+				    const errorMessage = error.message || 'An error occurred. Please try again.';
+				    showAlert('error', errorMessage);
+				    console.error('API error:', error);
+				  } finally {
+				    hideLoader();
+				  }
+				}
 
 		async function createPolicy() {
 			  const payload = {

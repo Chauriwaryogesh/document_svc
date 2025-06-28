@@ -333,7 +333,7 @@ public class SecurityService implements ISecrityService {
 		// Check for existing Security and Customer records
 		Optional<Security> existingSecurityByEmail = securityRepository
 				.findByEmailAndDeletedFlag(securityDTO.getEmail(), "N");
-		Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail());
+		Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail(),"N");
 		Optional<Security> existingSecurityByUserCode = securityRepository
 				.findByUserCodeAndDeletedFlag(securityDTO.getUserCode(), "N");
 		Optional<Customer> existingCustomerByUserCode = customerRepo.findByUserCode(securityDTO.getUserCode());
@@ -468,7 +468,7 @@ public class SecurityService implements ISecrityService {
 		// Check for existing Security and Customer records
 		Optional<Security> existingSecurityByEmail = securityRepository
 				.findByEmailAndDeletedFlag(securityDTO.getEmail(), "N");
-		Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail());
+		Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail(),"N");
 		Optional<Security> existingSecurityByUserCode = securityRepository
 				.findByUserCodeAndDeletedFlag(securityDTO.getUserCode(), "N");
 		Optional<Customer> existingCustomerByUserCode = customerRepo.findByUserCode(securityDTO.getUserCode());

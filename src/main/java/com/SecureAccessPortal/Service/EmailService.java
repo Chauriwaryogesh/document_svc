@@ -209,7 +209,7 @@ public class EmailService {
                     mailSender.send(message);
 
                     // Customer and workitem logic
-                    Optional<Customer> byEmail = customerRepo.findByEmail(email);
+                    Optional<Customer> byEmail = customerRepo.findByEmail(email,"N");
                     if (byEmail.isPresent()) {
                         Customer customer = byEmail.get();
                         String workType = CommonConstant.OTP_CREATED;
@@ -268,7 +268,7 @@ public class EmailService {
 		otpStoreRepository.save(otpStore);
 
 		// Customer and workitem logic
-		Optional<Customer> byEmail = customerRepo.findByEmail(email);
+		Optional<Customer> byEmail = customerRepo.findByEmail(email,"N");
 		if (byEmail.isPresent()) {
 			Customer customer = byEmail.get();
 			String workType = CommonConstant.OTP_VERIFIED;
@@ -524,7 +524,7 @@ public class EmailService {
 			Optional<Customer> customer = customerRepo.findByCustomerNo(customerNo);
 			customerList = mappingForCustomerOptional(customer);
 		} else if (email != null) {
-			Optional<Customer> customer = customerRepo.findByEmail(email);
+			Optional<Customer> customer = customerRepo.findByEmail(email,"N");
 			customerList = mappingForCustomerOptional(customer);
 
 		} else {
@@ -643,7 +643,7 @@ public class EmailService {
 			}
 
 			// Check for duplicate email and userCode
-			Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(cust.getEmail());
+			Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(cust.getEmail(),"N");
 			Optional<Security> existingSecurityByEmail = securityRepo.findByEmailAndDeletedFlag(cust.getEmail(), "N");
 			Optional<Customer> existingCustomerByUserCode = customerRepo.findByUserCode(cust.getUserCode());
 			Optional<Security> existingSecurityByUserCode = securityRepo

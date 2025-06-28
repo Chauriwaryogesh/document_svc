@@ -9,8 +9,8 @@ import com.SecureAccessPortal.Entity.Customer;
 
 public interface CustomerRepo extends JpaRepository<Customer, String> {
 
-	@Query(value = "Select * from  customer c where c.email=?1", nativeQuery = true)
-	Optional<Customer> findByEmail(String email);
+	@Query(value = "Select * from  customer c where c.email=?1 and c.deletedFlag=?2", nativeQuery = true)
+	Optional<Customer> findByEmail(String email, String deletedFlag);
 
 	@Query("SELECT c.customerNo FROM Customer c ORDER BY c.customerNo DESC LIMIT 1")
 	String findTopCustomerNo();

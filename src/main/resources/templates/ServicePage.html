@@ -198,7 +198,9 @@
     };
 
     window.navigateTo = function(page) {
-        if (page !== 'logout' && !config.userCode) return;
+        if (page !== 'logout' && !config.userCode)
+        	 sessionStorage.removeItem('userCode');
+        window.location.href = '/login';
         const pageUrls = { dashboard: 'dashboard', workitems: 'workItemServices', policy: 'policy', bankAccount:'bankAccount', payment: 'payment', logout: 'login', admin:'AdminPanel' };
         window.location.href = pageUrls[page]; 
       };

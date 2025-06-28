@@ -510,7 +510,7 @@ public class PolicyService {
 
 	private PolicyInfoDTO mapToDTO(Policy_Info policy) {
 		PolicyInfoDTO dto = new PolicyInfoDTO();
-		dto.setPolicyId(policy.getPolicy_id());
+		dto.setPolicyId(String.valueOf(policy.getPolicy_id()));
 		dto.setPolicyName(policy.getPolicy_name());
 		dto.setProductCode(policy.getProduct_code());
 		dto.setPolicyCompanyName(policy.getPolicy_company_name());
@@ -529,6 +529,31 @@ public class PolicyService {
 		dto.setCreatedAt(policy.getCreated_at() != null ? policy.getCreated_at().toLocalDateTime() : null);
 		dto.setUpdatedAt(policy.getUpdated_at() != null ? policy.getUpdated_at().toLocalDateTime() : null);
 		return dto;
+	}
+
+	public ResponseEntity<String> validateEmailUserCode(String email, String userCode) {
+		ResponseEntity<String> response = new ResponseEntity<String>();
+		String message = "";
+		if (email != null) {
+			Optional<Customer> byEmail = customerRepository.findByEmail(email, "N");
+			if (byEmail.isPresent()) {
+				message = "Email is exist in System please enter new email";
+				response.setErrorMessage(message);
+			} else {
+				message = "Great";
+				response.setStatus(message);
+			}
+		} else if (userCode != null) {
+			Customer customer = customerRepository.findByUserCodeAndDeletedFlagN(userCode, "N");
+			if (customer != null) {
+				message = "UserCode is exist in System please enter new email";
+				response.setErrorMessage(message);
+			} else {
+				message = "Great";
+				response.setStatus(message);
+			}
+		}
+		return response;
 	}
 
 }

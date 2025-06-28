@@ -112,5 +112,14 @@ public class PolicyController {
 		return resp;
 	}
 	
+	@GetMapping("validate/EmailOrUserCode")
+	public ResponseEntity<String> validateEmailUserCode(@RequestParam(value = "email", required = false) String email,
+			@RequestParam(value = "userCode", required = false) String userCode) {
+		ResponseEntity<String> response = new ResponseEntity<String>();
+		response = policyService.validateEmailUserCode(email, userCode);
+		return response;
+
+	}
+	
 	
 }
