@@ -39,6 +39,7 @@ import com.SecureAccessPortal.Repo.PaymentSequenceRepo;
 import com.SecureAccessPortal.Repo.PaymentsRepo;
 import com.SecureAccessPortal.Repo.PolicyInfoRepo;
 import com.SecureAccessPortal.Repo.WorkItemRepo;
+import com.SecureAccessPortal.Transformer.PolicyMapper;
 import com.SecureAccessPortal.util.DateUtil;
 
 import jakarta.transaction.Transactional;
@@ -71,6 +72,9 @@ public class PolicyService {
 	
 	@Autowired
 	private PaymentSequenceRepo paymentSequenceRepository;
+	
+	@Autowired
+	private PolicyMapper policyMapper;
 
 	@Autowired
 	private DateUtil dateUtil;
@@ -497,13 +501,17 @@ public class PolicyService {
 		} else {
 			policies = policyInfoRepo.findAllByOrderByProductCode();
 		}
-		Map<String, Map<String, List<PolicyInfoDTO>>> groupedByPolicyNameAndProductCode = policies.stream()
-				.map(this::mapToDTO).collect(Collectors.groupingBy(PolicyInfoDTO::getPolicyName,
-						Collectors.groupingBy(PolicyInfoDTO::getProductCode)));
-		return groupedByPolicyNameAndProductCode.entrySet().stream()
-				.flatMap(nameEntry -> nameEntry.getValue().entrySet().stream()
-						.map(productEntry -> new GroupedPolicyDTO(nameEntry.getKey(), productEntry.getKey(),
-								productEntry.getValue())))
+
+		// Grouping by policyName -> then by (productCode, policyType)
+		Map<String, Map<String, Map<String, List<PolicyInfoDTO>>>> grouped = policies.stream().map(this::mapToDTO)
+				.collect(Collectors.groupingBy(PolicyInfoDTO::getPolicyName, Collectors.groupingBy(
+						PolicyInfoDTO::getProductCode, Collectors.groupingBy(PolicyInfoDTO::getPolicyType))));
+
+		// Flattening into GroupedPolicyDTO list
+		return grouped.entrySet().stream().flatMap(policyNameEntry -> policyNameEntry.getValue().entrySet().stream()
+				.flatMap(productCodeEntry -> productCodeEntry.getValue().entrySet().stream()
+						.map(policyTypeEntry -> new GroupedPolicyDTO(policyNameEntry.getKey(),
+								productCodeEntry.getKey(), policyTypeEntry.getKey(), policyTypeEntry.getValue()))))
 				.collect(Collectors.toList());
 	}
 	
@@ -553,6 +561,15 @@ public class PolicyService {
 				response.setStatus(message);
 			}
 		}
+		return response;
+	}
+
+	public ResponseEntity<List<PolicyDTO>> fetchAllPolicies(String email, String userCode) {
+		ResponseEntity<List<PolicyDTO>> response = new ResponseEntity<>();
+		List<Customer> customer= customerRepository.findAll();
+		List<Policy> policies= policyRepository.findAll();
+		
+		response= policyMapper.mapAllPolicies(customer,policies);
 		return response;
 	}
 

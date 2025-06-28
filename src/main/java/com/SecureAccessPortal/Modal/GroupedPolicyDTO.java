@@ -7,7 +7,15 @@ public class GroupedPolicyDTO {
 
 	private String policyName;
 	private String productCode;
+	private String policyType;
 	private List<PolicyInfoDTO> policies;
+	
+	public String getPolicyType() {
+		return policyType;
+	}
+	public void setPolicyType(String policyType) {
+		this.policyType = policyType;
+	}
 	public String getPolicyName() {
 		return policyName;
 	}
@@ -26,10 +34,11 @@ public class GroupedPolicyDTO {
 	public void setPolicies(List<PolicyInfoDTO> policies) {
 		this.policies = policies;
 	}
-	public GroupedPolicyDTO(String policyName, String productCode, List<PolicyInfoDTO> policies) {
+	public GroupedPolicyDTO(String policyName, String productCode,String policyType, List<PolicyInfoDTO> policies) {
 		super();
 		this.policyName = policyName;
 		this.productCode = productCode;
+		this.policyType= policyType;
 		this.policies = policies;
 	}
 	

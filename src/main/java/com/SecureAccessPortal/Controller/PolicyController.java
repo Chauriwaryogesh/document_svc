@@ -121,5 +121,14 @@ public class PolicyController {
 
 	}
 	
+	@GetMapping("policy/fetchAllPolicies")
+	public ResponseEntity<List<PolicyDTO>> fetchAllPolicies(@RequestParam(value = "email", required = false) String email,
+			@RequestParam(value = "userCode", required = false) String userCode) {
+		ResponseEntity<List<PolicyDTO>> response = new ResponseEntity<>();
+		response = policyService.fetchAllPolicies(email, userCode);
+		return response;
+
+	}
+	
 	
 }
