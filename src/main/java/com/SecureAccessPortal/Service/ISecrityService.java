@@ -25,7 +25,7 @@ public interface ISecrityService{
 
 	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> registerUser(SecurityDTO securityDTO, String userCode);
 
-	public boolean deleteNoteById(Long id);
+	public boolean deleteNoteById(Long id, String userCode);
 
 	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> searchUserFromList(SecurityDTO searchRequest, String userCode);
 
@@ -36,6 +36,8 @@ public interface ISecrityService{
 
 	public com.SecureAccessPortal.Service.ResponseEntity<String> loginUsingPassword(String email, String userCode,
 			String password);
+
+	void logLoginAttempt(String email, String userCode, boolean success, String reason, String loginMethod);
 
 	
 

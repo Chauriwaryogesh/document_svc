@@ -65,8 +65,7 @@ public class SecurityController {
 
 	@GetMapping("/user-list")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<SecurityDTO>> fetchSecurityRole(
-			@RequestParam(value = "id", required = false) String id, @RequestHeader(required = false) String userCode) {
-
+		@RequestParam(value = "id", required = false) String id, @RequestHeader(required = false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<SecurityDTO>> serviceResponse = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		List<SecurityDTO> response = new ArrayList<>();
 		try {
@@ -74,7 +73,7 @@ public class SecurityController {
 			if (response != null && !response.isEmpty()) {
 				serviceResponse.setData(response);
 			} else {
-				serviceResponse.setErrorMessage("No available users");
+				serviceResponse.setErrorMessage("No Admin Access for given user "+ userCode);
 			}
 		} catch (Exception e) {
 			e.getMessage();
@@ -149,8 +148,9 @@ public class SecurityController {
 	}
 
 	@DeleteMapping("user-list/delete/{id}")
-	public org.springframework.http.ResponseEntity<Void> deleteNote(@PathVariable Long id) {
-		boolean deleted = securityService.deleteNoteById(id);
+	public org.springframework.http.ResponseEntity<Void> deleteNote(@PathVariable Long id,
+			@RequestHeader(value="userCode",required=true)String userCode) {
+		boolean deleted = securityService.deleteNoteById(id,userCode);
 		return deleted ? org.springframework.http.ResponseEntity.noContent().build()
 				: org.springframework.http.ResponseEntity.notFound().build();
 	}
@@ -177,7 +177,7 @@ public class SecurityController {
 			@RequestParam(value = "Otp") String otp, @RequestHeader(value = "user-id", required = true) String userCode) {
 		boolean isValid = otpService.verifyOtp(email, otp, userCode);
 		com.SecureAccessPortal.Service.ResponseEntity<String> data = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		isValid =true;
+		//isValid =true;
 		if (isValid) {
 			data.setData("Otp Verified Successfully");
 		} else {

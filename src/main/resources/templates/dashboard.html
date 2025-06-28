@@ -1473,12 +1473,8 @@ circle {
             function redirectToDocumentService() { window.location.href = "DocumentService"; }
             function redirectToEmployeeService() { window.location.href = "EmployeeService"; }
             function redirectToAdminPanel() {
-                const PaneluserCode = getuserCode();
-                if (PaneluserCode === "ychouri") {
-                    window.location.href = "AdminPanel";
-                } else {
-                    showErrorAlert("No admin access for user.");
-                }
+                const PaneluserCode = getuserCode();          
+              window.location.href = "AdminPanel";               
             }
             function redirectToCloudService() { window.location.href = "cloudServices"; }
             function redirectToMailService() { window.location.href = "MailServices"; }
@@ -1799,12 +1795,8 @@ circle {
                     showErrorAlert('Please select one user.');
                     return;
                 }
-                const PaneluserCode = getuserCode();
-                if (PaneluserCode === "ychouri") {
-                    window.location.href = `AdminPanel?id=${selectedCheckbox.value}`;
-                } else {
-                    showErrorAlert("No admin access for user.");
-                }
+                const PaneluserCode = getuserCode();          
+                    window.location.href = `AdminPanel?id=${selectedCheckbox.value}`;                
             }
 
             function showErrorAlert(message) {

@@ -1,10 +1,8 @@
 package com.SecureAccessPortal.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Email;
-import com.SecureAccessPortal.Entity.LoginHistory;
 import com.SecureAccessPortal.Entity.OtpStore;
 import com.SecureAccessPortal.Entity.Security;
 import com.SecureAccessPortal.Exception.DuplicateEntryException;
@@ -43,7 +40,6 @@ import com.SecureAccessPortal.Modal.WorkItemDTO;
 import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.IEmailRepo;
 import com.SecureAccessPortal.Repo.ISecurityRepo;
-import com.SecureAccessPortal.Repo.LoginHistoryRepo;
 import com.SecureAccessPortal.Repo.OtpStoreRepo;
 
 import jakarta.mail.internet.InternetAddress;
@@ -67,8 +63,9 @@ public class EmailService {
 
 	@Autowired
 	private OtpStoreRepo otpStoreRepository;
-
 	
+	@Autowired
+	private ISecrityService securityService;
 
 	private final JavaMailSender mailSender;
 	private final Map<String, String> otpStore = new HashMap<>();
@@ -250,11 +247,10 @@ public class EmailService {
 	public boolean verifyOtp(String email, String otp, String userCode) {
 		// Validate OTP with deletedFlag = 'N'
 		Optional<OtpStore> emailData = otpStoreRepository.findByEmailAndOtpAndDeletedFlag(email, otp, "N");
-		if (emailData.isEmpty()) {
+		if (!emailData.isPresent()) {
 			logger.warn("No valid OTP found for email: {}", email);
-			//return false;
+			return false;
 		}
-
 		OtpStore otpStore = emailData.get();
 		LocalDateTime now = LocalDateTime.now();
 
@@ -282,6 +278,7 @@ public class EmailService {
 			// TODO: Add bank account policy check
 			workItemService.mapRequetforWorkItemOtpService(userCode, customer, workType, workItemName, comment,
 					otpStore);
+			securityService.logLoginAttempt(email, userCode, true, "Otp Matches","otp");
 		} else {
 			logger.warn("Customer not found for email: {}", email);
 		}

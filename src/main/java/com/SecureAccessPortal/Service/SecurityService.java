@@ -291,16 +291,23 @@ public class SecurityService implements ISecrityService {
 	public List<SecurityDTO> fetchListOfUsers(String id, String userCode) {
 		List<SecurityDTO> allUsers = List.of();
 		List<Security> securityList = new ArrayList<>();
-		try {
-			if (id != null) {
-				Security security = securityRepository.findById(id, "N");
-				securityList.add(security);
-			} else {
-				securityList = securityRepository.findAll("N");
+		Security security = null;
+		security = securityRepository.findByUserCodeDeletedN(userCode, "N");
+		Customer customer=customerRepo.findByUserCodeAndDeletedFlagN(userCode,"N");
+		if (security != null && customer != null && "Y".equalsIgnoreCase(customer.getAdminAccess()) &&"Y".equals(security.getIsEmailVerified()) && "Y".equals(security.getIsUserCodeVerified())) {
+			try {
+				if (id != null) {
+					security = securityRepository.findById(id, "N");
+					securityList.add(security);
+				} else {
+					securityList = securityRepository.findAll("N");
+				}
+				allUsers = securityMapper.mapSecurity(securityList, userCode);
+			} catch (Exception e) {
+				e.getCause();
 			}
-			allUsers = securityMapper.mapSecurity(securityList, userCode);
-		} catch (Exception e) {
-			e.getCause();
+		} else {
+			logger.info("No admin access for User");
 		}
 		return allUsers;
 	}
@@ -418,6 +425,7 @@ public class SecurityService implements ISecrityService {
 			customer.setUserCode(securityDTO.getUserCode());
 			customer.setCreatedBy(userCode);
 			customer.setCreatedTime(LocalDateTime.now());
+			customer.setDeletedFlag("N");
 
 			// Link Security to Customer
 			securityEntity.setCustomerNo(customerNo);
@@ -525,9 +533,14 @@ public class SecurityService implements ISecrityService {
 	}
 
 	@Override
-	public boolean deleteNoteById(Long id) {
+	public boolean deleteNoteById(Long id,String userCode) {
 		if (id != null) {
-			securityRepository.deleteById(id);
+			Optional<Security> byId = securityRepository.findById(id);
+			 Security security = byId.get();
+			 security.setDeletedFlag("Y");
+			 security.setUpdateBy(userCode);
+			 security.setUpdateTime(LocalDate.now());
+			securityRepository.save(security);
 			return true;
 		}
 		return false;
@@ -721,14 +734,14 @@ public class SecurityService implements ISecrityService {
 				response.setStatus("Error");
 				response.setErrorMessage(lookupField.equals("email") ? "Email not found." : "UserCode not found.");
 				logLoginAttempt(email, userCode, false,
-						lookupField.equals("email") ? "Email not found" : "UserCode not found");
+						lookupField.equals("email") ? "Email not found" : "UserCode not found","Password");
 				logger.warn("Login attempt failed for {}: {}. Not found.", lookupField, lookupValue);
 				return response;
 			}
 			if (!"Y".equals(security.getIsEmailVerified()) || !"Y".equals(security.getIsUserCodeVerified())) {
 				response.setStatus("Error");
 				response.setErrorMessage("Account not verified. Please contact admin.");
-				logLoginAttempt(email, userCode, false, "Account not verified");
+				logLoginAttempt(email, userCode, false, "Account not verified","Password");
 				logger.warn("Login attempt failed for {}: {}. Account not verified.", lookupField, lookupValue);
 				return response;
 			}
@@ -737,7 +750,7 @@ public class SecurityService implements ISecrityService {
 	        if (passwordHistory == null) {
 	            response.setStatus("Error");
 	            response.setErrorMessage("No current password found for user.");
-	            logLoginAttempt(email, userCode, false, "No current password found");
+	            logLoginAttempt(email, userCode, false, "No current password found","Password");
 	            logger.warn("Login attempt failed for {}: {}. No current password found.", lookupField, lookupValue);
 	            return response;
 	        }
@@ -746,18 +759,18 @@ public class SecurityService implements ISecrityService {
 	        if (!BCrypt.checkpw(password, passwordHistory.getHashedPassword())) {
 	            response.setStatus("passwordnotmatch");
 	            response.setErrorMessage("Invalid password.");
-	            logLoginAttempt(email, userCode, false, "Password does not match");
+	            logLoginAttempt(email, userCode, false, "Password does not match","Password");
 	            logger.warn("Login attempt failed for {}: {}. Invalid password.", lookupField, lookupValue);
 	            return response;
 	        }
 			else {
 				response.setStatus("Password Match Successfully for "+ passwordHistory.getUserCode());
-				logLoginAttempt(email, userCode, true, "Password Match");
+				logLoginAttempt(email, userCode, true, "Password Match","Password");
 			}
 		} catch (Exception e) {
 			response.setStatus("Error");
 			response.setErrorMessage("Login failed: " + e.getMessage());
-			logLoginAttempt(email, userCode, false, "Exception: " + e.getMessage());
+			logLoginAttempt(email, userCode, false, "Exception: " + e.getMessage(),"Password");
 			logger.error("Exception during password login for email: {}, userCode: {}. Error: {}", email, userCode,
 					e.getMessage(), e);
 		}
@@ -765,7 +778,8 @@ public class SecurityService implements ISecrityService {
 		return response;
 	}
 
-	private void logLoginAttempt(String email, String userCode, boolean success, String reason) {
+	@Override
+	public void logLoginAttempt(String email, String userCode, boolean success, String reason,String loginMethod) {
 		try {
 			LoginHistory loginHistory = new LoginHistory();
 			//loginHistory.setId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
@@ -785,7 +799,7 @@ public class SecurityService implements ISecrityService {
 			loginHistory.setIpAddress("0.0.0.0"); // Placeholder; use actual IP in production
 			loginHistory.setDeviceInfo("Unknown"); // Placeholder; capture from request
 			loginHistory.setSessionId(UUID.randomUUID().toString());
-			loginHistory.setLoginMethod("Password");
+			loginHistory.setLoginMethod(loginMethod);
 			loginHistory.setRiskScore(0); // Placeholder; calculate based on logic
 			loginHistory.setDeletedFlag("N");
 			loginHistory.setCreatedBy(security.getUserCode());
