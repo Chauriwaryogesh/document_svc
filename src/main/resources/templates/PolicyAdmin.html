@@ -1,0 +1,3229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policy Services - Dashboard Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+<style>
+ body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #e0e7ff 0%, #f9fafb 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow-x: hidden;
+}
+
+#particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.text-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.text-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.button-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.button-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.btn-base {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.25rem;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-base:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-base:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #2563eb, #7c3aed);
+}
+
+.btn-secondary {
+    background: linear-gradient(to right, #6b7280, #4b5563);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(to right, #4b5563, #374151);
+}
+
+.btn-danger {
+    background: linear-gradient(to right, #ef4444, #dc2626);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(to right, #dc2626, #b91c1c);
+}
+
+.btn-create-party {
+    background: linear-gradient(to right, #7c3aed, #db2777);
+    color: white;
+}
+
+.btn-create-party:hover {
+    background: linear-gradient(to right, #6d28d9, #be185d);
+}
+
+.btn-create-policy {
+    background: linear-gradient(to right, #10b981, #34d399);
+    color: white;
+}
+
+.btn-create-policy:hover {
+    background: linear-gradient(to right, #059669, #22c55e);
+}
+
+.modal-base {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none; /* Ensure hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-base:not(.hidden) {
+    display: flex !important;
+}
+
+#policy-management-modal {
+    z-index: 1000;
+}
+
+#create-policy-modal {
+    z-index: 1100;
+}
+
+#success-modal, #error-modal {
+    z-index: 1200; /* Above create-policy-modal */
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 500px;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.modal-content-fullscreen {
+    width: 100vw;
+    height: 100vh;
+    background: #ffffff;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(to right, #3b82f6, #8b5cf6) 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+}
+
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+    scrollbar-width: thin;
+    scrollbar-color: #3b82f6 #e5e7eb;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #e5e7eb;
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 4px;
+}
+
+.modal-footer {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f8fafc;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.modern-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid transparent;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+.modern-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    border-color: #3b82f6;
+}
+
+.modern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modern-card:hover::before {
+    opacity: 1;
+}
+
+.gradient-text {
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    position: relative;
+}
+
+.gradient-text::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    animation: pulse 2s infinite;
+}
+
+.loader {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1150; /* Above header, below modals */
+    display: none;
+}
+
+.loader.active {
+    display: flex;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 5px solid #e5e7eb;
+    border-top: 5px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.nav-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1300; /* Above success/error modals */
+    display: none;
+}
+
+.nav-popup.active {
+    display: flex;
+}
+
+.nav-popup-content {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.mandatory::after {
+    content: '*';
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+.modern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 2.5rem;
+    margin-top: 2rem;
+}
+
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    overflow-x: auto;
+}
+
+.modern-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(to bottom, #f8fafc, #e5e7eb);
+}
+
+.modern-table th {
+    padding: 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1f2937;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+.modern-table td {
+    padding: 12px;
+    font-size: 0.85rem;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.modern-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 5;
+    font-weight: 500;
+}
+
+.modern-table tr:hover {
+    background: linear-gradient(to right, #eff6ff, #dbeafe);
+}
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 20;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.tab.active {
+    border-bottom: 2px solid #3b82f6;
+    color: #3b82f6;
+    font-weight: 600;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.tab:hover:not(.active) {
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.modal-close {
+    color: #6b7280;
+    transition: all 0.3s ease;
+    z-index: 1210; /* Above modal content */
+}
+
+.modal-close:hover {
+    color: #374151;
+    transform: rotate(90deg);
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    width: 100%;
+    transition: all 0.3s ease;
+    background: white;
+    color: #1f2937;
+    z-index: 1;
+}
+
+.input-group textarea {
+    resize: none; /* Prevent resizing */
+    height: 6rem; /* Match h-24 in Tailwind (24 * 0.25rem) */
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+.input-group label {
+    position: absolute;
+    top: 0.75rem;
+    left: 1rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    background: white;
+    padding: 0 0.25rem;
+    z-index: 0;
+}
+
+.input-group input:not(:placeholder-shown) + label,
+.input-group select:not([value=""]) + label,
+.input-group textarea:not(:placeholder-shown) + label,
+.input-group input:focus + label,
+.input-group select:focus + label,
+.input-group textarea:focus + label,
+.input-group input[readonly] + label,
+.input-group input:disabled + label {
+    top: -0.75rem;
+    font-size: 0.75rem;
+    color: #3b82f6;
+}
+
+.input-group input[readonly],
+.input-group input:disabled {
+    background: #f3f4f6;
+    color: #1f2937;
+    cursor: not-allowed;
+}
+
+.input-group select option {
+    display: block;
+    color: #1f2937;
+    background: white;
+}
+
+.highlight {
+    background-color: #dbeafe;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+}
+
+#btn-create-party,
+#btn-create-policy {
+    flex: 1;
+    min-width: 180px;
+    font-size: 0.9rem;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.top-actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    background-color: white;
+    border-radius: 25px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: width 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.3s ease;
+    width: 320px;
+}
+
+#policySearchInput {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    padding: 12px 20px;
+    padding-right: 80px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    outline: none;
+    color: #0f172a;
+    width: 100%;
+}
+
+.search-container.focused,
+#policySearchInput:focus {
+    width: 450px;
+    box-shadow: 0 0 12px rgba(79, 70, 229, 0.3);
+}
+
+.search-button-group {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.search-container button {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-left: 4px;
+}
+
+.search-container button:hover {
+    color: #4f46e5;
+    background-color: rgba(79, 70, 229, 0.1);
+}
+
+.search-container button.clear-btn {
+    display: none;
+}
+
+#policySearchInput:not(:placeholder-shown) + .search-button-group .clear-btn,
+.search-container.focused #policySearchInput:not(:placeholder-shown) + .search-button-group .clear-btn {
+    display: inline-flex;
+}
+
+.header-actions button {
+    padding: 9px 14px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 42px;
+    box-sizing: border-box;
+    background: white;
+    color: #0f172a;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.header-actions button:hover {
+    background-color: #4f46e5;
+    color: white;
+    border-color: #4f46e5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.policy-list-container {
+    display: grid;
+    gap: 18px;
+    animation: fadeInUpGeneral 0.6s ease-out;
+}
+
+.policy-list-container.grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.policy-list-container.list-view {
+    grid-template-columns: 1fr;
+}
+
+.policy-card {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 18px;
+    transition: all 0.25s ease;
+    border-left: 4px solid transparent;
+    display: flex;
+    flex-direction: column;
+}
+
+.policy-list-container.grid-view .policy-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.1);
+    border-left-color: #4f46e5;
+}
+
+.policy-card .card-header {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.policy-card .card-subheader {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.copy-btn {
+    cursor: pointer;
+    color: #64748b;
+    transition: color 0.2s;
+}
+
+.copy-btn:hover {
+    color: #4f46e5;
+}
+
+.copy-btn .fa-check {
+    color: #10b981;
+}
+
+.policy-card .policy-details {
+    font-size: 0.9rem;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #d1d5db;
+}
+
+.policy-card .policy-details strong {
+    color: #0f172a;
+}
+
+.policy-card .policy-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 8px;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.policy-card .policy-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 0.85rem;
+}
+
+.policy-list-container.list-view .policy-card {
+    display: grid;
+    grid-template-columns: 2fr 1fr 3fr;
+    align-items: center;
+    padding: 12px 18px;
+}
+
+.policy-list-container.list-view .policy-card:hover {
+    background-color: #f8fafc;
+}
+
+.policy-list-container.list-view .card-header {
+    font-size: 0.95rem;
+}
+
+.policy-list-container.list-view .card-subheader {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+
+.policy-list-container.list-view .policy-details {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.policy-list-container.list-view .policy-details strong {
+    display: none;
+}
+
+.policy-list-container.list-view .policy-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    max-height: none;
+    overflow: visible;
+}
+
+.policy-list-container.list-view .policy-list li {
+    background: #eef2ff;
+    color: #4338ca;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin: 25px 0;
+    width: 100%;
+}
+
+.pagination-summary {
+    font-size: 0.85em;
+    color: #64748b;
+}
+
+.pagination-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-button,
+.page-numbers button {
+    padding: 7px 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 500;
+    background-color: white;
+    color: #4f46e5;
+    border: 1px solid #d1d5db;
+    transition: all 0.2s ease;
+}
+
+.pagination-button:hover:not(:disabled),
+.page-numbers button:hover:not(.active) {
+    background-color: #4f46e5;
+    color: white;
+    border-color: #4f46e5;
+    transform: translateY(-1px);
+}
+
+.pagination-button:disabled {
+    background-color: #e9ecef;
+    color: #adb5bd;
+    cursor: not-allowed;
+    border-color: #e9ecef;
+}
+
+.page-numbers button.active {
+    background-color: #4f46e5;
+    color: white;
+    border-color: #4f46e5;
+    cursor: default;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 5px;
+}
+
+.loading-message,
+.error-message,
+.info-message {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 1rem;
+    color: #64748b;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    grid-column: 1 / -1;
+}
+
+.loading-message i {
+    margin-left: 8px;
+}
+
+.error-message {
+    color: #ef4444;
+}
+
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInUpGeneral {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.policy-manage-table-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.policy-manage-table-actions button {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.policy-manage-table-actions .btn-edit {
+    background-color: #2563eb;
+    color: white;
+}
+
+.policy-manage-table-actions .btn-edit:hover {
+    background-color: #1d4ed8;
+}
+
+.policy-manage-table-actions .btn-delete {
+    background-color: #dc2626;
+    color: white;
+}
+
+.policy-manage-table-actions .btn-delete:hover {
+    background-color: #b91c1c;
+}
+
+.policy-manage-table-actions .btn-view {
+    background-color: #6b7280;
+    color: white;
+}
+
+.policy-manage-table-actions .btn-view:hover {
+    background-color: #4b5563;
+}
+
+.filter-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-bar .input-group {
+    flex: 1;
+    min-width: 180px;
+}
+
+.filter-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-group .input-group {
+    min-width: 150px;
+    margin-bottom: 0;
+}
+</style>
+</head>
+<body class="min-h-screen flex flex-col items-center selection:bg-blue-500 selection:text-white relative">
+  <canvas id="particles"></canvas>
+
+  <header class="header">
+    <h1 id="header-title" class="header-title">Policy Services</h1>
+    <nav class="header-nav">
+       <div class="search-container" id="searchBarContainer">
+            <input type="text" id="policySearchInput" placeholder="Search by Customer, Policy No...">
+            <div class="search-button-group">
+                <button onclick="searchPolicies()" title="Search"><i class="fas fa-search"></i></button>
+                <button onclick="clearSearch()" class="clear-btn" title="Clear Search" style="display:none;"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+      <button id="btn-profile" title="Profile" class="btn-base btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+        Profile
+      </button>
+      <button id="btn-contact" class="btn-base btn-secondary">
+        Contact Us
+      </mbutton>
+      <button id="btn-logout" onclick="navigateTo('logout')" class="btn-base btn-danger">
+        Logout
+      </button>
+    </nav>
+  </header>
+
+  <main class="w-full max-w-7xl flex flex-col flex-grow p-6">
+    <div class="flex-1 flex flex-col items-center gap-6">
+      <div class="w-full flex flex-col items-center justify-center p-8 text-center">
+        <p id="header-subtitle" class="text-hidden text-lg sm:text-xl text-gray-600">Manage your policies and customers efficiently.</p>
+      </div>
+
+      <div class="w-full max-w-6xl">
+        <div class="top-actions-bar">
+             <div class="header-actions flex gap-4">
+                <button onclick="toggleView()"><i class="fas fa-th-list"></i> View</button>
+                <button id="btn-create-party" onclick="openModal('create-party')" class="btn-base btn-create-party">
+                    <i class="fas fa-user-plus"></i> Create Party
+                </button>
+                <button id="btn-create-policy" onclick="openModal('create-policy')" class="btn-base btn-create-policy">
+                    <i class="fas fa-file-contract"></i> Create Policy
+                </button>
+                <!-- New button to open policy management modal (renamed from admin view) -->
+                <button onclick="openModal('policy-management-modal')" class="btn-base btn-secondary">
+                    <i class="fas fa-tasks"></i> Manage Policies
+                </button>
+            </div>
+            <!-- New filter options for main dashboard -->
+            <div class="filter-group ml-auto">
+                <div class="input-group">
+                    <select id="main-policy-type-filter" onchange="applyFiltersAndRender()">
+                        <option value="">All Types</option>
+                        <!-- Options populated by JS -->
+                    </select>
+                    <label for="main-policy-type-filter">Policy Type</label>
+                </div>
+                <div class="input-group">
+                    <select id="main-policy-status-filter" onchange="applyFiltersAndRender()">
+                        <option value="">All Statuses</option>
+                        <!-- Options populated by JS -->
+                    </select>
+                    <label for="main-policy-status-filter">Policy Status</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="policy-list-container grid-view" id="policyListContainer">
+            <!-- Policies will be loaded here by JavaScript -->
+        </div>
+
+        <div class="pagination-container" id="paginationContainer">
+            <div class="pagination-summary"></div>
+            <div class="pagination-buttons-group">
+                <button class="pagination-button" id="prevPage" disabled><i class="fas fa-chevron-left"></i> Prev</button>
+                <div class="page-numbers" id="pageNumbers"></div>
+                <button class="pagination-button" id="nextPage">Next <i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-gray-600 text-center py-8 w-full">
+    <p class="text-sm">© Secure Access Limited 2025 • Made with ❤️</p>
+  </footer>
+
+  <!-- MODALS from original policy.html -->
+    <div id="profile-modal" class="modal-base hidden">
+    <div class="modal-content p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
+        <button id="close-profile-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="text-gray-600 mb-6 space-y-2">
+        <p><span class="font-medium">User ID:</span> <span id="profile-userCode">Not available</span></p>
+        <p><span class="font-medium">Email:</span> <span id="profile-email">Not available</span></p>
+      </div>
+      <button onclick="document.getElementById('close-profile-modal').click()" class="btn-base btn-primary w-full">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <div id="contact-modal" class="modal-base hidden">
+    <div class="modal-content p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800">Contact Us</h3>
+        <button id="close-contact-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p class="text-gray-600 mb-6">Reach out to us at support@example.com or (555) 123-4567.</p>
+      <form class="space-y-5">
+        <div>
+          <label for="contact-name" class="block text-sm font-medium text-gray-700">Name</label>
+          <input type="text" id="contact-name" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Your Name">
+        </div>
+        <div>
+          <label for="contact-email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" id="contact-email" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="you@example.com">
+        </div>
+        <div>
+          <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
+          <textarea id="contact-message" rows="4" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Your message..."></textarea>
+        </div>
+      </form>
+      <button onclick="document.getElementById('close-contact-modal').click()" class="btn-base btn-primary w-full mt-6">
+        Send Message
+      </button>
+    </div>
+  </div>
+
+ <div id="create-party-modal" class="modal-base hidden">
+  <div class="modal-content-fullscreen">
+    <div class="modal-header">
+      <h3 class="text-2xl font-bold text-gray-800 gradient-text">Create Party/Customer</h3>
+      <button id="close-create-party-modal" class="modal-close">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="flex border-b px-4 bg-white/80">
+      <button class="tab flex-1 text-center active" data-tab="personal">Personal Details</button>
+      <button class="tab flex-1 text-center" data-tab="contact">Contact Details</button>
+      <button class="tab flex-1 text-center" data-tab="address">Address Details</button>
+    </div>
+    <div class="modal-body">
+      <form id="create-party-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div id="personal-section" class="tab-content col-span-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="input-group">
+              <input type="text" id="party-name" placeholder=" " required>
+              <label for="party-name" class="mandatory">Customer Name</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-middleName" placeholder=" ">
+              <label for="party-middleName">Middle Name</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-surname" placeholder=" ">
+              <label for="party-surname">Surname</label>
+            </div>
+            <div class="input-group">
+              <input type="number" id="party-age" placeholder=" ">
+              <label for="party-age">Age</label>
+            </div>
+            <div class="input-group">
+              <input type="date" id="party-dob" placeholder=" " required>
+              <label for="party-dob" class="mandatory">Date of Birth</label>
+            </div>
+            <div class="input-group">
+              <select id="party-gender" required>
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              <label for="party-gender" class="mandatory">Gender</label>
+            </div>
+            <div class="input-group">
+              <select id="party-smokerStatus">
+                <option value="">Select smoker status</option>
+                <option value="Smoker">Smoker</option>
+                <option value="Non-Smoker">Non-Smoker</option>
+                <option value="Unknown">Unknown</option>
+              </select>
+              <label for="party-smokerStatus">Smoker Status</label>
+            </div>
+            <div class="input-group">
+              <select id="party-adminAccess">
+                <option value="0">No</option>
+              </select>
+              <label for="party-adminAccess">Admin Access</label>
+            </div>
+          </div>
+        </div>
+        <div id="contact-section" class="tab-content col-span-2 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="input-group">
+              <input type="tel" id="party-phone" placeholder=" " required pattern="[0-9]{10}" maxlength="10" oninput="validatePhoneNumber(this)">
+              <label for="party-phone" class="mandatory">Phone Number</label>
+              <span id="party-phone-feedback" class="text-sm text-red-500"></span>
+            </div>
+            <div class="input-group">
+              <input type="email" id="party-email" placeholder=" " required oninput="validateEmailOrUserCode('email', this.value)">
+              <label for="party-email" class="mandatory">Email</label>
+              <span id="party-email-feedback" class="text-sm"></span>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-userCode" placeholder=" " required oninput="validateEmailOrUserCode('userCode', this.value)">
+              <label for="party-userCode" class="mandatory">userCode</label>
+              <span id="party-userCode-feedback" class="text-sm"></span>
+            </div>
+            <div class="input-group">
+              <input type="email" id="party-alternateEmail" placeholder=" ">
+              <label for="party-alternateEmail">Alternate Email</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-phoneCountryCode" placeholder=" ">
+              <label for="party-phoneCountryCode">Phone Country Code</label>
+            </div>
+            <div class="input-group">
+              <input type="tel" id="party-secondaryPhone" placeholder=" ">
+              <label for="party-secondaryPhone">Secondary Phone</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-emergencyContactName" placeholder=" ">
+              <label for="party-emergencyContactName">Emergency Contact Name</label>
+            </div>
+            <div class="input-group">
+              <input type="tel" id="party-emergencyContactPhone" placeholder=" ">
+              <label for="party-emergencyContactPhone">Emergency Contact Phone</label>
+            </div>
+          </div>
+        </div>
+        <div id="address-section" class="tab-content col-span-2 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="input-group">
+              <input type="text" id="party-street" placeholder=" ">
+              <label for="party-street">Street</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-city" placeholder=" ">
+              <label for="party-city">City</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-state" placeholder=" ">
+              <label for="party-state">State</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-zipCode" placeholder=" ">
+              <label for="party-zipCode">Zip Code</label>
+            </div>
+            <div class="input-group">
+              <input type="text" id="party-country" placeholder=" ">
+              <label for="party-country">Country</label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer" id="party-btn-container">
+      <button id="reset-party-btn" class="btn-base btn-secondary">Reset</button>
+      <button id="prev-tab-btn" class="btn-base btn-secondary" disabled>Previous</button>
+      <button id="next-tab-btn" class="btn-base btn-primary hidden">Next</button>
+      <button id="submit-party-btn" class="btn-base btn-primary hidden" onclick="createParty()">Submit</button>
+    </div>
+  </div>
+</div>
+
+ <div id="create-policy-modal" class="modal-base hidden">
+  <div class="modal-content-fullscreen">
+    <div class="modal-header">
+      <h3 class="text-2xl font-bold text-gray-800 gradient-text" id="policy-form-title">Create Policy</h3>
+      <button id="close-create-policy-modal" class="modal-close">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="create-policy-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <input type="hidden" id="policy-userCode" value="">
+        <input type="hidden" id="policy-policyNo-hidden" value=""> <!-- Hidden field for policy number during update -->
+        <div class="input-group">
+          <select id="policy-policyName" onchange="loadProductCodes()" required>
+            <option value="">Select policy name</option>
+          </select>
+          <label for="policy-policyName" class="mandatory">Policy Name</label>
+        </div>
+        <div class="input-group">
+          <select id="policy-productCode" onchange="loadPolicyDetails()" required>
+            <option value="">Select product code</option>
+          </select>
+          <label for="policy-productCode" class="mandatory">Product Code</label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="policy-polCompanyName" readonly required>
+          <label for="policy-polCompanyName" class="mandatory">Policy Company Name</label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="policy-customerNo" placeholder=" " oninput="validateCustomerNo(this.value)" required>
+          <label for="policy-customerNo" class="mandatory">Customer Number</label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="policy-custName" readonly required>
+          <label for="policy-custName" class="mandatory">Customer Name</label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="policy-middleName" readonly>
+          <label for="policy-middleName">Middle Name</label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="policy-surname" readonly>
+          <label for="policy-surname">Surname</label>
+        </div>
+        <div class="input-group">
+          <select id="policy-fcuFlag" required>
+            <option value="">Select FCU flag</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+          <label for="policy-fcuFlag" class="mandatory">FCU Flag</label>
+        </div>
+        <div class="input-group">
+          <input type="tel" id="policy-phoneNum" readonly>
+          <label for="policy-phoneNum">Phone Number</label>
+        </div>
+        <div class="input-group">
+          <input type="email" id="policy-email" readonly>
+          <label for="policy-email">Email</label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="policy-smokerStatus" readonly>
+          <label for="policy-smokerStatus">Smoker Status</label>
+        </div>
+        <div class="input-group">
+          <input type="date" id="policy-dateOfBirth" readonly>
+          <label for="policy-dateOfBirth">Date of Birth</label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="policy-gender" readonly>
+          <label for="policy-gender" class="mandatory">Gender</label>
+        </div>
+        <div class="input-group">
+          <select id="policy-term" onchange="updateInstallments()" required>
+            <option value="">Select policy term</option>
+          </select>
+          <label for="policy-term" class="mandatory">Policy Term</label>
+        </div>
+        <div class="input-group">
+          <select id="policy-frequency" required>
+            <option value="">Select frequency</option>
+            <option value="Single">Single</option>
+            <option value="Recurring">Recurring</option>
+          </select>
+          <label for="policy-frequency" class="mandatory">Policy Frequency</label>
+        </div>
+        <div class="input-group">
+          <input type="number" id="policy-premium" placeholder=" " readonly required>
+          <label for="policy-premium" class="mandatory">Policy Premium</label>
+        </div>
+        <div class="input-group">
+          <input type="number" id="policy-totalAmount" placeholder=" " oninput="updateInstallments()" required>
+          <label for="policy-totalAmount" class="mandatory">Total Policy Amount</label>
+        </div>
+        <div class="input-group">
+          <input type="number" id="policy-monthlyInstallment" placeholder=" " readonly required>
+          <label for="policy-monthlyInstallment" class="mandatory">Monthly Installment</label>
+        </div>
+        <div class="input-group">
+          <input type="number" id="policy-totalClaimableAmount" placeholder=" " readonly required>
+          <label for="policy-totalClaimableAmount" class="mandatory">Total Claimable Amount</label>
+        </div>
+        <div class="input-group">
+          <input type="date" id="policy-policyDate" placeholder=" " required>
+          <label for="policy-policyDate" class="mandatory">Policy Date</label>
+        </div>
+        <div class="input-group">
+          <input type="number" id="policy-installmentCount" placeholder=" " readonly required>
+          <label for="policy-installmentCount" class="mandatory">Installment Count</label>
+        </div>
+        <div class="input-group">
+          <input type="date" id="policy-dueDate" placeholder=" " readonly required>
+          <label for="policy-dueDate" class="mandatory">Due Date</label>
+        </div>
+        <div class="input-group">
+          <input type="date" id="policy-startDate" placeholder=" " oninput="updateDates()" required>
+          <label for="policy-startDate" class="mandatory">Policy Start Date</label>
+        </div>
+        <div class="input-group">
+          <input type="date" id="policy-endDate" placeholder=" " readonly required>
+          <label for="policy-endDate" class="mandatory">Policy End Date</label>
+        </div>
+        <div class="input-group">
+          <input type="date" id="policy-renewalDate" placeholder=" " readonly required>
+          <label for="policy-renewalDate" class="mandatory">Policy Renewal Date</label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="policy-beneficiaryName" placeholder=" " required>
+          <label for="policy-beneficiaryName" class="mandatory">Beneficiary Name</label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="policy-beneficiaryAadharNumber" placeholder=" " required>
+          <label for="policy-beneficiaryAadharNumber" class="mandatory">Beneficiary Aadhar Number</label>
+        </div>
+        <div class="input-group">
+          <select id="policy-beneficiaryRelationship" required>
+            <option value="">Select relationship</option>
+            <option value="Spouse">Spouse</option>
+            <option value="Parent">Parent</option>
+            <option value="Child">Child</option>
+            <option value="Sibling">Sibling</option>
+            <option value="Other">Other</option>
+          </select>
+          <label for="policy-beneficiaryRelationship" class="mandatory">Beneficiary Relationship</label>
+        </div>
+        <div class="input-group">
+          <input type="tel" id="policy-nomineeContactNumber" placeholder=" " required>
+          <label for="policy-nomineeContactNumber" class="mandatory">Nominee Contact Number</label>
+        </div>
+        <div class="input-group">
+          <select id="policy-status" required>
+            <option value="">Select status</option>
+            <option value="Active">Active</option>
+            <option value="Pending">Pending</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Expired">Expired</option>
+            <option value="Lapsed">Lapsed</option>
+            <option value="Grace Period">Grace Period</option>
+          </select>
+          <label for="policy-status" class="mandatory">Policy Status</label>
+        </div>
+        <div class="input-group">
+          <select id="policy-type" onchange="loadProductCodes()"  readonly required>
+          </select>
+          <label for="policy-type" class="mandatory">Policy Type</label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button id="reset-policy-btn" class="btn-base btn-secondary" onclick="resetPolicyForm()">Reset</button>
+      <button id="submit-policy-btn" class="btn-base btn-primary" onclick="createPolicy()">Submit</button>
+      <button id="update-policy-btn" class="btn-base btn-primary hidden" onclick="updatePolicy()">Update</button>
+    </div>
+  </div>
+</div>
+  <div id="success-modal" class="modal-base hidden">
+    <div class="modal-content p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-green-600">Success</h3>
+        <button id="close-success-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p id="success-message" class="text-gray-600 mb-6"></p>
+      <div id="customer-number-container" class="hidden mb-4">
+        <label class="block text-sm font-medium text-gray-700">Reference Number</label>
+        <div class="flex items-center mt-1">
+          <input type="text" id="customer-number" class="block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm bg-gray-100 sm:text-sm" readonly>
+          <button id="copy-customer-number" class="ml-2 btn-base btn-primary">
+            Copy
+          </button>
+        </div>
+      </div>
+      <button id="success-ok-btn" class="btn-base btn-primary w-full">
+        OK
+      </button>
+    </div>
+  </div>
+
+  <div id="error-modal" class="modal-base hidden">
+    <div class="modal-content p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-red-600">Error</h3>
+        <button id="close-error-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p id="error-message" class="text-gray-600 mb-6"></p>
+      <button id="error-ok-btn" class="btn-base btn-primary w-full">
+        OK
+      </button>
+    </div>
+  </div>
+
+  <div id="nav-popup" class="nav-popup">
+    <div class="nav-popup-content">
+      <div class="spinner"></div>
+      <p id="nav-message" class="text-gray-800 font-medium"></p>
+    </div>
+  </div>
+
+  <div id="loader" class="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Policy Management Modal (Renamed from Admin View) -->
+  <div id="policy-management-modal" class="modal-base hidden">
+    <div class="modal-content-fullscreen">
+      <div class="modal-header">
+        <h3 class="text-2xl font-bold text-gray-800 gradient-text">Manage Policies</h3>
+        <button id="close-policy-management-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="filter-bar">
+          <div class="input-group">
+            <input type="text" id="policy-manage-search" placeholder=" " oninput="filterPolicyManagementTable()">
+            <label for="policy-manage-search">Search Policy No., Cust. No., Company</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-manage-status-filter" onchange="filterPolicyManagementTable()">
+              <option value="">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Pending">Pending</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Expired">Expired</option>
+              <option value="Lapsed">Lapsed</option>
+              <option value="Grace Period">Grace Period</option>
+            </select>
+            <label for="policy-manage-status-filter">Filter by Status</label>
+          </div>
+            <button id="delete-selected-policies-btn" class="btn-base btn-danger ml-auto" onclick="confirmDeleteSelectedPolicies()" style="display:none;">
+                <i class="fas fa-trash"></i> Delete Selected
+            </button>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl shadow-md">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th class="w-12"><input type="checkbox" id="select-all-policies" onchange="toggleSelectAllPolicies(this.checked)"></th>
+                        <th>Policy No.</th>
+                        <th>Customer Name</th>
+                        <th>Customer No.</th>
+                        <th>Policy Name</th>
+                        <th>Company</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Term</th>
+                        <th>Premium</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="policy-manage-table-body">
+                    <!-- Policy data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-container mt-6">
+            <div class="pagination-summary" id="policy-manage-pagination-summary"></div>
+            <div class="pagination-buttons-group">
+                <button class="pagination-button" id="policy-manage-prevPage" disabled><i class="fas fa-chevron-left"></i> Prev</button>
+                <div class="page-numbers" id="policy-manage-pageNumbers"></div>
+                <button class="pagination-button" id="policy-manage-nextPage">Next <i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="close-policy-management-modal-btn" class="btn-base btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmation-modal" class="modal-base hidden">
+  <div class="modal-content p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-2xl font-semibold text-gray-800">Confirm Action</h3>
+      <button id="close-confirmation-modal" class="modal-close">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <p id="confirmation-message" class="text-gray-600 mb-4"></p>
+    <div class="input-group">
+      <textarea id="delete-reason" placeholder="Enter reason for deletion" required class="resize-none h-24"></textarea>
+      <label for="delete-reason" class="mandatory">Reason for Deletion</label>
+    </div>
+    <div class="flex justify-end gap-3 mt-4">
+      <button id="confirm-cancel-btn" class="btn-base btn-secondary">Cancel</button>
+      <button id="confirm-action-btn" class="btn-base btn-danger" disabled>Confirm</button>
+    </div>
+  </div>
+</div>
+
+ <script>
+ const API_URL = 'http://localhost:8081/policy/policy-domain';
+ const POLICY_BASE_URL = 'http://localhost:8081/policy'; // Base URL for policy specific APIs
+
+// Update config to track validation status and policy management data
+ const config = {
+   loginUrl: 'login',
+   userCode: null,
+   email: null,
+   itemsPerPage: 5, // Not used for main dashboard anymore, controlled by getPageSize()
+   currentPage: 1, // Not used for main dashboard anymore
+   currentData: [], // Not used for main dashboard anymore
+   currentView: 'grid', // Not used for main dashboard anymore, renamed displayViewMode
+   currentTab: 'personal',
+   customerValidated: false,
+   emailValidated: false,
+   userCodeValidated: false,
+   policyManagementPolicies: [], // Stores all policies for policy management modal
+   policyManagementCurrentPage: 0,
+   policyManagementItemsPerPage: 10, // Policies per page in policy management table
+   policyManagementFilteredPolicies: [],
+   selectedPolicyNumbers: new Set() // New: To store selected policy numbers for batch operations
+ };
+
+    let allPolicies = []; // Policies displayed on the main dashboard
+    let currentDisplayPage = 0;
+    let totalDisplayPages = 1;
+    let displayViewMode = 'grid'; // 'grid' or 'list'
+    let currentSearchQuery = '';
+    let currentPolicyTypeFilter = '';
+    let currentPolicyStatusFilter = '';
+
+
+    const getPageSize = () => displayViewMode === 'grid' ? 12 : 10;
+
+		const elements = {
+		  modals: {
+		    profile: document.getElementById('profile-modal'),
+		    contact: document.getElementById('contact-modal'),
+		    'create-party': document.getElementById('create-party-modal'),
+		    'create-policy': document.getElementById('create-policy-modal'),
+		    error: document.getElementById('error-modal'),
+		    success: document.getElementById('success-modal'),
+		    'policy-management-modal': document.getElementById('policy-management-modal'), // Renamed
+            'confirmation-modal': document.getElementById('confirmation-modal')
+		  },
+		  confirmActionBtn: document.getElementById('confirm-action-btn'), // Add this line
+		  confirmCancelBtn: document.getElementById('confirm-cancel-btn'), // Add this line
+          policyListContainer: document.getElementById('policyListContainer'),
+          paginationContainer: document.getElementById('paginationContainer'),
+          prevPageBtn: document.getElementById('prevPage'),
+          nextPageBtn: document.getElementById('nextPage'),
+          pageNumbersContainer: document.getElementById('pageNumbers'),
+          policySearchInput: document.getElementById('policySearchInput'),
+          searchBarContainer: document.getElementById('searchBarContainer'),
+          clearSearchBtn: document.querySelector('.clear-btn'),
+          viewToggleButtonIcon: document.querySelector('.header-actions button[onclick="toggleView()"] i'),
+          mainPolicyTypeFilter: document.getElementById('main-policy-type-filter'), // New
+          mainPolicyStatusFilter: document.getElementById('main-policy-status-filter'), // New
+
+          // Policy Management specific elements (renamed from admin- prefix)
+          policyManageSearch: document.getElementById('policy-manage-search'),
+          policyManageStatusFilter: document.getElementById('policy-manage-status-filter'),
+          policyManageTableBody: document.getElementById('policy-manage-table-body'),
+          policyManagePaginationSummary: document.getElementById('policy-manage-pagination-summary'),
+          policyManagePrevPageBtn: document.getElementById('policy-manage-prevPage'),
+          policyManageNextPageBtn: document.getElementById('policy-manage-nextPage'),
+          policyManagePageNumbersContainer: document.getElementById('policy-manage-pageNumbers'),
+          selectAllPoliciesCheckbox: document.getElementById('select-all-policies'),
+          deleteSelectedPoliciesBtn: document.getElementById('delete-selected-policies-btn'),
+
+          // Policy Form specific elements (for create and update)
+          policyFormTitle: document.getElementById('policy-form-title'),
+          submitPolicyBtn: document.getElementById('submit-policy-btn'),
+          updatePolicyBtn: document.getElementById('update-policy-btn'),
+          policyNoHidden: document.getElementById('policy-policyNo-hidden')
+		};
+
+		function openModal(modalId) {
+		  if (modalId === 'profile') {
+		    document.getElementById('profile-userCode').textContent = config.userCode || 'Not available';
+		    document.getElementById('profile-email').textContent = config.email || 'Not available';
+		  }
+		  if (modalId === 'create-party') {
+		    initializeuserCode();
+		    document.getElementById('party-userCode').value = config.userCode;
+		    resetPartyForm();
+		    switchTab('personal');
+		  }
+		  if (modalId === 'create-policy') {
+		    initializeuserCode();
+		    elements.policyFormTitle.textContent = 'Create Policy';
+            elements.submitPolicyBtn.classList.remove('hidden');
+            elements.updatePolicyBtn.classList.add('hidden');
+            elements.policyNoHidden.value = ''; // Clear hidden policy number
+		    document.getElementById('policy-userCode').value = config.userCode;
+		    resetPolicyForm();
+		    loadPolicyNamesAndTypes(); // Load policy names and types for the dropdowns
+		  }
+          if (modalId === 'policy-management-modal') { // Renamed
+              fetchPoliciesForPolicyManagement(); // Load policies when management modal opens
+          }
+		  elements.modals[modalId]?.classList.remove('hidden');
+		}
+
+		function closeModal(modalId) {
+		  elements.modals[modalId]?.classList.add('hidden');
+		  if (modalId === 'create-party') {
+		    resetPartyForm();
+		    switchTab('personal');
+		  }
+		  if (modalId === 'create-policy') {
+		    resetPolicyForm();
+		  }
+          if (modalId === 'confirmation-modal') {
+            // Clear any pending confirmation actions
+            elements.confirmActionBtn.onclick = null;
+            elements.confirmActionBtn.classList.remove('btn-danger', 'btn-primary');
+            elements.confirmCancelBtn.classList.remove('btn-danger', 'btn-primary');
+          }
+           if (modalId === 'policy-management-modal') {
+             config.selectedPolicyNumbers.clear(); // Clear selections when closing modal
+             updateDeleteSelectedButtonVisibility();
+           }
+		}
+
+		function resetPartyForm() {
+		  document.getElementById('create-party-form').reset();
+		  document.getElementById('party-userCode').value = config.userCode || '';
+		  const fields = [
+		    'name', 'middleName', 'surname', 'age', 'dob', 'gender', 'smokerStatus', 'adminAccess',
+		    'phone', 'email', 'alternateEmail', 'phoneCountryCode', 'secondaryPhone', 'emergencyContactName', 'emergencyContactPhone',
+		    'street', 'city', 'state', 'zipCode', 'country', 'userCode'
+		  ];
+		  fields.forEach(field => {
+		    const element = document.getElementById(`party-${field}`);
+		    if (element.tagName === 'SELECT') {
+		      element.value = '';
+		    }
+		    element.classList.remove('border-red-500', 'border-green-500');
+		  });
+		  ['phone', 'email', 'userCode'].forEach(field => {
+		    document.getElementById(`party-${field}-feedback`).textContent = '';
+		  });
+		  config.emailValidated = false;
+		  config.userCodeValidated = false;
+		  switchTab('personal');
+		}
+
+		function showAlert(type, message, redirectUrl = null, refNumber = null, refType = null) {
+		  document.getElementById(`${type}-message`).textContent = message;
+		  const numberContainer = document.getElementById('customer-number-container');
+		  const numberInput = document.getElementById('customer-number');
+		  const copyButton = document.getElementById('copy-customer-number');
+		  const refLabel = numberContainer.querySelector('label');
+
+		  if (refNumber && type === 'success') {
+            refLabel.textContent = refType === 'policy' ? 'Policy Number' : 'Customer Number';
+		    numberInput.value = refNumber;
+		    numberInput.dataset.type = refType;
+		    numberContainer.classList.remove('hidden');
+		    copyButton.textContent = 'Copy';
+		  } else {
+		    numberContainer.classList.add('hidden');
+		  }
+		  openModal(type);
+		  if (redirectUrl) {
+		    setTimeout(() => window.location.href = redirectUrl, 2000);
+		  }
+		}
+
+		function showNavPopup(message) {
+		  const popup = document.getElementById('nav-popup');
+		  document.getElementById('nav-message').textContent = `Navigating to ${message}...`;
+		  popup.classList.add('active');
+		}
+
+		function hideNavPopup() {
+		  document.getElementById('nav-popup').classList.remove('active');
+		}
+
+		function showLoader() {
+		  document.getElementById('loader').classList.add('active');
+		}
+
+		function hideLoader() {
+		  document.getElementById('loader').classList.remove('active');
+		}
+
+		function initializeuserCode() {
+		    console.log('sessionStorage userCode:', sessionStorage.getItem('userCode'));
+		    config.userCode = sessionStorage.getItem('userCode');
+		    config.email = sessionStorage.getItem('email');
+		    if (!config.userCode) {
+		        showAlert('error', 'User ID not found. Please log in again.');
+		        window.location.href = '/login';
+		        return null;
+		    }
+		    return config.userCode;
+		}
+
+		function logout() {
+		    sessionStorage.removeItem('userCode');
+		    sessionStorage.removeItem('email');
+		    config.userCode = null;
+		    config.email = null;
+		    showAlert('success', 'Logged out successfully!', config.loginUrl);
+		    window.location.href = config.loginUrl; // Ensure redirect
+		}
+
+		function navigateTo(page) {
+		  if (page !== 'logout' && !config.userCode) {
+		    showAlert('error', 'Please log in to access this page.', config.loginUrl);
+		    return;
+		  }
+		  const pageUrls = {
+		    dashboard: 'dashboard',
+		    workitems: 'workItemServices',
+		    policy: 'wholelife',
+		    annuity: 'annuity',
+		    logout: 'login'
+		  };
+		  const url = pageUrls[page] || config.loginUrl;
+		  showLoader();
+		  showNavPopup(page);
+		  setTimeout(() => {
+		    hideNavPopup();
+		    hideLoader();
+		    if (page === 'logout') {
+		      logout();
+		    } else {
+		      window.location.href = url;
+		    }
+		  }, 2000);
+		}
+
+		function switchTab(tabName) {
+		  config.currentTab = tabName;
+		  const tabs = document.querySelectorAll('.tab');
+		  const sections = document.querySelectorAll('.tab-content');
+		  const prevBtn = document.getElementById('prev-tab-btn');
+		  const nextBtn = document.getElementById('next-tab-btn');
+		  const submitBtn = document.getElementById('submit-party-btn');
+
+		  tabs.forEach(tab => {
+		    tab.classList.toggle('active', tab.dataset.tab === tabName);
+		  });
+
+		  sections.forEach(section => {
+		    section.classList.toggle('hidden', section.id !== `${tabName}-section`);
+		  });
+
+		  prevBtn.disabled = tabName === 'personal';
+		  nextBtn.classList.toggle('hidden', tabName === 'address');
+		  submitBtn.classList.toggle('hidden', tabName !== 'address');
+		}
+		async function loadPolicyNamesAndTypes() {
+		    try {
+		        const response = await fetch(API_URL);
+		        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+		        const data = await response.json();
+		        const policies = data.data || [];
+
+		        const policyNameSelect = document.getElementById('policy-policyName');
+		        const policyTypeSelect = document.getElementById('policy-type');
+		        const mainPolicyTypeFilter = elements.mainPolicyTypeFilter;
+		        const mainPolicyStatusFilter = elements.mainPolicyStatusFilter;
+		        const policyManageStatusFilter = elements.policyManageStatusFilter;
+
+		        policyNameSelect.innerHTML = '<option value="">Select policy name</option>';
+		        policyTypeSelect.innerHTML = '<option value="">Select policy type</option>';
+		        mainPolicyTypeFilter.innerHTML = '<option value="">All Types</option>';
+		        mainPolicyStatusFilter.innerHTML = '<option value="">All Statuses</option>';
+		        policyManageStatusFilter.innerHTML = '<option value="">All Statuses</option>';
+
+		        const uniquePolicyNames = [...new Set(policies.map(item => item.policyName).filter(name => name))];
+		        const uniquePolicyTypes = [...new Set(policies.map(item => item.policyType).filter(type => type))];
+		        const uniquePolicyStatuses = [...new Set(
+		            policies.flatMap(customer => customer.policyList || []).map(p => p.status).filter(status => status)
+		        )];
+
+		        uniquePolicyNames.forEach(policyName => {
+		            const option = document.createElement('option');
+		            option.value = policyName;
+		            option.text = policyName;
+		            policyNameSelect.appendChild(option);
+		        });
+
+		        uniquePolicyTypes.forEach(policyType => {
+		            const option = document.createElement('option');
+		            option.value = policyType;
+		            option.text = policyType;
+		            policyTypeSelect.appendChild(option);
+		            mainPolicyTypeFilter.appendChild(option.cloneNode(true));
+		        });
+
+		        uniquePolicyStatuses.forEach(status => {
+		            const option = document.createElement('option');
+		            option.value = status;
+		            option.text = status;
+		            mainPolicyStatusFilter.appendChild(option);
+		            policyManageStatusFilter.appendChild(option.cloneNode(true));
+		        });
+		    } catch (error) {
+		        console.error('Error loading policy names and types:', error);
+		        showAlert('error', 'Failed to load policy names and types.');
+		    }
+		}
+		async function loadProductCodes() {
+		    const policyName = document.getElementById('policy-policyName').value;
+		    const policyType = document.getElementById('policy-type').value;
+		    const productCodeSelect = document.getElementById('policy-productCode');
+		    productCodeSelect.innerHTML = '<option value="">Select product code</option>';
+
+		    if (!policyName && !policyType) return;
+
+		    try {
+		        const response = await fetch(API_URL);
+		        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+		        const data = await response.json();
+		        let filteredProducts = data.data || [];
+
+		        if (policyName) {
+		            filteredProducts = filteredProducts.filter(group => group.policyName === policyName);
+		        }
+		        if (policyType) {
+		            filteredProducts = filteredProducts.filter(group => group.policyType === policyType);
+		        }
+		        if (policyType && !policyName) {
+		            const policyNameSelect = document.getElementById('policy-policyName');
+		            const availableNames = [...new Set(filteredProducts.map(group => group.policyName).filter(name => name))];
+		            policyNameSelect.innerHTML = '<option value="">Select policy name</option>';
+		            availableNames.forEach(name => {
+		                const option = document.createElement('option');
+		                option.value = name;
+		                option.text = name;
+		                policyNameSelect.appendChild(option);
+		            });
+		        }
+
+		        filteredProducts.forEach(group => {
+		            group.policies.forEach(policy => {
+		                const option = document.createElement('option');
+		                option.value = policy.productCode;
+		                option.text = policy.productCode;
+		                productCodeSelect.appendChild(option);
+		            });
+		        });
+		    } catch (error) {
+		        console.error('Error loading product codes:', error);
+		        showAlert('error', 'Failed to load product codes.');
+		    }
+		}
+
+		function resetPolicyForm() {
+		  document.getElementById('create-policy-form').reset();
+		  document.getElementById('policy-polCompanyName').value = 'Secure Life Limited';
+		  document.getElementById('policy-userCode').value = config.userCode || '';
+          elements.policyNoHidden.value = ''; // Clear hidden policy number
+		  const fields = ['productCode', 'policyName', 'customerNo', 'custName', 'middleName', 'surname', 'phoneNum', 'email', 'smokerStatus', 'dateOfBirth', 'fcuFlag', 'gender', 'type', 'term', 'frequency', 'premium', 'totalAmount', 'monthlyInstallment', 'totalClaimableAmount', 'policyDate', 'installmentCount', 'dueDate', 'startDate', 'endDate', 'renewalDate', 'beneficiaryName', 'beneficiaryAadharNumber', 'beneficiaryRelationship', 'nomineeContactNumber', 'status'];
+		  fields.forEach(field => {
+		    const element = document.getElementById(`policy-${field}`);
+		    element.removeAttribute('readonly');
+		    element.classList.remove('bg-gray-100');
+		    if (field === 'polCompanyName') {
+		      element.setAttribute('readonly', 'true');
+		      element.classList.add('bg-gray-100');
+		    }
+		    if (element.tagName === 'SELECT') {
+		      element.disabled = false;
+		      element.value = '';
+		    }
+            // Clear specific selects
+            if (['policyName', 'productCode', 'term'].includes(field)) {
+                element.innerHTML = `<option value="">Select ${element.labels[0]?.textContent.toLowerCase().replace('select ', '') || 'option'}</option>`;
+            }
+		  });
+          loadPolicyNamesAndTypes(); // Reload dropdowns with default options
+		  config.customerValidated = false;
+		}
+		async function loadPolicyDetails() {
+		    const productCode = document.getElementById('policy-productCode').value;
+		    if (!productCode) return;
+
+		    try {
+		        const response = await fetch(`${API_URL}?productCode=${encodeURIComponent(productCode)}`);
+		        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+		        const data = await response.json();
+		        const policy = data.data[0]?.policies.find(p => p.productCode === productCode);
+
+		        if (policy) {
+		            document.getElementById('policy-polCompanyName').value = policy.policyCompanyName || 'Secure Life Limited';
+		            document.getElementById('policy-type').value = policy.policyType || '';
+		            const termSelect = document.getElementById('policy-term');
+		            termSelect.innerHTML = '<option value="">Select policy term</option>' +
+		                (policy.supportedTerms ? policy.supportedTerms.split(',').map(term => `<option value="${term}">${term}</option>`).join('') : '');
+		            document.getElementById('policy-frequency').value = policy.frequency || '';
+		            document.getElementById('policy-totalAmount').value = policy.minTotalAmount || '';
+		            document.getElementById('policy-totalClaimableAmount').value = policy.coverageAmount || '';
+		            document.getElementById('policy-startDate').value = policy.policyStartDate || '';
+		            document.getElementById('policy-endDate').value = policy.policyEndDate || '';
+		            document.getElementById('policy-renewalDate').value = policy.policyRenewalDate || '';
+		            document.getElementById('policy-dueDate').value = policy.policyStartDate || '';
+		            updateInstallments();
+		        }
+		    } catch (error) {
+		        console.error('Error loading policy details:', error);
+		        showAlert('error', 'Failed to load policy details.');
+		    }
+		}
+		  function updateInstallments() {
+		    const term = document.getElementById('policy-term').value;
+		    const totalAmount = parseFloat(document.getElementById('policy-totalAmount').value) || 0;
+		    const durationMonths = 12; // Assuming annual calculation for now, refine if terms are more specific
+
+		    if (!term || !totalAmount) {
+		      document.getElementById('policy-installmentCount').value = '';
+		      document.getElementById('policy-monthlyInstallment').value = '';
+		      document.getElementById('policy-premium').value = '';
+		      return;
+		    }
+
+		    let installmentCount;
+		    switch (term.toLowerCase()) {
+		      case 'monthly': installmentCount = durationMonths; break;
+		      case 'quarterly': installmentCount = Math.ceil(durationMonths / 3); break;
+		      case 'half-yearly': installmentCount = Math.ceil(durationMonths / 6); break;
+		      case 'yearly': installmentCount = 1; break;
+		      case 'daily': installmentCount = Math.round(durationMonths * 30.42); break;
+		      case 'single': installmentCount = 1; break; // Added for single payment policies
+		      default: installmentCount = durationMonths;
+		    }
+
+		    const installmentAmount = (totalAmount / installmentCount).toFixed(2);
+		    document.getElementById('policy-installmentCount').value = installmentCount;
+		    document.getElementById('policy-monthlyInstallment').value = installmentAmount;
+		    document.getElementById('policy-premium').value = installmentAmount; // Assuming premium is monthly installment
+		  }
+
+		  function updateDates() {
+		    const startDate = document.getElementById('policy-startDate').value;
+		    if (!startDate) return;
+
+		    const start = new Date(startDate);
+		    // Assuming a 1-year policy for default date calculation if term isn't specified, or logic needs refinement based on API
+		    const termSelect = document.getElementById('policy-term');
+            const term = parseInt(termSelect.value) || 1; // Assuming term is in years if numerical
+
+		    const endDate = new Date(start);
+            endDate.setFullYear(start.getFullYear() + term); // Add years based on term
+            endDate.setDate(endDate.getDate() - 1); // End one day before next anniversary of start date for full year
+
+		    const renewalDate = endDate.toISOString().split('T')[0];
+		    const dueDate = startDate; // Due date is typically start date for first premium
+
+		    document.getElementById('policy-endDate').value = renewalDate;
+		    document.getElementById('policy-renewalDate').value = renewalDate;
+		    document.getElementById('policy-dueDate').value = dueDate;
+		  }
+
+		async function validateCustomerNo(customerNo) {
+		  if (!customerNo.trim()) {
+		    config.customerValidated = false;
+		    resetCustomerPolicyFields(); // Reset only customer-related fields
+		    return;
+		  }
+
+		  showLoader();
+		  try {
+		    const response = await fetch(`${POLICY_BASE_URL}/policy-details?customerNo=${encodeURIComponent(customerNo)}`, {
+		      method: 'GET',
+		      headers: { 'userCode': config.userCode }
+		    });
+
+		    if (response.ok) {
+		      const { data } = await response.json();
+		      if (data && data.length > 0) {
+		        const customer = data[0];
+		        config.customerValidated = true;
+
+		        document.getElementById('policy-custName').value = customer.customerName || '';
+		        document.getElementById('policy-middleName').value = customer.middleName || '';
+		        document.getElementById('policy-surname').value = customer.surname || '';
+		        document.getElementById('policy-phoneNum').value = customer.phoneNumber || '';
+		        document.getElementById('policy-email').value = customer.email || '';
+		        document.getElementById('policy-smokerStatus').value = customer.smokerStatus || '';
+		        document.getElementById('policy-dateOfBirth').value = customer.dateOfBirth || '';
+		        document.getElementById('policy-gender').value = customer.gender || '';
+
+		        const fields = ['custName', 'middleName', 'surname', 'phoneNum', 'email', 'smokerStatus', 'dateOfBirth','gender'];
+		        fields.forEach(field => {
+		          const element = document.getElementById(`policy-${field}`);
+		          element.setAttribute('readonly', 'true');
+		          element.classList.add('bg-gray-100');
+		        });
+		      } else {
+		        config.customerValidated = false;
+		        resetCustomerPolicyFields();
+		        showAlert('error', 'Customer number not found.');
+		      }
+		    } else {
+		      const errorText = await response.text();
+		      config.customerValidated = false;
+		      resetCustomerPolicyFields();
+		      showAlert('error', errorText || 'Failed to validate customer number.');
+		    }
+		  } catch (error) {
+		    config.customerValidated = false;
+		    resetCustomerPolicyFields();
+		    showAlert('error', 'An error occurred while validating customer number.');
+		    console.error('Customer validation error:', error);
+		  } finally {
+		    hideLoader();
+		  }
+		}
+
+        function resetCustomerPolicyFields() {
+            const fields = ['custName', 'middleName', 'surname', 'phoneNum', 'email', 'smokerStatus', 'dateOfBirth', 'gender'];
+            fields.forEach(field => {
+                const element = document.getElementById(`policy-${field}`);
+                element.value = '';
+                element.removeAttribute('readonly');
+                element.classList.remove('bg-gray-100');
+            });
+        }
+
+
+		function validatePhoneNumber(input) {
+			  const feedback = document.getElementById('party-phone-feedback');
+			  const value = input.value.trim();
+			  const isValid = /^\d{10}$/.test(value);
+			  input.classList.toggle('border-red-500', !isValid && value.length > 0);
+			  input.classList.toggle('border-green-500', isValid);
+			  feedback.textContent = isValid ? '✅ Valid' : value.length > 0 ? 'Phone number must be exactly 10 digits' : '';
+			  return isValid;
+		}
+
+		async function validateEmailOrUserCode(type, value) {
+			  const feedbackId = `party-${type}-feedback`;
+			  const feedback = document.getElementById(feedbackId);
+			  const input = document.getElementById(`party-${type}`);
+			  if (!value.trim()) {
+			    feedback.textContent = '';
+			    input.classList.remove('border-red-500', 'border-green-500');
+			    config[`${type}Validated`] = false;
+			    return;
+			  }
+
+			  showLoader();
+			  try {
+			    const param = type === 'email' ? `email=${encodeURIComponent(value)}` : `userCode=${encodeURIComponent(value)}`;
+			    const response = await fetch(`${POLICY_BASE_URL}/validate/EmailOrUserCode?${param}`, {
+			      method: 'GET',
+			      headers: { 'userCode': config.userCode }
+			    });
+			    const data = await response.json();
+
+			    if (response.ok && !data.errorMessage) {
+			      feedback.textContent = '✅ Valid';
+			      feedback.classList.add('text-green-500');
+			      feedback.classList.remove('text-red-500');
+			      input.classList.add('border-green-500');
+			      input.classList.remove('border-red-500');
+			      config[`${type}Validated`] = true;
+			    } else {
+			      feedback.textContent = data.errorMessage || 'Invalid input';
+			      feedback.classList.add('text-red-500');
+			      feedback.classList.remove('text-green-500');
+			      input.classList.add('border-red-500');
+			      input.classList.remove('border-green-500');
+			      config[`${type}Validated`] = false;
+			    }
+			  } catch (error) {
+			    feedback.textContent = 'Error validating input';
+			    feedback.classList.add('text-red-500');
+			    input.classList.add('border-red-500');
+			    input.classList.remove('border-green-500');
+			    config[`${type}Validated`] = false;
+			    console.error('Validation error:', error);
+			  } finally {
+			    hideLoader();
+			  }
+		}
+
+		async function createParty() {
+				  const userCode = document.getElementById('party-userCode').value;
+				  const name = document.getElementById('party-name').value.trim();
+				  const middleName = document.getElementById('party-middleName').value.trim();
+				  const surname = document.getElementById('party-surname').value.trim();
+				  const age = document.getElementById('party-age').value.trim();
+				  const dateOfBirth = document.getElementById('party-dob').value;
+				  const gender = document.getElementById('party-gender').value;
+				  const phoneNumber = document.getElementById('party-phone').value.trim();
+				  const email = document.getElementById('party-email').value.trim();
+				  const smokerStatus = document.getElementById('party-smokerStatus').value;
+				  const adminAccess = document.getElementById('party-adminAccess').value;
+				  const alternateEmail = document.getElementById('party-alternateEmail').value.trim();
+				  const phoneCountryCode = document.getElementById('party-phoneCountryCode').value.trim();
+				  const secondaryPhone = document.getElementById('party-secondaryPhone').value.trim();
+				  const emergencyContactName = document.getElementById('party-emergencyContactName').value.trim();
+				  const emergencyContactPhone = document.getElementById('party-emergencyContactPhone').value.trim();
+				  const street = document.getElementById('party-street').value.trim();
+				  const city = document.getElementById('party-city').value.trim();
+				  const state = document.getElementById('party-state').value.trim();
+				  const zipCode = document.getElementById('party-zipCode').value.trim();
+				  const country = document.getElementById('party-country').value.trim();
+
+				  if (!userCode) {
+				    showAlert('error', 'User ID is missing. Please log in again.', config.loginUrl);
+				    return;
+				  }
+				  if (!name) {
+				    showAlert('error', 'Customer Name is required.');
+				    return;
+				  }
+				  if (!email) {
+				    showAlert('error', 'Email is required.');
+				    return;
+				  }
+				  if (!config.emailValidated) {
+				    showAlert('error', 'Please enter a valid and unique email.');
+				    return;
+				  }
+				  if (!config.userCodeValidated) {
+				    showAlert('error', 'Please enter a valid and unique userCode.');
+				    return;
+				  }
+				  if (!gender) {
+				    showAlert('error', 'Gender is required.');
+				    return;
+				  }
+				  if (!phoneNumber || !validatePhoneNumber(document.getElementById('party-phone'))) {
+				    showAlert('error', 'Phone Number must be exactly 10 digits.');
+				    return;
+				  }
+				  if (!dateOfBirth) {
+				    showAlert('error', 'Date of Birth is required.');
+				    return;
+				  }
+
+				  const payload = {
+				    userCode, name: name, middleName, surname, age: parseInt(age), dateOfBirth, gender, phoneNumber, email, smokerStatus, adminAccess: parseInt(adminAccess),
+				    address: { street, city, state, zipCode, country },
+				    contactDetails: { alternateEmail, phoneCountryCode, phoneNumber: secondaryPhone, emergencyContactName, emergencyContactPhone }
+				  };
+
+				  showLoader();
+				  try {
+				    const response = await fetch(`${POLICY_BASE_URL}/customer-details/update`, {
+				      method: 'POST',
+				      headers: { 'Content-Type': 'application/json', 'userCode': config.userCode },
+				      body: JSON.stringify(payload)
+				    });
+
+				    const responseData = await response.json();
+				    console.log('API Response:', responseData);
+
+				    if (response.ok) {
+				      const { data } = responseData;
+				      if (data) {
+				        const customerNumberMatch = data.match(/Customer Number: (\d+)/);
+				        const customerNumber = customerNumberMatch ? customerNumberMatch[1] : null;
+				        showAlert('success', data || 'Customer created successfully.', null, customerNumber, 'customer');
+				        closeModal('create-party');
+				        resetPartyForm();
+                        initialLoad(); // Refresh main dashboard policies
+				      } else {
+				        console.warn('API returned null data for successful customer creation:', responseData);
+				        showAlert('error', responseData.errorMessage || 'Customer created, but no customer number returned.');
+				        closeModal('create-party');
+				        resetPartyForm();
+				      }
+				    } else {
+				      const errorMessage = responseData.errorMessage || `Failed to create customer (Status: ${response.status})`;
+				      showAlert('error', errorMessage);
+				    }
+				  } catch (error) {
+				    const errorMessage = error.message || 'An error occurred. Please try again.';
+				    showAlert('error', errorMessage);
+				    console.error('API error:', error);
+				  } finally {
+				    hideLoader();
+				  }
+		}
+
+		async function createPolicy() {
+			  const payload = {
+			    userCode: document.getElementById('policy-userCode').value,
+			    productCode: document.getElementById('policy-productCode').value,
+			    polCompanyName: document.getElementById('policy-polCompanyName').value,
+			    policyName: document.getElementById('policy-policyName').value,
+			    customerNo: document.getElementById('policy-customerNo').value,
+			    custName: document.getElementById('policy-custName').value,
+			    middleName: document.getElementById('policy-middleName').value,
+			    surname: document.getElementById('policy-surname').value,
+			    fcuFlag: document.getElementById('policy-fcuFlag').value,
+			    phoneNum: document.getElementById('policy-phoneNum').value,
+			    email: document.getElementById('policy-email').value,
+			    smokerStatus: document.getElementById('policy-smokerStatus').value,
+			    dateOfBirth: document.getElementById('policy-dateOfBirth').value,
+			    gender: document.getElementById('policy-gender').value,
+			    term: document.getElementById('policy-term').value,
+			    frequency: document.getElementById('policy-frequency').value,
+			    premium: parseFloat(document.getElementById('policy-premium').value) || 0,
+			    totalAmount: parseFloat(document.getElementById('policy-totalAmount').value) || 0,
+			    monthlyInstallment: parseFloat(document.getElementById('policy-monthlyInstallment').value) || 0,
+			    totalClaimableAmount: parseFloat(document.getElementById('policy-totalClaimableAmount').value) || 0,
+			    policyDate: document.getElementById('policy-policyDate').value,
+			    installmentCount: parseInt(document.getElementById('policy-installmentCount').value) || 0,
+			    dueDate: document.getElementById('policy-dueDate').value,
+			    startDate: document.getElementById('policy-startDate').value,
+			    endDate: document.getElementById('policy-endDate').value,
+			    renewalDate: document.getElementById('policy-renewalDate').value,
+			    beneficiaryName: document.getElementById('policy-beneficiaryName').value,
+			    beneficiaryAadharNumber: document.getElementById('policy-beneficiaryAadharNumber').value,
+			    beneficiaryRelationship: document.getElementById('policy-beneficiaryRelationship').value,
+			    nomineeContactNumber: document.getElementById('policy-nomineeContactNumber').value,
+			    status: document.getElementById('policy-status').value,
+			    type: document.getElementById('policy-type').value
+			  };
+
+			  showLoader();
+			  try {
+			    const response = await fetch(`${POLICY_BASE_URL}/policy-create`, {
+			      method: 'POST',
+			      headers: { 'Content-Type': 'application/json', 'userCode': config.userCode },
+			      body: JSON.stringify(payload)
+			    });
+
+			    if (response.ok) {
+			      const { data, errorMessage } = await response.json();
+			      if (errorMessage) {
+			        showAlert('error', errorMessage);
+			        return;
+			      }
+			      const message = data.policyNo ? `Policy ${data.policyNo} created successfully!` : 'Policy created successfully!';
+			      showAlert('success', message, null, data.policyNo, 'policy');
+			      closeModal('create-policy');
+			      resetPolicyForm();
+                  initialLoad(); // Refresh main dashboard policies
+                  fetchPoliciesForPolicyManagement(); // Refresh policy management policies
+			    } else {
+			      const errorText = await response.text();
+			      showAlert('error', errorText || 'Failed to create policy.');
+			    }
+			  } catch (error) {
+			    showAlert('error', 'An error occurred. Please try again.');
+			    console.error('Policy creation error:', error);
+			  } finally {
+			    hideLoader();
+			  }
+		}
+		window.updatePolicy = async () => {
+		    showLoader();
+		    try {
+		        const form = document.getElementById('create-policy-form');
+		        const formData = {
+		            policyNumber: document.getElementById('policy-policyNo-hidden').value,
+		            userCode: document.getElementById('policy-userCode').value || config.userCode,
+		            policyName: document.getElementById('policy-policyName').value,
+		            productCode: document.getElementById('policy-productCode').value,
+		            polCompanyName: document.getElementById('policy-polCompanyName').value,
+		            customerNo: document.getElementById('policy-customerNo').value,
+		            customerName: document.getElementById('policy-custName').value,
+		            middleName: document.getElementById('policy-middleName').value,
+		            surname: document.getElementById('policy-surname').value,
+		            fcuFlag: document.getElementById('policy-fcuFlag').value,
+		            phoneNumber: document.getElementById('policy-phoneNum').value,
+		            email: document.getElementById('policy-email').value,
+		            smokerStatus: document.getElementById('policy-smokerStatus').value,
+		            dateOfBirth: document.getElementById('policy-dateOfBirth').value,
+		            gender: document.getElementById('policy-gender').value,
+		            term: document.getElementById('policy-term').value,
+		            frequency: document.getElementById('policy-frequency').value,
+		            premium: parseFloat(document.getElementById('policy-premium').value) || 0,
+		            totalAmount: parseFloat(document.getElementById('policy-totalAmount').value) || 0,
+		            monthlyInstallment: parseFloat(document.getElementById('policy-monthlyInstallment').value) || 0,
+		            totalClaimableAmount: parseFloat(document.getElementById('policy-totalClaimableAmount').value) || 0,
+		            policyDate: document.getElementById('policy-policyDate').value,
+		            installmentCount: document.getElementById('policy-installmentCount').value,
+		            dueDate: document.getElementById('policy-dueDate').value,
+		            startDate: document.getElementById('policy-startDate').value,
+		            endDate: document.getElementById('policy-endDate').value,
+		            renewalDate: document.getElementById('policy-renewalDate').value,
+		            beneficiaryName: document.getElementById('policy-beneficiaryName').value,
+		            beneficiaryAadharNumber: document.getElementById('policy-beneficiaryAadharNumber').value,
+		            beneficiaryRelationship: document.getElementById('policy-beneficiaryRelationship').value,
+		            nomineeContactNumber: document.getElementById('policy-nomineeContactNumber').value,
+		            status: document.getElementById('policy-status').value,
+		            type: document.getElementById('policy-type').value,
+		            updatedBy: config.userCode,
+		            deletedFlag: 'N'
+		        };
+
+		        // Validate required fields
+		        const requiredFields = [
+		            'policyNumber', 'policyName', 'productCode', 'polCompanyName', 'customerNo',
+		            'fcuFlag', 'term', 'frequency', 'premium', 'totalAmount', 'monthlyInstallment',
+		            'totalClaimableAmount', 'policyDate', 'installmentCount', 'dueDate', 'startDate',
+		            'endDate', 'renewalDate', 'beneficiaryName', 'beneficiaryAadharNumber',
+		            'beneficiaryRelationship', 'nomineeContactNumber', 'status', 'type'
+		        ];
+		        const missingFields = requiredFields.filter(field => !formData[field]);
+		        if (missingFields.length > 0) {
+		            throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+		        }
+		        const response = await fetch(`${POLICY_BASE_URL}/update`, {
+		            method: 'POST',
+		            headers: {
+		                'Content-Type': 'application/json',
+		                'userCode': config.userCode
+		            },
+		            body: JSON.stringify(formData)
+		        });
+		        const responseData = await response.json();
+		        if (response.ok && responseData.status === 'Success') {
+		            // Show success popup
+		            showAlert('success', 'Policy updated successfully.');
+		            // Refresh policy management table
+		            fetchPoliciesForPolicyManagement();
+		            // Close the create-policy-modal
+		            closeModal('create-policy');
+		        } else {
+		            throw new Error(responseData.errorMessage || 'Failed to update policy.');
+		        }
+		    } catch (error) {
+		        console.error('Error updating policy:', error);
+		        showAlert('error', `Failed to update policy: ${error.message}`);
+		    } finally {
+		        hideLoader();
+		    }
+		};
+		async function deletePolicy(policyNumber, reason) {
+		    showLoader();
+		    try {
+		        const response = await fetch(`http://localhost:8081/policy/update/delete?PolicyNumber=${encodeURIComponent(policyNumber)}&reason=${encodeURIComponent(reason)}`, {
+		            method: 'POST',
+		            headers: {
+		                'userCode': config.userCode
+		            }
+		        });
+
+		        const responseData = await response.json();
+
+		        if (response.ok && responseData.status === 'Success') {
+		            showAlert('success', responseData.data.status || `Policy ${policyNumber} deleted successfully.`);
+		            fetchPoliciesForPolicyManagement(); // Refresh policy list
+		            initialLoad(); // Refresh main dashboard policies
+		            closeModal('confirmation-modal');
+		        } else {
+		            throw new Error(responseData.errorMessage || 'Failed to delete policy.');
+		        }
+		    } catch (error) {
+		        console.error('Error deleting policy:', error);
+		        showAlert('error', `Failed to delete policy: ${error.message}`);
+		    } finally {
+		        hideLoader();
+		    }
+		}
+
+		function copyCustomerNumber() {
+		  const numberInput = document.getElementById('customer-number');
+		  const numberType = numberInput.dataset.type === 'policy' ? 'Policy Number' : 'Customer Number';
+		  const numberValue = numberInput.value;
+		  document.execCommand('copy'); // Using document.execCommand for clipboard copy due to iframe limitations
+		  const copyBtn = document.getElementById('copy-customer-number');
+		  copyBtn.textContent = 'Copied!';
+		  setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+		}
+
+        // --- NEW RENDERING & PAGINATION LOGIC FOR MAIN DASHBOARD ---
+
+        async function initialLoad() {
+            elements.policyListContainer.innerHTML = '<div class="loading-message">Loading all policies... <i class="fas fa-spinner fa-spin"></i></div>';
+            updatePaginationDisplay(0, 0);
+            loadPolicyNamesAndTypes(); // Ensure main filters are populated
+
+            try {
+                const response = await fetch(`${POLICY_BASE_URL}/policy/fetchAllPolicies`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                allPolicies = Array.isArray(data) ? data : (data.data || []);
+                applyFiltersAndRender();
+            } catch (error) {
+                console.error('Error during initial load:', error);
+                elements.policyListContainer.innerHTML = `<div class="error-message">Error loading policies: ${error.message}.</div>`;
+                allPolicies = [];
+                applyFiltersAndRender();
+            }
+        }
+
+        function applyFiltersAndRender() {
+            currentSearchQuery = elements.policySearchInput.value.toLowerCase().trim();
+            currentPolicyTypeFilter = elements.mainPolicyTypeFilter.value;
+            currentPolicyStatusFilter = elements.mainPolicyStatusFilter.value;
+
+            let filteredPolicies = allPolicies;
+
+            if (currentSearchQuery) {
+                filteredPolicies = filteredPolicies.filter(customer => {
+                    const nameMatch = customer.customerName?.toLowerCase().includes(currentSearchQuery);
+                    const numberMatch = customer.customerNo?.toLowerCase().includes(currentSearchQuery);
+                    const policyMatch = customer.policyList?.some(p =>
+                        p.policyNumber?.toLowerCase().includes(currentSearchQuery) ||
+                        p.policyName?.toLowerCase().includes(currentSearchQuery) ||
+                        p.polCompanyName?.toLowerCase().includes(currentSearchQuery)
+                    );
+                    return nameMatch || numberMatch || policyMatch;
+                });
+            }
+
+            if (currentPolicyTypeFilter || currentPolicyStatusFilter) {
+                filteredPolicies = filteredPolicies.map(customer => {
+                    const filteredCustomerPolicies = customer.policyList.filter(p => {
+                        const typeMatch = currentPolicyTypeFilter === '' || p.policyType === currentPolicyTypeFilter;
+                        const statusMatch = currentPolicyStatusFilter === '' || p.status === currentPolicyStatusFilter;
+                        return typeMatch && statusMatch;
+                    });
+                    // Only include customer if they have matching policies
+                    return filteredCustomerPolicies.length > 0 ? { ...customer, policyList: filteredCustomerPolicies } : null;
+                }).filter(Boolean); // Remove null entries
+            }
+
+            totalDisplayPages = Math.ceil(filteredPolicies.length / getPageSize()) || 1;
+            if (currentDisplayPage >= totalDisplayPages) {
+                currentDisplayPage = Math.max(0, totalDisplayPages - 1);
+            }
+
+            populatePolicyList(filteredPolicies);
+            updatePaginationDisplay(totalDisplayPages, filteredPolicies.length);
+        }
+
+        function populatePolicyList(policiesToDisplay) {
+            elements.policyListContainer.innerHTML = '';
+            const start = currentDisplayPage * getPageSize();
+            const end = start + getPageSize();
+            const paginatedPolicies = policiesToDisplay.slice(start, end);
+
+            if (paginatedPolicies.length === 0) {
+                elements.policyListContainer.innerHTML = currentSearchQuery || currentPolicyTypeFilter || currentPolicyStatusFilter
+                    ? '<div class="info-message">No policies match your search and filters.</div>'
+                    : '<div class="info-message">No policies available.</div>';
+                return;
+            }
+
+            paginatedPolicies.forEach((customer, index) => {
+                const card = createPolicyCard(customer);
+                card.style.animationDelay = `${index * 0.04}s`;
+                elements.policyListContainer.appendChild(card);
+            });
+        }
+
+        function createPolicyCard(customer) {
+            const card = document.createElement('div');
+            card.className = 'policy-card';
+
+            const policiesHtmlGrid = customer.policyList && customer.policyList.length > 0
+                ? customer.policyList.map(p => `
+                    <div class="mb-2 p-2 bg-blue-50 rounded-lg shadow-sm text-sm">
+                        <div class="font-semibold text-blue-800 flex justify-between items-center">
+                            <span>${p.policyNumber || 'N/A'}</span>
+                            <i class="fas fa-copy copy-btn text-blue-600 hover:text-blue-800" title="Copy Policy No." onclick="copyToClipboard('${p.policyNumber || ''}', event)"></i>
+                        </div>
+                        <p class="text-gray-700"><strong>Name:</strong> ${p.policyName || 'N/A'}</p>
+                        <p class="text-gray-700"><strong>Type:</strong> ${p.policyType || 'N/A'}</p>
+                        <p class="text-gray-700"><strong>Company:</strong> ${p.polCompanyName || 'N/A'}</p>
+                        <p class="text-gray-700"><strong>Status:</strong> <span class="font-medium text-green-700">${p.status || 'N/A'}</span></p>
+                        <p class="text-gray-700"><strong>Term:</strong> ${p.term || 'N/A'}</p>
+                        <p class="text-gray-700"><strong>Premium:</strong> $${p.premium?.toFixed(2) || '0.00'}</p>
+                    </div>`).join('')
+                : '<p class="text-gray-500">No policies found for this customer.</p>';
+
+            const policiesHtmlList = customer.policyList && customer.policyList.length > 0
+                ? customer.policyList.map(p => `
+                    <li class="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                        ${p.policyNumber || 'N/A'} (${p.policyType || 'N/A'}) - ${p.status || 'N/A'}
+                    </li>`).join('')
+                : '';
+
+
+            if (displayViewMode === 'grid') {
+                card.innerHTML = `
+                    <div class="card-header">${customer.customerName || 'Unknown Customer'}</div>
+                    <div class="card-subheader">
+                        ${customer.customerNo || 'N/A'}
+                        <i class="fas fa-copy copy-btn" title="Copy Customer No." onclick="copyToClipboard('${customer.customerNo || ''}', event)"></i>
+                    </div>
+                    <div class="policy-details">
+                        <p class="font-semibold text-gray-800 mb-2">Associated Policies (${customer.policyList?.length || 0}):</p>
+                        <div class="space-y-3">${policiesHtmlGrid}</div>
+                    </div>
+                `;
+            } else { // List view
+                card.innerHTML = `
+                    <div class="flex flex-col">
+                        <div class="card-header">${customer.customerName || 'Unknown Customer'}</div>
+                        <div class="card-subheader flex items-center">
+                            ${customer.customerNo || 'N/A'}
+                            <i class="fas fa-copy copy-btn ml-2" title="Copy Customer No." onclick="copyToClipboard('${customer.customerNo || ''}', event)"></i>
+                        </div>
+                    </div>
+                    <div class="text-right font-medium text-gray-700">${customer.policyList?.length || 0} Policies</div>
+                    <div class="policy-details">
+                        <ul class="flex flex-wrap gap-2">${policiesHtmlList}</ul>
+                    </div>
+                `;
+            }
+            return card;
+        }
+
+        function updatePaginationDisplay(totalPages, totalItems) {
+            elements.prevPageBtn.disabled = currentDisplayPage === 0;
+            elements.nextPageBtn.disabled = currentDisplayPage >= totalPages - 1;
+
+            const startItem = currentDisplayPage * getPageSize() + 1;
+            const endItem = Math.min((currentDisplayPage + 1) * getPageSize(), totalItems);
+
+            elements.paginationContainer.querySelector('.pagination-summary').textContent =
+                totalItems > 0 ? `Showing ${startItem} to ${endItem} of ${totalItems} policies` : 'No policies found';
+
+            elements.pageNumbersContainer.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            const maxPagesToShow = 5;
+            let startPage = Math.max(0, currentDisplayPage - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(totalPages - 1, startPage + maxPagesToShow - 1);
+
+            if (endPage - startPage + 1 < maxPagesToShow) {
+                startPage = Math.max(0, endPage - maxPagesToShow + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i + 1;
+                pageBtn.className = i === currentDisplayPage ? 'active' : '';
+                pageBtn.addEventListener('click', () => changeDisplayPage(i));
+                elements.pageNumbersContainer.appendChild(pageBtn);
+            }
+        }
+
+        window.searchPolicies = () => {
+            currentDisplayPage = 0;
+            applyFiltersAndRender();
+        };
+
+        window.clearSearch = () => {
+            elements.policySearchInput.value = '';
+            elements.clearSearchBtn.style.display = 'none';
+            if (!elements.searchBarContainer.contains(document.activeElement)) {
+                elements.searchBarContainer.classList.remove('focused');
+            }
+            currentDisplayPage = 0;
+            applyFiltersAndRender();
+        };
+
+        window.toggleView = () => {
+            displayViewMode = displayViewMode === 'list' ? 'grid' : 'list';
+            elements.policyListContainer.className = `policy-list-container ${displayViewMode}-view`;
+            if (elements.viewToggleButtonIcon) {
+                elements.viewToggleButtonIcon.className = displayViewMode === 'grid' ? 'fas fa-list-ul' : 'fas fa-th-large';
+            }
+            currentDisplayPage = 0;
+            applyFiltersAndRender();
+        };
+
+        window.changeDisplayPage = (page) => {
+            currentDisplayPage = page;
+            applyFiltersAndRender();
+        };
+
+        window.copyToClipboard = (text, event) => {
+            event.stopPropagation();
+            if (!text || text === 'N/A') return;
+            // Using document.execCommand for clipboard copy due to iframe restrictions
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            const icon = event.target;
+            icon.classList.remove('fa-copy');
+            icon.classList.add('fa-check', 'text-green-500'); // Add green color for checkmark
+            setTimeout(() => {
+                icon.classList.remove('fa-check', 'text-green-500');
+                icon.classList.add('fa-copy');
+            }, 1500);
+        };
+
+        // --- POLICY MANAGEMENT FUNCTIONS (Renamed from Admin) ---
+
+        async function fetchPoliciesForPolicyManagement() {
+            elements.policyManageTableBody.innerHTML = '<tr><td colspan="11" class="loading-message">Loading policies... <i class="fas fa-spinner fa-spin"></i></td></tr>';
+            config.policyManagementFilteredPolicies = [];
+            config.policyManagementCurrentPage = 0;
+            updatePolicyManagementPaginationDisplay(0, 0);
+
+            try {
+                const response = await fetch(`${POLICY_BASE_URL}/policy/fetchAllPolicies`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                config.policyManagementPolicies = [];
+                (Array.isArray(data) ? data : (data.data || [])).forEach(customer => {
+                    customer.policyList.forEach(policy => {
+                        config.policyManagementPolicies.push({
+                            customerName: customer.customerName,
+                            customerNo: customer.customerNo,
+                            policyNumber: policy.policyNumber,
+                            policyName: policy.policyName,
+                            polCompanyName: policy.polCompanyName,
+                            status: policy.status,
+                            term: policy.term,
+                            premium: policy.premium,
+                            policyType: policy.policyType, // Added
+                            fullDetails: policy,
+                            customerDetails: customer
+                        });
+                    });
+                });
+                filterPolicyManagementTable(); // Apply initial filter/search
+            } catch (error) {
+                console.error('Error fetching policies for management:', error);
+                elements.policyManageTableBody.innerHTML = `<tr><td colspan="11" class="error-message">Error loading policies: ${error.message}.</td></tr>`;
+            } finally {
+                // Ensure the "Select All" checkbox is unchecked and selections are cleared on fresh load
+                if (elements.selectAllPoliciesCheckbox) {
+                    elements.selectAllPoliciesCheckbox.checked = false;
+                }
+                config.selectedPolicyNumbers.clear();
+                updateDeleteSelectedButtonVisibility();
+            }
+        }
+
+        function filterPolicyManagementTable() {
+            const searchQuery = elements.policyManageSearch.value.toLowerCase().trim();
+            const statusFilter = elements.policyManageStatusFilter.value;
+
+            config.policyManagementFilteredPolicies = config.policyManagementPolicies.filter(policy => {
+                const matchesSearch =
+                    policy.policyNumber?.toLowerCase().includes(searchQuery) ||
+                    policy.customerNo?.toLowerCase().includes(searchQuery) ||
+                    policy.customerName?.toLowerCase().includes(searchQuery) ||
+                    policy.polCompanyName?.toLowerCase().includes(searchQuery) ||
+                    policy.policyName?.toLowerCase().includes(searchQuery);
+                const matchesStatus = statusFilter === '' || policy.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            });
+
+            config.policyManagementCurrentPage = 0; // Reset to first page on new filter/search
+            populatePolicyManagementTable();
+            updatePolicyManagementPaginationDisplay(
+                Math.ceil(config.policyManagementFilteredPolicies.length / config.policyManagementItemsPerPage) || 1,
+                config.policyManagementFilteredPolicies.length
+            );
+        }
+
+        function populatePolicyManagementTable() {
+            elements.policyManageTableBody.innerHTML = '';
+            const start = config.policyManagementCurrentPage * config.policyManagementItemsPerPage;
+            const end = start + config.policyManagementItemsPerPage;
+            const paginatedPolicies = config.policyManagementFilteredPolicies.slice(start, end);
+
+            if (paginatedPolicies.length === 0) {
+                elements.policyManageTableBody.innerHTML = '<tr><td colspan="11" class="info-message">No policies found matching criteria.</td></tr>';
+                return;
+            }
+
+            paginatedPolicies.forEach(policy => {
+                const row = document.createElement('tr');
+                const isSelected = config.selectedPolicyNumbers.has(policy.policyNumber);
+                row.innerHTML = `
+                    <td><input type="checkbox" data-policy-number="${policy.policyNumber}" onchange="toggleSelectPolicy('${policy.policyNumber}', this.checked)" ${isSelected ? 'checked' : ''}></td>
+                    <td class="tooltip" data-tooltip="${policy.policyNumber || 'N/A'}">${policy.policyNumber || 'N/A'}</td>
+                    <td class="tooltip" data-tooltip="${policy.customerName || 'N/A'}">${policy.customerName || 'N/A'}</td>
+                    <td class="tooltip" data-tooltip="${policy.customerNo || 'N/A'}">${policy.customerNo || 'N/A'}</td>
+                    <td class="tooltip" data-tooltip="${policy.policyName || 'N/A'}">${policy.policyName || 'N/A'}</td>
+                    <td class="tooltip" data-tooltip="${policy.polCompanyName || 'N/A'}">${policy.polCompanyName || 'N/A'}</td>
+                    <td class="tooltip" data-tooltip="${policy.policyType || 'N/A'}">${policy.policyType || 'N/A'}</td>
+                    <td class="tooltip" data-tooltip="${policy.status || 'N/A'}">${policy.status || 'N/A'}</td>
+                    <td class="tooltip" data-tooltip="${policy.term || 'N/A'}">${policy.term || 'N/A'}</td>
+                    <td class="tooltip" data-tooltip="${policy.premium?.toFixed(2) || 'N/A'}">$${policy.premium?.toFixed(2) || 'N/A'}</td>
+                    <td class="policy-manage-table-actions">
+                        <button class="btn-edit" onclick="editPolicy('${policy.policyNumber}')" title="Edit Policy"><i class="fas fa-edit"></i></button>
+                        <button class="btn-delete" onclick="confirmDeletePolicy('${policy.policyNumber}')" title="Delete Policy"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                elements.policyManageTableBody.appendChild(row);
+            });
+            updateSelectAllCheckboxState(); // Update master checkbox state
+        }
+
+        function updatePolicyManagementPaginationDisplay(totalPages, totalItems) {
+            elements.policyManagePrevPageBtn.disabled = config.policyManagementCurrentPage === 0;
+            elements.policyManageNextPageBtn.disabled = config.policyManagementCurrentPage >= totalPages - 1;
+
+            const startItem = config.policyManagementCurrentPage * config.policyManagementItemsPerPage + 1;
+            const endItem = Math.min((config.policyManagementCurrentPage + 1) * config.policyManagementItemsPerPage, totalItems);
+
+            elements.policyManagePaginationSummary.textContent =
+                totalItems > 0 ? `Showing ${startItem} to ${endItem} of ${totalItems} policies` : 'No policies found';
+
+            elements.policyManagePageNumbersContainer.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            const maxPagesToShow = 5;
+            let startPage = Math.max(0, config.policyManagementCurrentPage - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(totalPages - 1, startPage + maxPagesToShow - 1);
+
+            if (endPage - startPage + 1 < maxPagesToShow) {
+                startPage = Math.max(0, endPage - maxPagesToShow + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i + 1;
+                pageBtn.className = i === config.policyManagementCurrentPage ? 'active' : '';
+                pageBtn.addEventListener('click', () => changePolicyManagementPage(i));
+                elements.policyManagePageNumbersContainer.appendChild(pageBtn);
+            }
+        }
+
+        window.changePolicyManagementPage = (page) => {
+            config.policyManagementCurrentPage = page;
+            populatePolicyManagementTable();
+            updatePolicyManagementPaginationDisplay(
+                Math.ceil(config.policyManagementFilteredPolicies.length / config.policyManagementItemsPerPage) || 1,
+                config.policyManagementFilteredPolicies.length
+            );
+        };
+        window.editPolicy = async (policyNumber) => {
+            showLoader();
+            try {
+                // Fetch policy details from the API
+                const response = await fetch(`${POLICY_BASE_URL}/policy-details?policyNo=${encodeURIComponent(policyNumber)}`, {
+                    headers: { 'userCode': config.userCode }
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const responseData = await response.json();
+                const data = responseData.data && responseData.data.length > 0 ? responseData.data[0] : null;
+                const policy = data && data.policyList && data.policyList.length > 0 ? data.policyList[0] : null;
+
+                if (policy && data) {
+                    // Close other modals and open create-policy-modal
+                    Object.keys(elements.modals).forEach(id => {
+                        if (id !== 'create-policy' && id !== 'confirmation-modal') {
+                            closeModal(id);
+                        }
+                    });
+                    openModal('create-policy');
+                    elements.policyFormTitle.textContent = 'Update Policy';
+                    elements.submitPolicyBtn.classList.add('hidden');
+                    elements.updatePolicyBtn.classList.remove('hidden');
+                    elements.policyNoHidden.value = policyNumber;
+
+                    // Populate customer fields from data[0]
+                    document.getElementById('policy-customerNo').value = data.customerNo || '';
+                    document.getElementById('policy-custName').value = data.customerName || '';
+                    document.getElementById('policy-middleName').value = data.middleName || '';
+                    document.getElementById('policy-surname').value = data.surname || '';
+                    document.getElementById('policy-phoneNum').value = data.phoneNumber || '';
+                    document.getElementById('policy-email').value = data.email || '';
+                    document.getElementById('policy-smokerStatus').value = data.smokerStatus || '';
+                    document.getElementById('policy-dateOfBirth').value = data.dateOfBirth || '';
+                    document.getElementById('policy-gender').value = data.gender || '';
+
+                    // Populate policy fields from data[0].policyList[0]
+                    document.getElementById('policy-userCode').value = policy.userCode || config.userCode;
+                    document.getElementById('policy-polCompanyName').value = policy.polCompanyName || '';
+                    document.getElementById('policy-fcuFlag').value = policy.fcuFlag || '';
+                    document.getElementById('policy-premium').value = policy.premium || '';
+                    document.getElementById('policy-totalAmount').value = policy.totalAmount || '';
+                    document.getElementById('policy-monthlyInstallment').value = policy.monthlyInstallment || '';
+                    document.getElementById('policy-totalClaimableAmount').value = policy.totalClaimableAmount || '';
+                    document.getElementById('policy-policyDate').value = policy.policyDate || '';
+                    document.getElementById('policy-installmentCount').value = policy.installmentCount || '';
+                    document.getElementById('policy-dueDate').value = policy.dueDate || '';
+                    document.getElementById('policy-startDate').value = policy.startDate || '';
+                    document.getElementById('policy-endDate').value = policy.endDate || '';
+                    document.getElementById('policy-renewalDate').value = policy.renewalDate || '';
+                    document.getElementById('policy-beneficiaryName').value = policy.beneficiaryName || '';
+                    document.getElementById('policy-beneficiaryAadharNumber').value = policy.beneficiaryAadharNumber || '';
+                    document.getElementById('policy-beneficiaryRelationship').value = policy.beneficiaryRelationship || '';
+                    document.getElementById('policy-nomineeContactNumber').value = policy.nomineeContactNumber || '';
+                    document.getElementById('policy-status').value = policy.status || '';
+                    document.getElementById('policy-frequency').value = policy.frequency || '';
+
+                    // Populate dropdowns and ensure values are selected
+                    await loadPolicyNamesAndTypes().then(() => {
+                        const policyNameSelect = document.getElementById('policy-policyName');
+                        if (policy.policyName && !Array.from(policyNameSelect.options).some(opt => opt.value === policy.policyName)) {
+                            const option = document.createElement('option');
+                            option.value = policy.policyName;
+                            option.text = policy.policyName;
+                            policyNameSelect.appendChild(option);
+                        }
+                        policyNameSelect.value = policy.policyName || '';
+                    });
+
+                    await loadProductCodes().then(() => {
+                        const productCodeSelect = document.getElementById('policy-productCode');
+                        if (policy.productCode && !Array.from(productCodeSelect.options).some(opt => opt.value === policy.productCode)) {
+                            const option = document.createElement('option');
+                            option.value = policy.productCode;
+                            option.text = policy.productCode;
+                            productCodeSelect.appendChild(option);
+                        }
+                        productCodeSelect.value = policy.productCode || '';
+                    });
+
+                    await loadPolicyDetails().then(() => {
+                        const termSelect = document.getElementById('policy-term');
+                        if (policy.term && !Array.from(termSelect.options).some(opt => opt.value === policy.term)) {
+                            const option = document.createElement('option');
+                            option.value = policy.term;
+                            option.text = policy.term;
+                            termSelect.appendChild(option);
+                        }
+                        termSelect.value = policy.term || '';
+                        updateInstallments();
+                    });
+
+                    const typeSelect = document.getElementById('policy-type');
+                    if (policy.type && !Array.from(typeSelect.options).some(opt => opt.value === policy.type)) {
+                        const option = document.createElement('option');
+                        option.value = policy.type;
+                        option.text = policy.type;
+                        typeSelect.appendChild(option);
+                    }
+                    typeSelect.value = policy.type || '';
+
+                    // Set readonly for customer fields
+                    const readonlyFields = ['custName', 'middleName', 'surname', 'phoneNum', 'email', 'smokerStatus', 'dateOfBirth', 'gender', 'polCompanyName'];
+                    readonlyFields.forEach(field => {
+                        const el = document.getElementById(`policy-${field}`);
+                        if (el) {
+                            el.setAttribute('readonly', 'true');
+                            el.classList.add('bg-gray-100');
+                            if (el.tagName === 'SELECT') el.disabled = true;
+                        }
+                    });
+
+                    // Ensure editable fields are not readonly
+                    const editableFields = ['policyName', 'productCode', 'fcuFlag', 'term', 'frequency', 'premium', 'totalAmount', 'monthlyInstallment', 'totalClaimableAmount', 'policyDate', 'installmentCount', 'dueDate', 'startDate', 'endDate', 'renewalDate', 'beneficiaryName', 'beneficiaryAadharNumber', 'beneficiaryRelationship', 'nomineeContactNumber', 'status', 'type'];
+                    editableFields.forEach(field => {
+                        const el = document.getElementById(`policy-${field}`);
+                        if (el) {
+                            el.removeAttribute('readonly');
+                            el.classList.remove('bg-gray-100');
+                            if (el.tagName === 'SELECT') el.disabled = false;
+                        }
+                    });
+                } else {
+                    showAlert('error', 'Policy details not found for editing.');
+                }
+            } catch (error) {
+                console.error('Error fetching policy details:', error);
+                showAlert('error', 'Failed to load policy details. Please try again.');
+            } finally {
+                hideLoader();
+            }
+        };
+        window.confirmDeletePolicy = (policyNumber) => {
+            if (!elements.modals['confirmation-modal'] || !elements.confirmActionBtn || !elements.confirmCancelBtn) {
+                console.error('Confirmation modal or buttons not found');
+                showAlert('error', 'Failed to initialize confirmation modal.');
+                return;
+            }
+
+            openModal('confirmation-modal');
+            const confirmationMessage = document.getElementById('confirmation-message');
+            const deleteReason = document.getElementById('delete-reason');
+
+            if (!confirmationMessage || !deleteReason) {
+                console.error('Confirmation message or delete reason element not found');
+                showAlert('error', 'Failed to initialize confirmation modal.');
+                closeModal('confirmation-modal');
+                return;
+            }
+            confirmationMessage.textContent = `Are you sure you want to delete policy ${policyNumber}? This action cannot be undone.`;
+            deleteReason.value = '';
+            elements.confirmActionBtn.textContent = 'Delete';
+            elements.confirmActionBtn.classList.add('btn-danger');
+            elements.confirmActionBtn.disabled = true;
+            deleteReason.addEventListener('input', () => {
+                elements.confirmActionBtn.disabled = deleteReason.value.trim() === '';
+            }, { once: true });
+            elements.confirmActionBtn.onclick = () => {
+                const reason = deleteReason.value.trim();
+                if (reason) {
+                    deletePolicy(policyNumber, reason);
+                } else {
+                    showAlert('error', 'Please provide a reason for deletion.');
+                }
+            };
+            elements.confirmCancelBtn.onclick = () => closeModal('confirmation-modal');
+        };
+
+        async function deletePolicy(policyNumber, reason) {
+            showLoader();
+            try {
+                const response = await fetch(`http://localhost:8081/policy/update/delete?PolicyNumber=${encodeURIComponent(policyNumber)}&reason=${encodeURIComponent(reason)}`, {
+                    method: 'POST',
+                    headers: {
+                        'userCode': config.userCode
+                    }
+                });
+
+                const responseData = await response.json();
+
+                if (response.ok && responseData.status === 'Success') {
+                    showAlert('success', responseData.data.status || `Policy ${policyNumber} deleted successfully.`);
+                    fetchPoliciesForPolicyManagement(); // Refresh policy list
+                    closeModal('confirmation-modal');
+                } else {
+                    throw new Error(responseData.errorMessage || 'Failed to delete policy.');
+                }
+            } catch (error) {
+                console.error('Error deleting policy:', error);
+                showAlert('error', `Failed to delete policy: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // --- Checkbox and Batch Delete Logic ---
+        function toggleSelectPolicy(policyNumber, isChecked) {
+            if (isChecked) {
+                config.selectedPolicyNumbers.add(policyNumber);
+            } else {
+                config.selectedPolicyNumbers.delete(policyNumber);
+            }
+            updateSelectAllCheckboxState();
+            updateDeleteSelectedButtonVisibility();
+        }
+
+        function toggleSelectAllPolicies(isChecked) {
+            const checkboxes = elements.policyManageTableBody.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+                const policyNumber = checkbox.dataset.policyNumber;
+                if (isChecked) {
+                    config.selectedPolicyNumbers.add(policyNumber);
+                } else {
+                    config.selectedPolicyNumbers.delete(policyNumber);
+                }
+            });
+            updateDeleteSelectedButtonVisibility();
+        }
+
+        function updateSelectAllCheckboxState() {
+            const totalCheckboxes = elements.policyManageTableBody.querySelectorAll('input[type="checkbox"]').length;
+            const checkedCheckboxes = elements.policyManageTableBody.querySelectorAll('input[type="checkbox"]:checked').length;
+            if (elements.selectAllPoliciesCheckbox) {
+                elements.selectAllPoliciesCheckbox.checked = totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes;
+                elements.selectAllPoliciesCheckbox.indeterminate = totalCheckboxes > 0 && checkedCheckboxes > 0 && totalCheckboxes !== checkedCheckboxes;
+            }
+        }
+
+        function updateDeleteSelectedButtonVisibility() {
+            if (elements.deleteSelectedPoliciesBtn) {
+                elements.deleteSelectedPoliciesBtn.style.display = config.selectedPolicyNumbers.size > 0 ? 'inline-flex' : 'none';
+            }
+        }
+
+        window.confirmDeleteSelectedPolicies = () => {
+            if (config.selectedPolicyNumbers.size === 0) {
+                showAlert('error', 'Please select at least one policy to delete.');
+                return;
+            }
+            openModal('confirmation-modal');
+            document.getElementById('confirmation-message').textContent = `Are you sure you want to delete ${config.selectedPolicyNumbers.size} selected policies? This action cannot be undone.`;
+            elements.confirmActionBtn.textContent = 'Delete All';
+            elements.confirmActionBtn.classList.add('btn-danger');
+            elements.confirmActionBtn.onclick = deleteSelectedPolicies;
+            elements.confirmCancelBtn.onclick = () => closeModal('confirmation-modal');
+        };
+
+        async function deleteSelectedPolicies() {
+            showLoader();
+            try {
+                const policyNumbersToDelete = Array.from(config.selectedPolicyNumbers);
+                for (const policyNumber of policyNumbersToDelete) {
+                    const response = await fetch(`${POLICY_BASE_URL}/policy/delete`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'userCode': config.userCode },
+                        body: JSON.stringify({ policyNo: policyNumber })
+                    });
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(`Failed to delete policy ${policyNumber}: ${errorText}`);
+                        // Optionally show an error for individual policy or aggregate them
+                    }
+                }
+                showAlert('success', `${policyNumbersToDelete.length} policies deleted successfully!`);
+                config.selectedPolicyNumbers.clear(); // Clear selections after deletion
+                initialLoad(); // Refresh main dashboard policies
+                fetchPoliciesForPolicyManagement(); // Refresh policy management policies
+            } catch (error) {
+                showAlert('error', 'An error occurred during batch deletion. Some policies may not have been deleted.');
+                console.error('Batch deletion error:', error);
+            } finally {
+                hideLoader();
+                closeModal('confirmation-modal');
+            }
+        }
+
+		// Event Listeners
+		document.addEventListener('DOMContentLoaded', () => {
+		  initializeuserCode();
+          initialLoad(); // Fetch all policies on page load
+
+		  elements.policySearchInput.addEventListener('focus', () => elements.searchBarContainer.classList.add('focused'));
+          elements.policySearchInput.addEventListener('blur', () => {
+                if (!elements.policySearchInput.value.trim()) elements.searchBarContainer.classList.remove('focused');
+          });
+          elements.policySearchInput.addEventListener('input', () => {
+                elements.clearSearchBtn.style.display = elements.policySearchInput.value.trim() ? 'inline-flex' : 'none';
+                searchPolicies(); // Live search
+          });
+          elements.policySearchInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') searchPolicies();
+          });
+
+          elements.prevPageBtn.addEventListener('click', () => {
+                if (currentDisplayPage > 0) changeDisplayPage(currentDisplayPage - 1);
+          });
+          elements.nextPageBtn.addEventListener('click', () => {
+                if (currentDisplayPage < totalDisplayPages - 1) changeDisplayPage(currentDisplayPage + 1);
+          });
+
+          elements.policyManagePrevPageBtn.addEventListener('click', () => {
+            if (config.policyManagementCurrentPage > 0) changePolicyManagementPage(config.policyManagementCurrentPage - 1);
+          });
+          elements.policyManageNextPageBtn.addEventListener('click', () => {
+            const totalPolicyManagementPages = Math.ceil(config.policyManagementFilteredPolicies.length / config.policyManagementItemsPerPage);
+            if (config.policyManagementCurrentPage < totalPolicyManagementPages - 1) changePolicyManagementPage(config.policyManagementCurrentPage + 1);
+          });
+
+
+		  // Original Listeners
+		  document.getElementById('btn-profile').addEventListener('click', () => openModal('profile'));
+		  document.getElementById('btn-contact').addEventListener('click', () => openModal('contact'));
+		  document.getElementById('close-profile-modal').addEventListener('click', () => closeModal('profile'));
+		  document.getElementById('close-contact-modal').addEventListener('click', () => closeModal('contact'));
+		  document.getElementById('close-create-party-modal').addEventListener('click', () => closeModal('create-party'));
+		  document.getElementById('close-create-policy-modal').addEventListener('click', () => closeModal('create-policy'));
+		  document.getElementById('close-success-modal').addEventListener('click', () => closeModal('success'));
+		  document.getElementById('close-error-modal').addEventListener('click', () => closeModal('error'));
+		  document.getElementById('success-ok-btn').addEventListener('click', () => closeModal('success'));
+		  document.getElementById('error-ok-btn').addEventListener('click', () => closeModal('error'));
+		  document.getElementById('copy-customer-number').addEventListener('click', copyCustomerNumber);
+		  document.getElementById('reset-party-btn').addEventListener('click', resetPartyForm);
+		  document.getElementById('reset-policy-btn').addEventListener('click', resetPolicyForm);
+		  document.getElementById('close-confirmation-modal').addEventListener('click', () => closeModal('confirmation-modal'));
+		  document.getElementById('confirm-cancel-btn').addEventListener('click', () => closeModal('confirmation-modal'));
+		  document.getElementById('prev-tab-btn').addEventListener('click', () => {
+		    const tabs = ['personal', 'contact', 'address'];
+		    const currentIndex = tabs.indexOf(config.currentTab);
+		    if (currentIndex > 0) switchTab(tabs[currentIndex - 1]);
+		  });
+		  document.getElementById('next-tab-btn').addEventListener('click', () => {
+		    const tabs = ['personal', 'contact', 'address'];
+		    const currentIndex = tabs.indexOf(config.currentTab);
+		    if (currentIndex < tabs.length - 1) switchTab(tabs[currentIndex + 1]);
+		  });
+		  document.querySelectorAll('.tab').forEach(tab => {
+		    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+		  });
+          document.getElementById('close-policy-management-modal').addEventListener('click', () => closeModal('policy-management-modal'));
+          document.getElementById('close-policy-management-modal-btn').addEventListener('click', () => closeModal('policy-management-modal'));
+          document.getElementById('close-confirmation-modal').addEventListener('click', () => closeModal('confirmation-modal'));
+          document.getElementById('confirm-cancel-btn').addEventListener('click', () => closeModal('confirmation-modal'));
+
+
+		  // Animations & Particles from original
+		  const animateElements = () => {
+		    const elements = document.querySelectorAll('.text-hidden, .button-hidden');
+		    elements.forEach((el, index) => {
+		      setTimeout(() => {
+		        el.classList.remove('text-hidden', 'button-hidden');
+		        el.classList.add('text-visible', 'button-visible');
+		      }, index * 100);
+		    });
+		  };
+		  animateElements();
+
+		  const canvas = document.getElementById('particles');
+		  const ctx = canvas.getContext('2d');
+		  canvas.width = window.innerWidth;
+		  canvas.height = window.innerHeight;
+
+		  const particlesArray = [];
+		  const numberOfParticles = 50;
+
+		  class Particle {
+		    constructor() {
+		      this.x = Math.random() * canvas.width;
+		      this.y = Math.random() * canvas.height;
+		      this.size = Math.random() * 5 + 1;
+		      this.speedX = Math.random() * 1 - 0.5;
+		      this.speedY = Math.random() * 1 - 0.5;
+		    }
+		    update() {
+		      this.x += this.speedX;
+		      this.y += this.speedY;
+		      if (this.size > 0.2) this.size -= 0.01;
+		      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+		      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+		    }
+		    draw() {
+		      ctx.fillStyle = 'rgba(59, 130, 246, 0.5)';
+		      ctx.beginPath();
+		      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+		      ctx.fill();
+		    }
+		  }
+
+		  function initParticles() {
+		    for (let i = 0; i < numberOfParticles; i++) {
+		      particlesArray.push(new Particle());
+		    }
+		  }
+
+		  function animateParticles() {
+		    ctx.clearRect(0, 0, canvas.width, canvas.height);
+		    for (let i = 0; i < particlesArray.length; i++) {
+		      particlesArray[i].update();
+		      particlesArray[i].draw();
+		      if (particlesArray[i].size <= 0.2) {
+		        particlesArray.splice(i, 1);
+		        particlesArray.push(new Particle());
+		        i--;
+		      }
+		    }
+		    requestAnimationFrame(animateParticles);
+		  }
+		  initParticles();
+		  animateParticles();
+		  window.addEventListener('resize', () => {
+		    canvas.width = window.innerWidth;
+		    canvas.height = window.innerHeight;
+		  });
+		});
+</script>
+</body>
+</html>

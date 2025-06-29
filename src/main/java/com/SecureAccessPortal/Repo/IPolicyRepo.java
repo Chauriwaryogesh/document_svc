@@ -16,12 +16,15 @@ public interface IPolicyRepo extends JpaRepository<Policy, String> {
 	           "LIMIT 1")
 	    String findTopPolicyNumberForCurrentYear(@Param("currentTwoDigitYear") String currentTwoDigitYear);
 
-	@Query(value="Select * from policy p where p.policyNumber=?1", nativeQuery = true)
-	Policy findByPolicyNum(String policyNumber);
+	@Query(value="Select * from policy p where p.policyNumber=?1 and p.deleted_flag=?2", nativeQuery = true)
+	Policy findByPolicyNum(String policyNumber, String deletedFlag);
 
-	@Query(value="Select * from policy p where p.customerNo=?1", nativeQuery = true)
-	List<Policy> findByCustomerNo(String customerNo);
+	@Query(value="Select * from policy p where p.customerNo=?1 and p.deleted_flag=?2", nativeQuery = true)
+	List<Policy> findByCustomerNo(String customerNo, String deletedFlag);
 	
-	@Query(value="Select * from policy p where p.work_item_ref_no=?1", nativeQuery = true)
-	List<Policy> findByWorkItemRefNum(String workItemRefNum);
+	@Query(value="Select * from policy p where p.work_item_ref_no=?1 and p.deleted_flag=?2", nativeQuery = true)
+	List<Policy> findByWorkItemRefNum(String workItemRefNum, String deletedFlag);
+
+	@Query(value="Select * from policy p where p.deleted_flag=?1", nativeQuery = true)
+	List<Policy> findAllDeletedflagN(String deletedFlag);
 }

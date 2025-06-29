@@ -138,7 +138,7 @@ public class BankDetailsService {
 				dto.setCustomer(customer);
 			}
 			if(bankAccount.getPolicyNumber() != null) {
-				policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber());
+				policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber(),"N");
 				dto.setPolicy(policy);
 			}
 			dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
@@ -183,7 +183,7 @@ public class BankDetailsService {
 	public PolicyRequest getCustomerDetails(String policyNo, String customerNo, String userCode) {
 		PolicyRequest customer = new PolicyRequest();
 		if (policyNo != null) {
-			Policy policyNum = policyRepo.findByPolicyNum(policyNo);
+			Policy policyNum = policyRepo.findByPolicyNum(policyNo,"N");
 			if(policyNum != null) {
 				Customer byCustomerNoNew = customerRepo.findByCustomerNoNew(policyNum.getCustomer().getCustomerNo());
 				customer.setCustName(byCustomerNoNew.getName() + " " + byCustomerNoNew.getSurname());

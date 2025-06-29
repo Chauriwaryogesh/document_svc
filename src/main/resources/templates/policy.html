@@ -1224,6 +1224,15 @@
   <div id="loader" class="loader">
     <div class="spinner"></div>
   </div>
+   <div id="customErrorOverlay" class="custom-alert-overlay error">
+            <div id="customErrorBox" class="custom-alert-box">
+                <div id="customErrorHeader" class="custom-alert-header error">Error</div>
+                <div id="customErrorMessage" class="custom-alert-message error"></div>
+                <div class="custom-alert-buttons">
+                    <button id="customErrorOkBtn">OK</button>
+                </div>
+            </div>
+        </div>
 
   <div id="policy-list-modal" class="modal-base hidden">
     <div class="modal-content-fullscreen">
@@ -1386,7 +1395,13 @@
 		        return null;
 		    }
 		    return config.userCode;
-		}		
+		}	
+		 function showErrorAlert(message) {
+             const overlay = document.getElementById('customErrorOverlay');
+             document.getElementById('customErrorMessage').textContent = message;
+             overlay.classList.add('active');
+             document.getElementById('customErrorOkBtn').onclick = () => overlay.classList.remove('active');
+         }
 
 		function logout() {
 		    sessionStorage.removeItem('userCode');

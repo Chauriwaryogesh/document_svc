@@ -26,6 +26,8 @@ public class CommonConstant {
 	public static final String N = "N";
 	public static final String PAYMENT_CREATED = "PAYMENT_CREATED";
 	public static final String INSTALLEMT_CREATED = "Installemt has been created";
+	public static final String UPDATE_POL_DETAIL = "Update Policy Details";
+	public static final String POLICY_UPDATE_DETAILS = "Update Policy Details";
 	
 
 }

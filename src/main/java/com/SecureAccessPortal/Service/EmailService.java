@@ -679,6 +679,7 @@ public class EmailService {
 				custDTO.setCustomerNo(generateCustomerNumber());
 			}
 			custDTO.setAdminAccess(cust.getAdminAccess());
+			custDTO.setDeletedFlag("N");
 			custDTO.setAge(cust.getAge());
 			custDTO.setEmail(cust.getEmail());
 			custDTO.setGender(cust.getGender());

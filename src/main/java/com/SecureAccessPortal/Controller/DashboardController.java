@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class DashboardController {
-	
 	@GetMapping("/home")
     public String home(String userCode) {
         return "home"; 
@@ -73,5 +72,25 @@ public class DashboardController {
     @GetMapping("/bankAccount")
     public String bakAccount(String userCode) {
         return "bankAccount"; 
+    }
+    
+    @GetMapping("/workItemServices")
+    public String workItemServices(String email,String userCode) {
+        return "workItemServices";
+    }
+    
+    @GetMapping("/workitem-details")
+    public String workItemDetails( @RequestParam(value="ref",required=true) String ref,String userCode) {
+        return "workitem-details";
+    }
+    
+    @GetMapping("/policy")
+    public String policy(String userCode) {
+        return "policy";
+    }
+    
+    @GetMapping("/PolicyAdmin")
+    public String PolicyAdmin(String userCode) {
+        return "PolicyAdmin";
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Modal.CustomerDTO;
 import com.SecureAccessPortal.Modal.GroupedPolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyDTO;
@@ -97,19 +98,23 @@ public class PolicyController {
 		return response;
 	}
 	
-	@PostMapping("/policy-details/update")
-	public com.SecureAccessPortal.Service.ResponseEntity<String> getPolicyDetails(
-			@RequestBody CustomerDTO customerDTO, @RequestHeader String userCode) {
-		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
+	@PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseDTO> updatePolicy(@RequestBody PolicyRequest policyDTO,
+			@RequestHeader String userCode) {
+		ResponseEntity<ResponseDTO> response = new ResponseEntity<ResponseDTO>();
+		ResponseDTO responseDTO = new ResponseDTO();
 
-		String message = otpService.updateCustomerDetails(customerDTO, userCode);
+		responseDTO = policyService.updatePolicy(policyDTO, userCode);
 
-		if (message.contains("Success")) {
-			resp.setData(message);
+		if (responseDTO.getStatus().equalsIgnoreCase("Success")) {
+			response.setData(responseDTO);
+			response.setStatus(CommonConstant.SUCCESS);
 		} else {
-			resp.setErrorMessage("Error while updating  customerDetails ");
+			response.setStatus(CommonConstant.FAILURE);
+			response.setErrorMessage("Failed to update policy");
 		}
-		return resp;
+		return response;
 	}
 	
 	@GetMapping("validate/EmailOrUserCode")
@@ -128,6 +133,23 @@ public class PolicyController {
 		response = policyService.fetchAllPolicies(email, userCode);
 		return response;
 
+	}
+	
+	@PostMapping(value = "/update/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseDTO> updateDeletePolicy(@RequestParam String  PolicyNumber,
+			@RequestParam  String reason,
+			@RequestHeader String userCode) {
+		ResponseEntity<ResponseDTO> response = new ResponseEntity<ResponseDTO>();
+		ResponseDTO responseDTO = new ResponseDTO();
+		responseDTO = policyService.updateDeletePolicy(PolicyNumber,reason, userCode);
+		if (responseDTO.getStatus().equalsIgnoreCase("Success")) {
+			response.setData(responseDTO);
+			response.setStatus(CommonConstant.SUCCESS);
+		} else {
+			response.setStatus(CommonConstant.FAILURE);
+			response.setErrorMessage("Failed to update policy");
+		}
+		return response;
 	}
 	
 	

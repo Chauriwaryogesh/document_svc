@@ -83,20 +83,13 @@ public class PolicyService {
 	    public ResponseDTO createPolicy(PolicyRequest policyDTO, String userCode) {
 	        ResponseDTO response = new ResponseDTO();
 	        Customer customer = null;
-
 	        try {
-	            // Validate inputs
 	            if (policyDTO.getInstallmentCount() <= 0 || policyDTO.getMonthlyInstallment() <= 0) {
 	                throw new IllegalArgumentException("Invalid installment count or amount");
 	            }
-//	            if (policyDTO.getTotalAmount() != policyDTO.getMonthlyInstallment() * policyDTO.getInstallmentCount()) {
-//	                throw new IllegalArgumentException("Total amount does not match installments");
-//	            }
-
-	            // Create Policy entity
 	            Policy policy = new Policy();
 	            policy.setCreatedBy(userCode);
-	            policy.setCreatedDate(LocalDateTime.now());
+	            policy.setCreatedTime(LocalDateTime.now());
 	            if (policyDTO.getCustomerNo() != null) {
 	                customer = customerRepository.findByCustomerNoNew(policyDTO.getCustomerNo());
 	                if (customer == null) {
@@ -108,8 +101,8 @@ public class PolicyService {
 	            policy.setPolCompanyName(policyDTO.getPolCompanyName());
 	            policy.setPolicyName(policyDTO.getPolicyName());
 	            policy.setProductCode(policyDTO.getProductCode());
-	            policy.setUpdatedBy(userCode);
-	            policy.setUserCode(userCode);
+	           // policy.setUpdatedBy(userCode);
+	            policy.setUserCode(policyDTO.getUserCode());
 	            policy.setFcuFlag(policyDTO.getFcuFlag());
 	            String newPolicyNumber = generatePolicyNumber();
 	            policy.setPolicyNumber(newPolicyNumber);
@@ -274,7 +267,7 @@ public class PolicyService {
 		List<PolicyDTO> response = new ArrayList<>();
 
 		if (policyNo != null && !policyNo.isEmpty()) {
-			Policy policy = policyRepository.findByPolicyNum(policyNo);
+			Policy policy = policyRepository.findByPolicyNum(policyNo,"N");
 			if (policy == null) {
 				resp.setErrorMessage("No policy found for policy number: " + policyNo);
 				return resp;
@@ -285,7 +278,7 @@ public class PolicyService {
 				return resp;
 			}
 			List<Policy> policies = (allpol != null && allpol.equalsIgnoreCase("Y"))
-					? policyRepository.findByCustomerNo(custNo)
+					? policyRepository.findByCustomerNo(custNo,"N")
 					: List.of(policy);
 			if (policies.isEmpty()) {
 				resp.setErrorMessage("No policies found for customer number: " + custNo);
@@ -299,7 +292,7 @@ public class PolicyService {
 				resp.setErrorMessage("No customer found for customer number: " + customerNo);
 			} else {
 				Customer customer = customerDtls.get();
-				List<Policy> policies = policyRepository.findByCustomerNo(customerNo);
+				List<Policy> policies = policyRepository.findByCustomerNo(customerNo,"N");
 				if (policies.isEmpty()) {
 					PolicyDTO policyDTO = new PolicyDTO();
 					policyDTO.setAssociatedPolicyCount("0");
@@ -339,7 +332,7 @@ public class PolicyService {
 				resp.setErrorMessage("No customer associated with policy: " + policy.getPolicyNumber());
 				return resp;
 			}
-			List<Policy> policies = policyRepository.findByCustomerNo(custNo);
+			List<Policy> policies = policyRepository.findByCustomerNo(custNo,"N");
 			if (policies.isEmpty()) {
 				resp.setErrorMessage("No policies found for customer number: " + custNo);
 			} else {
@@ -391,7 +384,7 @@ public class PolicyService {
 		pol.setPolicyName(policy.getPolicyName() != null ? policy.getPolicyName() : "");
 		pol.setProductCode(policy.getProductCode() != null ? policy.getProductCode() : "");
 		pol.setCreatedBy(policy.getCreatedBy() != null ? policy.getCreatedBy() : "");
-		pol.setCreatedDate(String.valueOf(policy.getCreatedDate()));
+		pol.setCreatedDate(String.valueOf(policy.getCreatedTime()));
 		pol.setWorkItemRefNo(policy.getWorkitems() != null
 				? policy.getWorkitems().stream().map(Workitem::getWorkItemRefNumber).collect(Collectors.toList())
 				: new ArrayList<>());
@@ -567,9 +560,92 @@ public class PolicyService {
 	public ResponseEntity<List<PolicyDTO>> fetchAllPolicies(String email, String userCode) {
 		ResponseEntity<List<PolicyDTO>> response = new ResponseEntity<>();
 		List<Customer> customer= customerRepository.findAll();
-		List<Policy> policies= policyRepository.findAll();
+		List<Policy> policies= policyRepository.findAllDeletedflagN("N");
 		
 		response= policyMapper.mapAllPolicies(customer,policies);
+		return response;
+	}
+
+	public ResponseDTO updatePolicy(PolicyRequest policyDTO, String userCode) {
+		ResponseDTO response = new ResponseDTO();
+		Customer customer = null;
+		Policy policy =policyRepository.findByPolicyNum(policyDTO.getPolicyNumber(),"N");
+		if (policyDTO.getCustomerNo() != null) {
+			customer = customerRepository.findByCustomerNoNew(policyDTO.getCustomerNo());
+			if (customer == null) {
+				throw new IllegalArgumentException("Customer not found");
+			}
+			policy.setCustomer(customer);
+		}
+		try {
+			policy.setDeletedFlag("N");
+			//policy.setPolCompanyName(policyDTO.getPolCompanyName());
+			policy.setPolicyName(policyDTO.getPolicyName());
+			policy.setProductCode(policyDTO.getProductCode());
+			policy.setUpdatedBy(userCode);
+			policy.setUpdatedTime(LocalDateTime.now());
+			policy.setUserCode(userCode);
+			policy.setFcuFlag(policyDTO.getFcuFlag());
+			//String newPolicyNumber = generatePolicyNumber();
+			//policy.setPolicyNumber(newPolicyNumber);
+			policy.setBeneficiaryContactNumber(policyDTO.getNomineeContactNumber());
+			policy.setBeneficiaryIdentityNumber(policyDTO.getBeneficiaryAadharNumber());
+			policy.setBeneficiaryName(policyDTO.getBeneficiaryName());
+			policy.setBeneficiaryRelationship(policyDTO.getBeneficiaryRelationship());
+			policy.setComplianceFlag(CommonConstant.NO);
+			policy.setCoverageAmount(BigDecimal.valueOf(policyDTO.getTotalClaimableAmount()));
+			policy.setMonthlyInstallment(policyDTO.getMonthlyInstallment());
+			policy.setPaymentFrequency(policyDTO.getTerm());
+			policy.setPolicyEndDate(dateUtil.stringToLocalDateConvert(policyDTO.getEndDate()));
+			policy.setPolicyfrequency(policyDTO.getTerm());
+			policy.setPolicyPremium(BigDecimal.valueOf(policyDTO.getPremium()));
+			policy.setPolicyStartDate(dateUtil.stringToLocalDateConvert(policyDTO.getStartDate()));
+			policy.setPolicyStatus(policyDTO.getStatus());
+			policy.setPolicyTerm(policyDTO.getFrequency());
+			policy.setPolicyType(policyDTO.getType());
+			policy.setPremiumDueDate(dateUtil.stringToLocalDateConvert(policyDTO.getDueDate()));
+			policy.setRenewalDate(dateUtil.stringToLocalDateConvert(policyDTO.getRenewalDate()));
+			policy.setSmokerStatus(policyDTO.getSmokerStatus());
+			policy.setTotalAmount(policyDTO.getTotalAmount());
+			policy.setTotalClaimableAmount(policyDTO.getTotalClaimableAmount());
+
+			// Save policy
+			policy = policyRepository.save(policy);
+
+			// Create work item
+			String workType = CommonConstant.UPDATE_POL_DETAIL;
+			String workItemName = CommonConstant.POLICY_UPDATE_DETAILS;
+			String comment = "Policy is created " + policy.getPolicyNumber() + " for the customer";
+			Workitem mapRequetforWorkItem = workItemService.mapRequetforWorkItem(userCode, policy, customer, workType,
+					workItemName, comment, null, null, null);
+
+			response.setPolicyNo(policy.getPolicyNumber());
+			response.setStatus(CommonConstant.SUCCESS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setStatus(CommonConstant.FAILURE);
+			// response.(e.getMessage());
+		}
+		return response;
+	}
+
+	public ResponseDTO updateDeletePolicy(String policyNumber, String reson, String userCode) {
+		ResponseDTO response = new ResponseDTO();
+		Policy policy = policyRepository.findByPolicyNum(policyNumber, "N");
+		if (policy != null) {
+			policy.setDeletedFlag("Y");
+			policy.setPolicyStatus("LAPSED");
+			policy.setUpdatedBy(userCode);
+			policy.setUpdatedTime(LocalDateTime.now());
+			policy.setReson(reson);
+			// Save policy
+			policy = policyRepository.save(policy);
+
+			response.setPolicyNo(policy.getPolicyNumber());
+			response.setStatus(CommonConstant.SUCCESS);
+		}else {
+			response.setStatus("Policy Not found");
+		}
 		return response;
 	}
 

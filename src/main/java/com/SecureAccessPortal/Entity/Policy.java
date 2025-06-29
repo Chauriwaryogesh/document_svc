@@ -46,9 +46,6 @@ public class Policy {
 	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Workitem> workitems = new ArrayList<>();
 
-	@Column(name = "created_date")
-	private LocalDateTime createdDate;
-
 	@Column(name = "product_code")
 	private String productCode;
 
@@ -57,9 +54,15 @@ public class Policy {
 
 	@Column(name = "created_by")
 	private String createdBy;
+	
+	@Column(name = "created_Time")
+	private LocalDateTime createdTime;
 
 	@Column(name = "updated_by")
 	private String updatedBy;
+	
+	@Column(name = "updated_Time")
+	private LocalDateTime updatedTime;
 
 	@Column(name = "userCode")
 	private String userCode;
@@ -124,6 +127,34 @@ public class Policy {
 	private String beneficiaryIdentityNumber;
 	@Column(name = "beneficiary_contactNumber")
 	private String beneficiaryContactNumber;
+	
+	
+	@Column(name = "reson")
+	private String reson;
+	
+	public String getReson() {
+		return reson;
+	}
+
+	public void setReson(String reson) {
+		this.reson = reson;
+	}
+
+	public LocalDateTime getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(LocalDateTime createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public LocalDateTime getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(LocalDateTime updatedTime) {
+		this.updatedTime = updatedTime;
+	}
 
 	public List<Payments> getPayments() {
 		return payments;
@@ -254,13 +285,6 @@ public class Policy {
 		this.workitems = workitems;
 	}
 
-	public LocalDateTime getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(LocalDateTime createdDate) {
-		this.createdDate = createdDate;
-	}
 
 	public String getProductCode() {
 		return productCode;
