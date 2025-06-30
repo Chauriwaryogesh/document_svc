@@ -8,6 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -44,6 +45,9 @@ public class Workitem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "otpEmail", referencedColumnName = "email")
     private OtpStore otpStore;
+    
+    @OneToOne(mappedBy = "workitem")
+    private Complaint complaint;
 
     @Column
     private String workItemId;
@@ -76,7 +80,16 @@ public class Workitem {
     @Column
     private String queue;
     
-    public Payments getPayment() {
+    
+    public Complaint getComplaint() {
+		return complaint;
+	}
+
+	public void setComplaint(Complaint complaint) {
+		this.complaint = complaint;
+	}
+
+	public Payments getPayment() {
 		return payment;
 	}
 

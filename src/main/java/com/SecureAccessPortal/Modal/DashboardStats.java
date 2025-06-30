@@ -1,5 +1,10 @@
 package com.SecureAccessPortal.Modal;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DashboardStats {
 	private int totalEmails;
 	private int emailsSent;
@@ -25,6 +30,44 @@ public class DashboardStats {
 	private long totalUsers;
 	private long totalBankAccounts;
 	private long totalVerificationRecords;
+	
+	//complaints
+	private long complaintsTeam;
+	private long adminTeam;
+	private long escalationTeam;
+	private long bancsTeam;
+
+	public long getComplaintsTeam() {
+		return complaintsTeam;
+	}
+
+	public void setComplaintsTeam(long complaintsTeam) {
+		this.complaintsTeam = complaintsTeam;
+	}
+
+	public long getAdminTeam() {
+		return adminTeam;
+	}
+
+	public void setAdminTeam(long adminTeam) {
+		this.adminTeam = adminTeam;
+	}
+
+	public long getEscalationTeam() {
+		return escalationTeam;
+	}
+
+	public void setEscalationTeam(long escalationTeam) {
+		this.escalationTeam = escalationTeam;
+	}
+
+	public long getBancsTeam() {
+		return bancsTeam;
+	}
+
+	public void setBancsTeam(long bancsTeam) {
+		this.bancsTeam = bancsTeam;
+	}
 
 	public long getTotalWorkItems() {
 		return totalWorkItems;

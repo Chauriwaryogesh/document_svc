@@ -19,7 +19,7 @@ public class DashboardStatsController {
     private DashboardService dashboardService;
 
     @GetMapping("/stats")
-    public ResponseEntity<DashboardStats> getDashboardStats(@RequestHeader("userCode") String userCode) {
+    public ResponseEntity<DashboardStats> getDashboardStats(@RequestHeader(value="userCode",required=false) String userCode) {
         try {
             DashboardStats stats = dashboardService.getDashboardStats(userCode);
             return ResponseEntity.ok(stats);
@@ -29,7 +29,7 @@ public class DashboardStatsController {
     }
     
     @GetMapping("/email-counts")
-    public ResponseEntity<DashboardStats> getEmailCountStats(@RequestHeader("userCode") String userCode) {
+    public ResponseEntity<DashboardStats> getEmailCountStats(@RequestHeader(value="userCode",required=false) String userCode) {
         try {
             DashboardStats stats = dashboardService.getEmailCountStats(userCode);
             return ResponseEntity.ok(stats);

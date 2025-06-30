@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaints Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --sidebar-width-collapsed: 80px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .main-content {
+            transition: margin-left 0.3s ease-in-out;
+            margin-left: var(--sidebar-width);
+        }
+        body.sidebar-collapsed .main-content {
+            margin-left: var(--sidebar-width-collapsed);
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            transition: width 0.3s ease-in-out;
+        }
+        body.sidebar-collapsed .sidebar {
+            width: var(--sidebar-width-collapsed);
+        }
+        .sidebar .nav-link span, .sidebar .logo-text {
+            transition: opacity 0.2s ease-in-out;
+        }
+        body.sidebar-collapsed .sidebar .nav-link span,
+        body.sidebar-collapsed .sidebar .logo-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        .tab-button.active {
+            border-color: #4f46e5;
+            color: #4f46e5;
+            background-color: #eef2ff;
+        }
+        .summary-circle {
+            transition: all 0.3s ease;
+        }
+        .summary-circle:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .modal-body::-webkit-scrollbar { width: 8px; }
+        .modal-body::-webkit-scrollbar-track { background: #f1f1f1; }
+        .modal-body::-webkit-scrollbar-thumb { background: #a8a8a8; border-radius: 4px; }
+        .modal-body::-webkit-scrollbar-thumb:hover { background: #888; }
+        .input-style {
+            background-color: #f8fafc; border: 1px solid #d1d5db; color: #1e293b;
+            font-size: 0.875rem; border-radius: 0.5rem; padding: 0.5rem 1rem;
+            width: 100%; box-sizing: border-box;
+        }
+        .input-style:focus {
+            outline: none; ring: 2px solid #4f46e5; border-color: #4f46e5;
+        }
+        .complaint-number-link {
+            cursor: pointer;
+            text-decoration: underline;
+            color: #4f46e5;
+        }
+        .complaint-number-link:hover {
+            color: #3730a3;
+        }
+        #filterComplaintStatus {
+            height: auto;
+            min-height: 100px;
+        }
+        .required::after {
+    content: '*';
+    color: red;
+    margin-left: 2px;
+}
+    </style>
+</head>
+<body class="sidebar-collapsed">
+
+    <!-- Sidebar -->
+    <aside class="sidebar bg-white h-screen fixed top-0 left-0 z-40 shadow-xl flex flex-col">
+        <div class="flex items-center justify-center h-20 border-b border-slate-200 shrink-0">
+             <div class="flex items-center justify-center">
+                <i class="fa-solid fa-shield-heart text-indigo-600 text-3xl"></i>
+                <span class="logo-text text-xl font-bold text-slate-800 ml-3">Complaints</span>
+            </div>
+        </div>
+        <nav class="flex-grow p-4 space-y-2">
+            <a href="#" class="nav-link flex items-center p-3 rounded-lg text-slate-600 bg-indigo-50 text-indigo-700 font-semibold" data-sidebar-action="dashboard">
+                <i class="fas fa-tachometer-alt fa-fw text-lg w-12 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-link flex items-center p-3 rounded-lg text-slate-600 hover:bg-slate-100" data-sidebar-action="all-complaints">
+                <i class="fas fa-file-alt fa-fw text-lg w-12 text-center"></i>
+                <span>All Complaints</span>
+            </a>
+            <a href="#" class="nav-link flex items-center p-3 rounded-lg text-slate-600 hover:bg-slate-100" data-sidebar-action="reports">
+                <i class="fas fa-chart-bar fa-fw text-lg w-12 text-center"></i>
+                <span>Reports</span>
+            </a>
+            <a href="#" class="nav-link flex items-center p-3 rounded-lg text-slate-600 hover:bg-slate-100" data-sidebar-action="teams">
+                <i class="fas fa-users fa-fw text-lg w-12 text-center"></i>
+                <span>Teams</span>
+            </a>
+        </nav>
+        <div class="p-4 border-t border-slate-200 shrink-0">
+            <a href="#" class="nav-link flex items-center p-3 rounded-lg text-slate-600 hover:bg-slate-100" data-sidebar-action="settings">
+                <i class="fas fa-cog fa-fw text-lg w-12 text-center"></i>
+                <span>Settings</span>
+            </a>
+             <a href="#" id="sidebar-toggle" class="flex items-center p-3 rounded-lg text-slate-600 hover:bg-slate-100 mt-2">
+                <i class="fas fa-chevron-left fa-fw text-lg w-12 text-center transition-transform duration-300"></i>
+                <span>Collapse</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-30">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <h1 class="text-2xl font-bold text-slate-800">Complaints Dashboard</h1>
+                    <div class="flex items-center gap-4">
+                        <span class="font-semibold text-slate-600 hidden sm:block" id="userNameDisplay">User: Loading...</span>
+                        <button id="profileBtn" class="text-slate-500 hover:text-indigo-600 relative">
+                            <i class="fas fa-user-circle fa-lg"></i>
+                            <span id="notificationBadge" class="absolute -top-1 -right-1 hidden h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="p-4 sm:p-6 lg:p-8">
+            <!-- Queue Summary Circles -->
+            <div id="dashboard-view" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="summary-circle bg-white border-blue-500 text-blue-800 p-4">
+                    <i class="fas fa-headset text-3xl mb-2 text-blue-500"></i>
+                    <div id="complaints-team-count" class="text-4xl font-extrabold">0</div>
+                    <div class="font-semibold mt-1">Complaints Team</div>
+                </div>
+                <div class="summary-circle bg-white border-purple-500 text-purple-800 p-4">
+                    <i class="fas fa-user-shield text-3xl mb-2 text-purple-500"></i>
+                    <div id="admin-team-count" class="text-4xl font-extrabold">0</div>
+                    <div class="font-semibold mt-1">Admin Team</div>
+                </div>
+                <div class="summary-circle bg-white border-red-500 text-red-800 p-4">
+                    <i class="fas fa-arrow-trend-up text-3xl mb-2 text-red-500"></i>
+                    <div id="escalation-team-count" class="text-4xl font-extrabold">0</div>
+                    <div class="font-semibold mt-1">Escalation Team</div>
+                </div>
+                <div class="summary-circle bg-white border-green-500 text-green-800 p-4">
+                    <i class="fas fa-university text-3xl mb-2 text-green-500"></i>
+                    <div id="Bancs-team-count" class="text-4xl font-extrabold">0</div>
+                    <div class="font-semibold mt-1">Bancs Team</div>
+                </div>
+            </div>
+
+            <!-- Complaints Section -->
+            <div id="complaints-view" class="bg-white rounded-xl shadow-lg">
+                <div class="p-4 border-b border-slate-200">
+                    <nav class="flex flex-wrap gap-2" aria-label="Tabs">
+                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="All">All Complaints</button>
+                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Open">Open</button>
+                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Reopen">Reopen</button>
+                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Closed">Closed</button>
+                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Ombudsman">Ombudsman</button>
+                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Triage">Triage</button>
+                    </nav>
+                </div>
+
+                <div class="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="relative w-full sm:w-72 flex gap-2">
+                        <select id="searchTypeSelect" class="input-style w-auto">
+                            <option value="complaintId">Complaint ID</option>
+                            <option value="customerName">Customer Name</option>
+                            <option value="policyNumber">Policy Number</option>
+                            <option value="workitemNumber">Work Item No.</option>
+                        </select>
+                        <div class="relative flex-grow">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"><i class="fa fa-search text-slate-400"></i></div>
+                            <input type="text" id="searchInput" placeholder="Search..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="advancedSearchBtn" class="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600"><i class="fa-solid fa-sliders"></i></button>
+                        <button id="viewToggleBtn" class="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600"><i class="fa-solid fa-list"></i></button>
+                        <button id="createComplaintBtn" class="flex-shrink-0 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors flex items-center gap-2">
+                            <i class="fas fa-plus"></i><span>Create</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="bulk-actions-bar" class="hidden p-4 bg-indigo-50 border-y border-indigo-200 flex items-center justify-between">
+                    <span id="selection-count" class="font-semibold text-indigo-800">0 selected</span>
+                    <button id="delete-selected-btn" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-red-600 transition-colors flex items-center gap-2">
+                        <i class="fas fa-trash-alt"></i><span>Delete Selected</span>
+                    </button>
+                </div>
+
+                <div id="display-area" class="p-4"></div>
+
+                <div class="p-4 flex flex-col sm:flex-row items-center justify-between border-t border-slate-200">
+                    <span class="text-sm text-slate-700 mb-4 sm:mb-0">
+                        Showing <span class="font-semibold" id="pagination-start">0</span>-<span class="font-semibold" id="pagination-end">0</span> of <span class="font-semibold" id="pagination-total">0</span>
+                    </span>
+                    <div id="pagination-controls" class="flex items-center gap-1"></div>
+                </div>
+            </div>
+
+            <!-- Teams View (Placeholder) -->
+            <div id="teams-view" class="bg-white rounded-xl shadow-lg p-8 hidden">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">Teams Management</h2>
+                <p class="text-slate-600">This section will display details about different teams and their associated complaints. Feature coming soon!</p>
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-blue-800">Complaints Team</h3>
+                        <p class="text-sm text-blue-600">Total Complaints: <span id="team-complaints-count">0</span></p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-purple-800">Admin Team</h3>
+                        <p class="text-sm text-purple-600">Total Complaints: <span id="team-admin-count">0</span></p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-red-800">Escalation Team</h3>
+                        <p class="text-sm text-red-600">Total Complaints: <span id="team-escalation-count">0</span></p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-green-800">Bancs Team</h3>
+                        <p class="text-sm text-green-600">Total Complaints: <span id="team-Bancs-count">0</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports View (Placeholder) -->
+            <div id="reports-view" class="bg-white rounded-xl shadow-lg p-8 hidden">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">Reports & Analytics</h2>
+                <p class="text-slate-600">Detailed reports and analytics will be available here. Feature coming soon!</p>
+            </div>
+
+            <!-- Settings View (Placeholder) -->
+            <div id="settings-view" class="bg-white rounded-xl shadow-lg p-8 hidden">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">Application Settings</h2>
+                <p class="text-slate-600">Configure application settings here. Feature coming soon!</p>
+            </div>
+
+        </main>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    let allComplaints = [];
+    let displayedComplaints = [];
+    let selectedComplaintIds = new Set();
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 9;
+    let currentView = 'cards';
+    let currentInputTypeFilter = 'All';
+
+    const mainContent = document.querySelector('.main-content');
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const displayArea = document.getElementById('display-area');
+    const paginationControls = document.getElementById('pagination-controls');
+    const searchInput = document.getElementById('searchInput');
+    const searchTypeSelect = document.getElementById('searchTypeSelect');
+    const viewToggleBtn = document.getElementById('viewToggleBtn');
+    const createComplaintBtn = document.getElementById('createComplaintBtn');
+    const advancedSearchBtn = document.getElementById('advancedSearchBtn');
+    const bulkActionsBar = document.getElementById('bulk-actions-bar');
+    const selectionCount = document.getElementById('selection-count');
+    const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+    const profileBtn = document.getElementById('profileBtn');
+    const userNameDisplay = document.getElementById('userNameDisplay');
+    const notificationBadge = document.getElementById('notificationBadge');
+
+    const dashboardView = document.getElementById('dashboard-view');
+    const complaintsView = document.getElementById('complaints-view');
+    const teamsView = document.getElementById('teams-view');
+    const reportsView = document.getElementById('reports-view');
+    const settingsView = document.getElementById('settings-view');
+
+    let currentUser = {
+        userCode: 'defaultUser',
+        fullName: 'Guest User',
+        roles: [],
+        notifications: 0
+    };
+
+    const BASE_URL = 'http://localhost:8081';
+    const api = {
+        fetchTeamDetails: async (userCode) => {
+            if (!userCode) return null;
+            const url = `${BASE_URL}/Complaint/fetch-Team?userCode=${userCode}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                const data = await response.json();
+                return data.data;
+            } catch (error) {
+                console.error("Failed to fetch team details:", error);
+                showErrorToast(`Failed to fetch user details: ${error.message}`);
+                return null;
+            }
+        },
+        searchComplaints: async (params = {}) => {
+            const queryParams = new URLSearchParams();
+            Object.entries(params).forEach(([key, value]) => {
+                if (value) queryParams.set(key, value);
+            });
+            const url = `${BASE_URL}/Complaint/search-complaint?${queryParams.toString()}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                return await response.json();
+            } catch (error) {
+                showErrorToast(`Search failed: ${error.message}`);
+                return { data: [], totalElements: 0 };
+            }
+        },
+        getComplaint: async (complaintNumber, type = '') => {
+            const queryParams = new URLSearchParams({ complaintNumber });
+            if (type) queryParams.set('type', type);
+            const url = `${BASE_URL}/Complaint/get-complaint?${queryParams.toString()}`;
+            try {
+                console.log('Calling getComplaint with URL:', url); // Add logging for debugging
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                const result = await response.json();
+                console.log('getComplaint response:', result); // Add logging for debugging
+                return result.data && result.data.length > 0 ? result.data[0] : null;
+            } catch (error) {
+                console.error("Failed to fetch complaint details:", error);
+                showErrorToast(`Failed to fetch complaint details: ${error.message}`);
+                return null;
+            }
+        },
+        getStats: async () => {
+             const url = `${BASE_URL}/Complaint/get-stats`;
+             try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                return await response.json();
+            } catch (error) {
+                showErrorToast(`Failed to fetch stats: ${error.message}`);
+                return { complaintsTeam: 0, adminTeam: 0, escalationTeam: 0, BancsTeam: 0 };
+            }
+        },
+        fetchPolicyDetails: async (policyNo) => {
+            if (!policyNo) return null;
+            const url = `${BASE_URL}/policy/policy-details?policyNo=${policyNo}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Policy not found');
+                return await response.json();
+            } catch (error) {
+                showErrorToast(error.message);
+                return null;
+            }
+        },
+        createComplaint: async (data) => {
+            const url = `${BASE_URL}/Complaint/create-complaint`;
+            try {
+                const response = await fetch(url, { method: 'POST', headers: { 'userCode': currentUser.userCode,
+                  'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.errorMessage || 'Failed to create complaint'); }
+                showErrorToast("Complaint created successfully!", "bg-green-500");
+                return await response.json();
+            } catch (error) {
+                showErrorToast(`Creation failed: ${error.message}`);
+                return null;
+            }
+        },
+        updateComplaint: async (data) => {
+            const url = `${BASE_URL}/Complaint/update-complaint`;
+            try {
+                const response = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.errorMessage || 'Failed to update complaint'); }
+                showErrorToast("Complaint updated successfully!", "bg-green-500");
+                return await response.json();
+            } catch (error) {
+                showErrorToast(`Update failed: ${error.message}`);
+                return null;
+            }
+        },
+        deleteComplaints: async (ids) => {
+            const deletePromises = Array.from(ids).map(id => {
+                const url = `${BASE_URL}/Complaint/delete-complaint?complaintId=${id}`;
+                return fetch(url, { method: 'DELETE' });
+            });
+            try {
+                const results = await Promise.all(deletePromises);
+                const failed = results.filter(res => !res.ok);
+                if (failed.length > 0) throw new Error(`${failed.length} deletions failed.`);
+                showErrorToast(`${ids.size} complaint(s) deleted successfully!`, "bg-green-500");
+                return { success: true };
+            } catch (error) {
+                showErrorToast(`Deletion failed: ${error.message}`);
+                return { success: false };
+            }
+        },
+    };
+
+    const getSlaInfo = (complaint) => {
+        if (!complaint || !complaint.slaDueDate || !complaint.dateFiled) return { isCrossed: false, daysLeft: 'N/A', progress: 0 };
+        const slaDueDate = new Date(complaint.slaDueDate);
+        const creationDate = new Date(complaint.dateFiled);
+        const today = new Date();
+        const timeLeft = slaDueDate.getTime() - today.getTime();
+        const daysLeft = Math.ceil(timeLeft / (1000 * 3600 * 24));
+        const totalDuration = slaDueDate.getTime() - creationDate.getTime();
+        if (totalDuration <= 0) return { daysLeft: 0, progress: 100, isCrossed: today > slaDueDate };
+        const timePassed = today.getTime() - creationDate.getTime();
+        const progress = Math.min(100, Math.max(0, (timePassed / totalDuration) * 100));
+        const isCrossed = today > slaDueDate;
+        return { daysLeft, progress, isCrossed };
+    };
+
+    const showErrorToast = (message, bgClass = 'bg-red-600') => {
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-5 right-5 ${bgClass} text-white py-3 px-5 rounded-xl shadow-lg z-50 transform transition-all duration-300 translate-y-full opacity-0`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.remove('translate-y-full', 'opacity-0'), 100);
+        setTimeout(() => {
+            toast.classList.add('translate-y-full', 'opacity-0');
+            toast.addEventListener('transitionend', () => toast.remove());
+        }, 4000);
+    };
+
+    const renderComplaints = () => {
+        displayArea.innerHTML = '';
+        if (displayedComplaints.length === 0) {
+            displayArea.innerHTML = `<div class="text-center p-8 text-slate-500">No complaints found for "${currentInputTypeFilter}" status.</div>`;
+            return;
+        }
+
+        if (currentView === 'list') renderTable();
+        else renderCards();
+    };
+
+    const renderTable = () => {
+        const tableHTML = `<div class="overflow-x-auto"><table class="w-full text-sm text-left text-slate-500"><thead class="text-xs text-slate-700 uppercase bg-slate-50"><tr><th scope="col" class="p-4"><input id="select-all-checkbox" type="checkbox" class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"></th><th scope="col" class="px-6 py-3">Complaint Details</th><th scope="col" class="px-6 py-3">Customer</th><th scope="col" class="px-6 py-3">Status</th><th scope="col" class="px-6 py-3">SLA Status</th><th scope="col" class="px-6 py-3">Actions</th></tr></thead><tbody id="complaints-table-body"></tbody></table></div>`;
+        displayArea.innerHTML = tableHTML;
+        const tableBody = document.getElementById('complaints-table-body');
+        
+        const pageItems = displayedComplaints.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+        pageItems.forEach(complaint => tableBody.appendChild(createComplaintRow(complaint)));
+        document.getElementById('select-all-checkbox').addEventListener('change', handleSelectAllChange);
+    };
+
+    const renderCards = () => {
+        const cardsContainer = document.createElement('div');
+        cardsContainer.id = 'cards-container';
+        cardsContainer.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6';
+        displayArea.appendChild(cardsContainer);
+        
+        const pageItems = displayedComplaints.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+        pageItems.forEach(complaint => cardsContainer.appendChild(createComplaintCard(complaint)));
+    };
+
+    const createComplaintRow = (complaint) => {
+        const row = document.createElement('tr');
+        row.className = 'bg-white border-b hover:bg-slate-50 fade-in';
+        row.dataset.id = complaint.complaintId;
+        const isSelected = selectedComplaintIds.has(complaint.complaintId);
+        const slaInfo = getSlaInfo(complaint);
+        let statusClass = getStatusClass(complaint.status, 'bg');
+        
+        row.innerHTML = `
+            <td class="w-4 p-4"><input type="checkbox" class="row-checkbox w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500" ${isSelected ? 'checked' : ''}></td>
+            <td class="px-6 py-4"><div class="font-semibold complaint-number-link" data-complaint-number="${complaint.complaintNumber}">${complaint.complaintNumber}</div><div class="text-xs text-slate-500">${complaint.policyNumber}</div></td>
+            <td class="px-6 py-4 font-medium">${complaint.customerName}</td>
+            <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${statusClass}">${complaint.status}</span></td>
+            <td class="px-6 py-4 min-w-[150px]">${getSlaProgressHtml(complaint, slaInfo)}</td>
+            <td class="px-6 py-4"><div class="flex items-center gap-2">${getActionButtonsHtml()}</div></td>`;
+        return row;
+    };
+
+    const createComplaintCard = (complaint) => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-xl shadow-lg border-l-4 p-5 flex flex-col justify-between fade-in';
+        card.dataset.id = complaint.complaintId;
+        const isSelected = selectedComplaintIds.has(complaint.complaintId);
+        const slaInfo = getSlaInfo(complaint);
+        let statusBorderClass = getStatusClass(complaint.status, 'border');
+        if (slaInfo.isCrossed) statusBorderClass = 'border-red-500';
+        
+        statusBorderClass.split(' ').forEach(cls => {
+            if (cls) card.classList.add(cls);
+        });
+
+        card.innerHTML = `
+            <div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-bold text-lg text-slate-800">${complaint.customerName || 'N/A'}</p>
+                        <p class="text-xs text-slate-500 complaint-number-link" data-complaint-number="${complaint.complaintNumber}">${complaint.complaintNumber || 'N/A'}</p>
+                    </div>
+                    <input type="checkbox" class="row-checkbox w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500" ${isSelected ? 'checked' : ''}>
+                </div>
+                <p class="text-sm text-slate-600 mt-3 line-clamp-2 h-10">${complaint.description || 'No description'}</p>
+            </div>
+            <div class="mt-4">
+                <div class="text-sm mb-2">${getSlaProgressHtml(complaint, slaInfo)}</div>
+                <div class="border-t pt-3 flex justify-between items-center">
+                    <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(complaint.status, 'bg')}">${complaint.status || 'N/A'}</span>
+                    <div class="flex items-center gap-2">${getActionButtonsHtml()}</div>
+                </div>
+            </div>`;
+        return card;
+    };
+
+    const getActionButtonsHtml = () => `
+        <button class="view-btn text-indigo-600 hover:text-indigo-900" title="View"><i class="fas fa-eye"></i></button>
+        <button class="edit-btn text-amber-600 hover:text-amber-900" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+        <button class="delete-btn text-red-600 hover:text-red-900" title="Delete"><i class="fas fa-trash-alt"></i></button>`;
+
+    const getSlaProgressHtml = (complaint, slaInfo) => {
+        if (['Resolved', 'Closed', 'Rejected'].includes(complaint.status)) {
+            return `<div class="flex items-center gap-2"><div class="sla-circle bg-green-100 text-green-700 text-lg"><i class="fa-solid fa-check"></i></div><span class="font-semibold text-green-600">Met</span></div>`;
+        }
+        if (slaInfo.isCrossed) {
+            return `<div class="flex items-center gap-2"><div class="sla-circle bg-red-100 text-red-700 text-lg border-2 border-red-500"><i class="fa-solid fa-triangle-exclamation"></i></div><span class="font-semibold text-red-600">Crossed</span></div>`;
+        }
+        const progressBarColor = slaInfo.progress > 80 ? 'bg-amber-500' : 'bg-green-500';
+        return `<div class="flex flex-col gap-1"><div class="progress-bar-container"><div class="progress-bar ${progressBarColor}" style="width: ${slaInfo.progress}%"></div></div><span class="text-xs text-slate-500">${slaInfo.daysLeft} days left</span></div>`;
+    };
+
+    const getStatusClass = (status, type) => {
+        const prefix = type === 'bg' ? 'bg-' : 'border-';
+        const textPrefix = 'text-';
+        switch (status) {
+            case 'Resolved': return `${prefix}emerald-100 ${textPrefix}emerald-800`;
+            case 'Closed': return `${prefix}slate-100 ${textPrefix}slate-800`;
+            case 'Rejected':
+            case 'Canceled': return `${prefix}red-100 ${textPrefix}red-800`;
+            case 'Open': return `${prefix}blue-100 ${textPrefix}blue-800`;
+            default: return `${prefix}amber-100 ${textPrefix}amber-800`;
+        }
+    };
+
+    const renderPagination = () => {
+        paginationControls.innerHTML = '';
+        const totalPages = Math.ceil(displayedComplaints.length / ITEMS_PER_PAGE);
+        if (totalPages <= 1) return;
+        const createButton = (content, page, disabled = false, active = false) => {
+            const button = document.createElement('button');
+            button.innerHTML = content;
+            button.className = `pagination-circle text-sm font-semibold ${active ? 'active' : ''}`;
+            if (disabled) button.classList.add('opacity-50', 'cursor-not-allowed');
+            button.onclick = () => { if (!disabled) { currentPage = page; renderAll(); } };
+            return button;
+        };
+        paginationControls.appendChild(createButton('<i class="fas fa-chevron-left"></i>', currentPage - 1, currentPage === 1));
+        for (let i = 1; i <= totalPages; i++) {
+            paginationControls.appendChild(createButton(i, i, false, i === currentPage));
+        }
+        paginationControls.appendChild(createButton('<i class="fas fa-chevron-right"></i>', currentPage + 1, currentPage === totalPages));
+    };
+
+    const updatePaginationInfo = (totalItems) => {
+        const start = totalItems === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1;
+        const end = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+        document.getElementById('pagination-start').textContent = start;
+        document.getElementById('pagination-end').textContent = end;
+        document.getElementById('pagination-total').textContent = totalItems;
+    };
+
+    const updateQueueCounts = async () => {
+        const counts = await api.getStats();
+        document.getElementById('complaints-team-count').textContent = counts.data.complaintsTeam || 0;
+        document.getElementById('admin-team-count').textContent = counts.data.adminTeam || 0;
+        document.getElementById('escalation-team-count').textContent = counts.data.escalationTeam || 0;
+        document.getElementById('Bancs-team-count').textContent = counts.data.BancsTeam || 0;
+        if (document.getElementById('team-complaints-count')) {
+            document.getElementById('team-complaints-count').textContent = counts.data.complaintsTeam || 0;
+            document.getElementById('team-admin-count').textContent = counts.data.adminTeam || 0;
+            document.getElementById('team-escalation-count').textContent = counts.data.escalationTeam || 0;
+            document.getElementById('team-Bancs-count').textContent = counts.data.BancsTeam || 0;
+        }
+    };
+    const renderAll = () => {
+        renderComplaints();
+        renderPagination();
+        updatePaginationInfo(displayedComplaints.length);
+        updateQueueCounts();
+    };
+
+    const handleSelectionChange = () => {
+        selectedComplaintIds.clear();
+        document.querySelectorAll('.row-checkbox:checked').forEach(cb => {
+            selectedComplaintIds.add(cb.closest('[data-id]').dataset.id);
+        });
+        const numSelected = selectedComplaintIds.size;
+        bulkActionsBar.classList.toggle('hidden', numSelected === 0);
+        selectionCount.textContent = `${numSelected} selected`;
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        if(selectAllCheckbox) {
+            const pageItemsCount = document.querySelectorAll('.row-checkbox').length;
+            selectAllCheckbox.checked = numSelected > 0 && pageItemsCount > 0 && numSelected === pageItemsCount;
+            selectAllCheckbox.indeterminate = numSelected > 0 && numSelected < pageItemsCount;
+        }
+    };
+    
+    function handleSelectAllChange(e) {
+        document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = e.target.checked);
+        handleSelectionChange();
+    }
+
+    displayArea.addEventListener('change', e => { if (e.target.classList.contains('row-checkbox')) handleSelectionChange(); });
+    deleteSelectedBtn.addEventListener('click', async () => {
+        if (confirm(`Are you sure you want to delete ${selectedComplaintIds.size} complaints?`)) {
+            await api.deleteComplaints(selectedComplaintIds);
+            selectedComplaintIds.clear();
+            bulkActionsBar.classList.add('hidden');
+            await performSearch({ inputType: currentInputTypeFilter });
+        }
+    });
+
+    displayArea.addEventListener('click', async (e) => {
+        const target = e.target;
+        const container = target.closest('[data-id]');
+        const complaintNumberEl = target.closest('.complaint-number-link');
+
+        if (complaintNumberEl) {
+            const complaintNumber = complaintNumberEl.dataset.complaintNumber;
+            openComplaintDetailsModal(complaintNumber);
+            return;
+        }
+
+        if (!container) return;
+        const id = container.dataset.id;
+
+        if (target.closest('.delete-btn')) {
+            if (confirm(`Are you sure you want to delete complaint #${id}?`)) {
+                await api.deleteComplaints(new Set([id]));
+                await performSearch({ inputType: currentInputTypeFilter });
+            }
+        } else if (target.closest('.edit-btn')) {
+            const complaintData = await api.searchComplaints({ complaintId: id });
+            if (complaintData?.data?.length > 0) openModal('complaintModal', 'edit', complaintData.data[0]);
+            else showErrorToast(`Could not fetch details for complaint #${id}`);
+        } else if (target.closest('.view-btn')) {
+             const complaintData = await api.searchComplaints({ complaintId: id });
+            if (complaintData?.data?.length > 0) openComplaintDetailsModal(complaintData.data[0].complaintNumber);
+            else showErrorToast(`Could not fetch details for complaint #${id}`);
+        }
+    });
+    
+    function createModals() {
+        const modalContainer = document.createElement('div');
+        modalContainer.innerHTML = `
+            <div id="complaintModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col transform transition-all opacity-0 -translate-y-4">
+                    <div class="p-6 border-b flex justify-between items-center"><h3 id="modalTitle" class="text-2xl font-bold text-slate-800"></h3><button id="closeModalBtn" class="text-slate-400 hover:text-red-500"><i class="fas fa-times fa-2x"></i></button></div>
+                    <div class="modal-body p-6 overflow-y-auto">
+                        <div class="border-b border-gray-200 mb-6"><nav id="modalTabs" class="-mb-px flex space-x-8"><button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-b-2 border-transparent" data-tab="details">Details</button><button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-b-2 border-transparent" data-tab="assignment">Assignment</button><button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-b-2 border-transparent" data-tab="notes">Notes</button></nav></div>
+                        <form id="complaintForm">
+                            <input type="hidden" id="complaintId">
+                            <div id="tab-content-details" class="tab-content grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                            <div id="tab-content-assignment" class="tab-content grid grid-cols-1 md:grid-cols-3 gap-4" style="display:none;"></div>
+                            <div id="tab-content-notes" class="tab-content space-y-4" style="display:none;"></div>
+                        </form>
+                    </div>
+                    <div class="p-6 border-t flex justify-end gap-3 bg-slate-50"><button id="cancelModalBtn" class="bg-slate-200 font-bold py-2 px-6 rounded-lg">Cancel</button><button id="saveComplaintBtn" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg">Save</button></div>
+                </div>
+            </div>
+            <div id="complaintDetailsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col transform transition-all opacity-0 -translate-y-4">
+                    <div class="p-6 border-b flex justify-between items-center"><h3 id="detailsModalTitle" class="text-2xl font-bold text-slate-800"></h3><button id="closeDetailsModalBtn" class="text-slate-400 hover:text-red-500"><i class="fas fa-times fa-2x"></i></button></div>
+                    <div id="detailsModalBody" class="modal-body p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+                    <div class="p-4 border-t flex justify-end gap-3 bg-slate-50"><button id="closeDetailsModalFooterBtn" class="bg-slate-200 font-bold py-2 px-4 rounded-lg">Close</button></div>
+                </div>
+            </div>
+            <div id="advancedFilterModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transform transition-all opacity-0 -translate-y-4">
+                    <div class="p-6 border-b flex justify-between items-center"><h3 class="text-2xl font-bold text-slate-800">Advanced Filter</h3><button id="closeAdvancedFilterModalBtn" class="text-slate-400 hover:text-red-500"><i class="fas fa-times fa-2x"></i></button></div>
+                    <div class="modal-body p-6 overflow-y-auto">
+                        <form id="advancedFilterForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex flex-col">
+                                <label for="filterWorkitemNumber" class="block text-sm font-medium text-slate-700 mb-1">Work Item Number</label>
+                                <input type="text" id="filterWorkitemNumber" name="workitemNumber" class="input-style">
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="filterPolicyNumber" class="block text-sm font-medium text-slate-700 mb-1">Policy Number</label>
+                                <input type="text" id="filterPolicyNumber" name="policyNumber" class="input-style">
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="filterCustomerNo" class="block text-sm font-medium text-slate-700 mb-1">Customer ID</label>
+                                <input type="text" id="filterCustomerNo" name="customerNo" class="input-style">
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="filterComplaintStatus" class="block text-sm font-medium text-slate-700 mb-1">Complaint Status</label>
+                                <select id="filterComplaintStatus" name="status" class="input-style" multiple>
+                                    <option value="Open">Open</option>
+                                    <option value="Reopen">Reopen</option>
+                                    <option value="Closed">Closed</option>
+                                    <option value="Ombudsman">Ombudsman</option>
+                                    <option value="Triage">Triage</option>
+                                    <option value="Resolved">Resolved</option>
+                                    <option value="Rejected">Rejected</option>
+                                    <option value="Canceled">Canceled</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="p-6 border-t flex justify-end gap-3 bg-slate-50">
+                        <button id="clearAdvancedFilterBtn" class="bg-slate-200 font-bold py-2 px-6 rounded-lg">Clear Filter</button>
+                        <button id="applyAdvancedFilterBtn" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg">Apply Filter</button>
+                    </div>
+                </div>
+            </div>
+            <div id="profileModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col transform transition-all opacity-0 -translate-y-4">
+                    <div class="p-6 border-b flex justify-between items-center"><h3 class="text-2xl font-bold text-slate-800">User Profile</h3><button id="closeProfileModalBtn" class="text-slate-400 hover:text-red-500"><i class="fas fa-times fa-2x"></i></button></div>
+                    <div class="modal-body p-6 overflow-y-auto space-y-4">
+                        <div>
+                            <p class="text-sm font-medium text-slate-700">User Name:</p>
+                            <p id="profileUserName" class="text-lg font-semibold text-slate-800"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-700">User Code:</p>
+                            <p id="profileUserCode" class="text-lg font-semibold text-slate-800"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-700">Roles:</p>
+                            <p id="profileRoles" class="text-lg font-semibold text-slate-800"></p>
+                        </div>
+                    </div>
+                    <div class="p-6 border-t flex justify-end gap-3 bg-slate-50">
+                        <button id="logoutBtn" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg">Logout</button>
+                    </div>
+                </div>
+            </div>
+            <div id="reopenSearchModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex justify-center items-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transform transition-all opacity-0 -translate-y-4">
+                    <div class="p-6 border-b flex justify-between items-center"><h3 class="text-2xl font-bold text-slate-800">Search Reopen Complaint</h3><button id="closeReopenSearchModalBtn" class="text-slate-400 hover:text-red-500"><i class="fas fa-times fa-2x"></i></button></div>
+                    <div class="modal-body p-6 overflow-y-auto">
+                        <div class="flex flex-col gap-4">
+                            <div class="flex flex-col">
+                                <label for="reopenSearchInput" class="block text-sm font-medium text-slate-700 mb-1">Complaint Number</label>
+                                <input type="text" id="reopenSearchInput" class="input-style" placeholder="Enter Complaint Number">
+                            </div>
+                            <button id="reopenSearchBtn" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg">Search</button>
+                            <div id="reopenSearchResults" class="mt-4"></div>
+                        </div>
+                    </div>
+                    <div class="p-6 border-t flex justify-end gap-3 bg-slate-50">
+                        <button id="cancelReopenSearchBtn" class="bg-slate-200 font-bold py-2 px-6 rounded-lg">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modalContainer);
+        console.log('Modals created:', document.getElementById('reopenSearchModal')); // Verify modal creation
+        
+        // Register event listeners for modals
+        document.getElementById('closeModalBtn').addEventListener('click', () => closeModal('complaintModal'));
+        document.getElementById('cancelModalBtn').addEventListener('click', () => closeModal('complaintModal'));
+        document.getElementById('saveComplaintBtn').addEventListener('click', handleSaveComplaint);
+        document.getElementById('closeDetailsModalBtn').addEventListener('click', () => closeModal('complaintDetailsModal'));
+        document.getElementById('closeDetailsModalFooterBtn').addEventListener('click', () => closeModal('complaintDetailsModal'));
+        document.getElementById('closeAdvancedFilterModalBtn').addEventListener('click', () => closeModal('advancedFilterModal'));
+        document.getElementById('applyAdvancedFilterBtn').addEventListener('click', applyAdvancedFilter);
+        document.getElementById('clearAdvancedFilterBtn').addEventListener('click', clearAdvancedFilter);
+        document.getElementById('profileBtn').addEventListener('click', openProfileModal);
+        document.getElementById('closeProfileModalBtn').addEventListener('click', () => closeModal('profileModal'));
+        document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+        document.getElementById('closeReopenSearchModalBtn').addEventListener('click', () => closeModal('reopenSearchModal'));
+        document.getElementById('cancelReopenSearchBtn').addEventListener('click', () => closeModal('reopenSearchModal'));
+
+        // Register reopenSearchBtn event listener
+        const reopenSearchBtn = document.getElementById('reopenSearchBtn');
+        if (reopenSearchBtn) {
+            reopenSearchBtn.addEventListener('click', async () => {
+                const complaintNum = document.getElementById('reopenSearchInput').value.trim();
+                const searchResultsDiv = document.getElementById('reopenSearchResults');
+                if (complaintNum) {
+                    searchResultsDiv.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin fa-2x text-indigo-500"></i></div>';
+                    const complaint = await api.getComplaint(complaintNum, 'ReOpen');
+                    searchResultsDiv.innerHTML = '';
+                    if (complaint) {
+                        const reopenComplaintIdInput = document.getElementById('reopenComplaintId');
+                        const reopenComplaintStatusDisplay = document.getElementById('reopenComplaintStatusDisplay');
+                        const reopenReasonForReopenInput = document.getElementById('reopenReasonForReopen');
+                        const reopenTypeDisplay = document.getElementById('reopenTypeDisplay');
+                        const reopenFileDateDisplay = document.getElementById('reopenFileDateDisplay');
+                        const reopenSlaDateDisplay = document.getElementById('reopenSlaDateDisplay');
+                        if (reopenComplaintIdInput) reopenComplaintIdInput.value = complaint.complaintNumber || '';
+                        if (reopenComplaintStatusDisplay) reopenComplaintStatusDisplay.value = complaint.status || '';
+                        if (reopenReasonForReopenInput) reopenReasonForReopenInput.value = complaint.reason || '';
+                        if (reopenTypeDisplay) reopenTypeDisplay.value = complaint.policyType || complaint.category || '';
+                        if (reopenFileDateDisplay) reopenFileDateDisplay.value = complaint.dateFiled || '';
+                        if (reopenSlaDateDisplay) reopenSlaDateDisplay.value = complaint.slaDueDate || '';
+                        closeModal('reopenSearchModal');
+                        showErrorToast('Complaint details fetched!', 'bg-green-500');
+                    } else {
+                        searchResultsDiv.innerHTML = '<p class="text-red-500 text-center">No complaint found.</p>';
+                        showErrorToast('No complaint found with that number.', 'bg-red-600');
+                    }
+                } else {
+                    searchResultsDiv.innerHTML = '<p class="text-red-500 text-center">Please enter a complaint number.</p>';
+                    showErrorToast('Please enter a complaint number.', 'bg-red-600');
+                }
+            });
+        } else {
+            console.error('reopenSearchBtn not found');
+        }
+    }
+    
+    const openModal = (modalId, mode = 'create', data = {}) => {
+        const modal = document.getElementById(modalId);
+        if (!modal) {
+            console.error(`Modal with ID ${modalId} not found`);
+            return;
+        }
+        modal.classList.remove('hidden');
+        console.log(`Opening modal: ${modalId}, hidden class removed:`, modal.classList.contains('hidden')); // Add this
+        setTimeout(() => modal.querySelector('.transform').classList.remove('opacity-0', '-translate-y-4'), 10);
+        if (modalId === 'complaintModal') {
+            const modalTitle = document.getElementById('modalTitle');
+            const complaintForm = document.getElementById('complaintForm');
+            const complaintIdInput = document.getElementById('complaintId');
+            const tabDetails = document.getElementById('tab-content-details');
+            const tabAssignment = document.getElementById('tab-content-assignment');
+            const tabNotes = document.getElementById('tab-content-notes');
+            const modalTabsNav = document.getElementById('modalTabs');
+
+            tabDetails.innerHTML = '';
+            tabAssignment.innerHTML = '';
+            tabNotes.innerHTML = '';
+            complaintForm.reset();
+
+            modalTitle.textContent = mode === 'create' ? 'Create New Complaint' : `Edit Complaint: ${data.complaintNumber || ''}`;
+            complaintIdInput.value = data.complaintId || '';
+
+        const formFields = {
+            details: [
+                { id: 'complaintNumberDisplay', label: 'Complaint Number', type: 'text', readonly: true, value: data.complaintNumber || 'Auto-generated' },
+                { id: 'customerNo', label: 'Customer Number', type: 'text', value: data.customerNo || '', required: mode === 'create' },
+                { id: 'customerName', label: 'Customer Name', type: 'text', value: data.customerName || '' },
+                { id: 'policyNumber', label: 'Policy Number', type: 'text', value: data.policyNumber || '', required: mode === 'create' },
+                { id: 'policyType', label: 'Policy Type', type: 'select', options: ['Health', 'Life', 'Auto', 'Home'], value: data.policyType || '' },
+                { id: 'totalClaimableAmount', label: 'Total Claimable Amount', type: 'number', value: data.totalClaimableAmount || '' },
+                { id: 'category', label: 'Category', type: 'select', options: ['Policy Issue', 'Claim Issue', 'Bank Account Issue', 'Customer Registration', 'Admin Access', 'Billing Dispute', 'Service Delay', 'Product Defect', 'Compliance Issue', 'Other'], value: data.category || '', required: mode === 'create' },
+                { id: 'status', label: 'Status', type: 'select', options: ['Open', 'Reopen', 'Closed', 'Resolved', 'Rejected', 'Canceled', 'Ombudsman', 'Triage'], value: mode === 'create' ? 'Open' : (data.status || 'Open'), readonly: mode === 'create', required: mode === 'create' },
+                { id: 'description', label: 'Description', type: 'textarea', value: data.description || '', required: mode === 'create' },
+                { id: 'dateFiled', label: 'Date Filed', type: 'date', value: data.dateFiled || new Date().toISOString().split('T')[0] },
+                { id: 'sourceChannel', label: 'Source Channel', type: 'select', options: ['Web', 'Call Center', 'Email', 'Branch'], value: data.sourceChannel || '' },
+                { id: 'severity', label: 'Severity', type: 'select', options: ['Minor', 'Major', 'Critical'], value: data.severity || '' },
+            ],
+            assignment: [
+                { id: 'assignedTo', label: 'Assigned To', type: 'select', options: ['Complaints Team', 'Admin Team', 'Escalation Team', 'Bancs Team'], value: data.assignedTo || '' },
+                { id: 'departmentId', label: 'Department ID', type: 'select', options: [], value: data.departmentId || '', required: mode === 'create' },
+                { id: 'escalationLevel', label: 'Escalation Level', type: 'select', options: ['Level 1', 'Level 2', 'Level 3'], value: mode === 'create' ? 'Level 1' : (data.escalationLevel || ''), readonly: mode === 'create' },
+                { id: 'priority', label: 'Priority', type: 'select', options: ['Low', 'Medium', 'High', 'Urgent'], value: data.priority || '' },
+                { id: 'slaDueDate', label: 'SLA Due Date', type: 'date', value: data.slaDueDate || '' },
+                { id: 'workitemNumberDisplay', label: 'Work Item Number', type: 'text', readonly: true, value: data.workitemNumber || 'Auto-generated', hidden: mode === 'create' },
+                { id: 'relatedComplaintId', label: 'Related Complaint ID', type: 'text', value: data.relatedComplaintId || '' },
+            ],
+            notes: [
+                { id: 'resolutionNotes', label: 'Resolution Notes', type: 'textarea', value: data.resolutionNotes || '', disabled: mode === 'edit' && !currentUser.roles.includes('Admin') },
+                { id: 'customerFeedback', label: 'Customer Feedback', type: 'textarea', value: data.customerFeedback || '' },
+                { id: 'isReopened', label: 'Is Reopened?', type: 'checkbox', checked: data.isReopened === 'Yes' },
+                { id: 'tags', label: 'Tags (comma-separated)', type: 'text', value: data.tags || '' },
+                { id: 'reason', label: 'Reason', type: 'textarea', value: data.reason || '' },
+                { id: 'reopenComplaintId', label: 'Old Complaint ID', type: 'text', value: '', hidden: true },
+                { id: 'reopenComplaintStatusDisplay', label: 'Old Complaint Status', type: 'text', value: '', readonly: true, hidden: true },
+                { id: 'reopenReasonForReopen', label: 'Reason for Reopening', type: 'textarea', value: '', hidden: true },
+                { id: 'reopenTypeDisplay', label: 'Old Complaint Type', type: 'text', value: '', readonly: true, hidden: true },
+                { id: 'reopenFileDateDisplay', label: 'Old File Date', type: 'date', value: '', readonly: true, hidden: true },
+                { id: 'reopenSlaDateDisplay', label: 'Old SLA Date', type: 'date', value: '', readonly: true, hidden: true }
+            ]
+        };
+
+            const createFormGroup = (field) => {
+                const div = document.createElement('div');
+                div.className = 'flex flex-col';
+                if (field.hidden) {
+                    div.style.display = 'none';
+                }
+                
+                const label = document.createElement('label');
+                label.htmlFor = field.id;
+                label.className = 'block text-sm font-medium text-slate-700 mb-1';
+                label.textContent = field.label;
+            if (field.required) {
+                label.classList.add('required');
+            }
+                div.appendChild(label);
+
+                let inputElement;
+                if (field.type === 'select') {
+                    inputElement = document.createElement('select');
+                    field.options.forEach(optionText => {
+                        const option = document.createElement('option');
+                        option.value = optionText;
+                        option.textContent = optionText;
+                        if (field.value === optionText) {
+                            option.selected = true;
+                        }
+                        inputElement.appendChild(option);
+                    });
+                    if (field.readonly) {
+                        inputElement.disabled = true;
+                        inputElement.classList.add('bg-slate-100', 'cursor-not-allowed');
+                    }
+                } else if (field.type === 'textarea') {
+                    inputElement = document.createElement('textarea');
+                    inputElement.rows = 3;
+                    inputElement.value = field.value;
+                    if (field.readonly) {
+                        inputElement.readOnly = true;
+                        inputElement.classList.add('bg-slate-100', 'cursor-not-allowed');
+                    }
+                if (field.disabled) {
+                    inputElement.disabled = true;
+                    inputElement.classList.add('bg-slate-100', 'cursor-not-allowed');
+                }
+                } else if (field.type === 'checkbox') {
+                    inputElement = document.createElement('input');
+                    inputElement.type = 'checkbox';
+                    inputElement.checked = field.checked;
+                inputElement.id = field.id;
+                console.log(`Created checkbox with id: ${field.id}`);
+                    inputElement.className = 'w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500';
+                    if (field.readonly) {
+                        inputElement.disabled = true;
+                        inputElement.classList.add('cursor-not-allowed');
+                    }
+                    div.className = 'flex items-center gap-2';
+                    div.appendChild(inputElement);
+                    div.appendChild(label);
+                    return div;
+                } else {
+                    inputElement = document.createElement('input');
+                    inputElement.type = field.type;
+                    inputElement.value = field.value;
+                    if (field.readonly) {
+                        inputElement.readOnly = true;
+                        inputElement.classList.add('bg-slate-100', 'cursor-not-allowed');
+                    }
+                }
+                inputElement.id = field.id;
+                inputElement.name = field.id;
+                inputElement.classList.add('input-style');
+                div.appendChild(inputElement);
+                return div;
+            };
+
+            formFields.details.forEach(field => tabDetails.appendChild(createFormGroup(field)));
+            formFields.assignment.forEach(field => tabAssignment.appendChild(createFormGroup(field)));
+            formFields.notes.forEach(field => tabNotes.appendChild(createFormGroup(field)));
+
+            if (mode === 'create') {
+                const dateFiledInput = document.getElementById('dateFiled');
+                const slaDueDateInput = document.getElementById('slaDueDate');
+                if (dateFiledInput && slaDueDateInput) {
+                    const today = new Date();
+                    const dueDate = new Date();
+                    dueDate.setDate(today.getDate() + 7);
+                    slaDueDateInput.value = dueDate.toISOString().split('T')[0];
+                }
+            }
+
+            const policyNumberInput = document.getElementById('policyNumber');
+            if (policyNumberInput) {
+                policyNumberInput.addEventListener('change', async (e) => {
+                    const policyNo = e.target.value;
+                    if (policyNo) {
+                        const policyDetails = await api.fetchPolicyDetails(policyNo);
+                        if (policyDetails && policyDetails.data && policyDetails.data.length > 0) {
+                            const customerData = policyDetails.data[0];
+                            document.getElementById('customerNo').value = customerData.customerNo || '';
+                            document.getElementById('customerName').value = customerData.customerName || '';
+                            
+                            if (customerData.policyList && customerData.policyList.length > 0) {
+                                const policyData = customerData.policyList[0];
+                                document.getElementById('policyType').value = policyData.policyType || '';
+                                document.getElementById('totalClaimableAmount').value = policyData.totalClaimableAmount || '';
+                            } else {
+                                document.getElementById('policyType').value = '';
+                                document.getElementById('totalClaimableAmount').value = '';
+                            }
+                            showErrorToast('Policy details fetched successfully!', 'bg-green-500');
+                        } else {
+                            document.getElementById('customerNo').value = '';
+                            document.getElementById('customerName').value = '';
+                            document.getElementById('policyType').value = '';
+                            document.getElementById('totalClaimableAmount').value = '';
+                            showErrorToast('Policy not found or no details available.', 'bg-red-600');
+                        }
+                    } else {
+                        document.getElementById('customerNo').value = '';
+                        document.getElementById('customerName').value = '';
+                        document.getElementById('policyType').value = '';
+                        document.getElementById('totalClaimableAmount').value = '';
+                    }
+                });
+            }
+
+        const assignedToSelect = document.getElementById('assignedTo');
+        const departmentIdSelect = document.getElementById('departmentId');
+        if (assignedToSelect && departmentIdSelect) {
+            const departmentOptions = {
+                'Complaints Team': ['C001', 'C002', 'C003', 'C004', 'C005'],
+                'Admin Team': ['A001', 'A002', 'A003', 'A004', 'A005'],
+                'Escalation Team': ['E001', 'E002', 'E003', 'E004', 'E005'],
+                'Bancs Team': ['B001', 'B002', 'B003', 'B004', 'B005']
+            };
+            const updateDepartmentOptions = () => {
+                const selectedTeam = assignedToSelect.value;
+                departmentIdSelect.innerHTML = '';
+                const options = departmentOptions[selectedTeam] || [];
+                options.forEach(optionText => {
+                    const option = document.createElement('option');
+                    option.value = optionText;
+                    option.textContent = optionText;
+                    departmentIdSelect.appendChild(option);
+                });
+                departmentIdSelect.value = data.departmentId && options.includes(data.departmentId) ? data.departmentId : options[0] || '';
+            };
+            updateDepartmentOptions();
+            assignedToSelect.addEventListener('change', updateDepartmentOptions);
+        }
+
+        const relatedComplaintIdInput = document.getElementById('relatedComplaintId');
+        if (relatedComplaintIdInput) {
+            relatedComplaintIdInput.addEventListener('input', (e) => {
+                const value = e.target.value;
+                if (value && !/^\d{6}$/.test(value)) {
+                    showErrorToast('Related Complaint ID must be exactly 6 digits.', 'bg-red-600');
+                }
+            });
+        }
+        setTimeout(() => {
+            const isReopenedCheckbox = document.getElementById('isReopened');
+            const reopenComplaintIdInput = document.getElementById('reopenComplaintId');
+            const reopenComplaintStatusDisplay = document.getElementById('reopenComplaintStatusDisplay');
+            const reopenReasonForReopenInput = document.getElementById('reopenReasonForReopen');
+            const reopenTypeDisplay = document.getElementById('reopenTypeDisplay');
+            const reopenFileDateDisplay = document.getElementById('reopenFileDateDisplay');
+            const reopenSlaDateDisplay = document.getElementById('reopenSlaDateDisplay');
+            const statusSelect = document.getElementById('status');
+
+            console.log('isReopenedCheckbox:', isReopenedCheckbox);
+            console.log('reopenComplaintIdInput:', reopenComplaintIdInput);
+
+            if (isReopenedCheckbox) {
+                const reopenFields = [
+                    reopenComplaintIdInput?.closest('.flex-col'),
+                    reopenComplaintStatusDisplay?.closest('.flex-col'),
+                    reopenReasonForReopenInput?.closest('.flex-col'),
+                    reopenTypeDisplay?.closest('.flex-col'),
+                    reopenFileDateDisplay?.closest('.flex-col'),
+                    reopenSlaDateDisplay?.closest('.flex-col')
+                ].filter(field => field);
+
+                const toggleReopenFields = (show) => {
+                    console.log(`Toggling reopen fields: ${show}`);
+                    reopenFields.forEach(fieldDiv => {
+                        if (fieldDiv) {
+                            fieldDiv.style.display = show ? 'flex' : 'none';
+                            console.log(`Field ${fieldDiv.querySelector('label')?.textContent} display set to: ${fieldDiv.style.display}`);
+                        }
+                    });
+                    if (show && statusSelect) {
+                        statusSelect.value = 'Reopen';
+                        statusSelect.disabled = true;
+                        statusSelect.classList.add('bg-slate-100', 'cursor-not-allowed');
+                    } else if (statusSelect) {
+                        statusSelect.disabled = false;
+                        statusSelect.classList.remove('bg-slate-100', 'cursor-not-allowed');
+                        if (mode === 'create') {
+                            statusSelect.value = 'Open';
+                            statusSelect.disabled = true;
+                            statusSelect.classList.add('bg-slate-100', 'cursor-not-allowed');
+                        }
+                    }
+                };
+                toggleReopenFields(isReopenedCheckbox.checked);
+                isReopenedCheckbox.addEventListener('change', () => {
+                    console.log('Is Reopened checkbox changed!');
+                    toggleReopenFields(isReopenedCheckbox.checked);
+                    if (isReopenedCheckbox.checked) {
+                        openModal('reopenSearchModal');
+                    } else {
+                        if (reopenComplaintIdInput) reopenComplaintIdInput.value = '';
+                        if (reopenComplaintStatusDisplay) reopenComplaintStatusDisplay.value = '';
+                        if (reopenReasonForReopenInput) reopenReasonForReopenInput.value = '';
+                        if (reopenTypeDisplay) reopenTypeDisplay.value = '';
+                        if (reopenFileDateDisplay) reopenFileDateDisplay.value = '';
+                        if (reopenSlaDateDisplay) reopenSlaDateDisplay.value = '';
+                    }
+                });
+            } else {
+                console.error('Is Reopened checkbox not found');
+            }
+        }, 0);
+
+        modalTabsNav.querySelectorAll('.tab-button').forEach(tabButton => {
+            tabButton.classList.remove('active');
+            tabButton.addEventListener('click', () => {
+                modalTabsNav.querySelectorAll('.tab-button').forEach(t => t.classList.remove('active'));
+                tabButton.classList.add('active');
+                document.querySelectorAll('#complaintModal .tab-content').forEach(content => content.style.display = 'none');
+                const targetTabId = `tab-content-${tabButton.dataset.tab}`;
+                const targetTabElement = document.getElementById(targetTabId);
+                if (tabButton.dataset.tab === 'notes') {
+                    targetTabElement.style.display = 'block';
+                } else {
+                    targetTabElement.style.display = 'grid';
+                }
+            });
+        });
+        modalTabsNav.querySelector('.tab-button[data-tab="details"]').click();
+    }
+};
+    const closeModal = (modalId) => {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+        modal.querySelector('.transform').classList.add('opacity-0', '-translate-y-4');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    };
+
+    const openComplaintDetailsModal = async (complaintNumber) => {
+        const modal = document.getElementById('complaintDetailsModal');
+        const title = modal.querySelector('#detailsModalTitle');
+        const body = modal.querySelector('#detailsModalBody');
+        
+        title.textContent = 'Loading...';
+        body.innerHTML = '<div class="col-span-3 text-center p-8"><i class="fas fa-spinner fa-spin fa-2x text-indigo-500"></i></div>';
+        openModal('complaintDetailsModal');
+
+        const complaint = await api.getComplaint(complaintNumber);
+        if (complaint) {
+            title.textContent = `Details for ${complaint.complaintNumber}`;
+            body.innerHTML = '';
+            const fieldsToDisplay = [
+                { label: 'Complaint Number', value: complaint.complaintNumber },
+                { label: 'Customer Name', value: complaint.customerName },
+                { label: 'Policy Number', value: complaint.policyNumber },
+                { label: 'Policy Type', value: complaint.policyType },
+                { label: 'Status', value: complaint.status },
+                { label: 'Category', value: complaint.category },
+                { label: 'Description', value: complaint.description },
+                { label: 'Date Filed', value: complaint.dateFiled },
+                { label: 'SLA Due Date', value: complaint.slaDueDate },
+                { label: 'Assigned To', value: complaint.assignedTo },
+                { label: 'Escalation Level', value: complaint.escalationLevel },
+                { label: 'Priority', value: complaint.priority },
+                { label: 'Work Item Number', value: complaint.workitemNumber },
+                { label: 'Resolution Notes', value: complaint.resolutionNotes },
+                { label: 'Customer Feedback', value: complaint.customerFeedback },
+                { label: 'Is Reopened', value: complaint.isReopened },
+                { label: 'Reason', value: complaint.reason }
+            ];
+
+            fieldsToDisplay.forEach(field => {
+                const detailItem = document.createElement('div');
+                detailItem.className = 'bg-slate-50 p-3 rounded-lg';
+                detailItem.innerHTML = `<p class="text-xs font-semibold text-slate-500 uppercase">${field.label}</p><p class="text-md font-medium text-slate-800">${field.value || 'N/A'}</p>`;
+                body.appendChild(detailItem);
+            });
+        } else {
+            title.textContent = 'Error';
+            body.innerHTML = '<p class="text-red-500 text-center col-span-3">Could not load complaint details.</p>';
+        }
+    };
+
+    const handleSaveComplaint = async () => {
+        const complaintId = document.getElementById('complaintId').value;
+        const mode = complaintId ? 'edit' : 'create';
+
+        console.log('Complaint ID:', complaintId, 'Mode:', mode);
+
+        const formData = {
+            complaintId: complaintId || null,
+            complaintNumber: document.getElementById('complaintNumberDisplay').value === 'Auto-generated' ? null : document.getElementById('complaintNumberDisplay').value,
+            userCode: currentUser.userCode,
+            customerNo: document.getElementById('customerNo').value,
+            customerName: document.getElementById('customerName').value,
+            policyNumber: document.getElementById('policyNumber').value,
+            policyType: document.getElementById('policyType').value,
+            totalClaimableAmount: parseFloat(document.getElementById('totalClaimableAmount').value) || 0,
+            category: document.getElementById('category').value,
+            status: document.getElementById('status') ? document.getElementById('status').value : 'Open',
+            priority: document.getElementById('priority').value,
+            slaStatus: 'N/A',
+            slaProgress: 0,
+            dateFiled: document.getElementById('dateFiled').value,
+            lastUpdated: new Date().toISOString().split('T')[0],
+            description: document.getElementById('description').value,
+            resolutionNotes: document.getElementById('resolutionNotes').value,
+            attachmentPath: 'No',
+            createdBy: currentUser.userCode,
+            updatedBy: currentUser.userCode,
+            createdAt: document.getElementById('dateFiled').value,
+            updatedAt: new Date().toISOString().split('T')[0],
+            assignedTo: document.getElementById('assignedTo').value,
+            departmentId: document.getElementById('departmentId').value,
+            escalationLevel: document.getElementById('escalationLevel').value,
+            relatedComplaintId: document.getElementById('relatedComplaintId').value || '0',
+            sourceChannel: document.getElementById('sourceChannel').value,
+            severity: document.getElementById('severity').value,
+            customerFeedback: document.getElementById('customerFeedback').value,
+            isReopened: document.getElementById('isReopened') ? (document.getElementById('isReopened').checked ? 'Yes' : 'No') : 'No',
+            tags: document.getElementById('tags').value,
+            reason: document.getElementById('reason').value,
+            workitemNumber: document.getElementById('workitemNumberDisplay').value === 'Auto-generated' ? null : document.getElementById('workitemNumberDisplay').value,
+            reopenComplaintNumber: document.getElementById('isReopened').checked ? document.getElementById('reopenComplaintId').value : null,
+            reopenReasonForReopen: document.getElementById('isReopened').checked ? document.getElementById('reopenReasonForReopen').value : null
+        };
+
+        for (const key in formData) {
+            if (formData[key] === null || formData[key] === '') {
+                delete formData[key];
+            }
+        }
+        
+        if (mode === 'edit' && !formData.complaintId) {
+          showErrorToast('Error: Complaint ID is required for editing.');
+            return;
+        }
+
+        const response = mode === 'create' 
+            ? await api.createComplaint(formData)
+            : await api.updateComplaint(formData);
+
+        if (response && response.success) {
+            closeModal('complaintModal');
+            await performSearch({ inputType: currentInputTypeFilter });
+        }
+    };
+
+    const applyAdvancedFilter = async () => {
+        const form = document.getElementById('advancedFilterForm');
+        const formData = new FormData(form);
+        const filterParams = {};
+        formData.forEach((value, key) => {
+            if (key === 'status') {
+                if (!filterParams[key]) filterParams[key] = [];
+                filterParams[key].push(value);
+            } else {
+                filterParams[key] = value;
+            }
+        });
+
+        await performSearch({ ...filterParams, inputType: currentInputTypeFilter });
+        closeModal('advancedFilterModal');
+    };
+
+    const clearAdvancedFilter = () => {
+        document.getElementById('advancedFilterForm').reset();
+    };
+
+    const openProfileModal = async () => {
+        const modal = document.getElementById('profileModal');
+        if (!modal) return;
+
+        const profileUserName = document.getElementById('profileUserName');
+        const profileUserCode = document.getElementById('profileUserCode');
+        const profileRoles = document.getElementById('profileRoles');
+
+        profileUserName.textContent = currentUser.fullName || 'N/A';
+        profileUserCode.textContent = currentUser.userCode || 'N/A';
+        profileRoles.textContent = currentUser.roles.length > 0 ? currentUser.roles.join(', ') : 'No roles assigned';
+
+        openModal('profileModal');
+    };
+
+    const handleLogout = () => {
+        currentUser = { userCode: 'defaultUser', fullName: 'Guest User', roles: [], notifications: 0 };
+        userNameDisplay.textContent = `User: ${currentUser.fullName}`;
+        notificationBadge.classList.add('hidden');
+        closeModal('profileModal');
+        showErrorToast('Logged out successfully!', 'bg-green-500');
+    };
+
+    const performSearch = async (params = {}) => {
+        const searchParams = { ...params };
+
+        if (searchParams.inputType && searchParams.inputType !== 'All') {
+            searchParams.status = searchParams.inputType;
+        }
+        delete searchParams.inputType;
+
+        const response = await api.searchComplaints(searchParams);
+        allComplaints = response.data || [];
+        displayedComplaints = allComplaints;
+        currentPage = 1;
+        renderAll();
+    };
+
+    const initialize = async () => {
+        createModals();
+        const teamDetails = await api.fetchTeamDetails(currentUser.userCode);
+        if (teamDetails) {
+            currentUser.fullName = teamDetails.userName || currentUser.fullName;
+            currentUser.roles = teamDetails.roles || currentUser.roles;
+            currentUser.notifications = teamDetails.notifications || currentUser.notifications;
+        }
+        userNameDisplay.textContent = `User: ${currentUser.fullName}`;
+        notificationBadge.classList.toggle('hidden', currentUser.notifications === 0);
+        await performSearch({ inputType: 'All' });
+    };
+
+    sidebarToggle.addEventListener('click', () => {
+        document.body.classList.toggle('sidebar-collapsed');
+        sidebarToggle.querySelector('i').classList.toggle('fa-chevron-left');
+        sidebarToggle.querySelector('i').classList.toggle('fa-chevron-right');
+        sidebarToggle.querySelector('span').textContent = document.body.classList.contains('sidebar-collapsed') ? 'Expand' : 'Collapse';
+    });
+
+    document.querySelectorAll('.nav-link[data-sidebar-action]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const action = link.dataset.sidebarAction;
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('bg-indigo-50', 'text-indigo-700', 'font-semibold'));
+            link.classList.add('bg-indigo-50', 'text-indigo-700', 'font-semibold');
+
+            dashboardView.classList.add('hidden');
+            complaintsView.classList.add('hidden');
+            teamsView.classList.add('hidden');
+            reportsView.classList.add('hidden');
+            settingsView.classList.add('hidden');
+            if (action === 'dashboard') {
+                dashboardView.classList.remove('hidden');
+                complaintsView.classList.remove('hidden'); // Show complaints view
+            } else if (action === 'all-complaints') {
+                complaintsView.classList.remove('hidden');
+            } else if (action === 'teams') {
+                teamsView.classList.remove('hidden');
+            } else if (action === 'reports') {
+                reportsView.classList.remove('hidden');
+            } else if (action === 'settings') {
+                settingsView.classList.remove('hidden');
+            }
+        });
+    });
+    document.querySelectorAll('.tab-button[data-inputType]').forEach(button => {
+        button.addEventListener('click', async () => {
+            document.querySelectorAll('.tab-button[data-inputType]').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentInputTypeFilter = button.dataset.inputType;
+            selectedComplaintIds.clear();
+            bulkActionsBar.classList.add('hidden');
+            await performSearch({ inputType: currentInputTypeFilter });
+        });
+    });
+
+    searchInput.addEventListener('input', async () => {
+        const searchValue = searchInput.value.trim();
+        const searchType = searchTypeSelect.value;
+
+        if (searchValue) {
+            await performSearch({ [searchType]: searchValue, inputType: currentInputTypeFilter });
+        } else {
+            await performSearch({ inputType: currentInputTypeFilter });
+        }
+    });
+
+    searchTypeSelect.addEventListener('change', () => {
+        searchInput.placeholder = `Search by ${searchTypeSelect.options[searchTypeSelect.selectedIndex].text}...`;
+        searchInput.value = '';
+        performSearch({ inputType: currentInputTypeFilter });
+    });
+
+    viewToggleBtn.addEventListener('click', () => {
+        currentView = currentView === 'cards' ? 'list' : 'cards';
+        viewToggleBtn.innerHTML = currentView === 'cards' ? '<i class="fa-solid fa-list"></i>' : '<i class="fa-solid fa-grip"></i>';
+        renderAll();
+    });
+
+    createComplaintBtn.addEventListener('click', () => openModal('complaintModal', 'create'));
+
+    advancedSearchBtn.addEventListener('click', () => openModal('advancedFilterModal'));
+
+    initialize();
+});
+</script>
+<style>
+    .fade-in {
+        animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .progress-bar-container {
+        height: 8px;
+        background-color: #e5e7eb;
+        border-radius: 9999px;
+        overflow: hidden;
+    }
+    .progress-bar {
+        height: 100%;
+        border-radius: 9999px;
+        transition: width 0.3s ease;
+    }
+    .sla-circle {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .pagination-circle {
+        width: 38px;
+        height: 38px;
+        border: none;
+        border-radius: 50%;
+        background-color: #f1f5f9;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    .pagination-circle:hover:not(.opacity-50) {
+        background-color: #e0e7ff;
+        color: #4f46e5;
+    }
+    .pagination-circle.active {
+        background-color: #4f46e5;
+        color: white;
+    }
+</style>
+</body>
+</html>

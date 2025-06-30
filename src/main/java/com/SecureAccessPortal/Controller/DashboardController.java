@@ -93,4 +93,16 @@ public class DashboardController {
     public String PolicyAdmin(String userCode) {
         return "PolicyAdmin";
     }
+    @GetMapping("/Complaints")
+    public String Complaints(String userCode) {
+        return "Complaints";
+    }
+    @GetMapping("/Feedback")
+    public String Feedback(String userCode) {
+        return "Feedback";
+    }
+    @GetMapping("/CustomerService")
+    public String CustomerService(String userCode) {
+        return "CustomerService";
+    }
 }

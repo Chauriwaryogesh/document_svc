@@ -134,7 +134,7 @@ public class BankDetailsService {
 			dto.setAccountType(bankAccount.getAccountType());
 			dto.setStatus(bankAccount.getStatus());
 			if (bankAccount.getCustomerNumber() != null) {
-				 customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber());
+				 customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber(),"N");
 				dto.setCustomer(customer);
 			}
 			if(bankAccount.getPolicyNumber() != null) {
@@ -185,7 +185,7 @@ public class BankDetailsService {
 		if (policyNo != null) {
 			Policy policyNum = policyRepo.findByPolicyNum(policyNo,"N");
 			if(policyNum != null) {
-				Customer byCustomerNoNew = customerRepo.findByCustomerNoNew(policyNum.getCustomer().getCustomerNo());
+				Customer byCustomerNoNew = customerRepo.findByCustomerNoNew(policyNum.getCustomer().getCustomerNo(),"N");
 				customer.setCustName(byCustomerNoNew.getName() + " " + byCustomerNoNew.getSurname());
 				customer.setCustomerNo(byCustomerNoNew.getCustomerNo());
 				customer.setDateOfBirth(byCustomerNoNew.getDateOfBirth());

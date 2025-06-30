@@ -91,7 +91,7 @@ public class PolicyService {
 	            policy.setCreatedBy(userCode);
 	            policy.setCreatedTime(LocalDateTime.now());
 	            if (policyDTO.getCustomerNo() != null) {
-	                customer = customerRepository.findByCustomerNoNew(policyDTO.getCustomerNo());
+	                customer = customerRepository.findByCustomerNoNew(policyDTO.getCustomerNo(),"N");
 	                if (customer == null) {
 	                    throw new IllegalArgumentException("Customer not found");
 	                }
@@ -571,7 +571,7 @@ public class PolicyService {
 		Customer customer = null;
 		Policy policy =policyRepository.findByPolicyNum(policyDTO.getPolicyNumber(),"N");
 		if (policyDTO.getCustomerNo() != null) {
-			customer = customerRepository.findByCustomerNoNew(policyDTO.getCustomerNo());
+			customer = customerRepository.findByCustomerNoNew(policyDTO.getCustomerNo(),"N");
 			if (customer == null) {
 				throw new IllegalArgumentException("Customer not found");
 			}
@@ -631,8 +631,17 @@ public class PolicyService {
 
 	public ResponseDTO updateDeletePolicy(String policyNumber, String reson, String userCode) {
 		ResponseDTO response = new ResponseDTO();
+		Customer customer = null;
 		Policy policy = policyRepository.findByPolicyNum(policyNumber, "N");
 		if (policy != null) {
+			if (policy.getCustomer() != null) {
+				customer = customerRepository.findByCustomerNoNew(policy.getCustomer().getCustomerNo(),"N");
+				if (customer == null) {
+					throw new IllegalArgumentException("Customer not found");
+				}
+				policy.setCustomer(customer);
+			}
+
 			policy.setDeletedFlag("Y");
 			policy.setPolicyStatus("LAPSED");
 			policy.setUpdatedBy(userCode);
@@ -643,7 +652,13 @@ public class PolicyService {
 
 			response.setPolicyNo(policy.getPolicyNumber());
 			response.setStatus(CommonConstant.SUCCESS);
-		}else {
+			// Create work item
+			String workType = CommonConstant.POLICY_DELETED;
+			String workItemName = CommonConstant.POLICY_DELETED;
+			String comment = "Policy Deleted  " + policy.getPolicyNumber() + " for the customer";
+			Workitem mapRequetforWorkItem = workItemService.mapRequetforWorkItem(userCode, policy, customer, workType,
+					workItemName, comment, null, null, null);
+		} else {
 			response.setStatus("Policy Not found");
 		}
 		return response;

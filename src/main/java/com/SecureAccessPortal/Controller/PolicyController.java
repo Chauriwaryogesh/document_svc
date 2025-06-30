@@ -54,7 +54,7 @@ public class PolicyController {
 			@RequestParam(value = "allpolSearch", required = false) String allPol,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
 			@RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
-			@RequestHeader String userCode) {
+			@RequestHeader (required =false)String userCode) {
 		if (allPol == null) {
 			allPol = "N";
 		}

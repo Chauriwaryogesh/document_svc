@@ -46,6 +46,18 @@ public class Policy {
 	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Workitem> workitems = new ArrayList<>();
 
+	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Complaint> complaint = new ArrayList<>();
+	
+	
+	public List<Complaint> getComplaint() {
+		return complaint;
+	}
+
+	public void setComplaint(List<Complaint> complaint) {
+		this.complaint = complaint;
+	}
+
 	@Column(name = "product_code")
 	private String productCode;
 

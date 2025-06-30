@@ -28,6 +28,9 @@ public class CommonConstant {
 	public static final String INSTALLEMT_CREATED = "Installemt has been created";
 	public static final String UPDATE_POL_DETAIL = "Update Policy Details";
 	public static final String POLICY_UPDATE_DETAILS = "Update Policy Details";
+	public static final String POLICY_DELETED = "Policy Deleted";
+	public static final String COMPLAINT_CREATE = "COMPLAINTSV2";
+	public static final String COMPLAINT_CREATE_NEW = "Complaint Created";
 	
 
 }

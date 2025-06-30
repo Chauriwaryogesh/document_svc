@@ -65,7 +65,7 @@ import com.SecureAccessPortal.Repo.WorkItemRepo;
 			stats.setTotalPolicy(polCnt);
 			stats.setTotalUsers(users);
 			stats.setTotalWorkItems(workItem);
-			stats.setTotalVerificationRecords(ver);
+			stats.setTotalVerificationRecords(ver);						
 			return stats;
 		}
 
