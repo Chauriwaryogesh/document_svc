@@ -99,14 +99,17 @@ public class ComplaintService {
 
 	public RoleDTO fetchRoles(String usrCode) {
 
+		Customer customer= customerRepository.findByUserCodeAndDeletedFlagN(usrCode, "N");
+		
 		RoleDTO roleDTO = new RoleDTO();
 		roleDTO.setLoggedInTime(LocalDate.now());
-		roleDTO.setName("Yogesh");
-		roleDTO.setPhNo("8208247944");
-		roleDTO.setUserCode("ychouri");
+		roleDTO.setName(customer.getName() +" "+customer.getMiddleName()+" "+customer.getSurname());
+		roleDTO.setPhNo(customer.getPhoneNumber());
+		roleDTO.setUserCode(customer.getUserCode());
 		List<String> rolelist = new ArrayList<>();
 		rolelist.add("Complaints Team");
 		rolelist.add("Bancs Team");
+		rolelist.add("Admin");
 		roleDTO.setRoles(rolelist);
 
 		return roleDTO;
@@ -114,10 +117,17 @@ public class ComplaintService {
 
 	public DashboardStats getComplaintStats(String userCode) {
 		DashboardStats stats = new DashboardStats();
-		stats.setComplaintsTeam(55);
-		stats.setBancsTeam(20);
-		stats.setEscalationTeam(10);
-		stats.setAdminTeam(5);
+		List<Complaint> complaintList = complaintRepository.findAll();
+		
+		long complaintteam =complaintList.stream().filter(list -> list.getAssignedTo().equalsIgnoreCase("Complaints Team")).count();
+		long bancsTeam=complaintList.stream().filter(list -> list.getAssignedTo().equalsIgnoreCase("Bancs Team")).count();
+		long adminteam=complaintList.stream().filter(list -> list.getAssignedTo().equalsIgnoreCase("Admin Team")).count();
+		long escTeam=complaintList.stream().filter(list -> list.getAssignedTo().equalsIgnoreCase("Escalation Team")).count();
+		
+		stats.setComplaintsTeam(complaintteam);
+		stats.setBancsTeam(bancsTeam);
+		stats.setEscalationTeam(escTeam);
+		stats.setAdminTeam(adminteam);
 
 		return stats;
 	}
@@ -130,32 +140,45 @@ public class ComplaintService {
 
 	public ComplaintDTO createComplaint(ComplaintDTO dto, String userCode) {
 		Complaint complaint = new Complaint();
-		complaint.setUserCode(dto.getUserCode());
-		String complaintNumber= generateComplaintNumber();
-		complaint.setComplaintNumber(complaintNumber);
 		
-		
-		String[] parts = complaintNumber.split("/");
-		String complaintId = parts[1];
-		complaint.setComplaintId(complaintId);
-		
-		
+		if(dto.getComplaintNumber() == null) {
+			String complaintNumber= generateComplaintNumber();
+			complaint.setComplaintNumber(complaintNumber);
+			String[] parts = complaintNumber.split("/");
+			String complaintId = parts[1];
+			complaint.setComplaintId(complaintId);
+		}else {
+			complaint.setComplaintNumber(dto.getComplaintNumber());
+			complaint.setComplaintId(dto.getComplaintId());
+		}
 		Customer customer = customerRepository.findByCustomerNoNew(dto.getCustomerNo(),"N");
 		complaint.setCustomer(customer);
-		
+		complaint.setUserCode(customer.getUserCode());
 		
 		 Policy policy = policyRepo.findByPolicyNum(dto.getPolicyNumber(), "N");
-		complaint.setPolicy(policy);
+		  complaint.setPolicy(policy);
 		
 		
 		// Create work item
-        String workType = CommonConstant.COMPLAINT_CREATE;
-        String workItemName = CommonConstant.COMPLAINT_CREATE_NEW;
-        String comment = "Complaint is created " + policy.getPolicyNumber() + " for the customer";
-        Workitem mapRequetforWorkItem = workItemService.mapRequetforWorkItem(
-            userCode, policy, customer, workType, workItemName, comment, null, null,null
-        );
-		complaint.setWorkitem(mapRequetforWorkItem);
+		  if(dto.getWorkitemNumber() == null) {
+			  String workType = CommonConstant.COMPLAINT_CREATE;
+		        String workItemName = CommonConstant.COMPLAINT_CREATE_NEW;
+		        String comment = "Complaint is created " + policy.getPolicyNumber() + " for the customer";
+		        Workitem mapRequetforWorkItem = workItemService.mapRequetforWorkItem(
+		            userCode, policy, customer, workType, workItemName, comment, null, null,null
+		        );
+				complaint.setWorkitem(mapRequetforWorkItem);
+		  }else {
+			  // code for link workitemwill implement soon.
+			  String workType = CommonConstant.COMPLAINT_UPDATE;
+		        String workItemName = CommonConstant.COMPLAINT_CREATE_UPDATE;
+		        String comment = "Complaint is updateing  " + policy.getPolicyNumber() + " for the customer";
+		        Workitem mapRequetforWorkItem = workItemService.mapRequetforWorkItem(
+		            userCode, policy, customer, workType, workItemName, comment, null, null,null
+		        );
+				complaint.setWorkitem(mapRequetforWorkItem);
+		  }
+       
 		
 		
 		complaint.setCategory(dto.getCategory());
@@ -168,9 +191,12 @@ public class ComplaintService {
 		complaint.setDescription(dto.getDescription());
 		complaint.setAttachmentPath(dto.getAttachmentPath());
 		complaint.setCreatedBy(dto.getCreatedBy());
-		//complaint.setUpdatedBy(dto.getUpdatedBy());
+		if(dto.getUpdatedBy() != null) {
+			complaint.setUpdatedBy(dto.getUpdatedBy());
+			complaint.setUpdatedTime(LocalDate.parse(dto.getUpdatedAt()));
+		}
+		
 		complaint.setCreatedTime(LocalDate.parse(dto.getCreatedAt()));
-		//complaint.setUpdatedTime(LocalDate.parse(dto.getUpdatedAt()));
 		complaint.setAssignedTo(dto.getAssignedTo());
 		complaint.setDepartmentId(dto.getDepartmentId());
 		complaint.setEscalationLevel(dto.getEscalationLevel());

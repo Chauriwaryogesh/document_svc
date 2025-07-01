@@ -651,7 +651,7 @@ public class EmailService {
 
 			Customer existingCustomer = null;
 			if (cust.getCustomerNo() != null && !cust.getCustomerNo().isEmpty()) {
-				existingCustomer = customerRepo.findByCustomerNoNew(cust.getCustomerNo());
+				existingCustomer = customerRepo.findByCustomerNoNew(cust.getCustomerNo(),"N");
 			}
 
 			// Allow updating existing customer without duplicate error

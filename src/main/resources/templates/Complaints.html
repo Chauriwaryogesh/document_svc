@@ -172,12 +172,13 @@
             <div id="complaints-view" class="bg-white rounded-xl shadow-lg">
                 <div class="p-4 border-b border-slate-200">
                     <nav class="flex flex-wrap gap-2" aria-label="Tabs">
-                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="All">All Complaints</button>
-                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Open">Open</button>
-                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Reopen">Reopen</button>
-                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Closed">Closed</button>
-                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Ombudsman">Ombudsman</button>
-                        <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Triage">Triage</button>
+                       <button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="All">All Complaints</button>
+<button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Open">Open</button>
+<button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Pending">Pending</button>
+<button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Rejected">Rejected</button>
+<button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Reopen">Reopen</button>
+<button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Closed">Closed</button>
+<button class="tab-button py-2 px-4 text-sm font-medium rounded-md border-2 border-transparent" data-inputType="Resolved">Resolved</button>                         
                     </nav>
                 </div>
 
@@ -268,6 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ITEMS_PER_PAGE = 9;
     let currentView = 'cards';
     let currentInputTypeFilter = 'All';
+    let userCode = sessionStorage.getItem('userCode') || null;
 
     const mainContent = document.querySelector('.main-content');
     const sidebar = document.querySelector('.sidebar');
@@ -292,126 +294,186 @@ document.addEventListener('DOMContentLoaded', () => {
     const reportsView = document.getElementById('reports-view');
     const settingsView = document.getElementById('settings-view');
 
+    // Moved showErrorToast function here to ensure it's defined before getuserCode
+    const showErrorToast = (message, bgClass = 'bg-red-600') => {
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-5 right-5 ${bgClass} text-white py-3 px-5 rounded-xl shadow-lg z-50 transform transition-all duration-300 translate-y-full opacity-0`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.remove('translate-y-full', 'opacity-0'), 100);
+        setTimeout(() => {
+            toast.classList.add('translate-y-full', 'opacity-0');
+            toast.addEventListener('transitionend', () => toast.remove());
+        }, 4000);
+    };
+
+    function getuserCode() {
+        if (!userCode) {
+            showErrorToast('User ID not found. Please log in again.');
+            setTimeout(() => window.location.href = 'login', 1500);
+            return null;
+        }
+        return userCode;
+    }
+
+    function logout() {
+        sessionStorage.removeItem('userCode');
+        userCode = null; // Clear global userCode
+        showErrorToast('You have been successfully logged out.', 'bg-green-500');
+        setTimeout(() => {
+            window.location.href = 'login';
+        }, 1500); // Delay redirect to allow toast to be visible
+    }
+
     let currentUser = {
-        userCode: 'defaultUser',
+        userCode: getuserCode(),
         fullName: 'Guest User',
         roles: [],
         notifications: 0
     };
-
     const BASE_URL = 'http://localhost:8081';
     const api = {
-        fetchTeamDetails: async (userCode) => {
-            if (!userCode) return null;
-            const url = `${BASE_URL}/Complaint/fetch-Team?userCode=${userCode}`;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                const data = await response.json();
-                return data.data;
-            } catch (error) {
-                console.error("Failed to fetch team details:", error);
-                showErrorToast(`Failed to fetch user details: ${error.message}`);
-                return null;
-            }
-        },
-        searchComplaints: async (params = {}) => {
-            const queryParams = new URLSearchParams();
-            Object.entries(params).forEach(([key, value]) => {
-                if (value) queryParams.set(key, value);
-            });
-            const url = `${BASE_URL}/Complaint/search-complaint?${queryParams.toString()}`;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                return await response.json();
-            } catch (error) {
-                showErrorToast(`Search failed: ${error.message}`);
-                return { data: [], totalElements: 0 };
-            }
-        },
-        getComplaint: async (complaintNumber, type = '') => {
-            const queryParams = new URLSearchParams({ complaintNumber });
-            if (type) queryParams.set('type', type);
-            const url = `${BASE_URL}/Complaint/get-complaint?${queryParams.toString()}`;
-            try {
-                console.log('Calling getComplaint with URL:', url); // Add logging for debugging
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                const result = await response.json();
-                console.log('getComplaint response:', result); // Add logging for debugging
-                return result.data && result.data.length > 0 ? result.data[0] : null;
-            } catch (error) {
-                console.error("Failed to fetch complaint details:", error);
-                showErrorToast(`Failed to fetch complaint details: ${error.message}`);
-                return null;
-            }
-        },
-        getStats: async () => {
-             const url = `${BASE_URL}/Complaint/get-stats`;
-             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                return await response.json();
-            } catch (error) {
-                showErrorToast(`Failed to fetch stats: ${error.message}`);
-                return { complaintsTeam: 0, adminTeam: 0, escalationTeam: 0, BancsTeam: 0 };
-            }
-        },
-        fetchPolicyDetails: async (policyNo) => {
-            if (!policyNo) return null;
-            const url = `${BASE_URL}/policy/policy-details?policyNo=${policyNo}`;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Policy not found');
-                return await response.json();
-            } catch (error) {
-                showErrorToast(error.message);
-                return null;
-            }
-        },
-        createComplaint: async (data) => {
-            const url = `${BASE_URL}/Complaint/create-complaint`;
-            try {
-                const response = await fetch(url, { method: 'POST', headers: { 'userCode': currentUser.userCode,
-                  'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-                if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.errorMessage || 'Failed to create complaint'); }
-                showErrorToast("Complaint created successfully!", "bg-green-500");
-                return await response.json();
-            } catch (error) {
-                showErrorToast(`Creation failed: ${error.message}`);
-                return null;
-            }
-        },
-        updateComplaint: async (data) => {
-            const url = `${BASE_URL}/Complaint/update-complaint`;
-            try {
-                const response = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-                if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.errorMessage || 'Failed to update complaint'); }
-                showErrorToast("Complaint updated successfully!", "bg-green-500");
-                return await response.json();
-            } catch (error) {
-                showErrorToast(`Update failed: ${error.message}`);
-                return null;
-            }
-        },
-        deleteComplaints: async (ids) => {
-            const deletePromises = Array.from(ids).map(id => {
-                const url = `${BASE_URL}/Complaint/delete-complaint?complaintId=${id}`;
-                return fetch(url, { method: 'DELETE' });
-            });
-            try {
-                const results = await Promise.all(deletePromises);
-                const failed = results.filter(res => !res.ok);
-                if (failed.length > 0) throw new Error(`${failed.length} deletions failed.`);
-                showErrorToast(`${ids.size} complaint(s) deleted successfully!`, "bg-green-500");
-                return { success: true };
-            } catch (error) {
-                showErrorToast(`Deletion failed: ${error.message}`);
-                return { success: false };
-            }
-        },
-    };
+    	    fetchTeamDetails: async () => {
+    	        if (!userCode) return null;
+    	        const url = `${BASE_URL}/Complaint/fetch-Team?userCode=${userCode}`;
+    	        try {
+    	            const response = await fetch(url);
+    	            if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+    	            const data = await response.json();
+    	            return data.data;
+    	        } catch (error) {
+    	            console.error("Failed to fetch team details:", error);
+    	            showErrorToast(`Failed to fetch user details: ${error.message}`);
+    	            return null;
+    	        }
+    	    },
+    	    searchComplaints: async (params = {}) => {
+    	        const queryParams = new URLSearchParams();
+    	        console.log('searchComplaints received params:', params);
+    	        Object.entries(params).forEach(([key, value]) => {
+    	            if (value || key === 'type') {
+    	                if (Array.isArray(value)) {
+    	                    queryParams.set(key, value.join(','));
+    	                } else {
+    	                    queryParams.set(key, value);
+    	                }
+    	            }
+    	        });
+    	        const url = `${BASE_URL}/Complaint/search-complaint?${queryParams.toString()}`;
+    	        try {
+    	            console.log('Calling searchComplaints with URL:', url);
+    	            const response = await fetch(url);
+    	            if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+    	            return await response.json();
+    	        } catch (error) {
+    	            showErrorToast(`Search failed: ${error.message}`);
+    	            return { data: [], totalElements: 0 };
+    	        }
+    	    },
+    	    getComplaint: async (complaintNumber, type = '') => {
+    	        const queryParams = new URLSearchParams({ complaintNumber });
+    	        if (type) queryParams.set('type', type);
+    	        const url = `${BASE_URL}/Complaint/get-complaint?${queryParams.toString()}`;
+    	        try {
+    	            console.log('Calling getComplaint with URL:', url);
+    	            const response = await fetch(url);
+    	            if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+    	            const result = await response.json();
+    	            console.log('getComplaint response:', result);
+    	            return result.data && result.data.length > 0 ? result.data[0] : null;
+    	        } catch (error) {
+    	            console.error("Failed to fetch complaint details:", error);
+    	            showErrorToast(`Failed to fetch complaint details: ${error.message}`);
+    	            return null;
+    	        }
+    	    },
+    	    getStats: async () => {
+    	        const url = `${BASE_URL}/Complaint/get-stats`;
+    	        try {
+    	            const response = await fetch(url);
+    	            if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+    	            return await response.json();
+    	        } catch (error) {
+    	            showErrorToast(`Failed to fetch stats: ${error.message}`);
+    	            return { complaintsTeam: 0, adminTeam: 0, escalationTeam: 0, BancsTeam: 0 };
+    	        }
+    	    },
+    	    fetchPolicyDetails: async (policyNo) => {
+    	        if (!policyNo) return null;
+    	        const url = `${BASE_URL}/policy/policy-details?policyNo=${policyNo}`;
+    	        try {
+    	            const response = await fetch(url);
+    	            if (!response.ok) throw new Error('Policy not found');
+    	            return await response.json();
+    	        } catch (error) {
+    	            showErrorToast(error.message);
+    	            return null;
+    	        }
+    	    },
+    	    createComplaint: async (data) => {
+    	        const url = `${BASE_URL}/Complaint/create-complaint`; // Updated endpoint
+    	        try {
+    	            const response = await fetch(url, { 
+    	                method: 'POST', 
+    	                headers: { 
+    	                    'userCode': userCode,
+    	                    'Content-Type': 'application/json' 
+    	                }, 
+    	                body: JSON.stringify({ ...data, action: 'create' }) // Add action parameter
+    	            });
+    	            if (!response.ok) { 
+    	                const errorData = await response.json(); 
+    	                throw new Error(errorData.errorMessage || 'Failed to create complaint'); 
+    	            }
+    	            const responseData = await response.json();
+    	            showErrorToast("Complaint created successfully!", "bg-green-500");
+    	            return responseData; // Return the full response
+    	        } catch (error) {
+    	            showErrorToast(`Creation failed: ${error.message}`);
+    	            return null;
+    	        }
+    	    },
+    	    updateComplaint: async (data) => {
+console.log("data",data);
+    	        const url = `${BASE_URL}/Complaint/create-complaint`; // Updated endpoint
+    	        try {
+    	            const response = await fetch(url, { 
+    	                method: 'POST', 
+    	                headers: {
+    	                    'userCode': userCode,
+    	                    'Content-Type': 'application/json' 
+    	                }, 
+    	                body: JSON.stringify({ ...data, action: 'update' }) // Add action parameter
+    	            });
+    	            if (!response.ok) { 
+    	                const errorData = await response.json(); 
+    	                throw new Error(errorData.errorMessage || 'Failed to update complaint'); 
+    	            }
+    	            const responseData = await response.json();
+    	            showErrorToast("Complaint updated successfully!", "bg-green-500");
+    	            return responseData;
+    	        } catch (error) {
+    	            showErrorToast(`Update failed: ${error.message}`);
+    	            return null;
+    	        }
+    	    },
+    	    deleteComplaints: async (ids) => {
+    	        const deletePromises = Array.from(ids).map(id => {
+    	            const url = `${BASE_URL}/Complaint/delete-complaint?complaintId=${id}`;
+    	            return fetch(url, { method: 'DELETE' });
+    	        });
+    	        try {
+    	            const results = await Promise.all(deletePromises);
+    	            const failed = results.filter(res => !res.ok);
+    	            if (failed.length > 0) throw new Error(`${failed.length} deletions failed.`);
+    	            showErrorToast(`${ids.size} complaint(s) deleted successfully!`, "bg-green-500");
+    	            return { success: true };
+    	        } catch (error) {
+    	            showErrorToast(`Deletion failed: ${error.message}`);
+    	            return { success: false };
+    	        }
+    	    },
+    	};
 
     const getSlaInfo = (complaint) => {
         if (!complaint || !complaint.slaDueDate || !complaint.dateFiled) return { isCrossed: false, daysLeft: 'N/A', progress: 0 };
@@ -427,19 +489,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const isCrossed = today > slaDueDate;
         return { daysLeft, progress, isCrossed };
     };
-
-    const showErrorToast = (message, bgClass = 'bg-red-600') => {
-        const toast = document.createElement('div');
-        toast.className = `fixed bottom-5 right-5 ${bgClass} text-white py-3 px-5 rounded-xl shadow-lg z-50 transform transition-all duration-300 translate-y-full opacity-0`;
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.classList.remove('translate-y-full', 'opacity-0'), 100);
-        setTimeout(() => {
-            toast.classList.add('translate-y-full', 'opacity-0');
-            toast.addEventListener('transitionend', () => toast.remove());
-        }, 4000);
-    };
-
     const renderComplaints = () => {
         displayArea.innerHTML = '';
         if (displayedComplaints.length === 0) {
@@ -584,14 +633,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('complaints-team-count').textContent = counts.data.complaintsTeam || 0;
         document.getElementById('admin-team-count').textContent = counts.data.adminTeam || 0;
         document.getElementById('escalation-team-count').textContent = counts.data.escalationTeam || 0;
-        document.getElementById('Bancs-team-count').textContent = counts.data.BancsTeam || 0;
+        document.getElementById('Bancs-team-count').textContent = counts.data.bancsTeam || 0;
         if (document.getElementById('team-complaints-count')) {
             document.getElementById('team-complaints-count').textContent = counts.data.complaintsTeam || 0;
             document.getElementById('team-admin-count').textContent = counts.data.adminTeam || 0;
             document.getElementById('team-escalation-count').textContent = counts.data.escalationTeam || 0;
-            document.getElementById('team-Bancs-count').textContent = counts.data.BancsTeam || 0;
+            document.getElementById('team-Bancs-count').textContent = counts.data.bancsTeam || 0;
         }
     };
+
     const renderAll = () => {
         renderComplaints();
         renderPagination();
@@ -708,7 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <option value="Open">Open</option>
                                     <option value="Reopen">Reopen</option>
                                     <option value="Closed">Closed</option>
-                                    <option value="Ombudsman">Ombudsman</option>
+                                    <option value="Pending">Pending</option>
                                     <option value="Triage">Triage</option>
                                     <option value="Resolved">Resolved</option>
                                     <option value="Rejected">Rejected</option>
@@ -763,11 +813,39 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </div>
+            <div id="successPopupModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col transform transition-all opacity-0 -translate-y-4">
+                    <div class="p-6 border-b flex justify-between items-center">
+                        <h3 id="successModalTitle" class="text-2xl font-bold text-slate-800">Complaint Action</h3>
+                        <button id="closeSuccessPopupBtn" class="text-slate-400 hover:text-red-500"><i class="fas fa-times fa-2x"></i></button>
+                    </div>
+                    <div class="modal-body p-6 overflow-y-auto space-y-4">
+                        <div>
+                            <p class="text-sm font-medium text-slate-700">Complaint Number:</p>
+                            <p id="successComplaintNumber" class="text-lg font-semibold text-slate-800"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-700">User Code:</p>
+                            <p id="successUserCode" class="text-lg font-semibold text-slate-800"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate- umbre">Status:</p>
+                            <p id="successStatus" class="text-lg font-semibold text-slate-800"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-700">Work Item Number:</p>
+                            <p id="successWorkitemNumber" class="text-lg font-semibold text-slate-800"></p>
+                        </div>
+                    </div>
+                    <div class="p-6 border-t flex justify-end gap-3 bg-slate-50">
+                        <button id="successOkBtn" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg">OK</button>
+                    </div>
+                </div>
+            </div>
         `;
         document.body.appendChild(modalContainer);
-        console.log('Modals created:', document.getElementById('reopenSearchModal')); // Verify modal creation
-        
-        // Register event listeners for modals
+        console.log('Modals created:', document.getElementById('successPopupModal') ? 'Success modal found' : 'Success modal not found');
+
         document.getElementById('closeModalBtn').addEventListener('click', () => closeModal('complaintModal'));
         document.getElementById('cancelModalBtn').addEventListener('click', () => closeModal('complaintModal'));
         document.getElementById('saveComplaintBtn').addEventListener('click', handleSaveComplaint);
@@ -778,11 +856,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('clearAdvancedFilterBtn').addEventListener('click', clearAdvancedFilter);
         document.getElementById('profileBtn').addEventListener('click', openProfileModal);
         document.getElementById('closeProfileModalBtn').addEventListener('click', () => closeModal('profileModal'));
-        document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
         document.getElementById('closeReopenSearchModalBtn').addEventListener('click', () => closeModal('reopenSearchModal'));
         document.getElementById('cancelReopenSearchBtn').addEventListener('click', () => closeModal('reopenSearchModal'));
+        document.getElementById('closeSuccessPopupBtn').addEventListener('click', () => {
+            console.log('Close success popup button clicked');
+            closeModal('successPopupModal');
+        });
+        document.getElementById('successOkBtn').addEventListener('click', () => {
+            console.log('Success OK button clicked');
+            closeModal('successPopupModal');
+        });
 
-        // Register reopenSearchBtn event listener
         const reopenSearchBtn = document.getElementById('reopenSearchBtn');
         if (reopenSearchBtn) {
             reopenSearchBtn.addEventListener('click', async () => {
@@ -828,7 +913,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         modal.classList.remove('hidden');
-        console.log(`Opening modal: ${modalId}, hidden class removed:`, modal.classList.contains('hidden')); // Add this
+        console.log(`Opening modal: ${modalId}, hidden class removed:`, modal.classList.contains('hidden'));
         setTimeout(() => modal.querySelector('.transform').classList.remove('opacity-0', '-translate-y-4'), 10);
         if (modalId === 'complaintModal') {
             const modalTitle = document.getElementById('modalTitle');
@@ -1180,7 +1265,6 @@ document.addEventListener('DOMContentLoaded', () => {
             body.innerHTML = '<p class="text-red-500 text-center col-span-3">Could not load complaint details.</p>';
         }
     };
-
     const handleSaveComplaint = async () => {
         const complaintId = document.getElementById('complaintId').value;
         const mode = complaintId ? 'edit' : 'create';
@@ -1188,9 +1272,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Complaint ID:', complaintId, 'Mode:', mode);
 
         const formData = {
+            action: mode === 'create' ? 'create' : 'update', // Add action parameter
             complaintId: complaintId || null,
             complaintNumber: document.getElementById('complaintNumberDisplay').value === 'Auto-generated' ? null : document.getElementById('complaintNumberDisplay').value,
-            userCode: currentUser.userCode,
+            userCode: userCode,
             customerNo: document.getElementById('customerNo').value,
             customerName: document.getElementById('customerName').value,
             policyNumber: document.getElementById('policyNumber').value,
@@ -1206,8 +1291,8 @@ document.addEventListener('DOMContentLoaded', () => {
             description: document.getElementById('description').value,
             resolutionNotes: document.getElementById('resolutionNotes').value,
             attachmentPath: 'No',
-            createdBy: currentUser.userCode,
-            updatedBy: currentUser.userCode,
+            createdBy: userCode,
+            updatedBy: userCode,
             createdAt: document.getElementById('dateFiled').value,
             updatedAt: new Date().toISOString().split('T')[0],
             assignedTo: document.getElementById('assignedTo').value,
@@ -1230,22 +1315,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 delete formData[key];
             }
         }
-        
+
         if (mode === 'edit' && !formData.complaintId) {
-          showErrorToast('Error: Complaint ID is required for editing.');
+            showErrorToast('Error: Complaint ID is required for editing.');
             return;
         }
 
+        console.log('Sending complaint data:', formData);
         const response = mode === 'create' 
             ? await api.createComplaint(formData)
-            : await api.updateComplaint(formData);
+            : await api.updateComplaint(formData);// Updated to use single saveComplaint API
 
-        if (response && response.success) {
+        console.log('API response:', response);
+
+        if (response && response.status === 'Success') {
+            console.log('Closing complaint modal');
             closeModal('complaintModal');
-            await performSearch({ inputType: currentInputTypeFilter });
+
+            // Show success popup with response details
+            const successModal = document.getElementById('successPopupModal');
+            if (successModal) {
+                console.log('Success modal found, updating content');
+                document.getElementById('successComplaintNumber').textContent = response.data.complaintNumber || 'N/A';
+                document.getElementById('successUserCode').textContent = response.data.userCode || 'N/A';
+                document.getElementById('successStatus').textContent = response.data.status || 'N/A';
+                document.getElementById('successWorkitemNumber').textContent = response.data.workitemNumber || 'N/A';
+                document.getElementById('successModalTitle').textContent = `Complaint ${mode === 'create' ? 'Created' : 'Updated'}`;
+                console.log('Opening success popup modal');
+                openModal('successPopupModal');
+            } else {
+                console.error('Success modal not found in DOM');
+                showErrorToast(`Complaint ${mode === 'create' ? 'created' : 'updated'} successfully! Complaint Number: ${response.data.complaintNumber}`, 'bg-green-500');
+            }
+            const updatedComplaint = response.data;
+            if (mode === 'create') {
+                allComplaints.push(updatedComplaint);
+            } else {
+                const index = allComplaints.findIndex(c => c.complaintId === complaintId);
+                if (index !== -1) {
+                    allComplaints[index] = { ...allComplaints[index], ...updatedComplaint };
+                }
+            }
+            displayedComplaints = allComplaints;
+            currentPage = 1;
+            console.log('Rendering updated complaint list');
+            renderAll();
+        } else {
+            console.error('API response failed:', response);
+            showErrorToast('Failed to save complaint. Please try again.', 'bg-red-600');
         }
     };
-
     const applyAdvancedFilter = async () => {
         const form = document.getElementById('advancedFilterForm');
         const formData = new FormData(form);
@@ -1258,15 +1377,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 filterParams[key] = value;
             }
         });
-
-        await performSearch({ ...filterParams, inputType: currentInputTypeFilter });
+        let type = 'All';
+        if (filterParams.status && filterParams.status.length === 1) {
+            type = filterParams.status[0];
+        } else if (filterParams.status && filterParams.status.length > 1) {
+            type = filterParams.status.join(',');
+        }
+        await performSearch({ ...filterParams, inputType: currentInputTypeFilter, type });
         closeModal('advancedFilterModal');
     };
 
     const clearAdvancedFilter = () => {
         document.getElementById('advancedFilterForm').reset();
     };
-
     const openProfileModal = async () => {
         const modal = document.getElementById('profileModal');
         if (!modal) return;
@@ -1276,38 +1399,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const profileRoles = document.getElementById('profileRoles');
 
         profileUserName.textContent = currentUser.fullName || 'N/A';
-        profileUserCode.textContent = currentUser.userCode || 'N/A';
+        profileUserCode.textContent = userCode || 'N/A';
         profileRoles.textContent = currentUser.roles.length > 0 ? currentUser.roles.join(', ') : 'No roles assigned';
 
         openModal('profileModal');
     };
-
-    const handleLogout = () => {
-        currentUser = { userCode: 'defaultUser', fullName: 'Guest User', roles: [], notifications: 0 };
-        userNameDisplay.textContent = `User: ${currentUser.fullName}`;
-        notificationBadge.classList.add('hidden');
-        closeModal('profileModal');
-        showErrorToast('Logged out successfully!', 'bg-green-500');
-    };
-
-    const performSearch = async (params = {}) => {
-        const searchParams = { ...params };
-
-        if (searchParams.inputType && searchParams.inputType !== 'All') {
-            searchParams.status = searchParams.inputType;
-        }
-        delete searchParams.inputType;
-
-        const response = await api.searchComplaints(searchParams);
-        allComplaints = response.data || [];
-        displayedComplaints = allComplaints;
-        currentPage = 1;
-        renderAll();
-    };
-
     const initialize = async () => {
         createModals();
-        const teamDetails = await api.fetchTeamDetails(currentUser.userCode);
+        const teamDetails = await api.fetchTeamDetails();
         if (teamDetails) {
             currentUser.fullName = teamDetails.userName || currentUser.fullName;
             currentUser.roles = teamDetails.roles || currentUser.roles;
@@ -1339,7 +1438,7 @@ document.addEventListener('DOMContentLoaded', () => {
             settingsView.classList.add('hidden');
             if (action === 'dashboard') {
                 dashboardView.classList.remove('hidden');
-                complaintsView.classList.remove('hidden'); // Show complaints view
+                complaintsView.classList.remove('hidden');
             } else if (action === 'all-complaints') {
                 complaintsView.classList.remove('hidden');
             } else if (action === 'teams') {
@@ -1355,13 +1454,25 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', async () => {
             document.querySelectorAll('.tab-button[data-inputType]').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            currentInputTypeFilter = button.dataset.inputType;
+            currentInputTypeFilter = button.getAttribute('data-inputType'); // Explicitly use getAttribute
+            console.log('Tab clicked, setting currentInputTypeFilter to:', currentInputTypeFilter); // Debug log
             selectedComplaintIds.clear();
             bulkActionsBar.classList.add('hidden');
-            await performSearch({ inputType: currentInputTypeFilter });
+            const typeValue = currentInputTypeFilter === 'All' ? 'All' : currentInputTypeFilter;
+            console.log('Sending type to performSearch:', typeValue); // Debug log
+            await performSearch({ type: typeValue });
         });
     });
 
+    const performSearch = async (params = {}) => {
+        const searchParams = { ...params };
+        console.log('performSearch called with params:', searchParams); // Debug log
+        const response = await api.searchComplaints(searchParams);
+        allComplaints = response.data || [];
+        displayedComplaints = allComplaints;
+        currentPage = 1;
+        renderAll();
+    };
     searchInput.addEventListener('input', async () => {
         const searchValue = searchInput.value.trim();
         const searchType = searchTypeSelect.value;

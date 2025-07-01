@@ -12,7 +12,8 @@ public class ComplaintMapper {
 		ComplaintDTO complaintDTO = new ComplaintDTO();
 		complaintDTO.setComplaintNumber(complaintRepo.getComplaintNumber());
 		complaintDTO.setStatus(complaintRepo.getStatus());
-
+		complaintDTO.setWorkitemNumber(complaintRepo.getWorkitem().getWorkItemRefNumber());
+		complaintDTO.setUserCode(complaintRepo.getUserCode());
 		return complaintDTO;
 	}
 

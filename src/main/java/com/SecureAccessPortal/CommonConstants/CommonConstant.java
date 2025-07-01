@@ -31,6 +31,8 @@ public class CommonConstant {
 	public static final String POLICY_DELETED = "Policy Deleted";
 	public static final String COMPLAINT_CREATE = "COMPLAINTSV2";
 	public static final String COMPLAINT_CREATE_NEW = "Complaint Created";
+	public static final String COMPLAINT_UPDATE = "Complaint Update";
+	public static final String COMPLAINT_CREATE_UPDATE = "Updating the Complaint";
 	
 
 }

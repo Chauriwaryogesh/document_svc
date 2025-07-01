@@ -1,6 +1,7 @@
 package com.SecureAccessPortal.Modal;
 
 public class ComplaintDTO {
+	private String action;
 	    private String complaintId;
 	    private String complaintNumber;
 	    private String userCode;
@@ -35,6 +36,13 @@ public class ComplaintDTO {
 	    private String slaDueDate; 
 	    private String reason; 
 	    private String workitemNumber;
+	    
+		public String getAction() {
+			return action;
+		}
+		public void setAction(String action) {
+			this.action = action;
+		}
 		public String getComplaintId() {
 			return complaintId;
 		}

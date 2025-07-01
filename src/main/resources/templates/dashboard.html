@@ -1925,7 +1925,6 @@ circle {
                     showErrorAlert('Failed to delete note.');
                 }
             }
-
             function saveFeedback() {
                 const text = document.getElementById('feedbackInput').value.trim();
                 if (!text) return showErrorAlert('Please enter some feedback.');
@@ -1990,7 +1989,7 @@ circle {
                 input.value = '';
 
                 try {
-                    const PaneluserCode = getuserCode() || 'test_user';
+                    const PaneluserCode = getuserCode();
                     const response = await fetch('http://0.0.0.0:5005/webhooks/rest/webhook', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -2097,7 +2096,7 @@ circle {
                 loadDashboardStats();
                 loadEmailCounts();
 
-                document.getElementById('menuuserCode').textContent = getuserCode() || 'Guest';
+                document.getElementById('menuuserCode').textContent = getuserCode();
 
                 // Header search event listeners
                 const globalSearchInput = document.getElementById('globalSearchInput');

@@ -79,10 +79,14 @@ public class ComplaintsController {
 		ComplaintDTO complaint = complaintService.createComplaint(complaintDTO, userCode);
 		if (complaint != null ) {
 			resp.setData(complaint);
+			resp.setStatus(CommonConstant.SUCCESS);
 		} else {
+			resp.setStatus(CommonConstant.FAILURE);
 			resp.setErrorMessage("failed to create Complaint");
 		}
 		return resp;
 	}
+	
+	
 
 }
