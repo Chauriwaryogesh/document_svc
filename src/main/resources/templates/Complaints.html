@@ -185,6 +185,7 @@
                 <div class="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="relative w-full sm:w-72 flex gap-2">
                         <select id="searchTypeSelect" class="input-style w-auto">
+                        <option value="complaintNumber">Complaint Number</option>
                             <option value="complaintId">Complaint ID</option>
                             <option value="customerName">Customer Name</option>
                             <option value="policyNumber">Policy Number</option>
@@ -329,7 +330,8 @@ document.addEventListener('DOMContentLoaded', () => {
         userCode: getuserCode(),
         fullName: 'Guest User',
         roles: [],
-        notifications: 0
+        logInTime: 0,
+        PhNo:0
     };
     const BASE_URL = 'http://localhost:8081';
     const api = {
@@ -537,36 +539,36 @@ console.log("data",data);
             <td class="px-6 py-4"><div class="flex items-center gap-2">${getActionButtonsHtml()}</div></td>`;
         return row;
     };
-
     const createComplaintCard = (complaint) => {
         const card = document.createElement('div');
-        card.className = 'bg-white rounded-xl shadow-lg border-l-4 p-5 flex flex-col justify-between fade-in';
+        card.className = 'bg-white rounded-lg shadow-md border-l-4 p-4 flex flex-col gap-3 hover:shadow-lg transition-shadow duration-200';
         card.dataset.id = complaint.complaintId;
         const isSelected = selectedComplaintIds.has(complaint.complaintId);
         const slaInfo = getSlaInfo(complaint);
         let statusBorderClass = getStatusClass(complaint.status, 'border');
         if (slaInfo.isCrossed) statusBorderClass = 'border-red-500';
-        
         statusBorderClass.split(' ').forEach(cls => {
             if (cls) card.classList.add(cls);
         });
 
         card.innerHTML = `
-            <div>
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="font-bold text-lg text-slate-800">${complaint.customerName || 'N/A'}</p>
-                        <p class="text-xs text-slate-500 complaint-number-link" data-complaint-number="${complaint.complaintNumber}">${complaint.complaintNumber || 'N/A'}</p>
-                    </div>
-                    <input type="checkbox" class="row-checkbox w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500" ${isSelected ? 'checked' : ''}>
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <p class="font-semibold text-base text-slate-800 truncate">${complaint.customerName || 'N/A'}</p>
+                    <p class="text-xs text-slate-500 complaint-number-link cursor-pointer hover:text-indigo-600" data-complaint-number="${complaint.complaintNumber}">${complaint.complaintNumber || 'N/A'}</p>
                 </div>
-                <p class="text-sm text-slate-600 mt-3 line-clamp-2 h-10">${complaint.description || 'No description'}</p>
+                <input type="checkbox" class="row-checkbox w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500" ${isSelected ? 'checked' : ''}>
             </div>
-            <div class="mt-4">
-                <div class="text-sm mb-2">${getSlaProgressHtml(complaint, slaInfo)}</div>
-                <div class="border-t pt-3 flex justify-between items-center">
+            <p class="text-xs text-slate-600 line-clamp-2">${complaint.description || 'No description'}</p>
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-xs">
+                    ${getSlaProgressHtml(complaint, slaInfo)}
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-slate-100">
                     <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(complaint.status, 'bg')}">${complaint.status || 'N/A'}</span>
-                    <div class="flex items-center gap-2">${getActionButtonsHtml()}</div>
+                    <div class="flex items-center gap-2">
+                        ${getActionButtonsHtml()}
+                    </div>
                 </div>
             </div>`;
         return card;
@@ -753,13 +755,16 @@ console.log("data",data);
                                 <input type="text" id="filterCustomerNo" name="customerNo" class="input-style">
                             </div>
                             <div class="flex flex-col">
+                            <label for="filterCustomerNo" class="block text-sm font-medium text-slate-700 mb-1">Complaint Number</label>
+                            <input type="text" id="filterComplaintNumber" name="complaintNumber" class="input-style">
+                        </div>
+                            <div class="flex flex-col">
                                 <label for="filterComplaintStatus" class="block text-sm font-medium text-slate-700 mb-1">Complaint Status</label>
                                 <select id="filterComplaintStatus" name="status" class="input-style" multiple>
                                     <option value="Open">Open</option>
                                     <option value="Reopen">Reopen</option>
                                     <option value="Closed">Closed</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Triage">Triage</option>
+                                    <option value="Pending">Pending</option>                                  
                                     <option value="Resolved">Resolved</option>
                                     <option value="Rejected">Rejected</option>
                                     <option value="Canceled">Canceled</option>
@@ -774,27 +779,40 @@ console.log("data",data);
                 </div>
             </div>
             <div id="profileModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
-                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col transform transition-all opacity-0 -translate-y-4">
-                    <div class="p-6 border-b flex justify-between items-center"><h3 class="text-2xl font-bold text-slate-800">User Profile</h3><button id="closeProfileModalBtn" class="text-slate-400 hover:text-red-500"><i class="fas fa-times fa-2x"></i></button></div>
-                    <div class="modal-body p-6 overflow-y-auto space-y-4">
-                        <div>
-                            <p class="text-sm font-medium text-slate-700">User Name:</p>
-                            <p id="profileUserName" class="text-lg font-semibold text-slate-800"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-slate-700">User Code:</p>
-                            <p id="profileUserCode" class="text-lg font-semibold text-slate-800"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-slate-700">Roles:</p>
-                            <p id="profileRoles" class="text-lg font-semibold text-slate-800"></p>
-                        </div>
+            <div class="bg-white rounded-xl shadow-xl w-full max-w-sm flex flex-col transform transition-all opacity-0 -translate-y-4">
+                <div class="p-4 border-b flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-slate-800">User Profile</h3>
+                    <button id="closeProfileModalBtn" class="text-slate-400 hover:text-red-500">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="modal-body p-4 space-y-3">
+                    <div class="flex flex-col">
+                        <p class="text-xs font-medium text-slate-600">User Name</p>
+                        <p id="profileUserName" class="text-sm font-semibold text-slate-800"></p>
                     </div>
-                    <div class="p-6 border-t flex justify-end gap-3 bg-slate-50">
-                        <button id="logoutBtn" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg">Logout</button>
+                    <div class="flex flex-col">
+                        <p class="text-xs font-medium text-slate-600">User Code</p>
+                        <p id="profileUserCode" class="text-sm font-semibold text-slate-800"></p>
+                    </div>
+                    <div class="flex flex-col">
+                        <p class="text-xs font-medium text-slate-600">Phone Number</p>
+                        <p id="profilePhNo" class="text-sm font-semibold text-slate-800"></p>
+                    </div>
+                    <div class="flex flex-col">
+                        <p class="text-xs font-medium text-slate-600">Roles</p>
+                        <p id="profileRoles" class="text-sm font-semibold text-slate-800"></p>
+                    </div>
+                    <div class="flex flex-col">
+                        <p class="text-xs font-medium text-slate-600">Logged In Time</p>
+                        <p id="profilelogInTime" class="text-sm font-semibold text-slate-800"></p>
                     </div>
                 </div>
+                <div class="p-4 border-t flex justify-end bg-slate-50">
+                    <button id="logoutBtn" class="bg-red-600 text-white font-semibold py-1.5 px-4 rounded-lg hover:bg-red-700 transition-colors">Logout</button>
+                </div>
             </div>
+        </div>
             <div id="reopenSearchModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex justify-center items-center p-4">
                 <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transform transition-all opacity-0 -translate-y-4">
                     <div class="p-6 border-b flex justify-between items-center"><h3 class="text-2xl font-bold text-slate-800">Search Reopen Complaint</h3><button id="closeReopenSearchModalBtn" class="text-slate-400 hover:text-red-500"><i class="fas fa-times fa-2x"></i></button></div>
@@ -941,7 +959,7 @@ console.log("data",data);
                 { id: 'policyType', label: 'Policy Type', type: 'select', options: ['Health', 'Life', 'Auto', 'Home'], value: data.policyType || '' },
                 { id: 'totalClaimableAmount', label: 'Total Claimable Amount', type: 'number', value: data.totalClaimableAmount || '' },
                 { id: 'category', label: 'Category', type: 'select', options: ['Policy Issue', 'Claim Issue', 'Bank Account Issue', 'Customer Registration', 'Admin Access', 'Billing Dispute', 'Service Delay', 'Product Defect', 'Compliance Issue', 'Other'], value: data.category || '', required: mode === 'create' },
-                { id: 'status', label: 'Status', type: 'select', options: ['Open', 'Reopen', 'Closed', 'Resolved', 'Rejected', 'Canceled', 'Ombudsman', 'Triage'], value: mode === 'create' ? 'Open' : (data.status || 'Open'), readonly: mode === 'create', required: mode === 'create' },
+                { id: 'status', label: 'Status', type: 'select', options: ['Open', 'Reopen', 'Closed', 'Resolved', 'Rejected', 'Canceled', 'Pending'], value: mode === 'create' ? 'Open' : (data.status || 'Open'), readonly: mode === 'create', required: mode === 'create' },
                 { id: 'description', label: 'Description', type: 'textarea', value: data.description || '', required: mode === 'create' },
                 { id: 'dateFiled', label: 'Date Filed', type: 'date', value: data.dateFiled || new Date().toISOString().split('T')[0] },
                 { id: 'sourceChannel', label: 'Source Channel', type: 'select', options: ['Web', 'Call Center', 'Email', 'Branch'], value: data.sourceChannel || '' },
@@ -952,7 +970,7 @@ console.log("data",data);
                 { id: 'departmentId', label: 'Department ID', type: 'select', options: [], value: data.departmentId || '', required: mode === 'create' },
                 { id: 'escalationLevel', label: 'Escalation Level', type: 'select', options: ['Level 1', 'Level 2', 'Level 3'], value: mode === 'create' ? 'Level 1' : (data.escalationLevel || ''), readonly: mode === 'create' },
                 { id: 'priority', label: 'Priority', type: 'select', options: ['Low', 'Medium', 'High', 'Urgent'], value: data.priority || '' },
-                { id: 'slaDueDate', label: 'SLA Due Date', type: 'date', value: data.slaDueDate || '' },
+                { id: 'slaDueDate', label: 'SLA Due Date', type: 'date', value: data.slaDueDate || new Date().toISOString().split('T')[0]  },
                 { id: 'workitemNumberDisplay', label: 'Work Item Number', type: 'text', readonly: true, value: data.workitemNumber || 'Auto-generated', hidden: mode === 'create' },
                 { id: 'relatedComplaintId', label: 'Related Complaint ID', type: 'text', value: data.relatedComplaintId || '' },
             ],
@@ -1284,7 +1302,8 @@ console.log("data",data);
             category: document.getElementById('category').value,
             status: document.getElementById('status') ? document.getElementById('status').value : 'Open',
             priority: document.getElementById('priority').value,
-            slaStatus: 'N/A',
+            slaDueDate:document.getElementById('slaDueDate').value,
+            slaStatus: 'In_SLA',
             slaProgress: 0,
             dateFiled: document.getElementById('dateFiled').value,
             lastUpdated: new Date().toISOString().split('T')[0],
@@ -1397,23 +1416,44 @@ console.log("data",data);
         const profileUserName = document.getElementById('profileUserName');
         const profileUserCode = document.getElementById('profileUserCode');
         const profileRoles = document.getElementById('profileRoles');
+        const profilePhNo = document.getElementById('profilePhNo');
+        const profilelogInTime = document.getElementById('profilelogInTime');
 
-        profileUserName.textContent = currentUser.fullName || 'N/A';
+        const teamDetails = await api.fetchTeamDetails();
+        if (teamDetails) {
+            currentUser.fullName = teamDetails.name || 'Guest User';
+            currentUser.roles = teamDetails.roles || [];
+            currentUser.logInTime = teamDetails.loggedInTime || 'N/A';
+            currentUser.PhNo = teamDetails.phNo || 'N/A';
+        }
+
+        profileUserName.textContent = currentUser.fullName;
         profileUserCode.textContent = userCode || 'N/A';
         profileRoles.textContent = currentUser.roles.length > 0 ? currentUser.roles.join(', ') : 'No roles assigned';
+        profilePhNo.textContent = currentUser.PhNo;
+        profilelogInTime.textContent = currentUser.logInTime !== 'N/A' ? new Date(currentUser.logInTime).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        }) : 'N/A';
 
         openModal('profileModal');
     };
     const initialize = async () => {
         createModals();
         const teamDetails = await api.fetchTeamDetails();
+        console.log(teamDetails);
         if (teamDetails) {
-            currentUser.fullName = teamDetails.userName || currentUser.fullName;
-            currentUser.roles = teamDetails.roles || currentUser.roles;
-            currentUser.notifications = teamDetails.notifications || currentUser.notifications;
+            currentUser.fullName = teamDetails.name;
+            currentUser.roles = teamDetails.roles;
+            currentUser.loggedInTime = teamDetails.loggedInTime || new Date().toISOString().split('T')[0];
+            currentUser.PhNo=teamDetails.phNo;
         }
         userNameDisplay.textContent = `User: ${currentUser.fullName}`;
-        notificationBadge.classList.toggle('hidden', currentUser.notifications === 0);
         await performSearch({ inputType: 'All' });
     };
 

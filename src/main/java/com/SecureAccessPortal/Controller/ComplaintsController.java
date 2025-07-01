@@ -31,11 +31,12 @@ public class ComplaintsController {
 	public ResponseEntity<List<ComplaintDTO>> searchComplaints(@RequestParam(required = false) String complaintId,
 			@RequestParam(required = false) String complaintNumber, @RequestParam(required = false) String customerNo,
 			@RequestParam(required = false) String policyNumber, @RequestParam(required = false) String workitemNumber,
+			@RequestParam(required = false) String type,
 			@RequestHeader(required = false) String userCode) {
 
 		ResponseEntity<List<ComplaintDTO>> response = new ResponseEntity<>();
 		List<ComplaintDTO> complaints = complaintService.searchComplaints(complaintId, complaintNumber, customerNo,
-				policyNumber, workitemNumber, userCode);
+				policyNumber, workitemNumber,type, userCode);
 		response.setData(complaints);
 		return response;
 	}

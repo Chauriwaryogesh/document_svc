@@ -18,11 +18,12 @@ public interface ComplaintRepo extends JpaRepository<Complaint, String> {
 			+ "AND (:customerNo IS NULL OR cust.customerNo = :customerNo) "
 			+ "AND (:policyNumber IS NULL OR pol.policyNumber = :policyNumber) "
 			+ "AND (:workitemNumber IS NULL OR wi.workItemRefNumber = :workitemNumber)"
+			+"AND (:type IS NULL OR c.status = :type)"
 			+ "AND c.deletedFlag= :deletedFlag")
 	List<Complaint> findByCriteria(@Param("complaintId") String complaintId,
 			@Param("complaintNumber") String complaintNumber, @Param("customerNo") String customerNo,
 			@Param("policyNumber") String policyNumber, @Param("workitemNumber") String workitemNumber,
-			String deletedFlag);
+			@Param("type") String type,String deletedFlag);
 
 	
 	@Query("SELECT c FROM Complaint c WHERE c.complaintNumber = :complaintNumber AND c.deletedFlag= :deletedFlag")

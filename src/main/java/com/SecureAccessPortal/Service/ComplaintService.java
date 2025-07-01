@@ -1,6 +1,7 @@
 package com.SecureAccessPortal.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,11 +44,15 @@ public class ComplaintService {
 	private IWorkItemService workItemService;
 
 	public List<ComplaintDTO> searchComplaints(String complaintId, String complaintNumber, String customerNo,
-			String policyNumber, String workitemNumber, String usrCode) {
-
-		List<Complaint> complaints = complaintRepository.findByCriteria(complaintId, complaintNumber, customerNo,
-				policyNumber, workitemNumber, "N");
-
+			String policyNumber, String workitemNumber,String type, String usrCode) {
+		List<Complaint> complaints = new ArrayList<>();
+		if(CommonConstant.ALL.equals(type)) {
+			complaints = complaintRepository.findByCriteria(complaintId, complaintNumber, customerNo,
+					policyNumber, workitemNumber,null, "N");
+		}else {
+			complaints = complaintRepository.findByCriteria(complaintId, complaintNumber, customerNo,
+					policyNumber, workitemNumber,type, "N");
+		}
 		return complaints.stream().map(this::mapToDTO).collect(Collectors.toList());
 	}
 
@@ -102,7 +107,7 @@ public class ComplaintService {
 		Customer customer= customerRepository.findByUserCodeAndDeletedFlagN(usrCode, "N");
 		
 		RoleDTO roleDTO = new RoleDTO();
-		roleDTO.setLoggedInTime(LocalDate.now());
+		roleDTO.setLoggedInTime(LocalDateTime.now());
 		roleDTO.setName(customer.getName() +" "+customer.getMiddleName()+" "+customer.getSurname());
 		roleDTO.setPhNo(customer.getPhoneNumber());
 		roleDTO.setUserCode(customer.getUserCode());

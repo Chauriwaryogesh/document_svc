@@ -1,13 +1,14 @@
 package com.SecureAccessPortal.Modal;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class RoleDTO {
 	private String name;
 	private String userCode;
 	private List<String> roles;
-	private LocalDate loggedInTime;
+	private LocalDateTime loggedInTime;
 	private String phNo;
 	public String getName() {
 		return name;
@@ -28,10 +29,10 @@ public class RoleDTO {
 		this.roles = roles;
 	}
 	
-	public LocalDate getLoggedInTime() {
+	public LocalDateTime getLoggedInTime() {
 		return loggedInTime;
 	}
-	public void setLoggedInTime(LocalDate loggedInTime) {
+	public void setLoggedInTime(LocalDateTime loggedInTime) {
 		this.loggedInTime = loggedInTime;
 	}
 	public String getPhNo() {
