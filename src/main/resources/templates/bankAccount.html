@@ -547,7 +547,7 @@
               <i class="fas fa-user-check w-8 text-center text-lg"></i>
               <span class="ml-3 font-semibold sidebar-text">Verification Services</span>
           </a>
-          <a href="workItemServices.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg mx-2">
+          <a href="workItemServices" class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg mx-2">
               <i class="fas fa-briefcase w-8 text-center text-lg"></i>
               <span class="ml-3 font-semibold sidebar-text">WorkItems</span>
           </a>
@@ -2472,7 +2472,9 @@
     }
     async function initializeApp() {
         config.userCode = getuserCode();
-        if (!config.userCode) return;
+        if (!config.userCode) 
+        	window.location.href = '/login';
+        	return;
 
         initializeModals();
         initializeEventListeners();
