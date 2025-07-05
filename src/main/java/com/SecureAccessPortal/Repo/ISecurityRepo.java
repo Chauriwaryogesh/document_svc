@@ -3,6 +3,9 @@ package com.SecureAccessPortal.Repo;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,7 +20,7 @@ public interface ISecurityRepo  extends JpaRepository<Security, Long>{
 	  Security findByEmail(String email, String deletedFlag);
 
 	@Query(value="Select * from security s where s.id=?1 and s.deletedFlag=?2",nativeQuery = true)
-	Security findById(String id, String string);
+	Optional<Security>findByIdAndDeletedFlag(String id, String deletedflag);
 
 	@Query(value="Select * from security s where s.deletedFlag=?1",nativeQuery = true)
 	List<Security> findAll(String string);
@@ -49,5 +52,9 @@ public interface ISecurityRepo  extends JpaRepository<Security, Long>{
 
     @Query("SELECT s FROM Security s WHERE (s.email = :email OR s.userCode = :userCode) AND s.deletedFlag = :deletedflag")
 	Optional<Security> findByEmailOrUserCodeAndDeletedFlag(String email, String userCode,String deletedflag);
+
+	Page<Security> findAllByDeletedFlag(String deletedflag, Pageable pageable);
+
+	Page<Security> findAll(Specification<Security> spec, Pageable pageable);
 
 }

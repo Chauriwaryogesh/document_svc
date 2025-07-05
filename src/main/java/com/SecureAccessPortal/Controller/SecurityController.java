@@ -5,7 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -13,6 +13,8 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -64,21 +66,33 @@ public class SecurityController {
 	}
 
 	@GetMapping("/user-list")
-	public com.SecureAccessPortal.Service.ResponseEntity<List<SecurityDTO>> fetchSecurityRole(
-		@RequestParam(value = "id", required = false) String id, @RequestHeader(required = false) String userCode) {
-		com.SecureAccessPortal.Service.ResponseEntity<List<SecurityDTO>> serviceResponse = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<SecurityDTO> response = new ArrayList<>();
+	public com.SecureAccessPortal.Service.ResponseEntity<Page<SecurityDTO>> fetchSecurityRole(@RequestParam(value = "id", required = false) String id,
+			@RequestParam(value = "search", required = false) String search,
+			@RequestParam(value = "email", required = false) String email,
+			@RequestParam(value = "userCode", required = false) String userCodeFilter, // Renamed to avoid conflict
+			@RequestParam(value = "isEmailVerified", required = false) String isEmailVerified,
+			@RequestParam(value = "isUserCodeVerified", required = false) String isUserCodeVerified,
+			@RequestParam(value = "createdTimeFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdTimeFrom,
+			@RequestParam(value = "createdTimeTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdTimeTo,
+			@RequestParam(value = "expireTimeFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expireTimeFrom,
+			@RequestParam(value = "expireTimeTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expireTimeTo,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
+			@RequestHeader(required = false) String userCode) { // This `userCode` is for the authenticating user
+		com.SecureAccessPortal.Service.ResponseEntity<Page<SecurityDTO>> serviceResponse= new com.SecureAccessPortal.Service.ResponseEntity<>();
+		Page<SecurityDTO> response = null;
 		try {
-			response = securityService.fetchListOfUsers(id, userCode);
+			response = securityService.fetchListOfUsers(id, search, email, userCodeFilter, isEmailVerified,
+					isUserCodeVerified, createdTimeFrom, createdTimeTo, expireTimeFrom, expireTimeTo, page, size,
+					userCode);
 			if (response != null && !response.isEmpty()) {
 				serviceResponse.setData(response);
 			} else {
-				serviceResponse.setErrorMessage("No Admin Access for given user "+ userCode);
+				serviceResponse.setErrorMessage(
+						"No users found matching the criteria or no admin access for user: " + userCode);
 			}
 		} catch (Exception e) {
-			e.getMessage();
+			serviceResponse.setErrorMessage("An error occurred while fetching user list: " + e.getMessage());
 		}
-
 		return serviceResponse;
 	}
 

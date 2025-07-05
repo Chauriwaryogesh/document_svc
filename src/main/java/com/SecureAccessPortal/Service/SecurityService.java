@@ -1,5 +1,4 @@
-package com.SecureAccessPortal.Service; // Use lowercase for package names
-
+package com.SecureAccessPortal.Service;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,8 +7,10 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,6 +19,11 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
@@ -50,6 +56,8 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
+
+import jakarta.persistence.criteria.Predicate;
 
 @Service
 public class SecurityService implements ISecrityService {
@@ -287,30 +295,83 @@ public class SecurityService implements ISecrityService {
 		return Files.readAllBytes(Paths.get(filePath));
 	}
 
-	@Override
-	public List<SecurityDTO> fetchListOfUsers(String id, String userCode) {
-		List<SecurityDTO> allUsers = List.of();
-		List<Security> securityList = new ArrayList<>();
-		Security security = null;
-		security = securityRepository.findByUserCodeDeletedN(userCode, "N");
-		Customer customer=customerRepo.findByUserCodeAndDeletedFlagN(userCode,"N");
-		if (security != null && customer != null && "Y".equalsIgnoreCase(customer.getAdminAccess()) &&"Y".equals(security.getIsEmailVerified()) && "Y".equals(security.getIsUserCodeVerified())) {
+	 @Override
+		public Page<SecurityDTO> fetchListOfUsers(String id, String search, String email, String userCodeFilter,
+				String isEmailVerified, String isUserCodeVerified, LocalDate createdTimeFrom, LocalDate createdTimeTo,
+				LocalDate expireTimeFrom, LocalDate expireTimeTo, int page, int size, String authUserCode) {
+			Pageable pageable = PageRequest.of(page, size);
 			try {
-				if (id != null) {
-					security = securityRepository.findById(id, "N");
-					securityList.add(security);
+				Optional<Security> securityOptional = securityRepository.findByUserCodeAndDeletedFlag(authUserCode,"N");
+				Customer customer = customerRepo.findByUserCodeAndDeletedFlagN(authUserCode, "N");
+				if (securityOptional.isPresent() && customer != null && "Y".equalsIgnoreCase(customer.getAdminAccess())
+						&& "Y".equalsIgnoreCase(securityOptional.get().getIsEmailVerified())
+						&& "Y".equalsIgnoreCase(securityOptional.get().getIsUserCodeVerified())) {
+					Specification<Security> spec = (root, query, criteriaBuilder) -> {
+						List<Predicate> predicates = new ArrayList<>();
+						predicates.add(criteriaBuilder.equal(root.get("deletedFlag"), "N"));
+						if (id != null && !id.isEmpty()) {
+							predicates.add(criteriaBuilder.equal(root.get("id"), id));
+						} else {							
+							if (search != null && !search.isEmpty()) {
+								String lowerCaseSearch = "%" + search.toLowerCase() + "%";
+								Predicate searchPredicate = criteriaBuilder.or(
+										criteriaBuilder.like(criteriaBuilder.lower(root.get("id").as(String.class)),
+												lowerCaseSearch),
+										criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), lowerCaseSearch),
+										criteriaBuilder.like(criteriaBuilder.lower(root.get("userCode")),
+												lowerCaseSearch));
+								predicates.add(searchPredicate);
+							}
+							if (email != null && !email.isEmpty()) {
+								predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("email")),
+										email.toLowerCase()));
+							}
+							if (userCodeFilter != null && !userCodeFilter.isEmpty()) {
+								predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("userCode")),
+										userCodeFilter.toLowerCase()));
+							}
+							if (isEmailVerified != null && !isEmailVerified.isEmpty()) {
+								predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("isEmailVerified")),
+										isEmailVerified.toLowerCase()));
+							}
+							if (isUserCodeVerified != null && !isUserCodeVerified.isEmpty()) {
+								predicates.add(
+										criteriaBuilder.equal(criteriaBuilder.lower(root.get("isUserCodeVerified")),
+												isUserCodeVerified.toLowerCase()));
+							}
+							if (createdTimeFrom != null) {
+								LocalDateTime startOfDay = createdTimeFrom.atStartOfDay();
+								predicates
+										.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdTime"), startOfDay));
+							}
+							if (createdTimeTo != null) {
+								LocalDateTime endOfDay = createdTimeTo.atTime(LocalTime.MAX); // End of the day
+								predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdTime"), endOfDay));
+							}
+							if (expireTimeFrom != null) {
+								LocalDateTime startOfDay = expireTimeFrom.atStartOfDay();
+								predicates.add(
+										criteriaBuilder.greaterThanOrEqualTo(root.get("remainingTime"), startOfDay));
+							}
+							if (expireTimeTo != null) {
+								LocalDateTime endOfDay = expireTimeTo.atTime(LocalTime.MAX); // End of the day
+								predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("remainingTime"), endOfDay));
+							}
+						}
+						return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+					};
+					Page<Security> securityList = securityRepository.findAll(spec, pageable);
+					return securityMapper.mapSecurity(securityList, authUserCode);
+
 				} else {
-					securityList = securityRepository.findAll("N");
+					logger.info("No admin access for User '{}' or verification failed.", authUserCode);
+					return new PageImpl<>(Collections.emptyList(), pageable, 0);
 				}
-				allUsers = securityMapper.mapSecurity(securityList, userCode);
 			} catch (Exception e) {
-				e.getCause();
+				logger.error("Error fetching users for user '{}': {}", authUserCode, e.getMessage(), e);
+				return new PageImpl<>(Collections.emptyList(), pageable, 0);
 			}
-		} else {
-			logger.info("No admin access for User");
 		}
-		return allUsers;
-	}
 
 	@Override
 	@Transactional
