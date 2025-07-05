@@ -930,16 +930,19 @@
     function handleFilter() {
         const filterPopup = document.getElementById('filter-popup');
         const statuses = Array.from(filterPopup.querySelectorAll('input[name="filter-status"]:checked')).map(cb => cb.value).join(',');
-        
+        console.log("workitem",document.getElementById('filter-refnum').value.trim())
         currentFilters = {
-            workItemRefNum: document.getElementById('filter-refnum').value.trim(),
+            // CORRECTED: Use filter-refnum for the filter popup's reference number
+            workItemRefNum: document.getElementById('filter-refnum').value.trim(), 
             queue: document.getElementById('filter-queue').value,
             userCode: document.getElementById('filter-userCode').value.trim(),
             createdBy: document.getElementById('filter-createdby').value.trim(),
             status: statuses,
             startDate: document.getElementById('filter-date-from').value,
             endDate: document.getElementById('filter-date-to').value,
-            workItemRefNum: headerSearchInput.value.trim() // Include header search query
+            // If you want header search to also apply, you need a separate filter for it
+            // or modify your API to combine search fields. For now, removing this as it was causing the conflict.
+            // headerSearchQuery: headerSearchInput.value.trim() 
         };
 
         if (currentFilters.startDate && currentFilters.endDate && new Date(currentFilters.startDate) > new Date(currentFilters.endDate)) {
@@ -1056,7 +1059,9 @@
         headerSearchIcon.addEventListener('click', () => {
             if (headerSearchContainer.classList.contains('expanded')) {
                 // Trigger search if already expanded
-                currentFilters.workItemRefNum = headerSearchInput.value.trim();
+                // When header search is clicked, it should apply its own filter
+                // If you want it to search by workItemRefNum, ensure your API supports a 'workItemRefNum' parameter for direct search
+                currentFilters = { workItemRefNum: headerSearchInput.value.trim() }; // Apply header search as the primary filter
                 renderPage(1);
             } else {
                 // Expand the search bar if not already expanded
@@ -1066,7 +1071,8 @@
         });
         headerSearchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                currentFilters.workItemRefNum = headerSearchInput.value.trim();
+                // When header search is used, it overrides other filters for this search
+                currentFilters = { workItemRefNum: headerSearchInput.value.trim() }; // Apply header search as the primary filter
                 renderPage(1);
             }
         });
@@ -1186,19 +1192,13 @@
                 renderPage(currentPage); // Re-render with new view type
             });
         });
-
-        // Logout
         document.getElementById('btn-logout-header').addEventListener('click', logout);
         document.getElementById('btn-logout-sidebar').addEventListener('click', logout);
     }
-
-    // --- Initialization ---
     document.addEventListener('DOMContentLoaded', () => {
         if (!initializeUser()) return;
         
         setupEventListeners();
-        
-        // Initial data load
         renderPage(1);
         fetchStatusCounts().then(updateStatusCards).catch(() => {});
     });

@@ -14,10 +14,11 @@ public class WorkItemMapper {
 		workItem.setComment(repoData.getComment());
 		workItem.setCreatedBy(repoData.getCreatedBy());
 		workItem.setCreatedTime(String.valueOf( repoData.getCreatedTime()));
-		workItem.setuserCode(repoData.getUserCode());
+		workItem.setUserCode(repoData.getUserCode());
 		workItem.setWorkItemName(repoData.getWorkItemName());
 		workItem.setWorkType(repoData.getWorkType());
 		workItem.setWorkItemReferenceNumber(repoData.getWorkItemRefNumber());
+		workItem.setPolicyNumber(repoData.getPolicy().getPolicyNumber());
 		return workItem;
 	}
 	

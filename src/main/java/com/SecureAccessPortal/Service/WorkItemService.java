@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import javax.management.RuntimeErrorException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +32,8 @@ import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.Queue;
 import com.SecureAccessPortal.Modal.WorkItemCount;
 import com.SecureAccessPortal.Modal.WorkItemDTO;
+import com.SecureAccessPortal.Repo.CustomerRepo;
+import com.SecureAccessPortal.Repo.IPolicyRepo;
 import com.SecureAccessPortal.Repo.WorkItemRepo;
 import com.SecureAccessPortal.Transformer.WorkItemMapper;
 
@@ -38,11 +42,19 @@ import jakarta.persistence.criteria.Predicate;
 @Component
 public class WorkItemService implements IWorkItemService {
 
+	private static final Logger logger = LoggerFactory.getLogger(WorkItemService.class);
+
 	@Autowired
 	private WorkItemRepo workItemRepo;
 
 	@Autowired
 	private WorkItemMapper workItemMapper;
+	
+	@Autowired
+	private IPolicyRepo policyRepository;
+	
+	@Autowired
+	private CustomerRepo customerRepository;
 
 	@Override
 	public WorkItemDTO createWorkItem(WorkItemDTO workItemRequest, String userCode) {
@@ -57,6 +69,16 @@ public class WorkItemService implements IWorkItemService {
 				workItem.setUserCode(userCode);
 			} else {
 				workItem.setUserCode(workItemRequest.getCreatedBy());
+			}
+			if (workItemRequest.getPolicyNumber() != null) {
+				Policy policy = policyRepository.findByPolicyNum(workItemRequest.getPolicyNumber(), "N");
+				if (policy == null) {
+					logger.error("No policy No found");
+				} else {
+					workItem.setPolicy(policy);
+					workItem.setCustomer(policy.getCustomer());
+				}
+
 			}
 			workItem.setWorkItemName(workItemRequest.getWorkItemName());
 			workItem.setWorkType(workItemRequest.getWorkType());
@@ -157,7 +179,7 @@ public class WorkItemService implements IWorkItemService {
 				workItem.setComment(workItems.getComment());
 				workItem.setCreatedBy(workItems.getCreatedBy());
 				workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
-				workItem.setuserCode(workItems.getUserCode());
+				workItem.setUserCode(workItems.getUserCode());
 				workItem.setWorkItemName(workItems.getWorkItemName());
 				workItem.setWorkType(workItems.getWorkType());
 				workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
@@ -310,7 +332,7 @@ public class WorkItemService implements IWorkItemService {
 			workItem.setComment(workItems.getComment());
 			workItem.setCreatedBy(workItems.getCreatedBy());
 			workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
-			workItem.setuserCode(workItems.getUserCode());
+			workItem.setUserCode(workItems.getUserCode());
 			workItem.setWorkItemName(workItems.getWorkItemName());
 			workItem.setWorkType(workItems.getWorkType());
 			workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());

@@ -3,6 +3,7 @@ package com.SecureAccessPortal.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -65,6 +66,7 @@ public class WorkItemController {
 		return response;
 	}
 
+	@Cacheable("WorkItem")
 	@RequestMapping(value = "workItem-count", method = RequestMethod.GET)
 	public ResponseEntity<WorkItemCount> workItemCount(
 			@RequestHeader(value = "userCode", required = true) String userCode) {
