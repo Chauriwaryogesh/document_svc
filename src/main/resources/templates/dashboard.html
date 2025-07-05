@@ -2175,7 +2175,7 @@
                     animateCircle('totalPolicy-circle', (data.totalPolicy / maxPolicy) * 100, 'totalPolicy-percent');
                     animateCircle('totalWorkItems-circle', (data.totalWorkItems / maxWorkItems) * 100, 'totalWorkItems-percent');
                     animateCircle('totalBankAccounts-circle', (data.totalBankAccounts / maxBankAccounts) * 100, 'totalBankAccounts-percent');
-                    animateCircle('totalVerificationRecords-circle', (data.totalVerificationRecords / maxVerificationRecords) * 100, 'totalVerificationRecords-percent');
+                    animateCircle('totalVerificationRecords-circle', (data.totalVerificationRecords / maxVerificationRecords) * 100, 'totalUsers-percent');
                     animateCircle('totalUsers-circle', (data.totalUsers / maxUsers) * 100, 'totalUsers-percent');
                 } catch (error) {
                     console.error('Error fetching dashboard stats:', error);
@@ -2510,8 +2510,9 @@
                     }
                 }
 
-                currentPage = 1; // Reset to first page for new view mode
-                fetchWorkItems(currentPage, itemsPerPage, currentFilters); // Re-fetch with new view mode and reset page
+                // Removed the API call. Now it just re-renders the existing data.
+                populateWorkItems(filteredWorkItems, currentMainViewType); 
+                renderPagination(); // Re-render pagination to ensure it's correct for the current view
             }
 
 
