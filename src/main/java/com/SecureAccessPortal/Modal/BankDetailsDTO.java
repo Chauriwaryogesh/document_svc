@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class BankDetailsDTO {
 	private Long id;
+	private String action;
 	private String accountNumber;
 	private String ifscCode;
 	private String bankName;
@@ -31,7 +32,29 @@ public class BankDetailsDTO {
 	private BigDecimal accountBalance;
 	private String linkedPaymentMethod;
 	private Integer verificationAttempts;
+	private String comment;
 	
+	
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	public String getAction() {
+		return action;
+	}
+	public void setAction(String action) {
+		this.action = action;
+	}
+	private String accountHolderName;
+	
+	public String getAccountHolderName() {
+		return accountHolderName;
+	}
+	public void setAccountHolderName(String accountHolderName) {
+		this.accountHolderName = accountHolderName;
+	}
 	public String getCustomerName() {
 		return customerName;
 	}

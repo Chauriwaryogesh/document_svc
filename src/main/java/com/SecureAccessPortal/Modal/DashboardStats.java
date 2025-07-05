@@ -36,6 +36,47 @@ public class DashboardStats {
 	private long adminTeam;
 	private long escalationTeam;
 	private long bancsTeam;
+	
+	
+	//bank account
+	private long totalAccounts;
+	private long verifiedAccounts;
+	private long pendingVerifications;
+	private long rejectedBankAccount;
+	
+	
+
+	public long getTotalAccounts() {
+		return totalAccounts;
+	}
+
+	public void setTotalAccounts(long totalAccounts) {
+		this.totalAccounts = totalAccounts;
+	}
+
+	public long getVerifiedAccounts() {
+		return verifiedAccounts;
+	}
+
+	public void setVerifiedAccounts(long verifiedAccounts) {
+		this.verifiedAccounts = verifiedAccounts;
+	}
+
+	public long getPendingVerifications() {
+		return pendingVerifications;
+	}
+
+	public void setPendingVerifications(long pendingVerifications) {
+		this.pendingVerifications = pendingVerifications;
+	}
+
+	public long getRejectedBankAccount() {
+		return rejectedBankAccount;
+	}
+
+	public void setRejectedBankAccount(long rejectedBankAccount) {
+		this.rejectedBankAccount = rejectedBankAccount;
+	}
 
 	public long getComplaintsTeam() {
 		return complaintsTeam;

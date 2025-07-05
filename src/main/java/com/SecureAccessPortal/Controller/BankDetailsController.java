@@ -1,11 +1,14 @@
 package com.SecureAccessPortal.Controller;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Exception.ResourceNotFoundException;
 import com.SecureAccessPortal.Modal.BankDetailsDTO;
-import com.SecureAccessPortal.Modal.PhotoDTO;
+import com.SecureAccessPortal.Modal.DashboardStats;
 import com.SecureAccessPortal.Modal.PolicyRequest;
 import com.SecureAccessPortal.Modal.VerificationRecordDTO;
 import com.SecureAccessPortal.Service.BankDetailsService;
@@ -40,14 +43,23 @@ public class BankDetailsController {
 	}
 
 	@GetMapping(value = "/bank-details")
-	public ResponseEntity<List<BankDetailsDTO>> getBankDetails(
+	public ResponseEntity<Page<BankDetailsDTO>> getBankDetails(
 			@RequestParam(value = "bankAccNo", required = false) String bankAccNo,
 			@RequestParam(value = "policyNo", required = false) String policyNo,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
-			@RequestHeader(value = "userCode", required = true) String userCode) {
-		com.SecureAccessPortal.Service.ResponseEntity<List<BankDetailsDTO>> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
-
-		List<BankDetailsDTO> bankDetails = bankDetailsService.getBankDetails(bankAccNo, policyNo, customerNo, userCode);
+			@RequestParam(value = "holderName", required = false) String holderName,
+			@RequestParam(value = "bankName", required = false) String bankName,
+			@RequestParam(value = "accountType", required = false) String accountType,
+			@RequestParam(value = "status", required = false) String status, // e.g., "Active,Pending"
+			@RequestParam(value = "createdDateFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdDateFrom,
+			@RequestParam(value = "createdDateTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdDateTo,
+			@RequestParam(value = "search", required = false) String globalSearch, // For header search bar
+			@RequestHeader(value = "userCode", required = true) String userCode,
+			@PageableDefault(page = 0, size = 10, sort = "createdDate") Pageable pageable) {
+		com.SecureAccessPortal.Service.ResponseEntity<Page<BankDetailsDTO>> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		Page<BankDetailsDTO> bankDetails = bankDetailsService.getBankDetails(bankAccNo, policyNo, customerNo,
+				holderName, bankName, accountType, status, createdDateFrom, createdDateTo, globalSearch, userCode,
+				pageable);
 		if (bankDetails != null && !bankDetails.isEmpty()) {
 			response.setData(bankDetails);
 		} else {
@@ -63,7 +75,7 @@ public class BankDetailsController {
 		com.SecureAccessPortal.Service.ResponseEntity<String> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		try {
 			String resp = bankDetailsService.addBankDetails(bankDetailsDTO, userCode);
-			if (resp.contains("successfully")) {
+			if (resp.contains("Successfully")) {
 				response.setData(resp);
 				response.setStatus(CommonConstant.SUCCESS);
 			} else {
@@ -149,7 +161,7 @@ public class BankDetailsController {
 		}
 	}
 
-	@GetMapping(value ="getVerificationRecord")
+	@GetMapping(value = "getVerificationRecord")
 	public org.springframework.http.ResponseEntity<Page<VerificationRecordDTO>> getVerificationRecords(
 			@RequestParam("accountNo") String accountNo,
 			@RequestParam(value = "action", required = false) String action,
@@ -183,12 +195,13 @@ public class BankDetailsController {
 			throw new ResourceNotFoundException(e.getMessage());
 		}
 	}
+
 	@PostMapping("/{id}/updateStatus")
 	public org.springframework.http.ResponseEntity<String> updateStatus(@PathVariable String id,
-			@RequestBody VerificationRecordDTO verificationRecordDTO, 
-			@RequestHeader (value= "userCode", required =false) String userCode) {
+			@RequestBody VerificationRecordDTO verificationRecordDTO,
+			@RequestHeader(value = "userCode", required = false) String userCode) {
 		try {
-			String message  = bankDetailsService.updateStatus(id, verificationRecordDTO,userCode);
+			String message = bankDetailsService.updateStatus(id, verificationRecordDTO, userCode);
 			return new org.springframework.http.ResponseEntity<>(message, HttpStatus.OK);
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(e.getMessage());
@@ -196,13 +209,14 @@ public class BankDetailsController {
 			throw new ResourceNotFoundException(e.getMessage());
 		}
 	}
+
 	@RequestMapping(value = "/getAllDocuments", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public com.SecureAccessPortal.Service.ResponseEntity<List<VerificationRecordDTO>> getDocument(
-			@RequestParam (value="accountNo",required=false) String accountNo,
+			@RequestParam(value = "accountNo", required = false) String accountNo,
 			@RequestHeader(value = "userCode", required = false) String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<List<VerificationRecordDTO>> docslist = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<VerificationRecordDTO> document = bankDetailsService.getAllDocuments(accountNo,userCode);
+		List<VerificationRecordDTO> document = bankDetailsService.getAllDocuments(accountNo, userCode);
 		if (document != null) {
 			docslist.setData(document);
 		} else {
@@ -211,6 +225,40 @@ public class BankDetailsController {
 		}
 		return docslist;
 	}
+
+	@GetMapping(value = "/bank-details/counts")
+	public ResponseEntity<DashboardStats> getCount(
+			@RequestHeader(value = "userCode", required = true) String userCode) {
+		com.SecureAccessPortal.Service.ResponseEntity<DashboardStats> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		DashboardStats stats = bankDetailsService.getCount(userCode);
+		if (stats != null) {
+			response.setData(stats);
+			response.setStatus(CommonConstant.SUCCESS);
+		} else {
+			response.setErrorMessage("No Bank NAmes found");
+			response.setStatus(CommonConstant.FAILURE);
+		}
+		return response;
+	}
 	
+	@PostMapping(value = "/verify/BankAccount", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public com.SecureAccessPortal.Service.ResponseEntity<String> verifyBankAccount(
+			@RequestBody BankDetailsDTO bankDetailsDTO,
+			@RequestHeader(value = "userCode", required = true) String userCode) {
+		com.SecureAccessPortal.Service.ResponseEntity<String> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		try {
+			String resp = bankDetailsService.verifyBankAccount(bankDetailsDTO, userCode);
+			if (resp.contains("Successfully")) {
+				response.setData(resp);
+				response.setStatus(CommonConstant.SUCCESS);
+			} else {
+				response.setStatus(CommonConstant.FAILURE);
+				response.setErrorMessage(resp);
+			}
+		} catch (Exception e) {
+			e.getStackTrace();
+		}
+		return response;
+	}
 
 }
