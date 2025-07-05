@@ -109,4 +109,19 @@ public class WorkItemController {
 		}
 		return response;
 	}
+	@RequestMapping(value = "update-WorkItem", method = RequestMethod.POST, consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<WorkItemDTO> updateWorkItem(@RequestBody WorkItemDTO workItemRequest,
+			@RequestHeader(value = "userCode", required = true) String userCode) {
+		ResponseEntity<WorkItemDTO> response = new ResponseEntity<>();
+		WorkItemDTO workItem = workItemService.updateWorkItem(workItemRequest, userCode);
+		if (workItem != null) {
+			response.setData(workItem);
+			response.setStatus(CommonConstant.SUCCESS);
+		} else {
+			response.setErrorMessage("failed to Update WorkItem");
+			response.setStatus(CommonConstant.FAILURE);
+		}
+
+		return response;
+	}
 }

@@ -19,6 +19,6 @@ public interface BankAccountRepo extends JpaRepository<BankAccount, Long> {
 	@Query("SELECT ba FROM BankAccount ba WHERE ba.accountNo = ?1")
 	List<BankAccount> findByBankAccNo(String accountNo);
 
-	@Query("SELECT ba FROM BankAccount ba WHERE ba.accountNo = ?1")
-	BankAccount findByAccountNo(String accountNo);
+	@Query("SELECT ba FROM BankAccount ba WHERE ba.accountNo = ?1 AND ba.deletedFlag= ?2")
+	BankAccount findByAccountNo(String accountNo, String deletedFlag);
 }

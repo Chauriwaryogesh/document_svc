@@ -35,4 +35,6 @@ public interface IWorkItemService {
 	Page<WorkItemDTO> fetchRelatedWorkitems(String workitemRefNo, int page, int size, String policyRelated,
 			String customerRelated, String userCode);
 
+	WorkItemDTO updateWorkItem(WorkItemDTO workItemRequest, String userCode);
+
 }

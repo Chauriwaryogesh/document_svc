@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Exception.ResourceNotFoundException;
 import com.SecureAccessPortal.Modal.BankDetailsDTO;
 import com.SecureAccessPortal.Modal.PhotoDTO;
@@ -64,8 +65,10 @@ public class BankDetailsController {
 			String resp = bankDetailsService.addBankDetails(bankDetailsDTO, userCode);
 			if (resp.contains("successfully")) {
 				response.setData(resp);
+				response.setStatus(CommonConstant.SUCCESS);
 			} else {
-				response.setData(resp);
+				response.setStatus(CommonConstant.FAILURE);
+				response.setErrorMessage(resp);
 			}
 
 		} catch (Exception e) {

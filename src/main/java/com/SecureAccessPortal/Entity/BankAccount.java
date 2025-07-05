@@ -40,6 +40,9 @@ public class BankAccount {
 
     @Column(name = "status")
     private String status;
+    
+    @Column(name = "deletedFlag")
+    private String deletedFlag;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
@@ -94,7 +97,15 @@ public class BankAccount {
     @Column(name = "verification_attempts")
     private Integer verificationAttempts;
 
-    // Getters and Setters
+    public String getDeletedFlag() {
+		return deletedFlag;
+	}
+
+	public void setDeletedFlag(String deletedFlag) {
+		this.deletedFlag = deletedFlag;
+	}
+
+	// Getters and Setters
     public Long getId() {
         return id;
     }

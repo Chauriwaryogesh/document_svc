@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -340,6 +341,28 @@ public class WorkItemService implements IWorkItemService {
 			workItem.setQueue(workItems.getQueue());
 			return workItem;
 		});
+	}
+
+	@Override
+	public WorkItemDTO updateWorkItem(WorkItemDTO workItemRequest, String userCode) {
+		WorkItemDTO workItemDTO = new WorkItemDTO();
+		String workItemReferenceNumber = workItemRequest.getWorkItemReferenceNumber();
+		Optional<Workitem> byWiRefNum = workItemRepo.findByWiRefNum(workItemReferenceNumber);
+		Workitem workitem = byWiRefNum.get();
+		workitem.setStatus(workItemRequest.getStatus());
+		if (workItemRequest.getComment() != null) {
+			String comment = workItemRequest.getComment();
+			workitem.setComment(comment);
+		}
+		if (workItemRequest.getQueue() != null) {
+			workitem.setQueue(workItemRequest.getQueue());
+		}
+		workitem.setUpdatedBy(userCode);
+		workitem.setUpdatedTime(LocalDateTime.now());
+		Workitem saveWorkItem = workItemRepo.save(workitem);
+		workItemDTO.setWorkItemReferenceNumber(saveWorkItem.getWorkItemRefNumber());
+		workItemDTO.setComment("Saved Successfully");
+		return workItemDTO;
 	}
 
 //	public WorkItemCount workItemCount(String userCode) {

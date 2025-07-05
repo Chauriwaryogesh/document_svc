@@ -127,43 +127,53 @@ public class BankDetailsService {
 		Customer customer= null;
 		Policy policy=null;
 		try {
-			BankAccount dto = new BankAccount();
-			dto.setAccountNo(bankAccount.getAccountNumber());
-			dto.setIfscCode(bankAccount.getIfscCode());
-			dto.setBankName(bankAccount.getBankName());
-			dto.setAccountType(bankAccount.getAccountType());
-			dto.setStatus(bankAccount.getStatus());
-			if (bankAccount.getCustomerNumber() != null) {
-				 customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber(),"N");
-				dto.setCustomer(customer);
-			}
-			if(bankAccount.getPolicyNumber() != null) {
-				policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber(),"N");
-				dto.setPolicy(policy);
-			}
-			dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
-			dto.setCreatedBy(bankAccount.getCreatedBy());
-			dto.setCreatedDate(bankAccount.getCreatedDate());
-			dto.setNotes(bankAccount.getNotes());
-			dto.setAccountHolderType(bankAccount.getAccountHolderType());
-			dto.setBranchCode(bankAccount.getBranchCode());
-			dto.setSwiftCode(bankAccount.getSwiftCode());
-			dto.setPaymentMethodStatus(bankAccount.getPaymentMethodStatus());
-			dto.setLastPaymentDate(bankAccount.getLastPaymentDate());
-			dto.setAmlStatus(bankAccount.getAmlStatus());
-			dto.setAccountBalance(bankAccount.getAccountBalance());
-			dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
-			dto.setVerificationAttempts(bankAccount.getVerificationAttempts());			
-			BankAccount save = bankAccountRepository.save(dto);
+			if(bankAccount.getAccountNumber() != null) {
+				BankAccount byAccountNo = bankAccountRepository.findByAccountNo(bankAccount.getAccountNumber(),"N");
+				if(byAccountNo != null) {
+					message="Bank Account already exist in System";
+					return message;
+				}else {
+					BankAccount dto = new BankAccount();
+					dto.setAccountNo(bankAccount.getAccountNumber());
+					dto.setIfscCode(bankAccount.getIfscCode());
+					dto.setBankName(bankAccount.getBankName());
+					dto.setAccountType(bankAccount.getAccountType());
+					dto.setStatus(bankAccount.getStatus());
+					dto.setDeletedFlag("N");
+					if (bankAccount.getCustomerNumber() != null) {
+						 customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber(),"N");
+						dto.setCustomer(customer);
+					}
+					if(bankAccount.getPolicyNumber() != null) {
+						policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber(),"N");
+						dto.setPolicy(policy);
+					}
+					dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
+					dto.setCreatedBy(bankAccount.getCreatedBy());
+					dto.setCreatedDate(bankAccount.getCreatedDate());
+					dto.setNotes(bankAccount.getNotes());
+					dto.setAccountHolderType(bankAccount.getAccountHolderType());
+					dto.setBranchCode(bankAccount.getBranchCode());
+					dto.setSwiftCode(bankAccount.getSwiftCode());
+					dto.setPaymentMethodStatus(bankAccount.getPaymentMethodStatus());
+					dto.setLastPaymentDate(bankAccount.getLastPaymentDate());
+					dto.setAmlStatus(bankAccount.getAmlStatus());
+					dto.setAccountBalance(bankAccount.getAccountBalance());
+					dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
+					dto.setVerificationAttempts(bankAccount.getVerificationAttempts());			
+					BankAccount save = bankAccountRepository.save(dto);
 
-			// call workitem Service to generate WIrefNo.
-			String workType = CommonConstant.BANK_ACC_CREATED;
-			String workItemName = CommonConstant.BANK_ACC_WORKITEM;
-			String comment = "Bank Account is created " + save.getAccountNo()+" and customer Number is" +bankAccount.getCustomerNumber() ;
-			workItemService.mapRequetforWorkItem(userCode, policy, customer, workType, workItemName, comment,save,null,null);
+					// call workitem Service to generate WIrefNo.
+					String workType = CommonConstant.BANK_ACC_CREATED;
+					String workItemName = CommonConstant.BANK_ACC_WORKITEM;
+					String comment = "Bank Account is created " + save.getAccountNo()+" and customer Number is" +bankAccount.getCustomerNumber() ;
+					workItemService.mapRequetforWorkItem(userCode, policy, customer, workType, workItemName, comment,save,null,null);
 
-			message = "Bank details saved for customer " + save.getCustomer().getName() + " "
-					+ save.getCustomer().getSurname() + " " + save.getPolicy().getCustomer().getCustomerNo();
+					message = "Bank details saved for customer " + save.getCustomer().getName() + " "
+							+ save.getCustomer().getSurname() + " " + save.getPolicy().getCustomer().getCustomerNo();
+				}	
+			}
+			
 		} catch (Exception e) {
 			e.getMessage();
 			message = "Customer Not identified";
@@ -210,7 +220,7 @@ public class BankDetailsService {
 		if (!isValidStatus(status)) {
 			throw new IllegalArgumentException("Invalid status. Must be PENDING, PASS, FAIL, or IN_REVIEW");
 		}
-		BankAccount bankAccount = bankAccountRepository.findByAccountNo(accountNo);
+		BankAccount bankAccount = bankAccountRepository.findByAccountNo(accountNo,"N");
 		if (bankAccount == null) {
 			throw new ResourceNotFoundException("Bank account not found for accountNo: " + accountNo);
 		}
@@ -277,7 +287,7 @@ public class BankDetailsService {
 		if (status != null && !isValidStatus(status)) {
 			throw new IllegalArgumentException("Invalid status. Must be PENDING, PASS, FAIL, or IN_REVIEW");
 		}
-		BankAccount byAccountNo = bankAccountRepository.findByAccountNo(accountNo);
+		BankAccount byAccountNo = bankAccountRepository.findByAccountNo(accountNo,"N");
 		if(byAccountNo == null) {
 			throw new ResourceNotFoundException("Bank account not found for accountNo: " + accountNo);
 		}

@@ -80,8 +80,32 @@ public class Workitem {
     @Column
     private String queue;
     
+    @Column
+    private String updatedBy;
+
+    @Column
+    private LocalDateTime updatedTime;
     
-    public Complaint getComplaint() {
+    
+    
+    
+    public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+
+	public LocalDateTime getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(LocalDateTime updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public Complaint getComplaint() {
 		return complaint;
 	}
 

@@ -3078,7 +3078,7 @@ async function initializeApp() {
 	  initializeEventListeners();
 	  showLoader();
 	  try {
-	    allAccounts = await searchBankDetails('', 'policyNo') || [];
+	    allAccounts = await searchBankDetails('', 'all') || [];
 	    currentPage = 1;
 	    updateTable();
 	    showToast('Application loaded successfully', 'success');
