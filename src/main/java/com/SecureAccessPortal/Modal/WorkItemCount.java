@@ -7,7 +7,7 @@ public class WorkItemCount {
 	private String in_progress;
 	private String completed;
 	private String pend_external;
-	private String pent_internal;
+	private String pend_internal;
 	private String rejected;
 	private String passed;
 	private Queue queue;
@@ -99,20 +99,18 @@ public class WorkItemCount {
 	/**
 	 * @return the pent_internal
 	 */
-	public String getPent_internal() {
-		return pent_internal;
-	}
-	/**
-	 * @param pent_internal the pent_internal to set
-	 */
-	public void setPent_internal(String pent_internal) {
-		this.pent_internal = pent_internal;
-	}
+	
 	/**
 	 * @return the rejected
 	 */
 	public String getRejected() {
 		return rejected;
+	}
+	public String getPend_internal() {
+		return pend_internal;
+	}
+	public void setPend_internal(String pend_internal) {
+		this.pend_internal = pend_internal;
 	}
 	/**
 	 * @param rejected the rejected to set

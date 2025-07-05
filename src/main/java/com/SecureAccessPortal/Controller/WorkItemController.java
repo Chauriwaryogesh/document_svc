@@ -3,6 +3,7 @@ package com.SecureAccessPortal.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,11 +43,20 @@ public class WorkItemController {
 	}
 
 	@RequestMapping(value = "workitems", method = RequestMethod.GET)
-	public ResponseEntity<List<WorkItemDTO>> createWorkItem(
+	public ResponseEntity<Page<WorkItemDTO>> workitems(
 			@RequestParam(value = "workItemRefNum", required = false) String workItemRefNum,
-			@RequestHeader(value = "userCode", required = true) String userCode) {
-		ResponseEntity<List<WorkItemDTO>> response = new ResponseEntity<>();
-		List<WorkItemDTO> workItem = workItemService.fetchWorkItems(workItemRefNum, userCode);
+			@RequestParam(value = "queue", required = false) String queue,
+			@RequestParam(value = "userCode", required = false) String filterUserCode,
+			@RequestParam(value = "createdBy", required = false) String createdBy,
+			@RequestParam(value = "status", required = false) String status,
+			@RequestParam(value = "startDate", required = false) String startDate,
+			@RequestParam(value = "endDate", required = false) String endDate, 
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
+			@RequestHeader(value = "userCode", required = true) String userCode) { 
+
+		ResponseEntity<Page<WorkItemDTO>> response = new ResponseEntity<>();
+		Page<WorkItemDTO> workItem = workItemService.fetchWorkItems(workItemRefNum, queue, filterUserCode, createdBy,
+				status, startDate, endDate, page, size, userCode);
 		if (workItem != null) {
 			response.setData(workItem);
 		} else {
@@ -60,6 +70,36 @@ public class WorkItemController {
 			@RequestHeader(value = "userCode", required = true) String userCode) {
 		ResponseEntity<WorkItemCount> response = new ResponseEntity<>();
 		WorkItemCount workItem = workItemService.workItemCount(userCode);
+		if (workItem != null) {
+			response.setData(workItem);
+		} else {
+			response.setErrorMessage("error in fetch WorkItem");
+		}
+		return response;
+	}
+	
+	@RequestMapping(value = "workType", method = RequestMethod.GET)
+	public ResponseEntity<List<String>> workType(
+			@RequestHeader(value = "userCode", required = false) String userCode) {
+		ResponseEntity<List<String>> response = new ResponseEntity<>();
+		List<String> workItem = workItemService.fetchWorkType(userCode);
+		if (workItem != null) {
+			response.setData(workItem);
+		} else {
+			response.setErrorMessage("error in fetch WorkItem");
+		}
+		return response;
+	}
+	
+	@RequestMapping(value = "/related-workitems", method = RequestMethod.GET)
+	public ResponseEntity<Page<WorkItemDTO>> relatedWorktems(
+			@RequestParam(value = "workItemRefNum", required = false) String workitemRefNo,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
+			@RequestParam(value = "policyRelated", required = false) String policyRelated,
+			@RequestParam(value = "customerRelated", required = false) String customerRelated,
+			@RequestHeader(value = "userCode", required = false) String userCode) {
+		ResponseEntity<Page<WorkItemDTO>>response = new ResponseEntity<>();
+		Page<WorkItemDTO> workItem = workItemService.fetchRelatedWorkitems(workitemRefNo,page,size,policyRelated,customerRelated,userCode);
 		if (workItem != null) {
 			response.setData(workItem);
 		} else {

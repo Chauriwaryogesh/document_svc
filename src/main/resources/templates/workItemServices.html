@@ -5,953 +5,540 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WorkItem Management - Dashboard Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
-      min-height: 100vh;
+      background-color: #f7f8fc;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      position: relative;
-      overflow-x: hidden;
-    }
-    .text-hidden {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    .text-visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    .button-hidden {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    .button-visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    .btn-neutral {
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-neutral::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(to right, transparent, currentColor, transparent);
-      transform: scaleX(0);
-      transform-origin: center;
-      transition: transform 0.3s ease;
-    }
-    .btn-neutral:hover::after {
-      transform: scaleX(1);
-    }
-    .btn-neutral:focus-visible {
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
-    }
-    .modal {
-      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+      min-height: 100vh;
     }
     .modal.hidden {
-      opacity: 0;
-      transform: scale(0.95);
-      pointer-events: none;
-    }
-    .modal-content {
-      transition: transform 0.4s ease-out;
-      background: white;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
-      max-height: 90vh;
-      overflow-y: auto;
-      animation: fadeInModal 0.3s ease-out;
-    }
-    .modal.hidden .modal-content {
-      transform: translateY(-20px);
-    }
-    .card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    }
-    .gradient-text {
-      color: #ffffff;
-      -webkit-background-clip: initial;
-      background-clip: initial;
-      background: none;
-      position: relative;
-    }
-    .loader {
-      position: fixed;
-      inset: 0;
-      background: rgba(17, 24, 39, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
       display: none;
-    }
-    .loader.active {
-      display: flex;
-    }
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 4px solid #e5e7eb;
-      border-top: 4px solid #3b82f6;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    .nav-popup {
-      position: fixed;
-      inset: 0;
-      background: rgba(17, 24, 39, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 60;
-      display: none;
-    }
-    .nav-popup.active {
-      display: flex;
-    }
-    .nav-popup-content {
-      background: white;
-      border-radius: 12px;
-      padding: 16px 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .glow:hover {
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
-      transform: scale(1.05);
-    }
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 256px;
-      background: #1f2937;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-      z-index: 100;
-    }
-    .sidebar.active {
-      transform: translateX(0) !important;
-    }
-    .sidebar-button {
-      width: 100%;
-      text-align: left;
-      padding: 8px 16px;
-      color: white;
-      transition: background 0.3s ease;
-    }
-    .sidebar-button:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-    .status-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-    .status-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    }
-    .status-progress {
-      height: 6px;
-      background: #e5e7eb;
-      border-radius: 3px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-    .status-progress-bar {
-      height: 100%;
-      transition: width 0.5s ease;
-    }
-    .team-circle {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 2px solid #e5e7eb;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      position: relative;
-    }
-    .team-circle svg {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      transform: rotate(-90deg);
-    }
-    .team-circle circle {
-      fill: none;
-      stroke-width: 10;
-      r: 55;
-      cx: 60;
-      cy: 60;
-    }
-    .circle-background {
-      stroke: #e6e6e6;
-    }
-    .circle-progress {
-      stroke-linecap: round;
-      stroke-dasharray: 345.58;
-      stroke-dashoffset: 345.58;
-      transition: stroke-dashoffset 1s ease-out;
-    }
-    .team-circle p.percentage {
-      font-size: 18px;
-      font-weight: bold;
-      color: #333;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .team-count {
-      font-size: 14px;
-      font-weight: 500;
-      margin-top: 8px;
-      text-align: center;
-    }
-    #complaints-circle { stroke: #3b82f6; }
-    #workflow-circle { stroke: #10b981; }
-    #admin-circle { stroke: #f59e0b; }
-    #team-member-circle { stroke: #ef4444; }
-    #complaints-count { color: #3b82f6; }
-    #workflow-count { color: #10b981; }
-    #admin-count { color: #f59e0b; }
-    #team-member-count { color: #ef4444; }
-    .table-container {
-      max-height: 600px;
-      overflow-y: auto;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      background: white;
-      position: relative;
-      scroll-behavior: smooth;
-    }
-    table {
-      border-collapse: separate;
-      border-spacing: 0;
-      width: 100%;
-    }
-    th, td {
-      border-bottom: 1px solid #e5e7eb;
-      border-right: 1px solid #e5e7eb;
-      padding: 16px 24px;
-      font-size: 1rem;
-    }
-    th:last-child, td:last-child {
-      border-right: none;
-    }
-    tr:last-child td {
-      border-bottom: none;
-    }
-    thead {
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      background: #60a5fa;
-    }
-    th {
-      color: white;
-      font-weight: 600;
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      background-clip: padding-box;
-      background: inherit;
-    }
-    th:nth-child(1) { background: #60a5fa; }
-    th:nth-child(2) { background: #2dd4bf; }
-    th:nth-child(3) { background: #a78bfa; }
-    th:nth-child(4) { background: #fb923c; }
-    th:nth-child(5) { background: #4ade80; }
-    th:nth-child(6) { background: #818cf8; }
-    th:nth-child(7) { background: #9ca3af; }
-    th:nth-child(8) { background: #f87171; }
-    tbody {
-      padding-top: 0;
-    }
-    tr:nth-child(even) {
-      background: #f9fafb;
-    }
-    tr:hover {
-      background: #f0f9ff;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      transition: background 0.2s ease, box-shadow 0.2s ease;
-    }
-    tr {
-      opacity: 0;
-      transform: translateY(10px);
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-    .ref-link {
-      color: #3b82f6;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-    .ref-link:hover {
-      color: #1d4ed8;
-    }
-    .pagination {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 16px;
-    }
-    .pagination button {
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    .pagination button.page-number {
-      background: #f3f4f6;
-      color: #1f2937;
-    }
-    .pagination button.page-number:hover:not(.active) {
-      background: #e5e7eb;
-    }
-    .pagination button.page-number.active {
-      background: #3b82f6;
-      color: white;
-    }
-    .pagination button.nav-button {
-      background: #f3f4f6;
-      color: #1f2937;
-    }
-    .pagination button.nav-button:hover:not(:disabled) {
-      background: #e5e7eb;
-    }
-    .pagination button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .required::after {
-      content: ' *';
-      color: #ef4444;
-    }
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: linear-gradient(to right, #3b82f6, #60a5fa);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-      z-index: 100;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 4rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .logout-button {
-      background: #dc2626;
-      color: white;
-      border: none;
-      font-weight: 600;
-      padding: 0.5rem 1.5rem;
-      border-radius: 8px;
-      transition: background 0.3s ease, transform 0.3s ease;
-    }
-    .logout-button:hover {
-      background: #b91c1c;
-      transform: scale(1.05);
-    }
-    .logout-button:focus-visible {
-      outline: 2px solid #ffffff;
-      outline-offset: 2px;
-    }
-    footer {
-      background: transparent;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-      color: #1f2937;
-      padding: 1.5rem 0;
-      width: 100%;
-      position: relative;
-    }
-    footer .footer-content {
-      max-width: 1280px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-    }
-    footer p {
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: transform 0.3s ease, color 0.3s ease;
-    }
-    footer p:hover {
-      transform: scale(1.02);
-      color: #3b82f6;
-    }
-    footer .separator {
-      font-size: 1rem;
-      color: #6b7280;
-    }
-    footer .secondary-text {
-      color: #6b7280;
-    }
-    .filter-popup {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background: white;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      z-index: 80;
-      display: none;
-      width: 300px;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    .filter-popup.active {
-      display: block;
-    }
-    .filter-section {
-      margin-bottom: 16px;
-    }
-    .filter-section label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #1f2937;
-      margin-bottom: 8px;
-    }
-    .filter-section input[type="text"],
-    .filter-section input[type="date"],
-    .filter-section select {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      padding: 8px;
-      font-size: 0.875rem;
-    }
-    .filter-section input:focus,
-    .filter-section select:focus {
-      outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
-    }
-    .checkbox-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    .checkbox-grid label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.875rem;
-      color: #1f2937;
-    }
-    .filter-buttons {
-      display: flex;
-      gap: 8px;
-    }
-    .filter-buttons button {
-      flex: 1;
-      padding: 8px;
-      border-radius: 8px;
-      font-weight: 500;
-      font-size: 0.875rem;
     }
     .status-badge {
       padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      display: inline-block;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-    .status-open { background: #dbeafe; color: #1e40af; }
-    .status-close { background: #e5e7eb; color: #4b5563; }
-    .status-in_progress { background: #ffedd5; color: #c2410c; }
-    .status-completed { background: #dcfce7; color: #15803d; }
-    .status-pend_external { background: #f3e8ff; color: #6b21a8; }
-    .status-pent_internal { background: #ccfbf1; color: #0f766e; }
-    .status-rejected { background: #fee2e2; color: #b91c1c; }
-    .status-passed { background: #e0e7ff; color: #3730a3; }
-    input[type="radio"] {
-      accent-color: #3b82f6;
+    .status-open { background-color: #e0f2fe; color: #0c4a6e; }
+    .status-close { background-color: #f1f5f9; color: #475569; }
+    .status-in_progress { background-color: #fef3c7; color: #92400e; }
+    .status-completed { background-color: #dcfce7; color: #166534; }
+    .status-pend_external { background-color: #f3e8ff; color: #6b21a8; }
+    .status-pend_internal { background-color: #d1fae5; color: #065f46; }
+    .status-rejected { background-color: #fee2e2; color: #991b1b; }
+    .status-passed { background-color: #e0e7ff; color: #3730a3; }
+
+    /* Sidebar styles */
+    #sidebar {
+        transition: width 0.3s ease-in-out;
+        width: 5rem; /* Start collapsed */
     }
-    .grid-cols-2 label {
-      font-size: 0.875rem;
-      color: #1f2937;
+    #sidebar.collapsed {
+        width: 5rem; /* 80px */
     }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    #sidebar:not(.collapsed) { /* Ensure it expands when not collapsed */
+        width: 16rem;
     }
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
+    #sidebar.collapsed .sidebar-text {
+        display: none;
     }
-    @keyframes fadeInModal {
-      0% { opacity: 0; transform: scale(0.95); }
-      100% { opacity: 1; transform: scale(1); }
+    #sidebar.collapsed .sidebar-brand-full {
+        display: none;
     }
-    @media (max-width: 640px) {
-      header {
+    #sidebar.collapsed .sidebar-brand-collapsed {
+        display: block;
+    }
+
+    /* Main content adjustment based on sidebar */
+    #main-content {
+        flex-grow: 1; /* Allow main content to take available space */
+        transition: margin-left 0.3s ease-in-out;
+        margin-left: 5rem; /* Start with collapsed sidebar margin */
+        display: flex; /* Flex container for header, main, and footer */
         flex-direction: column;
-        align-items: flex-start;
-        height: auto;
-        padding: 0.75rem;
-      }
-      header .left-section {
+        min-height: 100vh; /* Ensure main content fills viewport height */
+    }
+    #main-content.full { /* This class will be applied when sidebar is collapsed */
+        margin-left: 5rem;
+    }
+    #main-content:not(.full) { /* Adjust margin when sidebar is expanded */
+        margin-left: 16rem;
+    }
+    
+    /* Responsive adjustments for mobile */
+    @media (max-width: 767px) {
+        #sidebar {
+            transform: translateX(-100%);
+            width: 16rem;
+        }
+        #sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+        #sidebar.open {
+            transform: translateX(0);
+        }
+        #main-content {
+            margin-left: 0 !important;
+        }
+    }
+
+    /* Filter popup styles */
+    .filter-popup { 
+      display: none; 
+      width: 24rem; /* Increased width */
+      max-height: 400px; /* Max height for scrollbar */
+      overflow-y: auto; /* Add vertical scrollbar */
+      position: absolute; /* Position relative to its trigger button */
+      top: calc(100% + 0.5rem); /* Below the button */
+      left: 0; /* Align with the button */
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      z-index: 20; /* Above other content but below header */
+    }
+    .filter-popup.active { display: block; }
+    .pagination-input { width: 50px; text-align: center; }
+
+    /* Header Search Bar Styles */
+    .header-search-container {
+        position: relative;
+        width: 40px; /* Initial collapsed width */
+        transition: width 0.3s ease-in-out;
+    }
+    .header-search-container.expanded {
+        width: 250px; /* Expanded width */
+    }
+    .header-search-input {
+        width: 100%;
+        padding-right: 2.5rem; /* Space for icon */
+        opacity: 0;
+        pointer-events: none; /* Disable interaction when collapsed */
+        transition: opacity 0.3s ease-in-out;
+    }
+    .header-search-container.expanded .header-search-input {
+        opacity: 1;
+        pointer-events: auto; /* Enable interaction when expanded */
+    }
+    .header-search-icon {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #6b7280; /* gray-500 */
+        transition: color 0.2s ease-in-out;
+    }
+    .header-search-icon:hover {
+        color: #3b82f6; /* blue-600 */
+    }
+
+    /* Card View Styles */
+    .workitem-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .workitem-card {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem; /* rounded-xl */
+      padding: 1.25rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+    }
+    .workitem-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+    }
+    .workitem-card .title {
+      font-weight: 600; /* font-semibold */
+      color: #1f2937; /* text-gray-900 */
+      margin-bottom: 0.5rem;
+    }
+    .workitem-card .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px dashed #e5e7eb;
+      margin-bottom: 0.25rem;
+    }
+    .workitem-card .detail-row:last-of-type {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    .workitem-card .label {
+      font-weight: 500; /* font-medium */
+      color: #4b5563; /* text-gray-700 */
+      font-size: 0.875rem; /* text-sm */
+    }
+    .workitem-card .value {
+      font-size: 0.875rem; /* text-sm */
+      color: #374151; /* text-gray-800 */
+      text-align: right;
+    }
+    .workitem-card .ref-link {
+        color: #3b82f6; /* blue-600 */
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .workitem-card .ref-link:hover {
+        text-decoration: underline;
+    }
+
+    /* List View Styles */
+    .workitem-list-container {
+        display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-      .filter-popup {
-        width: 90%;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-      .checkbox-grid {
-        grid-template-columns: 1fr;
-      }
+        gap: 0.75rem; /* space-y-3 */
+    }
+    .workitem-list-item {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem; /* rounded-lg */
+        padding: 1rem 1.25rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        transition: all 0.2s ease-in-out;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem 1.5rem; /* row-gap, column-gap */
+        cursor: pointer;
+    }
+    .workitem-list-item:hover {
+        background-color: #f9fafb;
+    }
+    .workitem-list-item .info-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.5rem;
+        flex-grow: 1;
+    }
+    .workitem-list-item .info-item {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.875rem; /* text-sm */
+    }
+    .workitem-list-item .info-item .label {
+        font-weight: 500;
+        color: #4b5563;
+    }
+    .workitem-list-item .info-item .value {
+        color: #1f2937;
+    }
+    .workitem-list-item .ref-link {
+        color: #3b82f6;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .workitem-list-item .ref-link:hover {
+        text-decoration: underline;
+    }
+    @media (max-width: 640px) { /* sm breakpoint */
+        .workitem-list-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        .workitem-list-item .info-group {
+            width: 100%;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+    }
+
+    /* Table View (existing styles are mostly fine, just ensure consistency) */
+    .table-view-container {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    }
+    .table-view-container table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-view-container th, .table-view-container td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        text-align: left;
+        font-size: 0.875rem;
+    }
+    .table-view-container th {
+        background-color: #f9fafb;
+        font-weight: 600;
+        color: #4b5563;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .table-view-container tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .table-view-container tbody tr:hover {
+        background-color: #f9fafb;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center selection:bg-blue-500 selection:text-white relative">
-  <header>
-    <div class="left-section flex items-center space-x-3">
-      <button id="sidebar-toggle" class="btn-neutral text-white border border-white rounded-full p-2 hover:bg-white hover:bg-opacity-10 focus:outline-none transition-all glow">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-      <h1 id="header-title" class="text-xl sm:text-xl font-semibold gradient-text text-visible">Secure WorkItem Management</h1>
-    </div>
-    <div class="flex items-center space-x-2">
-      <button id="btn-profile" title="Profile"
-        class="btn-neutral text-white border border-white font-medium py-1 px-3 text-sm rounded-md hover:bg-white hover:bg-opacity-10 focus:outline-none transition-all glow sm:flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 sm:mr-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-        <span class="sm:hidden">Profile</span>
-      </button>
-      <button id="btn-contact"
-        class="btn-neutral text-white border border-white font-medium py-1 px-3 text-sm rounded-md hover:bg-white hover:bg-opacity-10 focus:outline-none transition-all glow">
-        Contact
-      </button>
-      <button id="btn-logout" onclick="navigateTo('logout')"
-        class="logout-button">
-        Logout
-      </button>
-    </div>
-  </header>
+<body>
 
-  <div id="sidebar" class="sidebar">
-    <div class="p-4">
-      <h2 class="text-xl font-semibold text-white mb-4">Dashboard Hub</h2>
-      <button class="sidebar-button" onclick="openModal('profile')">Profile</button>
-      <button class="sidebar-button" onclick="openModal('contact')">Contact Us</button>
-      <button class="sidebar-button" onclick="navigateTo('dashboard')">Dashboard Services</button>
-      <button class="sidebar-button" onclick="navigateTo('workitems')">Workitems Services</button>
-      <button class="sidebar-button" onclick="openModal('create-workitem')">Create Work Item</button>
-      <button class="sidebar-button text-red-400" onclick="navigateTo('logout')">Logout</button>
-    </div>
+  <!-- Sidebar -->
+  <div id="sidebar" class="fixed top-0 left-0 h-full bg-white shadow-lg z-30 collapsed">
+      <div class="flex items-center justify-between p-4 border-b h-16">
+          <div class="sidebar-brand-full hidden">
+            <h1 class="text-2xl font-bold text-blue-600">Dashboard</h1>
+          </div>
+          <div class="sidebar-brand-collapsed">
+            <h1 class="text-2xl font-bold text-blue-600">D</h1>
+          </div>
+          <button id="sidebar-toggle-btn" class="hidden md:block text-gray-500 hover:text-gray-800">
+              <i class="fas fa-bars"></i>
+          </button>
+      </div>
+      <nav class="mt-4">
+          <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg mx-2">
+              <i class="fas fa-tachometer-alt w-8 text-center text-lg"></i>
+              <span class="ml-3 font-semibold sidebar-text">Dashboard</span>
+          </a>
+          <a href="#" class="flex items-center px-4 py-3 text-blue-600 bg-blue-50 font-bold rounded-lg mx-2">
+              <i class="fas fa-briefcase w-8 text-center text-lg"></i>
+              <span class="ml-3 font-semibold sidebar-text">WorkItems</span>
+          </a>
+          <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg mx-2">
+              <i class="fas fa-cog w-8 text-center text-lg"></i>
+              <span class="ml-3 font-semibold sidebar-text">Settings</span>
+          </a>
+          <a href="#" id="btn-logout-sidebar" class="flex items-center px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg mx-2 mt-4">
+              <i class="fas fa-sign-out-alt w-8 text-center text-lg"></i>
+              <span class="ml-3 font-semibold sidebar-text">Logout</span>
+          </a>
+      </nav>
   </div>
 
-  <main class="w-full max-w-7xl flex flex-col flex-grow p-6 mt-20">
-    <div class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="card glow p-4 text-center">
-        <h3 class="text-sm font-semibold text-blue-600">Complaints Team</h3>
-        <div class="team-circle mx-auto">
-          <svg width="120" height="120">
-            <circle class="circle-background"></circle>
-            <circle class="circle-progress" id="complaints-circle"></circle>
-          </svg>
-          <p class="percentage" id="complaints-percentage">0%</p>
-        </div>
-        <p class="team-count" id="complaints-count">0</p>
-      </div>
-      <div class="card glow p-4 text-center">
-        <h3 class="text-sm font-semibold text-green-600">Workflow Team</h3>
-        <div class="team-circle mx-auto">
-          <svg width="120" height="120">
-            <circle class="circle-background"></circle>
-            <circle class="circle-progress" id="workflow-circle"></circle>
-          </svg>
-          <p class="percentage" id="workflow-percentage">0%</p>
-        </div>
-        <p class="team-count" id="workflow-count">0</p>
-      </div>
-      <div class="card glow p-4 text-center">
-        <h3 class="text-sm font-semibold text-yellow-600">Admin Team</h3>
-        <div class="team-circle mx-auto">
-          <svg width="120" height="120">
-            <circle class="circle-background"></circle>
-            <circle class="circle-progress" id="admin-circle"></circle>
-          </svg>
-          <p class="percentage" id="admin-percentage">0%</p>
-        </div>
-        <p class="team-count" id="admin-count">0</p>
-      </div>
-      <div class="card glow p-4 text-center">
-        <h3 class="text-sm font-semibold text-red-600">Team Member</h3>
-        <div class="team-circle mx-auto">
-          <svg width="120" height="120">
-            <circle class="circle-background"></circle>
-            <circle class="circle-progress" id="team-member-circle"></circle>
-          </svg>
-          <p class="percentage" id="team-member-percentage">0%</p>
-        </div>
-        <p class="team-count" id="team-member-count">0</p>
-      </div>
-    </div>
+  <div id="main-content" class="relative min-h-screen full">
+      <!-- Header -->
+      <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-20 shadow-sm p-4 flex justify-between items-center border-b h-16">
+          <button id="sidebar-open-btn" class="md:hidden text-gray-500 hover:text-gray-800">
+              <i class="fas fa-bars text-xl"></i>
+          </button>
+          <h2 class="text-xl font-bold text-gray-800">WorkItem Management <span class="text-sm text-gray-500">v2 2025 Secure access pvt limited</span></h2>
+          <div class="flex items-center space-x-4">
+              <!-- Expanding Search Bar -->
+              <div id="header-search-container" class="header-search-container">
+                  <input type="text" id="header-search-input" placeholder="Search work items..."
+                         class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm header-search-input">
+                  <i id="header-search-icon" class="fas fa-search header-search-icon"></i>
+              </div>
+              <button id="btn-profile" class="flex items-center text-gray-600 hover:text-blue-600">
+                  <i class="fas fa-user-circle text-2xl"></i>
+              </button>
+              <button id="btn-logout-header" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition">
+                  Logout
+              </button>
+          </div>
+      </header>
 
-    <div class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="status-card glow" title="Open">
-        <h3 class="text-sm font-semibold text-blue-600">Open</h3>
-        <p class="text-lg font-bold text-blue-800" id="open-count">0</p>
-        <div class="status-progress">
-          <div id="open-progress" class="status-progress-bar bg-blue-200"></div>
-        </div>
-      </div>
-      <div class="status-card glow" title="Close">
-        <h3 class="text-sm font-semibold text-gray-600">Close</h3>
-        <p class="text-lg font-bold text-gray-800" id="close-count">0</p>
-        <div class="status-progress">
-          <div id="close-progress" class="status-progress-bar bg-gray-200"></div>
-        </div>
-      </div>
-      <div class="status-card glow" title="In Progress">
-        <h3 class="text-sm font-semibold text-orange-600">In Progress</h3>
-        <p class="text-lg font-bold text-orange-800" id="in-progress-count">0</p>
-        <div class="status-progress">
-          <div id="in-progress-progress" class="status-progress-bar bg-orange-200"></div>
-        </div>
-      </div>
-      <div class="status-card glow" title="Completed">
-        <h3 class="text-sm font-semibold text-green-600">Completed</h3>
-        <p class="text-lg font-bold text-green-800" id="completed-count">0</p>
-        <div class="status-progress">
-          <div id="completed-progress" class="status-progress-bar bg-green-200"></div>
-        </div>
-      </div>
-      <div class="status-card glow" title="Pending External">
-        <h3 class="text-sm font-semibold text-purple-600">Pending External</h3>
-        <p class="text-lg font-bold text-purple-800" id="pend-external-count">0</p>
-        <div class="status-progress">
-          <div id="pend-external-progress" class="status-progress-bar bg-purple-200"></div>
-        </div>
-      </div>
-      <div class="status-card glow" title="Pending Internal">
-        <h3 class="text-sm font-semibold text-teal-600">Pending Internal</h3>
-        <p class="text-lg font-bold text-teal-800" id="pent-internal-count">0</p>
-        <div class="status-progress">
-          <div id="pent-internal-progress" class="status-progress-bar bg-teal-200"></div>
-        </div>
-      </div>
-      <div class="status-card glow" title="Rejected">
-        <h3 class="text-sm font-semibold text-red-600">Rejected</h3>
-        <p class="text-lg font-bold text-red-800" id="rejected-count">0</p>
-        <div class="status-progress">
-          <div id="rejected-progress" class="status-progress-bar bg-red-200"></div>
-        </div>
-      </div>
-      <div class="status-card glow" title="Passed">
-        <h3 class="text-sm font-semibold text-indigo-600">Passed</h3>
-        <p class="text-lg font-bold text-indigo-800" id="passed-count">0</p>
-        <div class="status-progress">
-          <div id="passed-progress" class="status-progress-bar bg-indigo-200"></div>
-        </div>
-      </div>
-    </div>
+      <main class="p-6 flex-grow">
+          <!-- Status Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
+              <!-- Status cards will be dynamically generated here -->
+          </div>
 
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0 relative">
-      <div class="flex items-center space-x-4 w-full sm:w-auto">
-        <button id="filter-workitems-btn" class="btn-neutral bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg border border-blue-200 hover:bg-blue-50 focus:outline-none transition-all glow">
-          Filter Work Items
-        </button>
-        <div class="bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg border border-blue-200 glow">
-          Total Work Items: <span id="total-count">0</span>
-        </div>
-        <div id="filter-popup" class="filter-popup hidden">
-          <div class="filter-section">
-            <label for="filter-refnum">Reference Number</label>
-            <input type="text" id="filter-refnum" placeholder="Enter Reference Number">
+          <!-- Action Bar -->
+          <div class="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-col md:flex-row justify-between items-center">
+              <div class="flex items-center space-x-4 mb-4 md:mb-0 relative">
+                  <button id="filter-workitems-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition flex items-center">
+                      <i class="fas fa-filter mr-2"></i> Filter
+                  </button>
+                  <div class="text-gray-600 font-semibold">
+                      Total: <span id="total-count" class="text-blue-600">0</span>
+                  </div>
+                  <!-- Filter Popup -->
+                  <div id="filter-popup" class="filter-popup">
+                      <div class="space-y-4">
+                          <div>
+                              <label for="filter-refnum" class="block text-sm font-medium text-gray-700">Reference Number</label>
+                              <input type="text" id="filter-refnum" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                          </div>
+                          <div>
+                              <label for="filter-queue" class="block text-sm font-medium text-gray-700">Queue</label>
+                              <select id="filter-queue" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                                  <option value="">All</option>
+                                  <option value="TEAM_MEMBER">TEAM_MEMBER</option>
+                                  <option value="ADMIN">ADMIN</option>
+                                  <option value="SUPPORT">SUPPORT</option>
+                                  <option value="FINANCE">FINANCE</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label for="filter-userCode" class="block text-sm font-medium text-gray-700">User Code</label>
+                              <input type="text" id="filter-userCode" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                          </div>
+                          <div>
+                              <label for="filter-createdby" class="block text-sm font-medium text-gray-700">Created By</label>
+                              <input type="text" id="filter-createdby" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                          </div>
+                          <div>
+                              <label class="block text-sm font-medium text-gray-700">Status</label>
+                              <div class="mt-2 space-y-2">
+                                  <label class="flex items-center"><input type="checkbox" name="filter-status" value="OPEN" class="mr-2 text-blue-600"> Open</label>
+                                  <label class="flex items-center"><input type="checkbox" name="filter-status" value="CLOSED" class="mr-2 text-blue-600"> Closed</label>
+                                  <label class="flex items-center"><input type="checkbox" name="filter-status" value="IN_PROGRESS" class="mr-2 text-blue-600"> In Progress</label>
+                                  <label class="flex items-center"><input type="checkbox" name="filter-status" value="COMPLETED" class="mr-2 text-blue-600"> Completed</label>
+                                  <label class="flex items-center"><input type="checkbox" name="filter-status" value="PEND_EXTERNAL" class="mr-2 text-blue-600"> Pend External</label>
+                                  <label class="flex items-center"><input type="checkbox" name="filter-status" value="PEND_INTERNAL" class="mr-2 text-blue-600"> Pend Internal</label>
+                                  <label class="flex items-center"><input type="checkbox" name="filter-status" value="REJECTED" class="mr-2 text-blue-600"> Rejected</label>
+                                  <label class="flex items-center"><input type="checkbox" name="filter-status" value="PASSED" class="mr-2 text-blue-600"> Passed</label>
+                              </div>
+                          </div>
+                          <div>
+                              <label for="filter-date-from" class="block text-sm font-medium text-gray-700">Date From</label>
+                              <input type="date" id="filter-date-from" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                          </div>
+                          <div>
+                              <label for="filter-date-to" class="block text-sm font-medium text-gray-700">Date To</label>
+                              <input type="date" id="filter-date-to" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                          </div>
+                          <div class="flex justify-end space-x-2 mt-4">
+                              <button id="clear-filter" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition">Clear</button>
+                              <button id="apply-filter" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition">Apply</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="flex flex-wrap gap-2 md:gap-4">
+                <button id="btn-create-workitem" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600 transition flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Create Work Item
+                </button>
+                <div class="relative">
+                    <button id="view-toggle-btn" class="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-gray-200 text-gray-700 shadow-sm hover:bg-gray-300">
+                      <i class="fas fa-th-large mr-2"></i>Card View
+                    </button>
+                    <div id="view-toggle-dropdown" class="filter-popup"> <!-- Reusing filter-popup for dropdown styling -->
+                      <button class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100" data-view="card">Card View</button>
+                      <button class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100" data-view="list">List View</button>
+                      <button class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100" data-view="table">Table View</button>
+                    </div>
+                </div>
+              </div>
           </div>
-          <div class="filter-section">
-            <label for="filter-queue">Queue</label>
-            <select id="filter-queue">
-              <option value="">Select Queue</option>
-              <option value="COMPLAINTS_TEAM">Complaints Team</option>
-              <option value="WORKFLOW_TEAM">Workflow Team</option>
-              <option value="TEAM_MEMBER">Team Member</option>
-              <option value="ADMIN_TEAM">Admin Team</option>
-            </select>
-          </div>
-          <div class="filter-section">
-            <label for="filter-userCode">User ID</label>
-            <input type="text" id="filter-userCode" placeholder="Enter User ID">
-          </div>
-          <div class="filter-section">
-            <label>Status</label>
-            <div class="checkbox-grid">
-              <label><input type="checkbox" value="open"> Open</label>
-              <label><input type="checkbox" value="close"> Close</label>
-              <label><input type="checkbox" value="in_progress"> In Progress</label>
-              <label><input type="checkbox" value="completed"> Completed</label>
-              <label><input type="checkbox" value="pend_external"> Pending External</label>
-              <label><input type="checkbox" value="pent_internal"> Pending Internal</label>
-              <label><input type="checkbox" value="rejected"> Rejected</label>
-              <label><input type="checkbox" value="passed"> Passed</label>
-            </div>
-          </div>
-          <div class="filter-section">
-            <label for="filter-createdby">Created By</label>
-            <input type="text" id="filter-createdby" placeholder="Enter Created By">
-          </div>
-          <div class="filter-section">
-            <label>Date Range</label>
-            <div class="flex flex-col sm:flex-row gap-4">
-              <input type="date" id="filter-date-from" placeholder="From">
-              <input type="date" id="filter-date-to" placeholder="To">
-            </div>
-          </div>
-          <div class="filter-buttons">
-            <button id="apply-filter" class="bg-blue-500 text-white hover:bg-blue-600">Apply</button>
-            <button id="clear-filter" class="bg-gray-200 text-gray-700 hover:bg-gray-300">Clear</button>
-          </div>
-        </div>
-      </div>
-      <button id="btn-create-workitem" onclick="openModal('create-workitem')"
-        class="btn-neutral bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-600 focus:outline-none transition-all glow">
-        Create Work Item
-      </button>
-    </div>
 
-    <div class="card p-6">
-      <div class="table-container">
-        <table class="w-full text-base text-left text-gray-600">
-          <thead class="text-sm uppercase">
-            <tr>
-              <th class="px-6 py-4">Reference Number</th>
-              <th class="px-6 py-4">Name</th>
-              <th class="px-6 py-4">Type</th>
-              <th class="px-6 py-4">Comment</th>
-              <th class="px-6 py-4">Created By</th>
-              <th class="px-6 py-4">Created Time</th>
-              <th class="px-6 py-4">User ID</th>
-              <th class="px-6 py-4">Status</th>
-            </tr>
-          </thead>
-          <tbody id="workitems-table"></tbody>
-        </table>
-      </div>
-      <div class="pagination" id="pagination"></div>
-    </div>
-  </main>
+          <!-- WorkItems Display Area -->
+          <div id="workitems-display-area" class="min-h-[500px]">
+              <!-- Work items will be rendered here based on view type -->
+          </div>
+          <!-- Moved no-results outside workitems-display-area -->
+          <div id="no-results" class="text-center py-10 text-gray-500" style="display: none;">
+              <i class="fas fa-box-open text-4xl mb-4 text-gray-400"></i>
+              <p class="font-semibold">No work items found.</p>
+          </div>
+          
+          <div id="pagination" class="p-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6"></div>
+      </main>
 
-  <footer>
-    <div class="footer-content">
-      <p>© 2025 Secure Access Limited</p>
-      <span class="separator">•</span>
-      <p class="secondary-text">Powered by Innovation</p>
-    </div>
-  </footer>
-
-  <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
-        <button id="close-profile-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="text-gray-600 mb-6 space-y-2">
-        <p><span class="font-medium">User ID:</span> <span id="profile-userCode">Not available</span></p>
-        <p><span class="font-medium">Email:</span> <span id="profile-email">Not available</span></p>
-      </div>
-      <button onclick="document.getElementById('close-profile-modal').click()"
-        class="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all">
-        Close
-      </button>
-    </div>
+      <!-- Footer -->
+      <footer class="bg-white/80 backdrop-blur-sm p-4 text-center text-gray-600 text-sm border-t mt-6">
+          &copy; v2 2025 Secure access pvt limited. All rights reserved.
+      </footer>
   </div>
 
-  <div id="contact-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-gray-800">Contact Us</h3>
-        <button id="close-contact-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <p class="text-gray-600 mb-6">Reach out to us at support@example.com or (555) 123-4567.</p>
-      <form class="space-y-5">
-        <div>
-          <label for="contact-name" class="block text-sm font-medium text-gray-700">Name</label>
-          <input type="text" id="contact-name" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Your Name">
-        </div>
-        <div>
-          <label for="contact-email" class="block text-sm font-medium text-gray-700">Email</label>
-          <input type="email" id="contact-email" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="you@example.com">
-        </div>
-        <div>
-          <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
-          <textarea id="contact-message" rows="4" class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Your message..."></textarea>
-        </div>
-      </form>
-      <button onclick="document.getElementById('close-contact-modal').click()"
-        class="mt-6 w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all">
-        Send Message
-      </button>
-    </div>
-  </div>
-
-  <div id="error-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-red-600">Error</h3>
-        <button id="close-error-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <p id="error-message" class="text-gray-600 mb-6"></p>
-      <button id="error-ok-btn"
-        class="w-full bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 transition-all">
-        OK
-      </button>
-    </div>
-  </div>
-
-  <div id="success-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-green-600">Success</h3>
-        <button id="close-success-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <p id="success-message" class="text-gray-600 mb-6"></p>
-      <button id="success-ok-btn"
-        class="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 transition-all">
-        OK
-      </button>
-    </div>
-  </div>
-
-  <div id="create-workitem-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold text-gray-800">Create Work Item</h3>
-        <button id="close-create-workitem-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <form id="create-workitem-form" class="space-y-5">
-        <div>
-          <label for="workitem-name" class="block text-sm font-medium text-gray-700 required">Work Item Name</label>
-          <input type="text" id="workitem-name" required class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter work item name">
-        </div>
-        <div>
-          <label for="workitem-type" class="block text-sm font-medium text-gray-700 required">Work Type</label>
-          <input type="text" id="workitem-type" required class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter work type (e.g., COMPLAINTNEWV1)">
-        </div>
-        <div>
-          <label for="workitem-comment" class="block text-sm font-medium text-gray-700 required">Comment</label>
-          <textarea id="workitem-comment" rows="4" required class="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter comment"></textarea>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Created By</label>
-          <p id="created-by" class="mt-1 block w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-lg sm:text-sm"></p>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Status (Optional)</label>
-          <div class="mt-2 grid grid-cols-2 gap-2">
-            <label class="flex items-center gap-2">
-              <input type="radio" name="status" value="PEND_EXTERNAL" class="focus:ring-blue-500">
-              Pending External
-            </label>
-            <label class="flex items-center gap-2">
-              <input type="radio" name="status" value="PEND_INTERNAL" class="focus:ring-blue-500">
-              Pending Internal
-            </label>
-            <label class="flex items-center gap-2">
-              <input type="radio" name="status" value="CLOSED" class="focus:ring-blue-500">
-              Closed
-            </label>
-            <label class="flex items-center gap-2">
-              <input type="radio" name="status" value="PASSED" class="focus:ring-blue-500">
-              Passed
-            </label>
-            <label class="flex items-center gap-2">
-              <input type="radio" name="status" value="REJECTED" class="focus:ring-blue-500">
-              Rejected
-            </label>
+  <!-- Create WorkItem Modal -->
+  <div id="create-workitem-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40 p-4">
+      <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl transform transition-all flex overflow-hidden border border-gray-300">
+          <div class="w-1/3 bg-blue-500 p-8 text-white hidden md:flex flex-col justify-center items-center">
+              <i class="fas fa-file-alt text-6xl mb-4"></i>
+              <h2 class="text-2xl font-bold mb-2">New Work Item</h2>
+              <p class="text-center text-blue-100">Fill in the details to create a new work item and assign it to the appropriate queue.</p>
           </div>
-          <div class="mt-3">
-            <button type="button" id="clear-status-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all">Clear Status</button>
+          <div class="w-full md:w-2/3">
+              <div class="p-6 border-b flex justify-between items-center">
+                  <h3 class="text-2xl font-bold text-gray-800">Work Item Details</h3>
+                  <button id="close-create-workitem-modal" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+              </div>
+              <form id="create-workitem-form" class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                          <label for="workitem-name" class="block text-sm font-medium text-gray-700 required">Work Item Name</label>
+                          <input type="text" id="workitem-name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+                      </div>
+                      <div>
+                          <label for="workitem-type" class="block text-sm font-medium text-gray-700 required">Work Type</label>
+                          <select id="workitem-type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select Work Type</option>
+                          </select>
+                      </div>
+                      <div>
+                          <label for="policy-number" class="block text-sm font-medium text-gray-700">Policy Number</label>
+                          <input type="text" id="policy-number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+                      </div>
+                      <!-- New fields for policy details -->
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700">Customer Number</label>
+                          <p id="customer-number" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm p-2"></p>
+                      </div>
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700">Policy Company</label>
+                          <p id="policy-company" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm p-2"></p>
+                      </div>
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700">Product Code</label>
+                          <p id="product-code" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm p-2"></p>
+                      </div>
+                      <!-- End new fields -->
+                       <div>
+                          <label class="block text-sm font-medium text-gray-700">Created By</label>
+                          <p id="created-by" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm p-2"></p>
+                      </div>
+                  </div>
+                  <div>
+                      <label for="workitem-comment" class="block text-sm font-medium text-gray-700 required">Comment</label>
+                      <textarea id="workitem-comment" rows="4" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                  </div>
+                  <div>
+                      <label class="block text-sm font-medium text-gray-700">Status (Optional)</label>
+                      <div class="mt-2 flex flex-wrap gap-4">
+                          <label class="flex items-center"><input type="radio" name="status" value="PEND_EXTERNAL" class="mr-2 text-blue-600 focus:ring-blue-500"> Pend External</label>
+                          <label class="flex items-center"><input type="radio" name="status" value="PEND_INTERNAL" class="mr-2 text-blue-600 focus:ring-blue-500"> Pend Internal</label>
+                          <label class="flex items-center"><input type="radio" name="status" value="CLOSED" class="mr-2 text-blue-600 focus:ring-blue-500"> Closed</label>
+                          <label class="flex items-center"><input type="radio" name="status" value="PASSED" class="mr-2 text-blue-600 focus:ring-blue-500"> Passed</label>
+                          <label class="flex items-center"><input type="radio" name="status" value="REJECTED" class="mr-2 text-blue-600 focus:ring-blue-500"> Rejected</label>
+                      </div>
+                  </div>
+                  <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
+                      <button type="button" id="clear-status-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 flex items-center"><i class="fas fa-times mr-2"></i>Clear Status</button>
+                      <button id="submit-workitem-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600 flex items-center"><i class="fas fa-check mr-2"></i>Create</button>
+                  </div>
+              </form>
           </div>
-        </div>
-      </form>
-      <button id="submit-workitem-btn"
-        class="mt-6 w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all">
-        Create Work Item
-      </button>
-    </div>
+      </div>
   </div>
 
-  <div id="nav-popup" class="nav-popup">
-    <div class="nav-popup-content">
-      <div class="spinner"></div>
-      <p id="nav-message" class="text-gray-800 font-medium"></p>
-    </div>
+  <!-- Generic Modal for Profile, Errors, Success -->
+  <div id="generic-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-lg shadow-2xl w-full max-w-md">
+          <div id="generic-modal-header" class="p-4 border-b flex justify-between items-center">
+              <h3 id="generic-modal-title" class="text-xl font-bold"></h3>
+              <button id="close-generic-modal" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+          </div>
+          <div id="generic-modal-body" class="p-6"></div>
+          <div class="p-4 bg-gray-50 text-right">
+              <button id="generic-modal-ok-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600">OK</button>
+          </div>
+      </div>
   </div>
-
-  <div id="loader" class="loader">
-    <div class="spinner"></div>
+  
+  <div id="loader" class="hidden fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
   </div>
 
   <script>
@@ -959,431 +546,663 @@
       loginUrl: 'login',
       userCode: null,
       email: null,
-      itemsPerPage: 30,
-      apiBaseUrl: 'http://localhost:8081/workItem_Service'
-    };
-
-    const modals = {
-      profile: document.getElementById('profile-modal'),
-      contact: document.getElementById('contact-modal'),
-      error: document.getElementById('error-modal'),
-      success: document.getElementById('success-modal'),
-      'create-workitem': document.getElementById('create-workitem-modal')
+      itemsPerPage: 20,
+      apiBaseUrl: 'http://localhost:8081/workItem_Service',
+      policyApiBaseUrl: 'http://localhost:8081/policy',
+      workTypeApiUrl: 'http://localhost:8081/workItem_Service/workType'
     };
 
     let currentPage = 1;
-    let allWorkItems = [];
-    let filterRefNum = '';
-    let filterQueue = '';
-    let filteruserCode = '';
-    let filterStatuses = [];
-    let filterCreatedBy = '';
-    let filterDateFrom = '';
-    let filterDateTo = '';
+    let totalPages = 1;
+    let currentFilters = {};
+    let currentMainViewType = 'card'; // Default view type for main work items
 
-    function openModal(modalId) {
-      if (modalId === 'profile') {
-        document.getElementById('profile-userCode').textContent = config.userCode || 'Not available';
-        document.getElementById('profile-email').textContent = config.email || 'Not available';
-      }
-      if (modalId === 'create-workitem') {
-        document.getElementById('created-by').textContent = config.userCode || 'Not available';
-      }
-      modals[modalId]?.classList.remove('hidden');
-    }
+    // --- DOM Elements ---
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    const createWorkItemModal = document.getElementById('create-workitem-modal');
+    const genericModal = document.getElementById('generic-modal');
+    const loader = document.getElementById('loader');
+    const workitemTypeSelect = document.getElementById('workitem-type');
+    const policyNumberInput = document.getElementById('policy-number');
+    const customerNumberField = document.getElementById('customer-number');
+    const policyCompanyField = document.getElementById('policy-company');
+    const productCodeField = document.getElementById('product-code');
+    const headerSearchContainer = document.getElementById('header-search-container');
+    const headerSearchInput = document.getElementById('header-search-input');
+    const headerSearchIcon = document.getElementById('header-search-icon');
+    const workitemsDisplayArea = document.getElementById('workitems-display-area');
+    const viewToggleBtn = document.getElementById('view-toggle-btn');
+    const viewToggleDropdown = document.getElementById('view-toggle-dropdown');
+    const noResultsElement = document.getElementById('no-results'); // Get reference to no-results
 
-    function closeModal(modalId) {
-      modals[modalId]?.classList.add('hidden');
+
+    // --- Utility Functions ---
+    const show = el => el.classList.remove('hidden');
+    const hide = el => el.classList.add('hidden');
+    const toggle = (el, className) => el.classList.toggle(className);
+
+    function showLoader() { show(loader); }
+    function hideLoader() { hide(loader); }
+
+    function openGenericModal(title, content, type = 'info') {
+        document.getElementById('generic-modal-title').textContent = title;
+        document.getElementById('generic-modal-body').innerHTML = content;
+        
+        const header = document.getElementById('generic-modal-header');
+        header.className = 'p-4 border-b flex justify-between items-center'; // Reset classes
+        if (type === 'error') header.classList.add('bg-red-50', 'text-red-800');
+        if (type === 'success') header.classList.add('bg-green-50', 'text-green-800');
+        
+        show(genericModal);
     }
 
     function showAlert(type, message, redirectUrl = null) {
-      document.getElementById(`${type}-message`).textContent = message;
-      openModal(type);
-      if (redirectUrl) {
-        setTimeout(() => window.location.href = redirectUrl, 2000);
-      }
-    }
-
-    function showNavPopup(message) {
-      const popup = document.getElementById('nav-popup');
-      document.getElementById('nav-message').textContent = `Navigating to ${message}...`;
-      popup.classList.add('active');
-    }
-
-    function hideNavPopup() {
-      const popup = document.getElementById('nav-popup');
-      popup.classList.remove('active');
-    }
-
-    function showLoader() {
-      document.getElementById('loader').classList.add('active');
-    }
-
-    function hideLoader() {
-      document.getElementById('loader').classList.remove('active');
-    }
-
-    function showSidebar() {
-      document.getElementById('sidebar').classList.add('active');
-    }
-
-    function hideSidebar() {
-      document.getElementById('sidebar').classList.remove('active');
-    }
-
-    function initializeuserCode() {
-      config.userCode = sessionStorage.getItem('userCode');
-      config.email = sessionStorage.getItem('email');
-      if (!config.userCode) {
-        showAlert('error', 'Please log in to continue.', config.loginUrl);
-        return false;
-      }
-      return true;
-    }
-
-    function logout() {
-      sessionStorage.removeItem('userCode');
-      sessionStorage.removeItem('email');
-      config.userCode = null;
-      config.email = null;
-      showAlert('success', 'Logged out successfully!', config.loginUrl);
-    }
-
-    function navigateTo(page) {
-      if (page !== 'logout' && !config.userCode) {
-        showAlert('error', 'Please log in to access this page.', config.loginUrl);
-        return;
-      }
-      const pageUrls = {
-        dashboard: 'dashboard',
-        workitems: 'workItemServices',
-        logout: 'login'
-      };
-      const url = pageUrls[page] || config.loginUrl;
-      showLoader();
-      showNavPopup(page);
-      setTimeout(() => {
-        hideNavPopup();
-        hideLoader();
-        if (page === 'logout') {
-          logout();
-        } else {
-          window.location.href = url;
+        const title = type.charAt(0).toUpperCase() + type.slice(1);
+        openGenericModal(title, message, type);
+        if (redirectUrl) {
+            setTimeout(() => window.location.href = redirectUrl, 2000);
         }
-      }, 2000);
     }
 
-    function animateCircle(circleId, percentage, percentageTextId) {
-      const circle = document.getElementById(circleId);
-      const circumference = 345.58; // 2 * π * r (r = 55)
-      circle.style.strokeDasharray = circumference;
-      const offset = circumference - (percentage / 100) * circumference;
-      circle.style.strokeDashoffset = offset;
-      document.getElementById(percentageTextId).innerText = `${Math.round(percentage)}%`;
+    // --- API Functions ---
+    async function apiFetch(endpoint, options = {}, baseUrl = config.apiBaseUrl) {
+        showLoader();
+        try {
+            const defaultHeaders = {
+                'Content-Type': 'application/json',
+                'userCode': config.userCode
+            };
+            const response = await fetch(`${baseUrl}${endpoint}`, {
+                ...options,
+                headers: { ...defaultHeaders, ...options.headers }
+            });
+            const data = await response.json();
+            if (!response.ok || data.errorMessage) {
+                throw new Error(data.errorMessage || `HTTP error! status: ${response.status}`);
+            }
+            return data;
+        } catch (error) {
+            showAlert('error', `API Request Failed: ${error.message}`);
+            throw error;
+        } finally {
+            hideLoader();
+        }
     }
 
-    async function fetchWorkItems(workItemRefNum = null) {
-      const params = new URLSearchParams();
-      if (workItemRefNum) params.append('workItemRefNum', workItemRefNum);
-      const response = await fetch(`${config.apiBaseUrl}/workitems${params.toString() ? '?' + params.toString() : ''}`, {
-        headers: { 'userCode': config.userCode }
-      });
-      const data = await response.json();
-      if (data.errorMessage) throw new Error(data.errorMessage);
-      return data.data;
+    async function fetchWorkItems(page = 1, filters = {}) {
+        const params = new URLSearchParams({
+            page: page - 1,
+            size: config.itemsPerPage,
+        });
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value) params.append(key, value);
+        });
+        return apiFetch(`/workitems?${params.toString()}`);
     }
 
     async function createWorkItem(workItem) {
-      const response = await fetch(`${config.apiBaseUrl}/create-WorkItem`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'userCode': config.userCode
-        },
-        body: JSON.stringify(workItem)
-      });
-      const data = await response.json();
-      if (data.errorMessage) throw new Error(data.errorMessage);
-      return data.data;
+        return apiFetch('/create-WorkItem', {
+            method: 'POST',
+            body: JSON.stringify(workItem)
+        });
     }
 
     async function fetchStatusCounts() {
-      const response = await fetch(`${config.apiBaseUrl}/workItem-count`, {
-        headers: { 'userCode': config.userCode }
-      });
-      const data = await response.json();
-      if (data.errorMessage) throw new Error(data.errorMessage);
-      return data.data;
+        return apiFetch('/workItem-count');
     }
 
-    function renderWorkItems(workItems) {
-      const tbody = document.getElementById('workitems-table');
-      tbody.innerHTML = '';
-      workItems.forEach((item, index) => {
-        const row = document.createElement('tr');
-        row.style.animationDelay = `${index * 0.05}s`;
-        row.innerHTML = `
-          <td class="px-6 py-4"><span class="ref-link" onclick="window.location.href='workitem-details?ref=${encodeURIComponent(item.workItemReferenceNumber)}'">${item.workItemReferenceNumber || ''}</span></td>
-          <td class="px-6 py-4">${item.workItemName || ''}</td>
-          <td class="px-6 py-4">${item.workType || ''}</td>
-          <td class="px-6 py-4">${item.comment || ''}</td>
-          <td class="px-6 py-4">${item.createdBy || ''}</td>
-          <td class="px-6 py-4">${item.createdTime ? new Date(item.createdTime).toLocaleString() : ''}</td>
-          <td class="px-6 py-4">${item.userCode || ''}</td>
-          <td class="px-6 py-4"><span class="status-badge status-${item.status?.toLowerCase().replace(' ', '_')}">${item.status || ''}</span></td>
+    async function fetchPolicyDetails(policyNo) {
+        if (!policyNo) return null;
+        return apiFetch(`/policy-details?policyNo=${encodeURIComponent(policyNo)}`, {}, config.policyApiBaseUrl);
+    }
+
+    async function fetchWorkTypes() {
+        return apiFetch('', {}, config.workTypeApiUrl);
+    }
+
+    // --- Rendering Functions ---
+    function renderWorkItems(workItems, viewType) {
+        workitemsDisplayArea.innerHTML = ''; // Clear previous content
+        hide(noResultsElement); // Hide no-results when rendering items
+
+        if (!workItems || workItems.length === 0) {
+            show(noResultsElement); // Show no-results if no items
+            return;
+        }
+        
+        if (viewType === 'table') {
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'table-view-container';
+            tableContainer.innerHTML = `
+                <div class="overflow-x-auto">
+                    <table>
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Reference #</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Name</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Type</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Created By</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Created Time</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">User ID</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workitems-table-body"></tbody>
+                    </table>
+                </div>
+            `;
+            workitemsDisplayArea.appendChild(tableContainer);
+            const tbody = document.getElementById('workitems-table-body');
+
+            workItems.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="p-4"><a href="workitem-details?ref=${encodeURIComponent(item.workItemReferenceNumber)}" class="text-blue-600 font-semibold hover:underline">${item.workItemReferenceNumber || ''}</a></td>
+                    <td class="p-4 text-gray-700">${item.workItemName || ''}</td>
+                    <td class="p-4 text-gray-700">${item.workType || ''}</td>
+                    <td class="p-4 text-gray-700">${item.createdBy || ''}</td>
+                    <td class="p-4 text-gray-700">${item.createdTime ? new Date(item.createdTime).toLocaleString() : ''}</td>
+                    <td class="p-4 text-gray-700">${item.userCode || ''}</td>
+                    <td class="p-4"><span class="status-badge status-${item.status?.toLowerCase().replace(/ /g, '_')}">${item.status || 'N/A'}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        } else if (viewType === 'card') {
+            const cardGrid = document.createElement('div');
+            cardGrid.className = 'workitem-card-grid';
+            workitemsDisplayArea.appendChild(cardGrid);
+
+            workItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'workitem-card';
+                card.onclick = () => window.location.href = `workitem-details?ref=${encodeURIComponent(item.workItemReferenceNumber)}`;
+                card.innerHTML = `
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">${item.workItemName || 'N/A'}</h3>
+                    <div class="space-y-1">
+                        <div class="detail-row">
+                            <span class="label">Ref No:</span>
+                            <span class="value"><a href="workitem-details?ref=${encodeURIComponent(item.workItemReferenceNumber)}" class="ref-link">${item.workItemReferenceNumber || 'N/A'}</a></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Type:</span>
+                            <span class="value">${item.workType || 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Status:</span>
+                            <span class="value"><span class="status-badge status-${item.status?.toLowerCase().replace(/ /g, '_')}">${item.status || 'N/A'}</span></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Created By:</span>
+                            <span class="value">${item.createdBy || 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Created Time:</span>
+                            <span class="value">${item.createdTime ? new Date(item.createdTime).toLocaleString() : 'N/A'}</span>
+                        </div>
+                    </div>
+                `;
+                cardGrid.appendChild(card);
+            });
+        } else if (viewType === 'list') {
+            const listContainer = document.createElement('div');
+            listContainer.className = 'workitem-list-container';
+            workitemsDisplayArea.appendChild(listContainer);
+
+            workItems.forEach(item => {
+                const listItem = document.createElement('div');
+                listItem.className = 'workitem-list-item';
+                listItem.onclick = () => window.location.href = `workitem-details?ref=${encodeURIComponent(item.workItemReferenceNumber)}`;
+                listItem.innerHTML = `
+                    <div class="info-group">
+                        <div class="info-item">
+                            <span class="label">Ref No:</span>
+                            <span class="value"><a href="workitem-details?ref=${encodeURIComponent(item.workItemReferenceNumber)}" class="ref-link">${item.workItemReferenceNumber || 'N/A'}</a></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Name:</span>
+                            <span class="value">${item.workItemName || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Type:</span>
+                            <span class="value">${item.workType || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Status:</span>
+                            <span class="value"><span class="status-badge status-${item.status?.toLowerCase().replace(/ /g, '_')}">${item.status || 'N/A'}</span></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Created By:</span>
+                            <span class="value">${item.createdBy || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Created Time:</span>
+                            <span class="value">${item.createdTime ? new Date(item.createdTime).toLocaleString() : 'N/A'}</span>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(listItem);
+            });
+        }
+    }
+
+    function renderTableSkeleton() {
+        workitemsDisplayArea.innerHTML = `
+            <div class="table-view-container">
+                <div class="overflow-x-auto">
+                    <table>
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Reference #</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Name</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Type</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Created By</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Created Time</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">User ID</th>
+                                <th class="p-4 text-left font-bold text-gray-600 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workitems-table-body-skeleton">
+                            ${Array.from({ length: 8 }).map(() => `
+                                <tr class="animate-pulse">
+                                    ${Array.from({ length: 7 }).map(() => `<td class="p-4"><div class="h-4 bg-gray-200 rounded-md"></div></td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         `;
-        tbody.appendChild(row);
-      });
+        hide(noResultsElement); // Hide no-results when skeleton is shown
+    }
+
+    function renderPagination() {
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+
+        if (totalPages <= 1) return;
+
+        const navContainer = document.createElement('div');
+        navContainer.className = 'flex items-center space-x-2';
+
+        const createButton = (text, page, enabled = true) => {
+            const button = document.createElement('button');
+            button.innerHTML = text;
+            button.disabled = !enabled;
+            button.className = `py-2 px-4 rounded-md font-semibold transition ${
+                enabled ? 'bg-white text-gray-700 border hover:bg-gray-100' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`;
+            if (enabled) button.onclick = () => renderPage(page);
+            return button;
+        };
+        
+        navContainer.appendChild(createButton('<i class="fas fa-angle-double-left"></i>', 1, currentPage > 1));
+        navContainer.appendChild(createButton('<i class="fas fa-angle-left"></i>', currentPage - 1, currentPage > 1));
+
+        const pageInfo = document.createElement('span');
+        pageInfo.className = 'font-semibold text-gray-600 px-4';
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        navContainer.appendChild(pageInfo);
+
+        navContainer.appendChild(createButton('<i class="fas fa-angle-right"></i>', currentPage + 1, currentPage < totalPages));
+        navContainer.appendChild(createButton('<i class="fas fa-angle-double-right"></i>', totalPages, currentPage < totalPages));
+
+        const goToContainer = document.createElement('div');
+        goToContainer.className = 'flex items-center space-x-2';
+        
+        const goToInput = document.createElement('input');
+        goToInput.type = 'number';
+        goToInput.min = 1;
+        goToInput.max = totalPages;
+        goToInput.value = currentPage;
+        goToInput.className = 'pagination-input border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500';
+        goToInput.addEventListener('change', (e) => {
+            const page = parseInt(e.target.value);
+            if (page >= 1 && page <= totalPages) {
+                renderPage(page);
+            }
+        });
+
+        goToContainer.appendChild(document.createTextNode('Go to:'));
+        goToContainer.appendChild(goToInput);
+        
+        pagination.appendChild(navContainer);
+        pagination.appendChild(goToContainer);
     }
 
     function updateStatusCards(counts) {
-      document.getElementById('total-count').textContent = counts.total || 0;
-      const total = counts.total || ((counts.open || 0) + (counts.closed || 0) + (counts.in_progress || 0) + (counts.completed || 0) +
-                    (counts.pend_external || 0) + (counts.pent_internal || 0) + (counts.rejected || 0) + (counts.passed || 0));
-      const updateCard = (id, count) => {
-        const percentage = total ? (count / total) * 100 : 0;
-        document.getElementById(`${id}-count`).textContent = count || 0;
-        document.getElementById(`${id}-progress`).style.width = `${percentage}%`;
-      };
-      updateCard('open', counts.open);
-      updateCard('close', counts.closed);
-      updateCard('in-progress', counts.in_progress);
-      updateCard('completed', counts.completed);
-      updateCard('pend-external', counts.pend_external);
-      updateCard('pent-internal', counts.pent_internal);
-      updateCard('rejected', counts.rejected);
-      updateCard('passed', counts.passed);
+        if (!counts.data) return;
+        const data = counts.data;
+        const container = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-4.lg\\:grid-cols-8');
+        container.innerHTML = '';
+
+        const statuses = [
+            { id: 'open', label: 'Open', color: 'blue', icon: 'fa-folder-open' },
+            { id: 'closed', label: 'Close', color: 'gray', icon: 'fa-folder' },
+            { id: 'in_progress', label: 'In Progress', color: 'yellow', icon: 'fa-tasks' },
+            { id: 'completed', label: 'Completed', color: 'green', icon: 'fa-check-circle' },
+            { id: 'pend_external', label: 'Pend External', color: 'purple', icon: 'fa-user-clock' },
+            { id: 'pend_internal', label: 'Pend Internal', color: 'teal', icon: 'fa-users-cog' },
+            { id: 'rejected', label: 'Rejected', color: 'red', icon: 'fa-times-circle' },
+            { id: 'passed', label: 'Passed', color: 'indigo', icon: 'fa-award' },
+        ];
+        
+        statuses.forEach(status => {
+            const count = data[status.id] || 0;
+            const card = document.createElement('div');
+            card.className = `bg-white p-4 rounded-xl shadow-sm flex items-center border-l-4 border-${status.color}-500 cursor-pointer hover:shadow-md transition`;
+            card.innerHTML = `
+                <div class="p-3 rounded-full bg-${status.color}-100">
+                    <i class="fas ${status.icon} text-${status.color}-500"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-gray-500 text-sm font-semibold">${status.label}</p>
+                    <p id="${status.id}-count" class="text-2xl font-bold">${count}</p>
+                </div>
+            `;
+            card.addEventListener('click', () => {
+                currentFilters = { status: status.id.toUpperCase() };
+                renderPage(1);
+            });
+            container.appendChild(card);
+        });
+
+        document.getElementById('total-count').textContent = data.total || 0;
     }
 
-    function updateTeamCircles(counts) {
-      const queue = counts.queue || {};
-      const maxQueueCount = 1000; // Assuming max queue count for scaling
-      const getPercentage = (count) => {
-        return Math.min(100, (parseInt(count) / maxQueueCount) * 100);
-      };
-      const updateCircle = (circleId, percentageId, countId, count) => {
-        animateCircle(circleId, getPercentage(count || 0), percentageId);
-        document.getElementById(countId).textContent = count || 0;
-      };
-      updateCircle('complaints-circle', 'complaints-percentage', 'complaints-count', queue.complaintsTeam);
-      updateCircle('workflow-circle', 'workflow-percentage', 'workflow-count', queue.workflowTeam);
-      updateCircle('admin-circle', 'admin-percentage', 'admin-count', queue.adminTeam);
-      updateCircle('team-member-circle', 'team-member-percentage', 'team-member-count', queue.teamMember);
+    // --- Page Logic ---
+    async function renderPage(page) {
+        currentPage = page;
+        renderTableSkeleton(); // Show skeleton loader while fetching
+        try {
+            const response = await fetchWorkItems(page, currentFilters);
+            const workItems = response.data.content;
+            totalPages = response.data.totalPages;
+            renderWorkItems(workItems, currentMainViewType); // Pass current view type
+            renderPagination();
+        } catch (error) {
+            workitemsDisplayArea.innerHTML = ''; // Clear skeleton on error
+            show(noResultsElement); // Show no results on error
+        }
     }
 
-    function updatePagination(filteredItems) {
-      const totalPages = Math.ceil(filteredItems.length / config.itemsPerPage);
-      const pagination = document.getElementById('pagination');
-      pagination.innerHTML = '';
+    function handleFilter() {
+        const filterPopup = document.getElementById('filter-popup');
+        const statuses = Array.from(filterPopup.querySelectorAll('input[name="filter-status"]:checked')).map(cb => cb.value).join(',');
+        
+        currentFilters = {
+            workItemRefNum: document.getElementById('filter-refnum').value.trim(),
+            queue: document.getElementById('filter-queue').value,
+            userCode: document.getElementById('filter-userCode').value.trim(),
+            createdBy: document.getElementById('filter-createdby').value.trim(),
+            status: statuses,
+            startDate: document.getElementById('filter-date-from').value,
+            endDate: document.getElementById('filter-date-to').value,
+            workItemRefNum: headerSearchInput.value.trim() // Include header search query
+        };
 
-      const prevButton = document.createElement('button');
-      prevButton.textContent = 'Previous';
-      prevButton.className = 'nav-button';
-      prevButton.disabled = currentPage === 1;
-      prevButton.onclick = () => {
-        if (currentPage > 1) renderPage(currentPage - 1);
-      };
-      pagination.appendChild(prevButton);
-
-      const maxPagesToShow = 10;
-      const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-      const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
-      for (let i = startPage; i <= endPage; i++) {
-        const pageButton = document.createElement('button');
-        pageButton.textContent = i;
-        pageButton.className = `page-number ${i === currentPage ? 'active' : ''}`;
-        pageButton.onclick = () => renderPage(i);
-        pagination.appendChild(pageButton);
-      }
-
-      const nextButton = document.createElement('button');
-      nextButton.textContent = 'Next';
-      nextButton.className = 'nav-button';
-      nextButton.disabled = currentPage === totalPages || totalPages === 0;
-      nextButton.onclick = () => {
-        if (currentPage < totalPages) renderPage(currentPage + 1);
-      };
-      pagination.appendChild(nextButton);
-    }
-
-    function applyFilters(items) {
-      return items.filter(item => {
-        const refNumMatch = !filterRefNum || item.workItemReferenceNumber?.toLowerCase().includes(filterRefNum.toLowerCase());
-        const queueMatch = !filterQueue || item.queue === filterQueue;
-        const userCodeMatch = !filteruserCode || item.userCode?.toLowerCase().includes(filteruserCode.toLowerCase());
-        const statusMatch = filterStatuses.length === 0 || filterStatuses.includes(item.status?.toLowerCase());
-        const createdByMatch = !filterCreatedBy || item.createdBy?.toLowerCase().includes(filterCreatedBy.toLowerCase());
-        const dateFrom = filterDateFrom ? new Date(filterDateFrom).setHours(0, 0, 0, 0) : null;
-        const dateTo = filterDateTo ? new Date(filterDateTo).setHours(23, 59, 59, 999) : null;
-        const itemDate = item.createdTime ? new Date(item.createdTime).getTime() : null;
-        const dateMatch = !itemDate || (!dateFrom || itemDate >= dateFrom) && (!dateTo || itemDate <= dateTo);
-        return refNumMatch && queueMatch && userCodeMatch && statusMatch && createdByMatch && dateMatch;
-      });
-    }
-
-    function renderPage(page) {
-      currentPage = page;
-      const filteredItems = applyFilters(allWorkItems);
-      const start = (currentPage - 1) * config.itemsPerPage;
-      const end = start + config.itemsPerPage;
-      const pageItems = filteredItems.slice(start, end);
-      renderWorkItems(pageItems);
-      updatePagination(filteredItems);
-    }
-
-    async function initializePage(workItemRefNum = null) {
-      try {
-        showLoader();
-        const [workItems, statusCounts] = await Promise.all([
-          fetchWorkItems(workItemRefNum),
-          fetchStatusCounts()
-        ]);
-        allWorkItems = workItems;
-        renderPage(1);
-        updateStatusCards(statusCounts);
-        updateTeamCircles(statusCounts);
-      } catch (error) {
-        showAlert('error', `Failed to load data: ${error.message}`);
-      } finally {
-        hideLoader();
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      if (!initializeuserCode()) return;
-
-      document.getElementById('btn-create-workitem').classList.replace('button-hidden', 'button-visible');
-
-      const filterButton = document.getElementById('filter-workitems-btn');
-      const filterPopup = document.getElementById('filter-popup');
-      const applyFilter = document.getElementById('apply-filter');
-      const clearFilter = document.getElementById('clear-filter');
-      const filterRefNumInput = document.getElementById('filter-refnum');
-      const filterQueueInput = document.getElementById('filter-queue');
-      const filteruserCodeInput = document.getElementById('filter-userCode');
-      const filterCreatedByInput = document.getElementById('filter-createdby');
-      const filterDateFromInput = document.getElementById('filter-date-from');
-      const filterDateToInput = document.getElementById('filter-date-to');
-      const filterCheckboxes = filterPopup.querySelectorAll('input[type="checkbox"]');
-
-      filterButton.addEventListener('click', () => {
-        filterPopup.classList.toggle('active');
-      });
-
-      applyFilter.addEventListener('click', () => {
-        filterRefNum = filterRefNumInput.value.trim();
-        filterQueue = filterQueueInput.value;
-        filteruserCode = filteruserCodeInput.value.trim();
-        filterStatuses = Array.from(filterCheckboxes)
-          .filter(cb => cb.checked)
-          .map(cb => cb.value.toLowerCase());
-        filterCreatedBy = filterCreatedByInput.value.trim();
-        filterDateFrom = filterDateFromInput.value;
-        filterDateTo = filterDateToInput.value;
-
-        if (filterDateFrom && filterDateTo && new Date(filterDateFrom) > new Date(filterDateTo)) {
-          showAlert('error', 'Start date cannot be after end date.');
-          return;
+        if (currentFilters.startDate && currentFilters.endDate && new Date(currentFilters.startDate) > new Date(currentFilters.endDate)) {
+            showAlert('error', 'Start date cannot be after end date.');
+            return;
         }
 
         renderPage(1);
-        filterPopup.classList.remove('active');
-      });
+        hide(filterPopup);
+    }
 
-      clearFilter.addEventListener('click', () => {
-        filterRefNumInput.value = '';
-        filterQueueInput.value = '';
-        filteruserCodeInput.value = '';
-        filterCheckboxes.forEach(cb => cb.checked = false);
-        filterCreatedByInput.value = '';
-        filterDateFromInput.value = '';
-        filterDateToInput.value = '';
-        filterRefNum = '';
-        filterQueue = '';
-        filteruserCode = '';
-        filterStatuses = [];
-        filterCreatedBy = '';
-        filterDateFrom = '';
-        filterDateTo = '';
+    function clearFilters() {
+        const filterPopup = document.getElementById('filter-popup');
+        filterPopup.querySelectorAll('input, select').forEach(el => {
+            if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+            else el.value = '';
+        });
+        headerSearchInput.value = ''; // Clear header search bar too
+        currentFilters = {};
         renderPage(1);
-        filterPopup.classList.remove('active');
-      });
+        hide(filterPopup);
+    }
 
-      const modalButtons = {
-        'btn-profile': () => openModal('profile'),
-        'btn-contact': () => openModal('contact'),
-        'close-profile-modal': () => closeModal('profile'),
-        'close-contact-modal': () => closeModal('contact'),
-        'close-error-modal': () => closeModal('error'),
-        'close-success-modal': () => closeModal('success'),
-        'close-create-workitem-modal': () => closeModal('create-workitem'),
-        'error-ok-btn': () => closeModal('error'),
-        'success-ok-btn': () => closeModal('success'),
-        'submit-workitem-btn': async () => {
-          const form = document.getElementById('create-workitem-form');
-          if (!form.checkValidity()) {
+    async function handleCreateWorkItem(e) {
+        e.preventDefault();
+        const form = document.getElementById('create-workitem-form');
+        if (!form.checkValidity()) {
             showAlert('error', 'Please fill all required fields.');
             return;
-          }
-          try {
-            showLoader();
-            const selectedStatus = document.querySelector('input[name="status"]:checked')?.value || '';
-            const workItem = {
-              workItemName: document.getElementById('workitem-name').value,
-              workType: document.getElementById('workitem-type').value,
-              comment: document.getElementById('workitem-comment').value,
-              createdBy: config.userCode,
-              userCode: config.userCode,
-              status: selectedStatus
-            };
-            const newWorkItem = await createWorkItem(workItem);
-            allWorkItems.push(newWorkItem);
-            closeModal('create-workitem');
-            showAlert('success', `Work item ${newWorkItem.workItemReferenceNumber} created successfully!`);
-            document.getElementById('create-workitem-form').reset();
-            document.querySelectorAll('input[name="status"]').forEach(radio => radio.checked = false);
+        }
+        
+        const workItem = {
+            workItemName: document.getElementById('workitem-name').value,
+            workType: document.getElementById('workitem-type').value,
+            policyNumber: document.getElementById('policy-number').value,
+            comment: document.getElementById('workitem-comment').value,
+            createdBy: config.userCode,
+            userCode: config.userCode,
+            status: document.querySelector('input[name="status"]:checked')?.value || ''
+        };
+
+        try {
+            const response = await createWorkItem(workItem);
+            hide(createWorkItemModal);
+            showAlert('success', `Work item ${response.data.workItemReferenceNumber} created successfully!`);
+            form.reset();
+            customerNumberField.textContent = '';
+            policyCompanyField.textContent = '';
+            productCodeField.textContent = '';
             renderPage(currentPage);
-          } catch (error) {
-            showAlert('error', `Failed to create work item: ${error.message}`);
-          } finally {
-            hideLoader();
-          }
-        },
-        'clear-status-btn': () => {
-          document.querySelectorAll('input[name="status"]').forEach(radio => radio.checked = false);
+        } catch(error) {
+            // Error handled by apiFetch
         }
-      };
-
-      Object.entries(modalButtons).forEach(([id, handler]) => {
-        document.getElementById(id)?.addEventListener('click', handler);
-      });
-
-      document.getElementById('sidebar-toggle').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('active');
-      });
-
-      window.addEventListener('click', (e) => {
-        Object.keys(modals).forEach((key) => {
-          if (e.target === modals[key]) closeModal(key);
+    }
+    
+    function initializeUser() {
+        config.userCode = sessionStorage.getItem('userCode');
+        config.email = sessionStorage.getItem('email');
+        if (!config.userCode) {
+            showAlert('error', 'Please log in to continue.', config.loginUrl);
+            return false;
+        }
+        return true;
+    }
+    
+    function logout() {
+        sessionStorage.clear();
+        showAlert('success', 'Logged out successfully!', config.loginUrl);
+    }
+    
+    // --- Event Listeners ---
+    function setupEventListeners() {
+        // Sidebar
+        document.getElementById('sidebar-toggle-btn').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('full');
         });
-        if (!e.target.closest('#sidebar') && !e.target.closest('#sidebar-toggle')) {
-          hideSidebar();
-        }
-        if (!e.target.closest('#filter-popup') && !e.target.closest('#filter-workitems-btn')) {
-          filterPopup.classList.remove('active');
-        }
-      });
+        document.getElementById('sidebar-open-btn').addEventListener('click', () => sidebar.classList.add('open'));
+        window.addEventListener('click', (e) => {
+            if (window.innerWidth < 767 && !sidebar.contains(e.target) && !e.target.closest('#sidebar-open-btn')) {
+                sidebar.classList.remove('open');
+            }
+            // Close filter popup if clicked outside
+            const filterPopup = document.getElementById('filter-popup');
+            const filterBtn = document.getElementById('filter-workitems-btn');
+            if (filterPopup && filterBtn && !filterPopup.contains(e.target) && !filterBtn.contains(e.target)) {
+                hide(filterPopup);
+            }
+            // Close view toggle dropdown if clicked outside
+            if (viewToggleDropdown && viewToggleBtn && !viewToggleDropdown.contains(e.target) && !viewToggleBtn.contains(e.target)) {
+                viewToggleDropdown.classList.remove('active');
+            }
+        });
 
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          Object.keys(modals).forEach((key) => closeModal(key));
-          hideSidebar();
-          filterPopup.classList.remove('active');
-        }
-      });
 
-      initializePage();
+        // Header Search Bar
+        let searchTimeout;
+        headerSearchContainer.addEventListener('mouseenter', () => {
+            headerSearchContainer.classList.add('expanded');
+        });
+        headerSearchContainer.addEventListener('mouseleave', () => {
+            if (document.activeElement !== headerSearchInput) { // Keep expanded if input is focused
+                headerSearchContainer.classList.remove('expanded');
+            }
+        });
+        headerSearchInput.addEventListener('focus', () => {
+            headerSearchContainer.classList.add('expanded');
+        });
+        headerSearchInput.addEventListener('blur', () => {
+            if (!headerSearchInput.value.trim()) { // Collapse only if empty
+                headerSearchContainer.classList.remove('expanded');
+            }
+        });
+        headerSearchIcon.addEventListener('click', () => {
+            if (headerSearchContainer.classList.contains('expanded')) {
+                // Trigger search if already expanded
+                currentFilters.workItemRefNum = headerSearchInput.value.trim();
+                renderPage(1);
+            } else {
+                // Expand the search bar if not already expanded
+                headerSearchContainer.classList.add('expanded');
+                headerSearchInput.focus();
+            }
+        });
+        headerSearchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                currentFilters.workItemRefNum = headerSearchInput.value.trim();
+                renderPage(1);
+            }
+        });
+
+
+        // Modals
+        document.getElementById('btn-create-workitem').addEventListener('click', async () => {
+            document.getElementById('created-by').textContent = config.userCode;
+            policyNumberInput.value = '';
+            customerNumberField.textContent = '';
+            policyCompanyField.textContent = '';
+            productCodeField.textContent = '';
+
+            if (workitemTypeSelect) {
+                workitemTypeSelect.innerHTML = '<option value="">Select Work Type</option>';
+                try {
+                    const workTypesResponse = await fetchWorkTypes();
+                    if (workTypesResponse && workTypesResponse.data && workTypesResponse.data.length > 0) {
+                        workTypesResponse.data.forEach(type => {
+                            const option = document.createElement('option');
+                            option.value = type;
+                            option.textContent = type;
+                            workitemTypeSelect.appendChild(option);
+                        });
+                    } else {
+                        showAlert('info', 'No work types available.');
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch work types:', error);
+                }
+            }
+            show(createWorkItemModal);
+        });
+        document.getElementById('close-create-workitem-modal').addEventListener('click', () => hide(createWorkItemModal));
+        document.getElementById('close-generic-modal').addEventListener('click', () => hide(genericModal));
+        document.getElementById('generic-modal-ok-btn').addEventListener('click', () => hide(genericModal));
+        
+        document.getElementById('btn-profile').addEventListener('click', () => {
+             openGenericModal('User Profile', `<p><strong>User ID:</strong> ${config.userCode}</p><p><strong>Email:</strong> ${config.email}</p>`);
+        });
+
+        // Forms
+        document.getElementById('submit-workitem-btn').addEventListener('click', handleCreateWorkItem);
+        document.getElementById('clear-status-btn').addEventListener('click', () => {
+            document.querySelectorAll('input[name="status"]').forEach(radio => radio.checked = false);
+        });
+
+        // Filters
+        document.getElementById('filter-workitems-btn').addEventListener('click', () => toggle(document.getElementById('filter-popup'), 'active'));
+        document.getElementById('apply-filter').addEventListener('click', handleFilter);
+        document.getElementById('clear-filter').addEventListener('click', clearFilters);
+        
+        // Policy Number auto-population
+        if (policyNumberInput) {
+            policyNumberInput.addEventListener('change', async () => {
+                const policyNo = policyNumberInput.value.trim();
+                if (policyNo) {
+                    try {
+                        const response = await fetchPolicyDetails(policyNo);
+                        if (response && response.data && response.data.length > 0) {
+                            const policyData = response.data[0];
+                            customerNumberField.textContent = policyData.customerNo || 'N/A';
+                            if (policyData.policyList && policyData.policyList.length > 0) {
+                                const firstPolicy = policyData.policyList[0];
+                                policyCompanyField.textContent = firstPolicy.polCompanyName || 'N/A';
+                                productCodeField.textContent = firstPolicy.productCode || 'N/A';
+                            } else {
+                                policyCompanyField.textContent = 'N/A';
+                                productCodeField.textContent = 'N/A';
+                                showAlert('info', 'No policy details found for this policy number.');
+                            }
+                        } else {
+                            customerNumberField.textContent = '';
+                            policyCompanyField.textContent = '';
+                            productCodeField.textContent = '';
+                            showAlert('info', 'Policy details not found for the entered policy number.');
+                        }
+                    } catch (error) {
+                        customerNumberField.textContent = '';
+                        policyCompanyField.textContent = '';
+                        productCodeField.textContent = '';
+                    }
+                } else {
+                    customerNumberField.textContent = '';
+                    policyCompanyField.textContent = '';
+                    productCodeField.textContent = '';
+                }
+            });
+        }
+
+        // View Toggles
+        viewToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            viewToggleDropdown.classList.toggle('active');
+            // Ensure filter dropdown is closed when view toggle is opened
+            document.getElementById('filter-popup').classList.remove('active');
+        });
+
+        viewToggleDropdown.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                currentMainViewType = e.target.dataset.view;
+                viewToggleDropdown.classList.remove('active');
+                
+                // Update the view toggle button text and icon
+                let iconClass = '';
+                let buttonText = '';
+                if (currentMainViewType === 'card') {
+                    iconClass = 'fas fa-th-large';
+                    buttonText = 'Card View';
+                } else if (currentMainViewType === 'list') {
+                    iconClass = 'fas fa-list';
+                    buttonText = 'List View';
+                } else if (currentMainViewType === 'table') {
+                    iconClass = 'fas fa-table';
+                    buttonText = 'Table View';
+                }
+                viewToggleBtn.innerHTML = `<i class="${iconClass} mr-2"></i>${buttonText}`;
+
+                renderPage(currentPage); // Re-render with new view type
+            });
+        });
+
+        // Logout
+        document.getElementById('btn-logout-header').addEventListener('click', logout);
+        document.getElementById('btn-logout-sidebar').addEventListener('click', logout);
+    }
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!initializeUser()) return;
+        
+        setupEventListeners();
+        
+        // Initial data load
+        renderPage(1);
+        fetchStatusCounts().then(updateStatusCards).catch(() => {});
     });
   </script>
 </body>

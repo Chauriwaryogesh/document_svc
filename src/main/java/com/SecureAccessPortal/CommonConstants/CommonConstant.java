@@ -33,13 +33,7 @@ public class CommonConstant {
 	public static final String COMPLAINT_CREATE_NEW = "Complaint Created";
 	public static final String COMPLAINT_UPDATE = "Complaint Update";
 	public static final String COMPLAINT_CREATE_UPDATE = "Updating the Complaint";
-	
-	
-	
-	
-	
-	
-	
+
 	//complaints status
 	public static final String ALL="All";
 	public static final String OPEN = "Open";
@@ -49,6 +43,7 @@ public class CommonConstant {
 	public static final String REJECTED="Rejected";
 	public static final String CANCELED="Canceled";
 	public static final String PENDING="Pending";
+	public static final String Y = "Y";
 	
 
 }

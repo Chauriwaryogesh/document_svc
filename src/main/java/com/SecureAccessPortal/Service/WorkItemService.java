@@ -2,17 +2,21 @@ package com.SecureAccessPortal.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
@@ -29,6 +33,8 @@ import com.SecureAccessPortal.Modal.WorkItemDTO;
 import com.SecureAccessPortal.Repo.WorkItemRepo;
 import com.SecureAccessPortal.Transformer.WorkItemMapper;
 
+import jakarta.persistence.criteria.Predicate;
+
 @Component
 public class WorkItemService implements IWorkItemService {
 
@@ -37,7 +43,6 @@ public class WorkItemService implements IWorkItemService {
 
 	@Autowired
 	private WorkItemMapper workItemMapper;
-
 
 	@Override
 	public WorkItemDTO createWorkItem(WorkItemDTO workItemRequest, String userCode) {
@@ -84,50 +89,86 @@ public class WorkItemService implements IWorkItemService {
 		return "WI" + year + randomNumber;
 	}
 
-	@Override
-	public List<WorkItemDTO> fetchWorkItems(String wiRefNum, String userCode) {
-		List<WorkItemDTO> workItemDTOList = new ArrayList<>();
-		try {
-			if (wiRefNum != null) {
-				Optional<Workitem> workItemsList = workItemRepo.findByWiRefNum(wiRefNum);
-				workItemDTOList = workItemsList.stream().map(workItems -> {
-					WorkItemDTO workItem = new WorkItemDTO();
-					workItem.setWorkItemId(workItems.getWorkItemId());
-					workItem.setComment(workItems.getComment());
-					workItem.setCreatedBy(workItems.getCreatedBy());
-					workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
-					workItem.setuserCode(workItems.getUserCode());
-					workItem.setWorkItemName(workItems.getWorkItemName());
-					workItem.setWorkType(workItems.getWorkType());
-					workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
-					workItem.setStatus(workItems.getStatus());
-					workItem.setQueue(workItems.getQueue());
-					return workItem;
-				}).collect(Collectors.toList());
-			} else {
-				List<Workitem> workItemsList = workItemRepo.findAll();
-				workItemDTOList = workItemsList.stream().map(workItems -> {
-					WorkItemDTO workItem = new WorkItemDTO();
-					workItem.setWorkItemId(workItems.getWorkItemId());
-					workItem.setComment(workItems.getComment());
-					workItem.setCreatedBy(workItems.getCreatedBy());
-					workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
-					workItem.setuserCode(workItems.getUserCode());
-					workItem.setWorkItemName(workItems.getWorkItemName());
-					workItem.setWorkType(workItems.getWorkType());
-					workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
-					workItem.setStatus(workItems.getStatus());
-					workItem.setQueue(workItems.getQueue());
-					return workItem;
-				}).collect(Collectors.toList());
+	public Page<WorkItemDTO> fetchWorkItems(String wiRefNum, String queue, String filterUserCode, String createdBy,
+			String status, String startDate, String endDate, int page, int size, String userCodeHeader) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by("createdTime").descending());
+
+		Specification<Workitem> spec = (root, query, cb) -> {
+			List<Predicate> predicates = new ArrayList<>();
+
+			// Filter by Work Item Reference Number
+			if (wiRefNum != null && !wiRefNum.isEmpty()) {
+				predicates.add(cb.equal(root.get("workItemRefNumber"), wiRefNum));
+			}
+			// Filter by Queue
+			if (queue != null && !queue.isEmpty()) {
+				predicates.add(cb.equal(root.get("queue"), queue));
+			}
+			// Filter by User Code (as in the Workitem entity's 'userCode' field)
+			if (filterUserCode != null && !filterUserCode.isEmpty()) {
+				predicates.add(cb.equal(root.get("userCode"), filterUserCode));
+			}
+			// Filter by Created By
+			if (createdBy != null && !createdBy.isEmpty()) {
+				predicates.add(cb.equal(root.get("createdBy"), createdBy));
+			}
+			// Filter by Status
+			if (status != null && !status.isEmpty()) {
+				predicates.add(cb.equal(root.get("status"), status));
 			}
 
+			// Date filtering for createdTime
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Assuming format from UI
+
+			if (startDate != null && !startDate.isEmpty()) {
+				try {
+					// Start of the day for startDate
+					LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
+							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					predicates.add(cb.greaterThanOrEqualTo(root.get("createdTime"), startDateTime));
+				} catch (DateTimeParseException e) {
+					System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
+					// Optionally, throw an exception or return an error response
+				}
+			}
+			if (endDate != null && !endDate.isEmpty()) {
+				try {
+					// End of the day for endDate
+					LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
+							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					predicates.add(cb.lessThanOrEqualTo(root.get("createdTime"), endDateTime));
+				} catch (DateTimeParseException e) {
+					System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
+					// Optionally, throw an exception or return an error response
+				}
+			}
+
+			// Combine all predicates with AND
+			return cb.and(predicates.toArray(new Predicate[0]));
+		};
+
+		try {
+			// Use findAll with the dynamically built Specification
+			Page<Workitem> workItemsPage = workItemRepo.findAll(spec, pageable);
+
+			return workItemsPage.map(workItems -> {
+				WorkItemDTO workItem = new WorkItemDTO();
+				workItem.setWorkItemId(workItems.getWorkItemId());
+				workItem.setComment(workItems.getComment());
+				workItem.setCreatedBy(workItems.getCreatedBy());
+				workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
+				workItem.setuserCode(workItems.getUserCode());
+				workItem.setWorkItemName(workItems.getWorkItemName());
+				workItem.setWorkType(workItems.getWorkType());
+				workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
+				workItem.setStatus(workItems.getStatus());
+				workItem.setQueue(workItems.getQueue());
+				return workItem;
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
+			return Page.empty(pageable); // Return empty page on error
 		}
-		List<WorkItemDTO> sortedList = workItemDTOList.stream().filter(item -> item.getCreatedTime() != null)
-				.sorted(Comparator.comparing(WorkItemDTO::getCreatedTime).reversed()).collect(Collectors.toList());
-		return sortedList;
 	}
 
 	@Override
@@ -136,8 +177,6 @@ public class WorkItemService implements IWorkItemService {
 
 		Queue queue = new Queue();
 		List<Workitem> workItemsList = workItemRepo.findAll();
-        //add pending
-		// hold 1 week
 		long pendExternal = workItemsList.stream().filter(sttus -> sttus.getStatus().equalsIgnoreCase("PEND_EXTERNAL"))
 				.count();
 		long pendInternal = workItemsList.stream().filter(sttus -> sttus.getStatus().equalsIgnoreCase("PEND_INTERNAL"))
@@ -173,7 +212,7 @@ public class WorkItemService implements IWorkItemService {
 		workItemCount.setOpen(String.valueOf(open));
 		workItemCount.setPassed(String.valueOf(passed));
 		workItemCount.setPend_external(String.valueOf(pendExternal));
-		workItemCount.setPent_internal(String.valueOf(pendInternal));
+		workItemCount.setPend_internal(String.valueOf(pendInternal));
 		workItemCount.setRejected(String.valueOf(rejected));
 		workItemCount.setQueue(queue);
 		return workItemCount;
@@ -181,7 +220,8 @@ public class WorkItemService implements IWorkItemService {
 
 	@Override
 	public Workitem mapRequetforWorkItem(String userCode, Policy policy, Customer customer, String workType,
-			String workItemName, String comment, BankAccount bankAccount,VerificationRecord verificationRecord,Payments payments) {
+			String workItemName, String comment, BankAccount bankAccount, VerificationRecord verificationRecord,
+			Payments payments) {
 		com.SecureAccessPortal.Entity.Workitem workItem = new com.SecureAccessPortal.Entity.Workitem();
 		workItem.setWorkItemId(String.valueOf(UUID.randomUUID()));
 		workItem.setComment(comment);
@@ -195,19 +235,19 @@ public class WorkItemService implements IWorkItemService {
 		workItem.setWorkItemRefNumber(refNo);
 		workItem.setQueue(CommonConstant.TEAM_MEMBER);
 		workItem.setStatus(CommonConstant.OPEN);
-		if(customer != null) {
+		if (customer != null) {
 			workItem.setCustomer(customer);
 		}
-		if(policy != null) {
+		if (policy != null) {
 			workItem.setPolicy(policy);
 		}
-		if(bankAccount != null) {
+		if (bankAccount != null) {
 			workItem.setBankAccount(bankAccount);
 		}
-		if(verificationRecord != null) {
+		if (verificationRecord != null) {
 			workItem.setVerificationRecord(verificationRecord);
 		}
-		if(payments != null) {
+		if (payments != null) {
 			workItem.setPayment(payments);
 		}
 		Workitem repoData = workItemRepo.save(workItem);
@@ -220,7 +260,6 @@ public class WorkItemService implements IWorkItemService {
 	@Override
 	public Workitem mapRequetforWorkItemOtpService(String userCode, Customer customer, String workType,
 			String workItemName, String comment, OtpStore otpStore) {
-		
 
 		com.SecureAccessPortal.Entity.Workitem workItem = new com.SecureAccessPortal.Entity.Workitem();
 		workItem.setWorkItemId(String.valueOf(UUID.randomUUID()));
@@ -235,10 +274,10 @@ public class WorkItemService implements IWorkItemService {
 		workItem.setWorkItemRefNumber(refNo);
 		workItem.setQueue(CommonConstant.TEAM_MEMBER);
 		workItem.setStatus(CommonConstant.OPEN);
-		if(customer != null) {
+		if (customer != null) {
 			workItem.setCustomer(customer);
 		}
-		if(otpStore != null) {
+		if (otpStore != null) {
 			workItem.setOtpStore(otpStore);
 		}
 		Workitem repoData = workItemRepo.save(workItem);
@@ -247,5 +286,82 @@ public class WorkItemService implements IWorkItemService {
 		}
 		return repoData;
 	}
+
+	@Override
+	public List<String> fetchWorkType(String userCode) {
+		List<String> workTypes = List.of("COMPLAINT", "FCU", "POLICY_CREATE");
+		return workTypes;
+	}
+
+	@Override
+	public Page<WorkItemDTO> fetchRelatedWorkitems(String workitemRefNo, int page, int size, String policyRelated,
+			String customerRelated, String userCode) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by("createdTime").descending());
+		Page<Workitem> workItemsPage= null;
+		if(CommonConstant.Y.equalsIgnoreCase(customerRelated)) {
+			 workItemsPage = workItemRepo.findWorkItemsByRefNumberCustomerNo(workitemRefNo, pageable);
+		}else {
+			 workItemsPage = workItemRepo.findWorkItemsByRefNumberPolicy(workitemRefNo, pageable);
+		}
+		
+		return workItemsPage.map(workItems -> {
+			WorkItemDTO workItem = new WorkItemDTO();
+			workItem.setWorkItemId(workItems.getWorkItemId());
+			workItem.setComment(workItems.getComment());
+			workItem.setCreatedBy(workItems.getCreatedBy());
+			workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
+			workItem.setuserCode(workItems.getUserCode());
+			workItem.setWorkItemName(workItems.getWorkItemName());
+			workItem.setWorkType(workItems.getWorkType());
+			workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
+			workItem.setStatus(workItems.getStatus());
+			workItem.setQueue(workItems.getQueue());
+			return workItem;
+		});
+	}
+
+//	public WorkItemCount workItemCount(String userCode) {
+//        WorkItemCount workItemCount = new WorkItemCount();
+//        Queue queue = new Queue();
+//
+//        // Status counts
+//        long pendExternal = workItemRepo.countByStatusAndUserCode("PEND_EXTERNAL", userCode);
+//        long pendInternal = workItemRepo.countByStatusAndUserCode("PEND_INTERNAL", userCode);
+//        long rejected = workItemRepo.countByStatusAndUserCode("REJECTED", userCode);
+//        long open = workItemRepo.countByStatusAndUserCode("OPEN", userCode);
+//        long closed = workItemRepo.countByStatusAndUserCode("CLOSED", userCode);
+//        long inProgress = workItemRepo.countByStatusAndUserCode("IN_PROGRESS", userCode);
+//        long completed = workItemRepo.countByStatusAndUserCode("COMPLETED", userCode);
+//        long passed = workItemRepo.countByStatusAndUserCode("PASSED", userCode);
+//
+//        // Queue counts
+//        long complaintsTeam = workItemRepo.countByQueueAndUserCode("COMPLAINTS_TEAM", userCode);
+//        long adminTeam = workItemRepo.countByQueueAndUserCode("ADMIN_TEAM", userCode);
+//        long workflowTeam = workItemRepo.countByQueueAndUserCode("WORKFLOW_TEAM", userCode);
+//        long teamMember = workItemRepo.countByQueueAndUserCode("TEAM_MEMBER", userCode);
+//
+//        // Total count
+//        long total = workItemRepo.countAllByUserCode(userCode);
+//
+//        // Set queue counts
+//        queue.setComplaintsTeam(String.valueOf(complaintsTeam));
+//        queue.setAdminTeam(String.valueOf(adminTeam));
+//        queue.setWorkflowTeam(String.valueOf(workflowTeam));
+//        queue.setTeamMember(String.valueOf(teamMember));
+//
+//        // Set work item counts
+//        workItemCount.setTotal(String.valueOf(total));
+//        workItemCount.setClosed(String.valueOf(closed));
+//        workItemCount.setCompleted(String.valueOf(completed));
+//        workItemCount.setIn_progress(String.valueOf(inProgress));
+//        workItemCount.setOpen(String.valueOf(open));
+//        workItemCount.setPassed(String.valueOf(passed));
+//        workItemCount.setPend_external(String.valueOf(pendExternal));
+//        workItemCount.setPent_internal(String.valueOf(pendInternal));
+//        workItemCount.setRejected(String.valueOf(rejected));
+//        workItemCount.setQueue(queue);
+//
+//        return workItemCount;
+//    }
 
 }
