@@ -3,6 +3,7 @@ package com.SecureAccessPortal.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -61,6 +63,9 @@ public class BankDetailsService {
      
     @Autowired
     private VerificationRecordRepo verificationRecordRepository;
+    
+    @Autowired
+    private Environment environment;
 
     public BankDetailsService(BankAccountRepo bankAccountRepository) {
         this.bankAccountRepository = bankAccountRepository;
@@ -192,7 +197,7 @@ public class BankDetailsService {
 					dto.setIfscCode(bankAccount.getIfscCode());
 					dto.setBankName(bankAccount.getBankName());
 					dto.setAccountType(bankAccount.getAccountType());
-					dto.setStatus(bankAccount.getStatus());
+					dto.setStatus(CommonConstant.PENE);
 					dto.setDeletedFlag("N");
 					if (bankAccount.getCustomerNumber() != null) {
 						 customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber(),"N");
@@ -519,17 +524,40 @@ public class BankDetailsService {
 	}
 
 	public String verifyBankAccount(BankDetailsDTO bankDetailsDTO, String userCode) {
-		bankDetailsDTO.getAction();  // verify or update
-		bankDetailsDTO.getAccountNumber();
-		bankDetailsDTO.getIfscCode();
-		bankDetailsDTO.getBankName();
-		bankDetailsDTO.getCustomerName();
-		bankDetailsDTO.getVerificationAttempts();
-		bankDetailsDTO.getLastVerificationDate();
-		bankDetailsDTO.getAccountType();
-		bankDetailsDTO.getStatus();
-		bankDetailsDTO.getComment();
-		String message=null/*" Successfully account verified"*/;
+		String message = CommonConstant.FAILURE;
+		BankAccount bankAccount = bankAccountRepository.findByAccountNo(bankDetailsDTO.getAccountNumber(), "N");
+		bankAccount.setAccountNo(bankDetailsDTO.getAccountNumber());
+		bankAccount.setIfscCode(bankDetailsDTO.getIfscCode());
+		bankAccount.setBankName(bankDetailsDTO.getBankName());
+		bankAccount.setAccountHolderName(bankDetailsDTO.getCustomerName());
+		bankAccount.setVerificationAttempts(bankDetailsDTO.getVerificationAttempts());
+		bankAccount.setLastVerificationDate(bankDetailsDTO.getLastVerificationDate());
+		bankAccount.setAccountType(bankDetailsDTO.getAccountType());
+		bankAccount.setStatus(bankDetailsDTO.getStatus());
+		bankAccount.setUpdatedBy(userCode);
+		bankAccount.setUpdatedTime(LocalDateTime.now());
+
+		if (bankDetailsDTO.getAction().equalsIgnoreCase("update")) {
+			bankAccount.setComment(bankDetailsDTO.getComment());
+			if ("PASS".equalsIgnoreCase(bankDetailsDTO.getVerificationStatus())) {
+				bankAccount.setAmlStatus(bankDetailsDTO.getVerificationStatus());
+				bankAccount.setStatus(bankDetailsDTO.getStatus());
+				bankAccountRepository.save(bankAccount);
+				message = " Successfully account verified";
+				return message;
+			} else {
+				bankAccount.setAmlStatus("FAILED");
+				bankAccount.setStatus(bankDetailsDTO.getStatus());
+				bankAccountRepository.save(bankAccount);
+				message = " Failed account Verification";
+				return message;
+			}
+		}
+		if(bankDetailsDTO.getAction().equalsIgnoreCase("verify")) {
+			String verify= environment.getProperty("VERIFICATION");
+			return  verify;
+		}
+
 		return message;
 	}
 }

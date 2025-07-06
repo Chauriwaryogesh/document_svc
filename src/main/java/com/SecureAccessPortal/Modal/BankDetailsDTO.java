@@ -33,8 +33,15 @@ public class BankDetailsDTO {
 	private String linkedPaymentMethod;
 	private Integer verificationAttempts;
 	private String comment;
+	private String verificationStatus;	
 	
 	
+	public String getVerificationStatus() {
+		return verificationStatus;
+	}
+	public void setVerificationStatus(String verificationStatus) {
+		this.verificationStatus = verificationStatus;
+	}
 	public String getComment() {
 		return comment;
 	}

@@ -663,10 +663,10 @@
                               <div>
                                   <label class="block text-sm font-medium text-gray-700">Status</label>
                                   <div class="mt-2 space-y-2">
-                                      <label class="flex items-center"><input type="checkbox" name="filter-status" value="Active" class="mr-2 text-blue-600"> Active</label>
-                                      <label class="flex items-center"><input type="checkbox" name="filter-status" value="Pending" class="mr-2 text-blue-600"> Pending</label>
-                                      <label class="flex items-center"><input type="checkbox" name="filter-status" value="Rejected" class="mr-2 text-blue-600"> Rejected</label>
-                                      <label class="flex items-center"><input type="checkbox" name="filter-status" value="In_Review" class="mr-2 text-blue-600"> In Review</label>
+                                      <label class="flex items-center"><input type="checkbox" name="filter-status" value="ACTIVE" class="mr-2 text-blue-600"> Active</label>
+                                      <label class="flex items-center"><input type="checkbox" name="filter-status" value="PENDING" class="mr-2 text-blue-600"> Pending</label>
+                                      <label class="flex items-center"><input type="checkbox" name="filter-status" value="REJECTED" class="mr-2 text-blue-600"> Rejected</label>
+                                      <label class="flex items-center"><input type="checkbox" name="filter-status" value="IN_REVIEW" class="mr-2 text-blue-600"> In Review</label>
                                   </div>
                               </div>
                               <div>
@@ -727,9 +727,9 @@
           <div id="verification-view" class="view-section hidden">
               <div class="bg-white p-4 rounded-xl shadow-sm">
                   <div class="flex items-center border-b border-gray-200 mb-4">
-                      <button data-status="Pending" class="verification-tab active">Pending</button>
-                      <button data-status="Approved" class="verification-tab">Approved</button>
-                      <button data-status="Rejected" class="verification-tab">Rejected</button>
+                      <button data-status="PENDING" class="verification-tab active">Pending</button>
+                      <button data-status="APPROVED" class="verification-tab">Approved</button>
+                      <button data-status="REJECTED" class="verification-tab">Rejected</button>
                   </div>
                   <div id="verification-content-area">
                       <!-- Verification accounts will be rendered here -->
@@ -1190,8 +1190,8 @@
                 createdDate: new Date().toISOString(),
                 lastVerificationDate: new Date().toISOString(),
                 lastPaymentDate: new Date().toISOString(),
-                status: 'Pending',
-                amlStatus: 'Pending'
+                status: 'PENDING',
+                amlStatus: 'PENDING'
             })
         });
     }
@@ -1569,7 +1569,7 @@
             item.dataset.bankName = acc.bankName || '';
             item.dataset.customerName = acc.holderName || ''; // Mapping holderName to customerName for API
             item.dataset.accountType = acc.accountType || '';
-            item.dataset.currentStatus = acc.status || 'Pending'; // Store current status
+            item.dataset.currentStatus = acc.status; // Store current status
             item.dataset.verificationAttempts = acc.verificationAttempts || 0; // Initialize attempts
             item.dataset.verificationStatus = acc.verificationStatus || ''; // Initialize verification status
 
@@ -1590,9 +1590,9 @@
                             <i class="fas fa-check"></i> Verify Account Number
                         </button>
                         <select class="status-dropdown form-input w-40" ${acc.verificationStatus === 'PASS' ? '' : 'disabled'}>
-                            <option value="Pending" ${acc.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                            <option value="Approved" ${acc.status === 'Approved' ? 'selected' : ''}>Approved</option>
-                            <option value="Rejected" ${acc.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                            <option value="PENDING" ${acc.status === 'PENDING' ? 'selected' : ''}>Pending</option>
+                            <option value="APPROVED" ${acc.status === 'APPROVED' ? 'selected' : ''}>Approved</option>
+                            <option value="REJECTED" ${acc.status === 'REJECTED' ? 'selected' : ''}>Rejected</option>
                         </select>
                         <input type="text" class="reason-input form-input flex-grow" placeholder="Reason (required for Approved/Rejected)" ${acc.verificationStatus === 'PASS' ? '' : 'disabled'}>
                         <button class="action-button bg-green-500 text-white hover:bg-green-600 update-status-btn" ${acc.verificationStatus === 'PASS' ? '' : 'disabled'}>
@@ -2416,9 +2416,9 @@
                     accountItem.querySelector('.verification-fail-msg').classList.remove('hidden');
                     accountItem.querySelector('.verification-success-msg').classList.add('hidden');
                     // Keep dropdowns/buttons disabled on API error
-                    accountItem.querySelector('.status-dropdown').disabled = true;
-                    accountItem.querySelector('.reason-input').disabled = true;
-                    accountItem.querySelector('.update-status-btn').disabled = true;
+                    accountItem.querySelector('.status-dropdown').disabled = false;
+                    accountItem.querySelector('.reason-input').disabled = false;
+                    accountItem.querySelector('.update-status-btn').disabled = false;
                 } finally {
                     button.textContent = 'Verify Account Number';
                     button.disabled = false;
@@ -2473,14 +2473,12 @@
     async function initializeApp() {
         config.userCode = getuserCode();
         if (!config.userCode) 
-        	window.location.href = '/login';
+        	/* window.location.href = '/login'; */
         	return;
-
         initializeModals();
         initializeEventListeners();
         switchView('dashboard'); 
     }
-
     document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>

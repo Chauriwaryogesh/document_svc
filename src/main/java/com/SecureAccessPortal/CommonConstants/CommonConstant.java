@@ -44,6 +44,7 @@ public class CommonConstant {
 	public static final String CANCELED="Canceled";
 	public static final String PENDING="Pending";
 	public static final String Y = "Y";
+	public static final String PENE="PENDING";
 	
 
 }

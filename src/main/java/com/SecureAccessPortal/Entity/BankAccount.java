@@ -66,6 +66,12 @@ public class BankAccount {
 
     @Column(name = "created_date")
     private LocalDateTime createdDate;
+    
+    @Column(name = "updated_by")
+    private String updatedBy;
+    
+    @Column(name = "updated_Time")
+    private LocalDateTime updatedTime;
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
@@ -96,8 +102,47 @@ public class BankAccount {
 
     @Column(name = "verification_attempts")
     private Integer verificationAttempts;
+    
+    @Column(name = "comment")
+    private String comment;
+    
+    @Column(name = "account_holder_name")
+    private String accountHolderName;
+    
 
-    public String getDeletedFlag() {
+    public String getAccountHolderName() {
+		return accountHolderName;
+	}
+
+	public void setAccountHolderName(String accountHolderName) {
+		this.accountHolderName = accountHolderName;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+
+	public LocalDateTime getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(LocalDateTime updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public String getDeletedFlag() {
 		return deletedFlag;
 	}
 

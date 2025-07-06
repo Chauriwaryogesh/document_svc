@@ -66,7 +66,7 @@ public class WorkItemController {
 		return response;
 	}
 
-	@Cacheable("WorkItem")
+	//@Cacheable("WorkItem")
 	@RequestMapping(value = "workItem-count", method = RequestMethod.GET)
 	public ResponseEntity<WorkItemCount> workItemCount(
 			@RequestHeader(value = "userCode", required = true) String userCode) {
