@@ -3,13 +3,17 @@ package com.SecureAccessPortal.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -85,22 +89,23 @@ public class PaymentService {
 				+ payment.getTransactionId() + ", Status: " + payment.getStatus());
 	}
 
-	public List<Payments> findHistoryOfPayments(String policyNumber, String customerNumber, String paymentId,
-			String transactionId) {
-		List<Payments> payments = new ArrayList<Payments>();
-		if (policyNumber != null) {
-			payments = paymentsRepository.findByPolicyPolicyNumber(policyNumber);
-		} else if (customerNumber != null) {
-			payments = paymentsRepository.findByCustomerNumber(customerNumber);
-		} else if (paymentId != null) {
+	public Page<Payments> findHistoryOfPayments(String policyNumber, String customerNumber, String paymentId,
+			String transactionId, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		if (policyNumber != null && !policyNumber.isEmpty()) {
+			return paymentsRepository.findByPolicyPolicyNumber(policyNumber, pageable);
+		} else if (customerNumber != null && !customerNumber.isEmpty()) {
+			return paymentsRepository.findByCustomerCustomerNo(customerNumber, pageable);
+		} else if (paymentId != null && !paymentId.isEmpty()) {
 			Optional<Payments> payment = paymentsRepository.findById(paymentId);
-			payments.add(payment.get());
-		} else if (transactionId != null) {
-			Optional<Payments> payment = paymentsRepository.findByTxnId(transactionId);
-			payments.add(payment.get());
-		}else {
-			payments = paymentsRepository.findAll();
+			return payment.map(p -> new PageImpl<>(List.of(p), pageable, 1))
+					.orElseGet(() -> new PageImpl<>(List.of(), pageable, 0));
+		} else if (transactionId != null && !transactionId.isEmpty()) {
+			Optional<Payments> payment = paymentsRepository.findByTransactionId(transactionId);
+			return payment.map(p -> new PageImpl<>(List.of(p), pageable, 1))
+					.orElseGet(() -> new PageImpl<>(List.of(), pageable, 0));
+		} else {
+			return paymentsRepository.findAll(pageable);
 		}
-		return payments;
 	}
 }

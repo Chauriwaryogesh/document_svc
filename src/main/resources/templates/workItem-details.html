@@ -1107,7 +1107,7 @@
     return data.data || [];
   }
 
-  async function fetchRelatedWorkItems(workItemRefNum, page = 0, size = 5, filters = {}) {
+  async function fetchRelatedWorkItems(workItemRefNum, page = 0, size = 6, filters = {}) {
     if (!config.userCode) {
       throw new Error('User ID is missing. Please log in again.');
     }
@@ -1550,7 +1550,7 @@
   async function fetchAndPopulateRelatedWorkItems(page, filters = {}) {
     showLoader();
     try {
-      const response = await fetchRelatedWorkItems(currentWorkItemRefNum, page, 5, filters);
+      const response = await fetchRelatedWorkItems(currentWorkItemRefNum, page, 6, filters);
       renderRelatedWorkItems(response.content, currentViewType);
       totalPagesRelated = response.totalPages;
       document.getElementById('current-related-page').textContent = page + 1;
