@@ -139,8 +139,8 @@ public class DocumentService implements IDocumentService {
 			document.setId(String.valueOf(file.getId()));
 			document.setDocName(file.getName());
 			document.setDocType(file.getContentType());
-			document.setCreatedBy("SYSTEM");
-			document.setUpdatedBy("SYSTEM");
+			document.setCreatedBy(userCode);
+			document.setUpdatedBy(userCode);
 			document.setData(file.getData());
 			return document;	
 		}).collect(Collectors.toList());

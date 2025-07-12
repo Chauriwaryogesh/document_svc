@@ -137,10 +137,41 @@ public class Customer {
     
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Complaint> complaint = new ArrayList<>();
-
     
-     
-    public List<Complaint> getComplaint() {
+    @Column
+    private List<String> roles;
+    
+    @Column
+    private String updatedBy;
+
+    @Column
+    private LocalDateTime updatedTime;
+    
+    public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+
+	public LocalDateTime getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(LocalDateTime updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
+
+	public List<Complaint> getComplaint() {
 		return complaint;
 	}
 

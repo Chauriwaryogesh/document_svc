@@ -44,12 +44,23 @@
     .submenu-open .submenu-arrow { transform: rotate(180deg); }
     
     /* Sidebar Header Icons and Text */
-    .sidebar-header .logo-text { opacity: 0; transition: opacity 0.2s ease-in-out; }
-    .sidebar:hover .logo-text, .sidebar.active .logo-text { opacity: 1; transition-delay: 0.1s; }
-    .sidebar-header .sidebar-icon-expanded { display: none; } /* Hidden by default when collapsed */
-    .sidebar-header .sidebar-icon-collapsed { display: block; } /* Visible by default when collapsed */
-    .sidebar:hover .sidebar-icon-expanded, .sidebar.active .sidebar-icon-expanded { display: block; }
-    .sidebar:hover .sidebar-icon-collapsed, .sidebar.active .sidebar-icon-collapsed { display: none; }
+    .sidebar-header .logo-text { 
+        opacity: 0; 
+        transition: opacity 0.2s ease-in-out; 
+        display: none; /* Initially hidden */
+    }
+    .sidebar:hover .logo-text, .sidebar.active .logo-text { 
+        opacity: 1; 
+        transition-delay: 0.1s; 
+        display: block; /* Show when expanded */
+    }
+    .sidebar-header .sidebar-icon-collapsed { 
+        display: block; /* Visible by default when collapsed */
+    }
+    .sidebar:hover .sidebar-icon-collapsed, .sidebar.active .sidebar-icon-collapsed { 
+        display: none; /* Hide when expanded */
+    }
+
 
     .sidebar-submenu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: #f9fafb; }
     .sidebar-submenu a { padding-left: 72px; font-size: 0.9rem; }
@@ -127,6 +138,62 @@
       .sidebar.active { transform: translateX(0); }
       .sidebar.active .sidebar-link-text, .sidebar.active .sidebar-link .submenu-arrow { opacity: 1; }
     }
+
+    /* === Dark Mode Styles === */
+    body.dark-mode {
+        background-color: #1a202c; /* Dark background */
+        color: #e2e8f0; /* Light text */
+    }
+    body.dark-mode .sidebar {
+        background: #2d3748; /* Darker sidebar */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    body.dark-mode .sidebar-header {
+        border-color: #4a5568;
+    }
+    body.dark-mode .sidebar-link {
+        color: #cbd5e1;
+    }
+    body.dark-mode .sidebar-link:hover, body.dark-mode .sidebar-link.active {
+        color: #63b3ed; /* Lighter blue for active/hover */
+        background-color: #4a5568;
+    }
+    body.dark-mode header {
+        background-color: #2d3748;
+        border-color: #4a5568;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    body.dark-mode .text-gray-600 { color: #a0aec0; }
+    body.dark-mode .text-gray-800 { color: #e2e8f0; }
+    body.dark-mode .text-gray-500 { color: #cbd5e1; }
+    body.dark-mode .bg-gray-100 { background-color: #1a202c; }
+    body.dark-mode .bg-white { background-color: #2d3748; }
+    body.dark-mode .border { border-color: #4a5568; }
+    body.dark-mode .shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+    body.dark-mode .shadow-lg { box-shadow: 0 10px 15px rgba(0,0,0,0.3); }
+    body.dark-mode .metric-card, body.dark-mode .service-card {
+        background: linear-gradient(145deg, #2d3748, #1a202c);
+        border-color: #4a5568;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    body.dark-mode .metric-card:hover, body.dark-mode .service-card:hover {
+        background: linear-gradient(145deg, #3a475a, #2d3748);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    }
+    body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+        background-color: #1a202c;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    body.dark-mode input::placeholder { color: #a0aec0; }
+    body.dark-mode .bg-gray-50 { background-color: #2d3748; }
+    body.dark-mode .bg-gray-200 { background-color: #4a5568; }
+    body.dark-mode .text-gray-400 { color: #a0aec0; }
+    body.dark-mode .tab-button { color: #cbd5e1; border-color: transparent; }
+    body.dark-mode .tab-button:hover { background-color: #4a5568; color: #63b3ed; }
+    body.dark-mode .tab-button.active { color: #63b3ed; border-color: #63b3ed; }
+    body.dark-mode .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b7280; }
+    body.dark-mode .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -135,9 +202,10 @@
     <!-- New Sidebar -->
     <aside id="sidebar" class="sidebar flex flex-col h-full flex-shrink-0">
         <div class="sidebar-header flex items-center justify-center h-20 flex-shrink-0 border-b border-gray-200">
-            <i class="fa-solid fa-cubes-stacked text-3xl text-blue-600 sidebar-icon-expanded"></i>
-            <i class="fa-solid fa-infinity text-3xl text-blue-600 sidebar-icon-collapsed"></i>
-            <h2 class="text-2xl font-bold ml-3 logo-text text-gray-800">Hub</h2>
+            <!-- Icon for collapsed state -->
+            <i id="sidebar-header-collapsed-icon" class="fa-solid fa-bars text-3xl text-blue-600"></i> 
+            <!-- Text for expanded state -->
+            <h2 id="sidebar-header-logo-text" class="text-2xl font-bold ml-3 text-gray-800">Hub</h2>
         </div>
 
         <nav class="flex-1 space-y-1 mt-4 custom-scrollbar overflow-y-auto">
@@ -177,6 +245,7 @@
 
     <div class="flex-1 flex flex-col h-screen">
       <header class="bg-white p-4 flex-shrink-0 flex justify-between items-center border-b h-20">
+        <!-- Sidebar Toggle for smaller screens -->
         <button id="sidebar-toggle" class="lg:hidden text-gray-600"><i class="fa-solid fa-bars text-xl"></i></button>
         <div class="relative flex-1 max-w-xl ml-4">
            <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"></i>
@@ -263,7 +332,7 @@
                   </div>
 
                   <!-- Timeline of Events Card -->
-                  <div class="bg-white p-6 rounded-xl shadow-sm">
+                  <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
                       <h3 class="text-xl font-bold text-gray-700 mb-4">Timeline of Events</h3>
                       <div id="timeline-events-list" class="space-y-4">
                           <div class="text-center py-8 text-gray-400">
@@ -272,6 +341,13 @@
                               <p class="text-sm mt-2">This feature is coming soon!</p>
                           </div>
                       </div>
+                  </div>
+
+                  <!-- New Action Button (Cloud Icon) -->
+                  <div class="grid grid-cols-1 gap-4">
+                      <button onclick="openModal('action-chatbot-modal', 'Quick Actions opened')" class="flex items-center justify-center p-4 bg-indigo-600 text-white rounded-xl shadow-md hover:bg-indigo-700 transition-colors text-lg font-semibold">
+                          <i class="fa-solid fa-cloud mr-3"></i> Quick Actions
+                      </button>
                   </div>
               </div>
           </div>
@@ -286,30 +362,83 @@
   <!-- MODALS -->
   <div class="modal-container">
     <div id="coming-soon-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform"><h3 class="text-2xl font-bold text-gray-800">Coming Soon!</h3><p class="text-gray-600 my-4">This feature is under development and will be available shortly.</p><button data-close-modal="coming-soon" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none transition-colors">Got it!</button></div>
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform"><h3 class="text-2xl font-bold text-gray-800">Coming Soon!</h3><p class="text-gray-600 my-4">This feature is under development and will be available shortly.</p></div>
     </div>
     <!-- Updated Profile Modal -->
     <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">User Profile</h3><button data-close-modal="profile" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div>
-          <div class="flex items-center gap-6 mb-6">
-            <img id="modal-profile-icon" src="https://placehold.co/80x80/E2E8F0/4A5568?text=U" alt="User" class="h-20 w-20 rounded-full object-cover">
-            <div>
-              <p class="text-xl font-bold text-gray-800" id="profile-name">&nbsp;</p>
-              <p class="text-gray-500" id="profile-role">&nbsp;</p>
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md transform">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
+                <button data-close-modal="profile" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
             </div>
-          </div>
-          <div class="text-gray-600 mb-6 space-y-3 bg-gray-50 p-4 rounded-lg">
-            <p><i class="fa-solid fa-id-card w-5 mr-2 text-gray-400"></i><span class="font-medium">User ID:</span> <span id="profile-userCode">&nbsp;</span></p>
-            <p><i class="fa-solid fa-envelope w-5 mr-2 text-gray-400"></i><span class="font-medium">Email:</span> <span id="profile-email">&nbsp;</span></p>
-            <p><i class="fa-solid fa-clock w-5 mr-2 text-gray-400"></i><span class="font-medium">Last Login:</span> <span id="profile-loginTime">&nbsp;</span></p>
-          </div>
-          <button data-close-modal="profile" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none">Close</button>
+            <div class="flex items-center gap-6 mb-6">
+                <img id="modal-profile-icon" src="https://placehold.co/80x80/E2E8F0/4A5568?text=U" alt="User" class="h-20 w-20 rounded-full object-cover">
+                <div>
+                    <p class="text-xl font-bold text-gray-800" id="profile-name">&nbsp;</p>
+                    <p class="text-gray-500" id="profile-role">&nbsp;</p>
+                </div>
+            </div>
+            <div class="text-gray-600 mb-6 space-y-3 bg-gray-50 p-4 rounded-lg">
+                <p><i class="fa-solid fa-id-card w-5 mr-2 text-gray-400"></i><span class="font-medium">User ID:</span> <span id="profile-userCode">&nbsp;</span></p>
+                <p><i class="fa-solid fa-envelope w-5 mr-2 text-gray-400"></i><span class="font-medium">Email:</span> <span id="profile-email">&nbsp;</span></p>
+                <p><i class="fa-solid fa-phone w-5 mr-2 text-gray-400"></i><span class="font-medium">Phone:</span> <span id="profile-phoneNumber">&nbsp;</span></p>
+            </div>
+
+            <!-- Toggle for More Details -->
+            <button id="toggle-more-details" class="w-full text-blue-600 hover:text-blue-800 font-medium py-2 flex items-center justify-center gap-2">
+                <span id="toggle-text">Show More Details</span>
+                <i id="toggle-icon" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+            </button>
+
+            <!-- Extended Details Section (initially hidden) -->
+            <div id="profile-extended-details" class="hidden mt-4 text-gray-600 space-y-3 bg-gray-50 p-4 rounded-lg">
+                <p><i class="fa-solid fa-user-tag w-5 mr-2 text-gray-400"></i><span class="font-medium">Customer No:</span> <span id="profile-customerNo">&nbsp;</span></p>
+                <p><i class="fa-solid fa-cake-candles w-5 mr-2 text-gray-400"></i><span class="font-medium">Date of Birth:</span> <span id="profile-dateOfBirth">&nbsp;</span></p>
+                <p><i class="fa-solid fa-venus-mars w-5 mr-2 text-gray-400"></i><span class="font-medium">Gender:</span> <span id="profile-gender">&nbsp;</span></p>
+                <p><i class="fa-solid fa-smoking w-5 mr-2 text-gray-400"></i><span class="font-medium">Smoker Status:</span> <span id="profile-smokerStatus">&nbsp;</span></p>
+                <p><i class="fa-solid fa-user-lock w-5 mr-2 text-gray-400"></i><span class="font-medium">Admin Access:</span> <span id="profile-adminAccess">&nbsp;</span></p>
+                <p><i class="fa-solid fa-briefcase w-5 mr-2 text-gray-400"></i><span class="font-medium">Roles:</span> <span id="profile-roles">&nbsp;</span></p>
+                <p><i class="fa-solid fa-map-marker-alt w-5 mr-2 text-gray-400"></i><span class="font-medium">Address:</span> <span id="profile-address">&nbsp;</span></p>
+                
+                <h4 class="font-semibold text-gray-700 mt-4 mb-2">Contact Details:</h4>
+                <p><i class="fa-solid fa-at w-5 mr-2 text-gray-400"></i><span class="font-medium">Alternate Email:</span> <span id="profile-alternateEmail">&nbsp;</span></p>
+                <p><i class="fa-solid fa-mobile-alt w-5 mr-2 text-gray-400"></i><span class="font-medium">Phone Country Code:</span> <span id="profile-phoneCountryCode">&nbsp;</span></p>
+                <p><i class="fa-solid fa-user-friends w-5 mr-2 text-gray-400"></i><span class="font-medium">Emergency Contact Name:</span> <span id="profile-emergencyContactName">&nbsp;</span></p>
+                <p><i class="fa-solid fa-phone-volume w-5 mr-2 text-gray-400"></i><span class="font-medium">Emergency Contact Phone:</span> <span id="profile-emergencyContactPhone">&nbsp;</span></p>
+                <p><i class="fa-solid fa-clock w-5 mr-2 text-gray-400"></i><span class="font-medium">Last Login:</span> <span id="profile-loginTime">&nbsp;</span></p>
+            </div>
         </div>
     </div>
     <!-- Updated Settings Modal -->
     <div id="settings-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Settings</h3><button data-close-modal="settings" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div>
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-semibold text-gray-800">Settings</h3>
+                <button data-close-modal="settings" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+            </div>
             <div class="space-y-6">
+                <!-- Dark Mode Toggle -->
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                    <label for="dark-mode-toggle" class="font-semibold text-gray-700">Dark Mode</label>
+                    <input type="checkbox" id="dark-mode-toggle" class="toggle-switch appearance-none w-12 h-6 rounded-full bg-gray-300 checked:bg-blue-600 transition-colors cursor-pointer relative">
+                    <style>
+                        .toggle-switch::before {
+                            content: '';
+                            position: absolute;
+                            top: 2px;
+                            left: 2px;
+                            width: 20px;
+                            height: 20px;
+                            border-radius: 50%;
+                            background-color: white;
+                            transition: transform 0.3s ease;
+                        }
+                        .toggle-switch:checked::before {
+                            transform: translateX(24px);
+                        }
+                    </style>
+                </div>
+
                  <div>
                     <h4 class="font-semibold text-gray-700 mb-2">Reorder Services</h4>
                     <p class="text-sm text-gray-500 mb-3">Drag and drop to reorder services on the dashboard. (Feature coming soon)</p>
@@ -320,33 +449,30 @@
                     </div>
                 </div>
             </div>
-            <button data-close-modal="settings" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Save Settings</button>
         </div>
     </div>
     <!-- Other original modals -->
     <div id="contact-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Contact Us</h3><button data-close-modal="contact" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div><p class="text-gray-600 mb-6">Reach out to us at support@example.com or (555) 123-4567.</p><button data-close-modal="contact" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none">Close</button></div>
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Contact Us</h3><button data-close-modal="contact" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div><p class="text-gray-600 mb-6">Reach out to us at support@example.com or (555) 123-4567.</p></div>
     </div>
     <div id="tasks-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Tasks</h3><button data-close-modal="tasks" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div><form class="space-y-4"><label class="block"><span class="text-gray-700">Task Name</span><input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Enter task name"></label><label class="block"><span class="text-gray-700">Due Date</span><input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></label></form><button data-close-modal="tasks" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Add Task</button></div>
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Tasks</h3><button data-close-modal="tasks" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div><form class="space-y-4"><label class="block"><span class="text-gray-700">Task Name</span><input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Enter task name"></label><label class="block"><span class="text-gray-700">Due Date</span><input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></label></form></div>
     </div>
     <div id="notifications-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Notifications</h3><button data-close-modal="notifications" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div><div class="space-y-3"><p class="text-gray-600 border-b pb-2"><span class="font-medium text-green-600">System Update:</span> New features available!</p><p class="text-gray-600"><span class="font-medium text-yellow-600">Task Due:</span> Complete report by 5 PM.</p></div><button data-close-modal="notifications" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Close</button></div>
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Notifications</h3><button data-close-modal="notifications" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div><div class="space-y-3"><p class="text-gray-600 border-b pb-2"><span class="font-medium text-green-600">System Update:</span> New features available!</p><p class="text-gray-600"><span class="font-medium text-yellow-600">Task Due:</span> Complete report by 5 PM.</p></div></div>
     </div>
     <!-- New Search Message Modal -->
     <div id="search-message-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
             <h3 class="text-2xl font-bold text-gray-800 mb-4">Search Initiated</h3>
             <p class="text-gray-600 my-4">Searching for: "<span id="search-query-display" class="font-semibold"></span>"</p>
-            <button data-close-modal="search-message-modal" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none transition-colors">OK</button>
         </div>
     </div>
     <!-- New Error Message Modal -->
     <div id="error-message-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
             <h3 class="text-2xl font-bold text-red-600 mb-4">Error!</h3>
-            <p class="text-gray-600 my-4">An unexpected error occurred. Please try again.</p>
-            <button data-close-modal="error-message-modal" class="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 focus:outline-none transition-colors">Close</button>
+            <p class="text-gray-600 my-4" id="error-message-text">An unexpected error occurred. Please try again.</p>
         </div>
     </div>
 
@@ -378,15 +504,32 @@
             <div id="module-search-results" class="bg-gray-50 p-4 rounded-lg h-48 overflow-y-auto custom-scrollbar">
                 <p class="text-gray-500 text-center py-4">Enter a query and select a type to search.</p>
             </div>
+        </div>
+    </div>
 
-            <!-- Close button -->
-            <button data-close-modal="search-module-modal" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Close</button>
+    <!-- New Action Chatbot Modal -->
+    <div id="action-chatbot-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-sm text-center transform">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-semibold text-gray-800">Quick Actions</h3>
+                <button data-close-modal="action-chatbot-modal" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="grid grid-cols-1 gap-4">
+                <button onclick="showComingSoon('Create Workitem')" class="flex items-center justify-center p-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-colors text-base font-medium">
+                    <i class="fa-solid fa-briefcase mr-2"></i> Create Workitem
+                </button>
+                <button onclick="showComingSoon('Add Customer')" class="flex items-center justify-center p-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-colors text-base font-medium">
+                    <i class="fa-solid fa-user-plus mr-2"></i> Add Customer
+                </button>
+                <button onclick="showComingSoon('Add Policy')" class="flex items-center justify-center p-3 bg-purple-500 text-white rounded-lg shadow-md hover:bg-purple-600 transition-colors text-base font-medium">
+                    <i class="fa-solid fa-file-contract mr-2"></i> Add Policy
+                </button>
+            </div>
         </div>
     </div>
   </div>
 
 <script>
-    // --- ORIGINAL SCRIPT (Unchanged Core Functionality) ---
     const config = { loginUrl: 'login', userCode: null, email: null };
     const modals = {
       profile: document.getElementById('profile-modal'),
@@ -397,7 +540,8 @@
       'coming-soon': document.getElementById('coming-soon-modal'),
       'search-message-modal': document.getElementById('search-message-modal'), 
       'error-message-modal': document.getElementById('error-message-modal'),   
-      'search-module-modal': document.getElementById('search-module-modal'), // Added
+      'search-module-modal': document.getElementById('search-module-modal'), 
+      'action-chatbot-modal': document.getElementById('action-chatbot-modal'), // Added new modal
     };
     
     window.showLoader = function() {
@@ -409,13 +553,23 @@
         document.getElementById('loader').classList.remove('active');
     };
 
-    // Modified openModal to log activity
     window.openModal = function(modalId, activityText = `Opened ${modalId} modal`) { 
         modals[modalId]?.classList.remove('hidden'); 
-        logActivity(activityText); // Log activity when a modal is opened
+        logActivity(activityText); 
     };
-    window.closeModal = function(modalId) { modals[modalId]?.classList.add('hidden'); };
-    // Modified showComingSoon to log activity
+    window.closeModal = function(modalId) { 
+        modals[modalId]?.classList.add('hidden'); 
+        // Reset profile extended details when closing profile modal
+        if (modalId === 'profile-modal') {
+            const profileExtendedDetails = document.getElementById('profile-extended-details');
+            const toggleText = document.getElementById('toggle-text');
+            const toggleIcon = document.getElementById('toggle-icon');
+            profileExtendedDetails.classList.add('hidden');
+            toggleText.textContent = 'Show More Details';
+            toggleIcon.classList.remove('fa-chevron-up');
+            toggleIcon.classList.add('fa-chevron-down');
+        }
+    };
     window.showComingSoon = function(featureName = 'A feature') { 
         openModal('coming-soon', `${featureName} feature coming soon`); 
     };
@@ -446,88 +600,132 @@
         const currentPageFileName = window.location.pathname.split('/').pop();
 
       
-        // Show loader for any navigation to a different page or unknown page
         showLoader(); 
 
-        // Set a timeout to hide the loader after 1 second, regardless of page load
         setTimeout(() => {
             hideLoader();
-        }, 1000); // Hide after 1 second
+        }, 1000); 
 
         if (page !== 'logout' && !config.userCode) {
             sessionStorage.removeItem('userCode');
-            window.location.href = '/login'; // Navigate to actual login page
-            logActivity('Logged out due to no user code'); // Log this action
+            window.location.href = '/login'; 
+            logActivity('Logged out due to no user code'); 
             return;
         }
         
         if (targetFileName) {
             window.location.href = targetFileName;
-            logActivity(`Navigated to ${pageUrls[page]} page`); // Log successful navigation
+            logActivity(`Navigated to ${pageUrls[page]} page`); 
         } else {
              console.error(`No URL defined for page: ${page}`);
-             hideLoader(); // Hide loader if navigation fails
-             openModal('error-message-modal', `Navigation failed for: ${page}`); // Show error modal
+             hideLoader(); 
+             openModal('error-message-modal', `Navigation failed for: ${page}`); 
         }
     };
     
-    // --- NEW SCRIPT ADDITIONS ---
-
     /**
-     * Fix for fetchTeamDetails not defined: making it global.
-     * Simulates fetching team/user details from an API.
-     * In a real app, replace the mockApiResponse with an actual fetch call.
+     * Fetches customer details from the API and displays them in the profile modal.
      */
-    window.fetchTeamDetails = async function() { // Made global
+    window.fetchTeamDetails = async function() { 
         showLoader();
-        // Reset modal fields
+        
+        // Clear previous data in modal
         document.getElementById('profile-name').innerHTML = '&nbsp;';
-        document.getElementById('profile-role').innerHTML = '&nbsp;';
+        document.getElementById('profile-role').innerHTML = '&nbsp;'; 
         document.getElementById('profile-userCode').innerHTML = '&nbsp;';
         document.getElementById('profile-email').innerHTML = '&nbsp;';
-        document.getElementById('profile-loginTime').innerHTML = '&nbsp;';
+        document.getElementById('profile-phoneNumber').innerHTML = '&nbsp;';
+        document.getElementById('profile-customerNo').innerHTML = '&nbsp;';
+        document.getElementById('profile-dateOfBirth').innerHTML = '&nbsp;';
+        document.getElementById('profile-gender').innerHTML = '&nbsp;';
+        document.getElementById('profile-smokerStatus').innerHTML = '&nbsp;';
+        document.getElementById('profile-adminAccess').innerHTML = '&nbsp;';
+        document.getElementById('profile-roles').innerHTML = '&nbsp;';
+        document.getElementById('profile-address').innerHTML = '&nbsp;';
+        document.getElementById('profile-loginTime').innerHTML = '&nbsp;'; 
+        document.getElementById('profile-alternateEmail').innerHTML = '&nbsp;';
+        document.getElementById('profile-phoneCountryCode').innerHTML = '&nbsp;';
+        document.getElementById('profile-emergencyContactName').innerHTML = '&nbsp;';
+        document.getElementById('profile-emergencyContactPhone').innerHTML = '&nbsp;';
+
+
+        // Set a generic profile icon for loading state
         document.getElementById('modal-profile-icon').src = 'https://placehold.co/80x80/E2E8F0/4A5568?text=U';
+        document.getElementById('profile-icon').src = 'https://placehold.co/40x40/E2E8F0/4A5568?text=U';
+
+        const userCode = sessionStorage.getItem('userCode');
+
+        if (!userCode) {
+            hideLoader();
+            openModal('error-message-modal', 'User code not found in session storage. Please log in.');
+            return;
+        }
 
         try {
-            // --- REPLACE THIS WITH YOUR ACTUAL API CALL ---
-            // Example:
-            // const response = await fetch('/api/user/details');
-            // const data = await response.json();
-            // if (!response.ok) throw new Error(data.message || 'Failed to fetch user details');
-            // const user = data.data; // Assuming your API returns { success: true, data: { ... } }
-
-            // --- MOCK API RESPONSE (REMOVE IN PRODUCTION) ---
-            await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API delay
-            const mockApiResponse = {
-                success: true,
-                data: {
-                    name: "Jane Doe", 
-                    role: "Lead Developer", 
-                    userCode: config.userCode,
-                    email: config.email,
-                    lastLogin: new Date().toLocaleString(),
-                    profileIconUrl: "https://i.pravatar.cc/80?img=25" 
+            const response = await fetch('http://localhost:8081/customer/getCustomerDetails', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'userCode': userCode 
                 }
-            };
-            const user = mockApiResponse.data; 
-            // --- END MOCK API RESPONSE ---
+            });
 
-            if (mockApiResponse.success) { 
-                document.getElementById('profile-name').textContent = user.name;
-                document.getElementById('profile-role').textContent = user.role;
-                document.getElementById('profile-userCode').textContent = user.userCode;
-                document.getElementById('profile-email').textContent = user.email;
-                document.getElementById('profile-loginTime').textContent = user.lastLogin;
-                document.getElementById('profile-icon').src = user.profileIconUrl;
-                document.getElementById('modal-profile-icon').src = user.profileIconUrl;
-                openModal('profile', 'Profile details fetched and viewed');
+            const apiResponse = await response.json();
+            console.log("Customer Details API Response:", apiResponse);
+
+            if (response.ok && apiResponse.status === 'Success' && apiResponse.data) {
+                const customer = apiResponse.data;
+
+                // Populate modal with fetched data
+                document.getElementById('profile-name').textContent = `${customer.name || ''} ${customer.middleName || ''} ${customer.surname || ''}`.trim();
+                document.getElementById('profile-role').textContent = customer.roles && customer.roles.length > 0 ? customer.roles.join(', ') : 'Customer'; 
+                document.getElementById('profile-userCode').textContent = customer.userCode || 'N/A';
+                document.getElementById('profile-email').textContent = customer.email || 'N/A';
+                document.getElementById('profile-phoneNumber').textContent = customer.phoneNumber || 'N/A';
+                
+                // Populate extended details
+                document.getElementById('profile-customerNo').textContent = customer.customerNo || 'N/A';
+                document.getElementById('profile-dateOfBirth').textContent = customer.dateOfBirth || 'N/A';
+                document.getElementById('profile-gender').textContent = customer.gender || 'N/A';
+                document.getElementById('profile-smokerStatus').textContent = customer.smokerStatus || 'N/A';
+                document.getElementById('profile-adminAccess').textContent = customer.adminAccess === 'Y' ? 'Yes' : 'No';
+                document.getElementById('profile-roles').textContent = customer.roles ? customer.roles.join(', ') : 'N/A';
+                
+                if (customer.address) {
+                    document.getElementById('profile-address').textContent = 
+                        `${customer.address.street || ''}, ${customer.address.city || ''}, ${customer.address.state || ''} - ${customer.address.zipCode || '', customer.address.country || ''}`.replace(/, \s*-|, \s*,/g, ', ').replace(/^, | ,$/g, '').trim();
+                } else {
+                    document.getElementById('profile-address').textContent = 'N/A';
+                }
+
+                if (customer.contactDetails) {
+                    document.getElementById('profile-alternateEmail').textContent = customer.contactDetails.alternateEmail || 'N/A';
+                    document.getElementById('profile-phoneCountryCode').textContent = customer.contactDetails.phoneCountryCode || 'N/A';
+                    document.getElementById('profile-emergencyContactName').textContent = customer.contactDetails.emergencyContactName || 'N/A';
+                    document.getElementById('profile-emergencyContactPhone').textContent = customer.contactDetails.emergencyContactPhone || 'N/A';
+                } else {
+                    document.getElementById('profile-alternateEmail').textContent = 'N/A';
+                    document.getElementById('profile-phoneCountryCode').textContent = 'N/A';
+                    document.getElementById('profile-emergencyContactName').textContent = 'N/A';
+                    document.getElementById('profile-emergencyContactPhone').textContent = 'N/A';
+                }
+                document.getElementById('profile-loginTime').textContent = new Date().toLocaleString(); 
+
+
+                // Update header welcome message and profile icon
+                document.getElementById('welcome-message').textContent = `Welcome, ${customer.name || customer.email || 'User'}!`;
+                document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?img=25"; 
+                document.getElementById('modal-profile-icon').src = "https://i.pravatar.cc/80?img=25"; 
+
+                openModal('profile', 'Customer details loaded successfully');
             } else {
-                console.error("API response indicated failure to fetch user details.");
-                openModal('error-message-modal', "Failed to fetch user details."); 
+                const errorMessage = apiResponse.errorMessage || 'Failed to fetch customer details.';
+                console.error("API response indicated failure:", errorMessage);
+                openModal('error-message-modal', errorMessage); 
             }
         } catch (error) {
-            console.error("Error fetching team details:", error);
-            openModal('error-message-modal', "An error occurred while fetching user details.");
+            console.error("Error fetching customer details:", error);
+            openModal('error-message-modal', 'An error occurred while fetching customer details. Please ensure the backend is running and accessible.');
         } finally {
             hideLoader();
         }
@@ -568,9 +766,9 @@
      */
     function updateKeyMetrics() {
         // Simulate fetching data from an API
-        const policiesCount = Math.floor(Math.random() * 1000) + 500; // 500-1499
-        const workitemsCount = Math.floor(Math.random() * 200) + 50;  // 50-249
-        const customersCount = Math.floor(Math.random() * 5000) + 1000; // 1000-5999
+        const policiesCount = Math.floor(Math.random() * 1000) + 500; 
+        const workitemsCount = Math.floor(Math.random() * 200) + 50;  
+        const customersCount = Math.floor(Math.random() * 5000) + 1000; 
 
         document.getElementById('policies-count').textContent = policiesCount.toLocaleString();
         document.getElementById('workitems-count').textContent = workitemsCount.toLocaleString();
@@ -587,15 +785,14 @@
     async function performModuleSearch(query, type) {
         showLoader();
         const resultsContainer = document.getElementById('module-search-results');
-        resultsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Searching...</p>'; // Show searching message
+        resultsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Searching...</p>'; 
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 1000)); 
 
             let results = [];
             const lowerCaseQuery = query.toLowerCase();
 
-            // Mock data based on type and query
             switch (type) {
                 case 'policy':
                     if (lowerCaseQuery.includes('health')) results.push('Health Policy 12345 - Active');
@@ -647,21 +844,62 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         initializeUser();
-        hideLoader(); // Ensure loader is hidden when the page initially loads
-        updateKeyMetrics(); // Populate key metrics on load
+        hideLoader(); 
+        updateKeyMetrics(); 
 
         // --- Event Listeners ---
+        const sidebar = document.getElementById('sidebar');
+        const logoText = document.getElementById('sidebar-header-logo-text');
+        const sidebarCollapsedIcon = document.getElementById('sidebar-header-collapsed-icon');
+
+        // Function to update sidebar header content based on state
+        function updateSidebarHeader() {
+            if (sidebar.classList.contains('active') || sidebar.matches(':hover')) {
+                logoText.textContent = 'Dashboard Hub';
+                logoText.classList.remove('opacity-0');
+                logoText.classList.remove('hidden'); // Ensure it's displayed
+                sidebarCollapsedIcon.classList.add('hidden'); 
+            } else {
+                logoText.textContent = 'Hub'; 
+                logoText.classList.add('opacity-0');
+                logoText.classList.add('hidden'); // Ensure it's hidden
+                sidebarCollapsedIcon.classList.remove('hidden'); 
+            }
+        }
+
+        // Initial update
+        updateSidebarHeader();
+
+        // Event listeners for hover (for desktop)
+        sidebar.addEventListener('mouseenter', updateSidebarHeader);
+        sidebar.addEventListener('mouseleave', updateSidebarHeader);
+
+        // Event listener for click (for mobile toggle)
         document.getElementById('sidebar-toggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('active');
+            sidebar.classList.toggle('active');
+            updateSidebarHeader(); 
             logActivity('Sidebar toggled');
         });
         
-        document.getElementById('btn-profile').addEventListener('click', window.fetchTeamDetails); // Use window.fetchTeamDetails
+        document.getElementById('btn-profile').addEventListener('click', window.fetchTeamDetails); 
 
-        document.querySelector('.modal-container').addEventListener('click', (e) => {
-            if (e.target.dataset.closeModal) {
-                closeModal(e.target.dataset.closeModal);
-            }
+        // Event listener for closing modals by clicking the cross icon or outside the modal content
+        document.querySelectorAll('.modal').forEach(modalElement => {
+            // Add listener to the modal overlay itself
+            modalElement.addEventListener('click', (e) => {
+                if (e.target === modalElement) { // Only close if clicking on the backdrop
+                    closeModal(modalElement.id);
+                }
+            });
+        });
+
+        // Add specific listeners for all elements with data-close-modal (the cross icons)
+        document.querySelectorAll('[data-close-modal]').forEach(closeBtn => {
+            closeBtn.addEventListener('click', (e) => {
+                const modalIdToClose = closeBtn.dataset.closeModal;
+                closeModal(modalIdToClose);
+                e.stopPropagation(); // Prevent event from bubbling up to the modal overlay
+            });
         });
       
         window.addEventListener('click', (e) => {
@@ -711,7 +949,7 @@
         });
 
         // --- Search Module Modal Logic ---
-        let currentSearchType = 'policy'; // Default search type
+        let currentSearchType = 'policy'; 
 
         const searchModuleTabs = document.querySelectorAll('#search-module-modal .tab-button');
         const moduleSearchInput = document.getElementById('module-search-input');
@@ -733,7 +971,7 @@
                 logActivity(`Performed search for "${query}" of type "${currentSearchType}"`);
                 const results = await performModuleSearch(query, currentSearchType);
                 
-                moduleSearchResults.innerHTML = ''; // Clear previous results
+                moduleSearchResults.innerHTML = ''; 
                 if (results.length > 0) {
                     results.forEach(result => {
                         const p = document.createElement('p');
@@ -744,6 +982,50 @@
                 } else {
                     moduleSearchResults.innerHTML = '<p class="text-gray-500 text-center py-4">No results found.</p>';
                 }
+            }
+        });
+
+        // --- Profile Modal Toggle Logic ---
+        const toggleMoreDetailsButton = document.getElementById('toggle-more-details');
+        const profileExtendedDetails = document.getElementById('profile-extended-details');
+        const toggleText = document.getElementById('toggle-text');
+        const toggleIcon = document.getElementById('toggle-icon');
+
+        toggleMoreDetailsButton.addEventListener('click', () => {
+            if (profileExtendedDetails.classList.contains('hidden')) {
+                profileExtendedDetails.classList.remove('hidden');
+                toggleText.textContent = 'Hide Details';
+                toggleIcon.classList.remove('fa-chevron-down');
+                toggleIcon.classList.add('fa-chevron-up');
+                logActivity('Profile extended details shown');
+            } else {
+                profileExtendedDetails.classList.add('hidden');
+                toggleText.textContent = 'Show More Details';
+                toggleIcon.classList.remove('fa-chevron-up');
+                toggleIcon.classList.add('fa-chevron-down');
+                logActivity('Profile extended details hidden');
+            }
+        });
+
+        // --- Dark Mode Toggle Logic ---
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const body = document.body;
+
+        // Apply saved preference on load
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+            darkModeToggle.checked = true;
+        }
+
+        darkModeToggle.addEventListener('change', () => {
+            if (darkModeToggle.checked) {
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                logActivity('Dark mode enabled');
+            } else {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+                logActivity('Dark mode disabled');
             }
         });
     });

@@ -1,5 +1,7 @@
 package com.SecureAccessPortal.Modal;
 
+import java.util.List;
+
 public class CustomerDTO {
 	
 	private String name;
@@ -16,6 +18,14 @@ public class CustomerDTO {
 	private String adminAccess;
 	private Address address;
 	private ContactDetails  contactDetails;
+	private List<String> roles;
+	
+	public List<String> getRoles() {
+		return roles;
+	}
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
 	public String getName() {
 		return name;
 	}

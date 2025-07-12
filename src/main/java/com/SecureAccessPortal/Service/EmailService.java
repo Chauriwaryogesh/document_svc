@@ -566,6 +566,8 @@ public class EmailService {
 			contact.setPhoneNumber(cust.getPhoneNumber());
 			custDTO.setAddress(address);
 			custDTO.setContactDetails(contact);
+			// add roles
+			custDTO.setRoles(cust.getRoles());
 			customerList.add(custDTO);
 		}
 		return customerList;
@@ -710,6 +712,8 @@ public class EmailService {
 				custDTO.setEmergencyContactPhone(contact.getEmergencyContactPhone());
 				custDTO.setPhoneCountryCode(contact.getPhoneCountryCode());
 			}
+			//Add Roles
+			custDTO.setRoles(cust.getRoles());
 
 			// Create or update corresponding Security record
 			Optional<Security> existingSecurity = securityRepo.findByCustomerNoAndDeletedFlag(custDTO.getCustomerNo(),

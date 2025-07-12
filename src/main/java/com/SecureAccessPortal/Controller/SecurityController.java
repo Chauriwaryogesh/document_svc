@@ -227,7 +227,7 @@ public class SecurityController {
 			@RequestParam(value = "userCodeVerified", required = false) String userCodeVerified,
 			@RequestParam(value = "adminAccess", required = false) String adminAccess,
 			@RequestParam(value = "inActive", required = false) String inActive,
-			@RequestHeader String userCode) {
+			@RequestHeader  (required=false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<EmailDTO>> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
 		List<EmailDTO> email = otpService.fetchListOfEmailIds(id, allEmails,emailVerified,userCodeVerified,adminAccess,
@@ -304,7 +304,7 @@ public class SecurityController {
 	@GetMapping("/customer-details")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<CustomerDTO>> getCustomerlDetails(
 			@RequestParam(value = "email", required = false) String email,
-			@RequestParam(value = "customerNo", required = false) String customerNo, @RequestHeader String userCode) {
+			@RequestParam(value = "customerNo", required = false) String customerNo, @RequestHeader (required=false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<CustomerDTO>> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
 		List<CustomerDTO> customerDTO = otpService.getCustomerDetails(email, customerNo, userCode);

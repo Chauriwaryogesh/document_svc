@@ -455,8 +455,7 @@
         .user-details .checkbox-group {
             display: flex;
             align-items: center;
-            font-size: 0.9em;
-            margin-top: 5px;
+            margin-bottom: 12px;
         }
         .user-details input[type="checkbox"] {
             margin-right: 6px;
@@ -464,9 +463,8 @@
             width: auto;
         }
         .user-details .checkbox-group label {
-            font-weight: normal;
-            color: var(--text-color);
             margin-bottom: 0;
+            font-weight: normal;
         }
         .customer-details-button, .register-fingerprint-button {
             background-color: var(--info-color);
@@ -789,7 +787,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(var(--dark-color-rgb), 0.65);
+            background-color: rgba(var(--dark-color-rgb), 0.7);
             display: none;
             justify-content: center;
             align-items: center;
@@ -988,8 +986,16 @@
             .modal h2 {
                 font-size: 1.3rem;
             }
-            .tab-fields {
-                grid-template-columns: 1fr;
+            .modal-content label {
+                font-size: 0.8em; /* Adjusted for smaller screens */
+            }
+            .modal-content input, .modal-content select {
+                font-size: 0.85em; /* Adjusted for smaller screens */
+                padding: 7px;
+            }
+            .modal-buttons button {
+                font-size: 0.8rem;
+                padding: 7px 10px;
             }
             .bottom-button-container {
                 flex-direction: column;
@@ -1293,7 +1299,7 @@
         padding: 7px 11px;
         border-radius: 6px;
         cursor: pointer;
-        font-size: 0.85rem;
+        font-size: 0.85em;
         font-weight: 500;
         background-color: var(--card-bg);
         color: var(--primary-color);
@@ -1319,19 +1325,61 @@
         cursor: default;
     }
     .page-numbers {
-        display: flex;
-        gap: 5px;
-    }
-    @media (max-width: 480px) {
-        .user-emails-table th, .user-emails-table td {
-            font-size: 0.8rem;
-            padding: 8px;
+            display: flex;
+            gap: 5px;
         }
-        .pagination-button, .page-numbers button {
-            padding: 5px 8px;
-            font-size: 0.8rem;
+        @media (max-width: 480px) {
+            .user-emails-table th, .user-emails-table td {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+            .pagination-button, .page-numbers button {
+                padding: 5px 8px;
+                font-size: 0.8rem;
+            }
         }
-    }
+        /* Styles for selected roles checkboxes */
+        .selected-roles-container {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--light-color);
+            min-height: 60px; /* Give it some height */
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .selected-role-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+        .selected-role-checkbox input[type="checkbox"] {
+            margin-right: 8px;
+            transform: scale(0.9);
+        }
+        /* Style for existing roles display */
+        .existing-roles-container {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: #e0f2f7; /* Light blue background */
+            min-height: 60px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .existing-role-badge {
+            display: inline-block;
+            background-color: var(--info-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin: 3px;
+        }
     </style>
 </head>
 <body>
@@ -1528,7 +1576,7 @@
                     <button class="tab-button active" data-tab="tab1C"><i class="fas fa-user-circle" style="margin-right:5px;"></i>Personal</button>
                     <button class="tab-button" data-tab="tab2C"><i class="fas fa-map-marked-alt" style="margin-right:5px;"></i>Address</button>
                     <button class="tab-button" data-tab="tab3C"><i class="fas fa-phone-alt" style="margin-right:5px;"></i>Contact</button>
-                    <button class="tab-button" data-tab="tab4C"><i class="fas fa-cogs" style="margin-right:5px;"></i>Preferences</button>
+                    <button class="tab-button" data-tab="tab4C"><i class="fas fa-user-tag" style="margin-right:5px;"></i>Role Management</button>
                 </div>
                 <div class="tab-content active" id="tab1C">
                     <div class="tab-fields">
@@ -1568,7 +1616,28 @@
                     </div>
                 </div>
                 <div class="tab-content" id="tab4C">
-                    <p>Customer preferences and other relevant settings can be configured here.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="font-semibold text-gray-700 mb-2">Existing Roles:</p>
+                            <div id="existing-roles-display" class="existing-roles-container">
+                                <!-- Existing roles will appear as badges here -->
+                                <p class="text-gray-500 text-sm">No existing roles.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="customer-roles-select" class="block font-semibold text-gray-700 mb-2">Assign Roles</label>
+                            <select id="customer-roles-select" multiple class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
+                                <!-- Roles will be dynamically loaded here -->
+                            </select>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-700 mb-2">Selected Roles:</p>
+                            <div id="selected-roles-display" class="selected-roles-container">
+                                <!-- Selected roles will appear as checkboxes here -->
+                                <p class="text-gray-500 text-sm">No roles selected.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1636,6 +1705,7 @@
         let userEmailsData = []; // Data for the user emails popup
         let currentEmailPage = 0;
         let totalEmailPages = 1;
+        let allDomainRoles = []; // To store all available roles
 
         const userListContainer = document.getElementById('userListContainer');
         const paginationContainer = document.getElementById('paginationContainer');
@@ -2485,6 +2555,39 @@
                 document.getElementById('customer-phoneCountryCode').value = customer.contactDetails?.phoneCountryCode || '';
                 document.getElementById('customer-emergencyContactName').value = customer.contactDetails?.emergencyContactName || '';
                 document.getElementById('customer-emergencyContactPhone').value = customer.contactDetails?.emergencyContactPhone || '';
+
+                // --- Role Management Logic ---
+                await fetchDomainRoles(); // Fetch all possible roles
+                const customerRoles = customer.roles || []; // Get roles assigned to this customer
+                const rolesSelect = document.getElementById('customer-roles-select');
+                const existingRolesDisplay = document.getElementById('existing-roles-display');
+                
+                // Clear previous existing roles
+                existingRolesDisplay.innerHTML = '';
+                if (customerRoles.length > 0) {
+                    customerRoles.forEach(role => {
+                        const badge = document.createElement('span');
+                        badge.className = 'existing-role-badge';
+                        badge.textContent = role;
+                        existingRolesDisplay.appendChild(badge);
+                    });
+                } else {
+                    existingRolesDisplay.innerHTML = '<p class="text-gray-500 text-sm">No existing roles.</p>';
+                }
+
+                // Clear previous selections in the multi-select dropdown
+                Array.from(rolesSelect.options).forEach(option => {
+                    option.selected = false;
+                });
+
+                // Select the customer's current roles in the dropdown
+                customerRoles.forEach(role => {
+                    const option = Array.from(rolesSelect.options).find(opt => opt.value === role);
+                    if (option) {
+                        option.selected = true;
+                    }
+                });
+                populateSelectedRolesCheckboxes(); // Display selected roles as checkboxes
                 
                 initializeTabs('customerDetailsModal');
                 openModal('customerDetailsModal');
@@ -2494,6 +2597,93 @@
                 showGlobalErrorAlert(`Failed to load customer details: ${error.message}`);
             }
         }
+
+        async function fetchDomainRoles() {
+            const authuserCode = getuserCode();
+            if (!authuserCode) return;
+
+            showLoadingSpinner(true);
+            try {
+                const response = await fetch('http://localhost:8081/customer/domain-role', {
+                    method: 'GET',
+                    headers: { 'userCode': authuserCode }
+                });
+                showLoadingSpinner(false);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                let rolesToDisplay = [];
+                if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+                    // Check if the first element is a comma-separated string
+                    if (typeof data.data[0] === 'string' && data.data[0].includes(',')) {
+                        rolesToDisplay = data.data[0].split(',').map(role => role.trim());
+                    } else {
+                        rolesToDisplay = data.data; // It's already an array of individual roles
+                    }
+                } else {
+                    throw new Error(data.errorMessage || 'No domain roles found.');
+                }
+                
+                allDomainRoles = rolesToDisplay; // Store parsed roles
+
+                const rolesSelect = document.getElementById('customer-roles-select');
+                rolesSelect.innerHTML = ''; // Clear existing options
+
+                allDomainRoles.forEach(role => {
+                    const option = document.createElement('option');
+                    option.value = role;
+                    option.textContent = role;
+                    rolesSelect.appendChild(option);
+                });
+            } catch (error) {
+                showLoadingSpinner(false);
+                console.error('Error fetching domain roles:', error);
+                showGlobalErrorAlert(`Failed to load domain roles: ${error.message}`);
+            }
+        }
+
+        function populateSelectedRolesCheckboxes() {
+            const rolesSelect = document.getElementById('customer-roles-select');
+            const selectedRolesDisplay = document.getElementById('selected-roles-display');
+            selectedRolesDisplay.innerHTML = ''; // Clear previous checkboxes
+
+            const selectedOptions = Array.from(rolesSelect.selectedOptions).map(option => option.value);
+
+            if (selectedOptions.length === 0) {
+                selectedRolesDisplay.innerHTML = '<p class="text-gray-500 text-sm">No roles selected.</p>';
+                return;
+            }
+
+            selectedOptions.forEach(role => {
+                const checkboxDiv = document.createElement('div');
+                checkboxDiv.className = 'selected-role-checkbox';
+                checkboxDiv.innerHTML = `
+                    <input type="checkbox" id="role-${role}" value="${role}" checked onchange="handleSelectedRoleCheckboxChange(this)">
+                    <label for="role-${role}">${role}</label>
+                `;
+                selectedRolesDisplay.appendChild(checkboxDiv);
+            });
+        }
+
+        // New function to handle changes in the selected roles checkboxes
+        function handleSelectedRoleCheckboxChange(checkboxElement) {
+            const role = checkboxElement.value;
+            const isChecked = checkboxElement.checked;
+            const rolesSelect = document.getElementById('customer-roles-select');
+            
+            // Find the corresponding option in the multi-select and update its selected state
+            const optionToUpdate = Array.from(rolesSelect.options).find(opt => opt.value === role);
+            if (optionToUpdate) {
+                optionToUpdate.selected = isChecked;
+            }
+
+            // Re-populate the checkboxes to reflect the updated state (e.g., if a role was deselected)
+            populateSelectedRolesCheckboxes();
+        }
+
         function initializeTabs(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
@@ -2536,6 +2726,10 @@
             const emergencyContactName = document.getElementById('customer-emergencyContactName').value.trim();
             const emergencyContactPhone = document.getElementById('customer-emergencyContactPhone').value.trim();
 
+            // Get selected roles from the multi-select dropdown
+            const rolesSelect = document.getElementById('customer-roles-select');
+            const selectedRoles = Array.from(rolesSelect.selectedOptions).map(option => option.value);
+
              if (!name || !surname || !age || !dateOfBirth || !gender || !phoneNumber || !email || !street || !city || !state || !zipCode || !country || !phoneCountryCode || !emergencyContactName || !emergencyContactPhone) {
                 showGlobalErrorAlert("Ensure all required fields in all tabs are filled correctly."); return;
             }
@@ -2546,7 +2740,8 @@
             const updatedCustomer = {
                 customerNo, userCode, name, middleName, surname, age: parseInt(age), dateOfBirth, gender, phoneNumber, email, smokerStatus, adminAccess,
                 address: { street, city, state, zipCode, country },
-                contactDetails: { alternateEmail, phoneCountryCode, phoneNumber, emergencyContactName, emergencyContactPhone }
+                contactDetails: { alternateEmail, phoneCountryCode, phoneNumber, emergencyContactName, emergencyContactPhone },
+                roles: selectedRoles // Add the selected roles to the payload
             };
             await sendUserData('http://localhost:8081/Security/customer-details/update', updatedCustomer, 'Customer details updated.', closeCustomerDetailsModal);
         }
@@ -2633,6 +2828,12 @@
             if(nextPageBtn) nextPageBtn.addEventListener('click', () => { if (currentPage < totalPages - 1) changePage(currentPage + 1); });
             if(modalOverlay) modalOverlay.addEventListener('click', closeAllModalsAndPopups);
             if(viewToggleButtonIcon) viewToggleButtonIcon.className = viewMode === 'grid' ? 'fas fa-list-ul' : 'fas fa-th-large';
+
+            // Event listener for role selection dropdown
+            const rolesSelect = document.getElementById('customer-roles-select');
+            if (rolesSelect) {
+                rolesSelect.addEventListener('change', populateSelectedRolesCheckboxes);
+            }
         });
     </script>
 </body>
