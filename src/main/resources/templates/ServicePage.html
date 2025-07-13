@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Service Dashboard - Dashboard Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body, html {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Inter', sans-serif;
       background-color: #f8f9fa;
       height: 100vh;
       overflow-x: hidden;
@@ -17,253 +17,988 @@
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; } 
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
-    /* === New Collapsible Sidebar === */
+   /* === Modernized Sidebar === */
+.sidebar {
+    --sidebar-width-collapsed: 80px;
+    --sidebar-width-expanded: 280px;
+    width: var(--sidebar-width-collapsed);
+    background: #ffffff;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e2e8f0;
+    position: relative;
+    height: 100vh;
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+}
+
+.sidebar:hover,
+.sidebar.expanded {
+    width: var(--sidebar-width-expanded);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Sidebar Toggle Button for Desktop */
+.sidebar-collapse-btn {
+    position: absolute;
+    top: 20px;
+    right: -16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    z-index: 101;
+}
+
+.sidebar-collapse-btn:hover {
+    background-color: #2563eb;
+    transform: scale(1.05);
+}
+
+.sidebar.expanded .sidebar-collapse-btn {
+    transform: rotate(180deg);
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    color: #4b5563;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: color 0.2s, background-color 0.2s, transform 0.2s ease;
+    border-radius: 8px;
+    margin: 4px 12px;
+    text-decoration: none;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    color: #2563eb;
+    background-color: #eff6ff;
+    transform: translateX(4px);
+}
+
+.sidebar-link i {
+    font-size: 1.15rem;
+    min-width: 24px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+/* Sidebar link text and submenu arrow visibility */
+.sidebar-link-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease-in-out 0.1s, width 0.3s ease-in-out 0.1s;
+}
+
+.sidebar:hover .sidebar-link-text,
+.sidebar.expanded .sidebar-link-text,
+.sidebar.active .sidebar-link-text {
+    opacity: 1;
+    width: auto;
+}
+
+.sidebar-link .submenu-arrow {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out 0.1s;
+}
+
+.sidebar:hover .sidebar-link .submenu-arrow,
+.sidebar.expanded .sidebar-link .submenu-arrow,
+.sidebar.active .sidebar-link .submenu-arrow {
+    opacity: 1;
+}
+
+.submenu-arrow {
+    transition: transform 0.3s ease;
+}
+
+.submenu-open .submenu-arrow {
+    transform: rotate(180deg);
+}
+
+/* Sidebar Header Icons and Text */
+.sidebar-header {
+    padding: 0 20px;
+    justify-content: flex-start;
+    flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.sidebar-header .logo-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease-in-out 0.1s, width 0.3s ease-in-out 0.1s;
+}
+
+.sidebar:hover .logo-text,
+.sidebar.expanded .logo-text,
+.sidebar.active .logo-text {
+    opacity: 1;
+    width: auto;
+}
+
+.sidebar-header .sidebar-icon-collapsed {
+    display: block;
+}
+
+.sidebar:hover .sidebar-icon-collapsed,
+.sidebar.expanded .sidebar-icon-collapsed,
+.sidebar.active .sidebar-icon-collapsed {
+    display: none;
+}
+
+.sidebar-submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    margin: 0 12px;
+}
+
+.sidebar-submenu.open {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.sidebar-submenu a {
+    padding-left: 56px;
+    font-size: 0.9rem;
+}
+
+.sidebar-submenu .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-submenu .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+.sidebar-submenu .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Menu Sections within Sidebar */
+.sidebar .menu-section {
+    margin-top: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.sidebar .menu-section:last-of-type {
+    border-bottom: none;
+}
+
+.sidebar .menu-section h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #6b7280;
+    padding: 10px 8px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: color 0.3s ease, background-color 0.2s ease;
+    border-radius: 6px;
+}
+
+.sidebar .menu-section h4:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+.sidebar .menu-section h4 i {
+    margin-right: 8px;
+    transition: transform 0.3s ease;
+}
+
+.sidebar .menu-section h4.collapsed i {
+    transform: rotate(-90deg);
+}
+
+.sidebar .menu-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+}
+
+.sidebar .menu-section ul.active {
+    max-height: 400px;
+    padding-top: 8px;
+    overflow-y: auto;
+}
+
+.sidebar .menu-section li {
+    padding: 10px 16px;
+    color: #4b5563;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    background: #fcfcfc;
+    transition: background 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    padding-left: 48px;
+}
+
+.sidebar .menu-section li:hover {
+    background: #e0f2fe;
+    transform: translateX(3px);
+}
+
+/* Mobile Sidebar */
+@media (max-width: 1024px) {
     .sidebar {
-      --sidebar-width-collapsed: 80px;
-      --sidebar-width-expanded: 260px;
-      width: var(--sidebar-width-collapsed);
-      background: #ffffff;
-      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      z-index: 100;
-    }
-    .sidebar:hover {
-      width: var(--sidebar-width-expanded);
-    }
-    .sidebar-link {
-      display: flex; align-items: center; gap: 20px; padding: 14px 28px; color: #6b7280; font-weight: 500;
-      white-space: nowrap; overflow: hidden; transition: color 0.2s, background-color 0.2s;
-    }
-    .sidebar-link:hover, .sidebar-link.active { color: #2563eb; background-color: #eff6ff; }
-    .sidebar-link i { font-size: 1.25rem; min-width: 24px; text-align: center; transition: transform 0.3s ease; }
-    .sidebar-link-text, .sidebar-link .submenu-arrow { opacity: 0; transition: opacity 0.2s ease-in-out; }
-    .sidebar:hover .sidebar-link-text, .sidebar:hover .sidebar-link .submenu-arrow { opacity: 1; transition-delay: 0.1s; }
-    .submenu-arrow { transition: transform 0.3s ease; }
-    .submenu-open .submenu-arrow { transform: rotate(180deg); }
-    
-    /* Sidebar Header Icons and Text */
-    .sidebar-header .logo-text { 
-        opacity: 0; 
-        transition: opacity 0.2s ease-in-out; 
-        display: none; /* Initially hidden */
-    }
-    .sidebar:hover .logo-text, .sidebar.active .logo-text { 
-        opacity: 1; 
-        transition-delay: 0.1s; 
-        display: block; /* Show when expanded */
-    }
-    .sidebar-header .sidebar-icon-collapsed { 
-        display: block; /* Visible by default when collapsed */
-    }
-    .sidebar:hover .sidebar-icon-collapsed, .sidebar.active .sidebar-icon-collapsed { 
-        display: none; /* Hide when expanded */
+        position: fixed;
+        transform: translateX(-100%);
+        width: var(--sidebar-width-expanded);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
     }
 
-
-    .sidebar-submenu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: #f9fafb; }
-    .sidebar-submenu a { padding-left: 72px; font-size: 0.9rem; }
-    .sidebar-submenu.open { max-height: 500px; } /* Adjust max-height as needed */
-
-    /* === Service Cards & Layout Customization === */
-    .service-card { 
-        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease; 
-        background: linear-gradient(145deg, #ffffff, #f0f0f0); /* Subtle gradient */
-        border: 1px solid #e2e8f0; /* Light border */
-        border-radius: 0.75rem; /* rounded-xl */
-    }
-    .service-card:hover { 
-        transform: translateY(-5px); 
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1); /* More pronounced shadow */
-        background: linear-gradient(145deg, #f0f8ff, #e6f2ff); /* Lighter hover gradient */
-    }
-    #services-container.view-list .service-card { 
-        flex-direction: row; 
-        align-items: center; 
-        text-align: left; 
-        gap: 1.5rem; /* Increased gap */
-        padding: 1.25rem; /* Increased padding */
-    }
-    #services-container.view-list .service-card i { margin-bottom: 0; font-size: 1.8rem; } /* Larger icon in list view */
-    #services-container.view-list { display: flex; flex-direction: column; }
-
-    /* === Key Metric Cards === */
-    .metric-card {
-        background: linear-gradient(145deg, #ffffff, #f0f0f0);
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border-radius: 0.75rem; /* rounded-xl */
-    }
-    .metric-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+    .sidebar.active {
+        transform: translateX(0);
     }
 
-    /* === Loader === */
-    .loader { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-    .loader.active { opacity: 1; pointer-events: all; }
-    .colorful-spinner { width: 60px; height: 60px; position: relative; animation: rotator 1.4s linear infinite; }
-    @keyframes rotator { 0% { transform: rotate(0deg); } 100% { transform: rotate(270deg); } }
-    .path { stroke-dasharray: 187; stroke-dashoffset: 0; transform-origin: center; animation: dash 1.4s ease-in-out infinite; }
-    @keyframes dash { 0% { stroke-dashoffset: 187; } 50% { stroke-dashoffset: 46.75; transform: rotate(135deg); } 100% { stroke-dashoffset: 187; transform: rotate(450deg); } }
+    .sidebar-collapse-btn {
+        display: none;
+    }
+}
 
-    /* === Modal === */
-    .modal { transition: opacity 0.2s ease, transform 0.2s ease; }
-    .modal.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
+/* Dark Mode Styles */
+body.dark-mode .sidebar {
+    background: #2d3748;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-color: #4a5568;
+}
 
-    /* === Search Module Tabs === */
-    .tab-button {
-        padding: 0.75rem 1.25rem;
-        border-bottom: 3px solid transparent;
-        font-weight: 500;
-        color: #6b7280;
+body.dark-mode .sidebar:hover,
+body.dark-mode .sidebar.expanded {
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .sidebar-header {
+    border-color: #4a5568;
+}
+
+body.dark-mode .sidebar-link {
+    color: #cbd5e1;
+}
+
+body.dark-mode .sidebar-link:hover,
+body.dark-mode .sidebar-link.active {
+    color: #63b3ed;
+    background-color: #4a5568;
+}
+
+body.dark-mode .sidebar-submenu {
+    background-color: #3a475a;
+}
+
+body.dark-mode .sidebar-submenu .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #6b7280;
+}
+
+body.dark-mode .sidebar-submenu .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+body.dark-mode .sidebar .menu-section h4 {
+    color: #90cdf4;
+}
+
+body.dark-mode .sidebar .menu-section h4:hover {
+    background-color: #4a5568;
+    color: #a7d9f8;
+}
+
+body.dark-mode .sidebar .menu-section li {
+    background: #3a475a;
+    color: #cbd5e1;
+}
+
+body.dark-mode .sidebar .menu-section li:hover {
+    background: #4a5568;
+}/* Header Styles */
+header {
+    background-color: #ffffff;
+    padding: 1rem;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    height: 5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 50; /* Below sidebar on mobile */
+}
+
+/* Search Bar */
+header .relative {
+    flex: 1;
+    max-width: 32rem; /* Reduced from 36rem to give more space to welcome message */
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+/* Right-side Header Container */
+header .flex.items-center.gap-4 {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: 1rem;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+/* Welcome Message */
+#welcome-message {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4b5563;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 24rem; /* Increased to accommodate full text */
+    flex-shrink: 1;
+}
+
+@media (min-width: 768px) {
+    #welcome-message {
+        display: block;
+        max-width: 28rem; /* More space for md screens */
+    }
+}
+
+@media (min-width: 1024px) {
+    #welcome-message {
+        max-width: 32rem; /* More space for lg screens */
+    }
+}
+
+/* Dark Mode Styles */
+body.dark-mode header {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode #welcome-message {
+    color: #cbd5e1;
+}
+    /* New styles for the small cloud button */
+    .quick-action-cloud-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background-color: #4f46e5;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         transition: all 0.2s ease;
-        flex-grow: 1; /* Distribute space evenly */
+        cursor: pointer;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    .quick-action-cloud-btn:hover {
+        background-color: #4338ca;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+
+    /* Profile Modal Layout Adjustments */
+    #profile-extended-details {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        #profile-extended-details {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    #profile-extended-details p {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+    }
+
+    #profile-extended-details h4 {
+        grid-column: span 1;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    @media (min-width: 640px) {
+        #profile-extended-details h4 {
+            grid-column: span 2;
+        }
+    }
+
+    /* Ensure modal content fits and scrolls */
+    .modal-content {
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+
+    /* SLA Circles - Resized and adjusted for better fitting */
+    .sla-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); /* Reduced minmax to fit more items */
+        gap: 1rem; /* Reduced gap */
+        margin-bottom: 2rem;
+        justify-items: center;
+    }
+
+    .sla-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: white;
+        padding: 0.75rem; /* Reduced padding */
+        border-radius: 0.75rem;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 100%;
+        max-width: 10rem; /* Reduced max-width */
+    }
+
+    .sla-item:hover {
+        transform: translateY(-0.3125rem);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .sla {
+        --sla-size: 6rem; /* New smaller size for SLA circles */
+        width: var(--sla-size);
+        height: var(--sla-size);
+        border-radius: 50%;
+        background: #f1f5f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #e2e8f0;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+
+    .sla p {
+        font-size: 1rem; /* Reduced font size for percentage */
+        font-weight: 700;
+        color: #334155;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .sla svg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+    }
+
+    .sla circle {
+        fill: none;
+        stroke-width: 0.5rem; /* Reduced stroke width */
+        r: calc(var(--sla-size) / 2 - 0.25rem); /* Adjusted radius based on new size and stroke */
+        cx: calc(var(--sla-size) / 2);
+        cy: calc(var(--sla-size) / 2);
+    }
+
+    .circle-background {
+        stroke: #e2e8f0;
+    }
+
+    .circle-progress {
+        stroke-linecap: round;
+        stroke-dasharray: calc(2 * 3.14159 * (var(--sla-size) / 2 - 0.25rem));
+        stroke-dashoffset: calc(2 * 3.14159 * (var(--sla-size) / 2 - 0.25rem));
+        transition: stroke-dashoffset 1s ease-out;
+    }
+
+    /* Specific colors for progress circles */
+    #totalPolicy-circle { stroke: #22c55e; }
+    #totalWorkItems-circle { stroke: #0ea5e9; }
+    #totalBankAccounts-circle { stroke: #3b82f6; }
+    #totalVerificationRecords-circle { stroke: #8b5cf6; }
+    #totalUsers-circle { stroke: #ef4444; }
+
+    .sla-label {
+        margin-top: 0.5rem; /* Reduced margin */
+        font-size: 0.8rem; /* Reduced font size */
+        font-weight: 600;
+        color: #475569;
         text-align: center;
     }
-    .tab-button:hover {
-        color: #2563eb;
-        background-color: #eff6ff;
+
+    /* Chatbot styles (from dashboard.html) */
+    .chatbot-button {
+        position: fixed;
+        bottom: 5.625rem;
+        right: 1.25rem;
+        background-color: #22c55e;
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.6em;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        width: 3.4375rem;
+        height: 3.4375rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10001;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     }
-    .tab-button.active {
-        color: #2563eb;
-        border-color: #2563eb;
+    .chatbot-button:hover {
+        background-color: #16a34a;
+        transform: translateY(-0.1875rem) scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
 
-    /* === Mobile Sidebar === */
-    @media (max-width: 1024px) {
-      .sidebar { position: fixed; transform: translateX(-100%); width: var(--sidebar-width-expanded); }
-      .sidebar.active { transform: translateX(0); }
-      .sidebar.active .sidebar-link-text, .sidebar.active .sidebar-link .submenu-arrow { opacity: 1; }
+    .chatbot-container {
+        display: none;
+        position: fixed;
+        bottom: 10rem;
+        right: 1.25rem;
+        width: 18.75rem;
+        height: 25rem;
+        background-color: #fff;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        flex-direction: column;
+        z-index: 10000;
+        overflow: hidden;
     }
 
-    /* === Dark Mode Styles === */
-    body.dark-mode {
-        background-color: #1a202c; /* Dark background */
-        color: #e2e8f0; /* Light text */
+    .chatbot-header {
+        background-color: #3b82f6;
+        color: white;
+        padding: 0.75rem 0.9375rem;
+        border-top-left-radius: 0.75rem;
+        border-top-right-radius: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-    body.dark-mode .sidebar {
-        background: #2d3748; /* Darker sidebar */
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+    .chatbot-header h3 {
+        margin: 0;
+        font-size: 1rem;
     }
-    body.dark-mode .sidebar-header {
-        border-color: #4a5568;
+
+    .chatbot-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.125rem;
+        cursor: pointer;
+        transition: color 0.3s ease;
     }
-    body.dark-mode .sidebar-link {
-        color: #cbd5e1;
+
+    .chatbot-close:hover {
+        color: #facc15;
     }
-    body.dark-mode .sidebar-link:hover, body.dark-mode .sidebar-link.active {
-        color: #63b3ed; /* Lighter blue for active/hover */
-        background-color: #4a5568;
+
+    .chatbot-messages {
+        flex: 1;
+        padding: 0.9375rem;
+        overflow-y: auto;
+        background-color: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
     }
-    body.dark-mode header {
-        background-color: #2d3748;
-        border-color: #4a5568;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+    .chatbot-message {
+        margin: 0.5rem 0;
+        padding: 0.625rem 0.9375rem;
+        border-radius: 0.625rem;
+        max-width: 85%;
+        word-wrap: break-word;
+        font-size: 0.875rem;
     }
-    body.dark-mode .text-gray-600 { color: #a0aec0; }
-    body.dark-mode .text-gray-800 { color: #e2e8f0; }
-    body.dark-mode .text-gray-500 { color: #cbd5e1; }
-    body.dark-mode .bg-gray-100 { background-color: #1a202c; }
-    body.dark-mode .bg-white { background-color: #2d3748; }
-    body.dark-mode .border { border-color: #4a5568; }
-    body.dark-mode .shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-    body.dark-mode .shadow-lg { box-shadow: 0 10px 15px rgba(0,0,0,0.3); }
-    body.dark-mode .metric-card, body.dark-mode .service-card {
-        background: linear-gradient(145deg, #2d3748, #1a202c);
-        border-color: #4a5568;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+    .chatbot-message.user {
+        background-color: #3b82f6;
+        color: white;
+        margin-left: auto;
+        border-bottom-right-radius: 0.25rem;
     }
-    body.dark-mode .metric-card:hover, body.dark-mode .service-card:hover {
-        background: linear-gradient(145deg, #3a475a, #2d3748);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+
+    .chatbot-message.bot {
+        background-color: #e2e8f0;
+        color: #334155;
+        margin-right: auto;
+        border-bottom-left-radius: 0.25rem;
     }
-    body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-        background-color: #1a202c;
-        border-color: #4a5568;
-        color: #e2e8f0;
+
+    .chatbot-input-container {
+        display: flex;
+        padding: 0.625rem 0.9375rem;
+        border-top: 1px solid #e2e8f0;
+        background-color: #fff;
     }
-    body.dark-mode input::placeholder { color: #a0aec0; }
-    body.dark-mode .bg-gray-50 { background-color: #2d3748; }
-    body.dark-mode .bg-gray-200 { background-color: #4a5568; }
-    body.dark-mode .text-gray-400 { color: #a0aec0; }
-    body.dark-mode .tab-button { color: #cbd5e1; border-color: transparent; }
-    body.dark-mode .tab-button:hover { background-color: #4a5568; color: #63b3ed; }
-    body.dark-mode .tab-button.active { color: #63b3ed; border-color: #63b3ed; }
-    body.dark-mode .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b7280; }
-    body.dark-mode .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+    .chatbot-input {
+        flex: 1;
+        padding: 0.625rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        margin-right: 0.625rem;
+        font-size: 0.875rem;
+        outline: none;
+    }
+    .chatbot-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+
+    .chatbot-send {
+        background-color: #22c55e;
+        color: white;
+        border: none;
+        padding: 0.625rem 0.9375rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .chatbot-send:hover {
+        background-color: #16a34a;
+        transform: translateY(-0.0625rem);
+    }
+
+    /* Custom Alert/Error Overlay (from dashboard.html) */
+    .custom-alert-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.6);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        backdrop-filter: blur(3px);
+    }
+
+    .custom-alert-overlay.active {
+        display: flex;
+    }
+
+    .custom-alert-box {
+        background-color: #fff;
+        border-radius: 0.625rem;
+        padding: 1.25rem;
+        text-align: center;
+        min-width: 20rem;
+        max-width: 85%;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .custom-alert-header {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 0.625rem;
+        color: #334155;
+    }
+
+    .custom-alert-header.error {
+        color: #f44336;
+    }
+
+    .custom-alert-message {
+        color: #475569;
+        margin-bottom: 0.9375rem;
+        font-size: 0.9375rem;
+    }
+
+    .custom-alert-message.error {
+        color: #f44336;
+    }
+
+    .custom-alert-buttons button {
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-alert-buttons button:hover {
+        background-color: #2563eb;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Modal styles for dashboard-specific modals (Notes, Feedback, Overview, Analytics) */
+    .dashboard-modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.6);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        backdrop-filter: blur(3px);
+    }
+
+    .dashboard-modal-box {
+        background: white;
+        padding: 1.875rem;
+        border-radius: 0.75rem;
+        width: 25rem;
+        max-width: 90%;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+        text-align: center;
+        position: relative;
+        animation: fadeInScale 0.3s ease-out forwards;
+    }
+    @keyframes fadeInScale {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .dashboard-modal-box h2, .dashboard-modal-box h3, .dashboard-modal-box h4 {
+        color: #3b82f6;
+        margin-bottom: 0.9375rem;
+        font-weight: 700;
+    }
+    .dashboard-modal-box p {
+        color: #475569;
+        margin-bottom: 1.25rem;
+    }
+    .dashboard-modal-box .modern-button {
+        margin: 0 0.5rem;
+    }
+    .dashboard-modal-box textarea {
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        padding: 0.625rem;
+        font-size: 0.875rem;
+        width: calc(100% - 1.25rem);
+        resize: vertical;
+        min-height: 5rem;
+        outline: none;
+    }
+    .dashboard-modal-box textarea:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+
+    .modern-button {
+        background-color: #3b82f6;
+        color: white;
+        padding: 0.625rem 1.25rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9375rem;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .modern-button:hover {
+        background-color: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modern-button.primary {
+        background-color: #22c55e;
+    }
+
+    .modern-button.primary:hover {
+        background-color: #16a34a;
+    }
+
+    .modern-button.secondary {
+        background-color: #facc15;
+        color: #334155;
+    }
+
+    .modern-button.secondary:hover {
+        background-color: #eab308;
+    }
+
+    /* Footer styles (from dashboard.html) */
+    .main-footer {
+        width: 100%;
+        padding: 0.5rem 1rem; /* Reduced padding */
+        background-color: #e0f2fe;
+        color: #1e40af;
+        text-align: center;
+        font-size: 0.75rem; /* Reduced font size */
+        position: fixed;
+        bottom: 0;
+        border-top: 1px solid #93c5fd;
+        z-index: 999;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+        border-radius: 1.25rem 1.25rem 0 0;
+    }
+
+    @media (max-width: 768px) {
+        .chatbot-container { width: 90%; right: 5%; bottom: 8rem; }
+        .chatbot-button { right: 0.8rem; bottom: 4.5rem; width: 2.8rem; height: 2.8rem; font-size: 1.3em; }
+        .main-footer { padding: 0.6rem; font-size: 0.7rem; } /* Further reduced for mobile */
+    }
+
+    /* Adjust main content padding to prevent logout button overlap */
+    .main-content-area {
+        padding-bottom: 6rem; /* Increased padding to accommodate footer height and prevent overlap */
+    }
+
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="bg-gray-100">
-
   <div class="flex h-screen">
-    <!-- New Sidebar -->
-    <aside id="sidebar" class="sidebar flex flex-col h-full flex-shrink-0">
-        <div class="sidebar-header flex items-center justify-center h-20 flex-shrink-0 border-b border-gray-200">
-            <!-- Icon for collapsed state -->
-            <i id="sidebar-header-collapsed-icon" class="fa-solid fa-bars text-3xl text-blue-600"></i> 
-            <!-- Text for expanded state -->
-            <h2 id="sidebar-header-logo-text" class="text-2xl font-bold ml-3 text-gray-800">Hub</h2>
-        </div>
+    <aside id="sidebar" class="sidebar flex flex-col h-full flex-shrink-0" aria-label="Main navigation">
+    <!-- Sidebar Collapse Button (Desktop Only) -->
+    <button id="sidebar-collapse-btn" class="sidebar-collapse-btn hidden lg:flex" aria-label="Toggle sidebar" aria-expanded="false">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
 
-        <nav class="flex-1 space-y-1 mt-4 custom-scrollbar overflow-y-auto">
-            <button class="sidebar-link w-full" onclick="openModal('profile', 'Profile Viewed')"><i class="fa-solid fa-user-circle"></i><span class="sidebar-link-text">Profile</span></button>
-            <button class="sidebar-link w-full" onclick="openModal('contact', 'Contact Us Opened')"><i class="fa-solid fa-envelope"></i><span class="sidebar-link-text">Contact Us</span></button>
-            <button class="sidebar-link w-full" onclick="openModal('notifications', 'Notifications Viewed')"><i class="fa-solid fa-bell"></i><span class="sidebar-link-text">Notifications</span></button>
-            
-            <!-- Services Submenu (JS-controlled) -->
-            <div>
-                <button id="services-submenu-toggle" class="sidebar-link w-full">
-                    <i class="fa-solid fa-grid-2"></i>
-                    <span class="sidebar-link-text">Services</span>
-                    <i class="fa-solid fa-chevron-down ml-auto text-xs submenu-arrow"></i>
-                </button>
-                <div id="services-submenu" class="sidebar-submenu">
-                    <a href="#" class="sidebar-link" onclick="navigateTo('dashboard')">Dashboard</a>
-                    <a href="#" class="sidebar-link" onclick="navigateTo('workitems')">Workitems</a>
-                    <a href="#" class="sidebar-link" onclick="navigateTo('policy')">Policy</a>
-                    <a href="#" class="sidebar-link" onclick="navigateTo('bankAccount')">Banking</a>
-                    <a href="#" class="sidebar-link" onclick="navigateTo('payment')">Payments</a>
-                    <a href="#" class="sidebar-link" onclick="navigateTo('policyAdmin')">Policy Admin</a>
-                    <a href="#" class="sidebar-link" onclick="navigateTo('admin')">Admin Module</a>
-                    <a href="#" class="sidebar-link" onclick="navigateTo('complaints')">Complaints</a>
-                    <a href="#" class="sidebar-link" onclick="navigateTo('feedback')">Feedback</a>
-                    <a href="#" class="sidebar-link" onclick="navigateTo('customerService')">Customer Service</a>
-                </div>
+    <div class="sidebar-header flex items-center justify-center h-20 flex-shrink-0 border-b border-gray-200">
+        <!-- Icon for collapsed state -->
+        <i id="sidebar-header-collapsed-icon" class="fa-solid fa-cloud text-3xl text-blue-600 sidebar-icon-collapsed"></i>
+        <!-- Text for expanded state -->
+        <h2 id="sidebar-header-logo-text" class="text-2xl font-bold ml-3 text-gray-800 logo-text">Dashboard Hub</h2>
+    </div>
+
+    <nav class="flex-1 space-y-1 mt-4 custom-scrollbar overflow-y-auto" role="navigation">
+        <a href="#" class="sidebar-link w-full" onclick="openModal('profile', 'Profile Viewed')" aria-label="View Profile">
+            <i class="fa-solid fa-user-circle"></i><span class="sidebar-link-text">Profile</span>
+        </a>
+        <a href="#" class="sidebar-link w-full" onclick="openModal('contact', 'Contact Us Opened')" aria-label="Contact Us">
+            <i class="fa-solid fa-envelope"></i><span class="sidebar-link-text">Contact Us</span>
+        </a>
+        <a href="#" class="sidebar-link w-full" onclick="openModal('notifications', 'Notifications Viewed')" aria-label="View Notifications">
+            <i class="fa-solid fa-bell"></i><span class="sidebar-link-text">Notifications</span>
+        </a>
+
+        <!-- Services Submenu -->
+        <div class="menu-section">
+            <button id="services-submenu-toggle" class="sidebar-link w-full" aria-expanded="false" aria-controls="services-submenu" aria-label="Toggle Services Submenu">
+                <i class="fa-solid fa-grid-2"></i>
+                <span class="sidebar-link-text">Services</span>
+                <i class="fa-solid fa-chevron-down ml-auto text-xs submenu-arrow"></i>
+            </button>
+            <div id="services-submenu" class="sidebar-submenu" role="region" aria-hidden="true">
+                <a href="#" class="sidebar-link" onclick="navigateTo('dashboard')" aria-label="Go to Dashboard">Dashboard</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('workitems')" aria-label="Go to Workitems">Workitems</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('policy')" aria-label="Go to Policy">Policy</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('bankAccount')" aria-label="Go to Banking">Banking</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('payment')" aria-label="Go to Payments">Payments</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('policyAdmin')" aria-label="Go to Policy Admin">Policy Admin</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('admin')" aria-label="Go to Admin Module">Admin Module</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('complaints')" aria-label="Go to Complaints">Complaints</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('feedback')" aria-label="Go to Feedback">Feedback</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('customerService')" aria-label="Go to Customer Service">Customer Service</a>
             </div>
-
-            <button class="sidebar-link w-full" onclick="showComingSoon('User Management')"><i class="fa-solid fa-users-gear"></i><span class="sidebar-link-text">User Management</span></button>
-        </nav>
-
-        <div class="p-4 border-t border-gray-200">
-            <button class="sidebar-link w-full" onclick="openModal('settings', 'Settings Opened')"><i class="fa-solid fa-gear"></i><span class="sidebar-link-text">Settings</span></button>
-            <button class="sidebar-link w-full text-red-500 hover:bg-red-50 hover:text-red-600" onclick="navigateTo('logout')"><i class="fa-solid fa-right-from-bracket"></i><span class="sidebar-link-text">Logout</span></button>
         </div>
-    </aside>
 
+        <a href="#" class="sidebar-link w-full" onclick="redirectToAdminPanel()" aria-label="User Management (Admin Module)">
+            <i class="fa-solid fa-users-gear"></i><span class="sidebar-link-text">User Management</span>
+        </a>
+
+        <!-- Activity Tracing Section -->
+        <div class="menu-section">
+            <h4 id="activitySection" class="sidebar-link" aria-expanded="true" aria-controls="activityList">
+                <i class="fa-solid fa-chevron-down"></i>
+                <span class="sidebar-link-text">Activity Tracing</span>
+            </h4>
+            <ul id="activityList" class="sidebar-submenu active" role="region" aria-hidden="false">
+                <li class="sidebar-link"><i class="fa-solid fa-history"></i><span class="sidebar-link-text">No activities yet.</span></li>
+            </ul>
+            <button id="viewActivitiesBtn" class="modern-button primary mx-auto mt-3" style="display: block; width: calc(100% - 56px);" aria-label="View All Activities">View All Activities</button>
+        </div>
+
+        <!-- Other Actions Section -->
+        <div class="menu-section">
+            <h4 id="otherSection" class="sidebar-link" aria-expanded="false" aria-controls="otherActionsList">
+                <i class="fa-solid fa-chevron-down"></i>
+                <span class="sidebar-link-text">Other Actions</span>
+            </h4>          
+        </div>
+    </nav>
+
+    <div class="p-4 border-t border-gray-200">
+        <a href="#" class="sidebar-link w-full" onclick="openModal('settings', 'Settings Opened')" aria-label="Open Settings">
+            <i class="fa-solid fa-gear"></i><span class="sidebar-link-text">Settings</span>
+        </a>
+        <a href="#" class="sidebar-link w-full text-red-500 hover:bg-red-50 hover:text-red-600" onclick="logout()" aria-label="Logout">
+            <i class="fa-solid fa-right-from-bracket"></i><span class="sidebar-link-text">Logout</span>
+        </a>
+    </div>
+</aside>
     <div class="flex-1 flex flex-col h-screen">
       <header class="bg-white p-4 flex-shrink-0 flex justify-between items-center border-b h-20">
-        <!-- Sidebar Toggle for smaller screens -->
-        <button id="sidebar-toggle" class="lg:hidden text-gray-600"><i class="fa-solid fa-bars text-xl"></i></button>
-        <div class="relative flex-1 max-w-xl ml-4">
-           <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"></i>
-           <input type="text" id="search-bar" placeholder="Search for customer, policy, services..." class="w-full pl-12 pr-4 py-3 border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-        </div>
-        <div class="flex items-center gap-4 ml-4">
-            <!-- Quick Help Button -->
-            <button onclick="showComingSoon('Quick Help')" title="Quick Help" class="h-10 w-10 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors flex items-center justify-center text-lg">
-                <i class="fa-solid fa-question"></i>
-            </button>
-            <div id="welcome-message" class="hidden md:block text-md font-medium text-gray-600"></div>
-            <button id="btn-profile" title="Profile" class="h-12 w-12 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors flex items-center justify-center">
-                <img id="profile-icon" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User" class="h-10 w-10 rounded-full object-cover">
-            </button>
-        </div>
-      </header>
-      
-      <main class="flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+    <!-- Sidebar Toggle for smaller screens -->
+    <button id="sidebar-toggle" class="lg:hidden text-gray-600"><i class="fa-solid fa-bars text-xl"></i></button>
+    <div class="relative flex-1 max-w-xl ml-4">
+        <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"></i>
+        <input type="text" id="search-bar" placeholder="Search for customer, policy, services..." class="w-full pl-12 pr-4 py-3 border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+    </div>
+    <div class="flex items-center gap-4 ml-4 min-w-0">
+        <!-- Quick Help Button -->
+        <button onclick="showComingSoon('Quick Help')" title="Quick Help" class="h-10 w-10 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors flex items-center justify-center text-lg">
+            <i class="fa-solid fa-question"></i>
+        </button>
+        <div id="welcome-message" class="text-md font-medium text-gray-600 truncate hidden md:block"></div>
+        <button id="btn-profile" title="Profile" class="h-12 w-12 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors flex items-center justify-center flex-shrink-0">
+            <img id="profile-icon" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User" class="h-10 w-10 rounded-full object-cover">
+        </button>
+    </div>
+</header>
+
+      <main class="flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar main-content-area">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div class="lg:col-span-2">
                   <div class="flex justify-between items-center mb-4">
@@ -278,31 +1013,90 @@
                     </div>
                   </div>
 
-                  <!-- Key Metrics Section -->
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                      <div class="metric-card p-5 rounded-xl flex items-center justify-between">
-                          <div>
-                              <p class="text-gray-500 text-sm font-medium">Total Policies</p>
-                              <h2 id="policies-count" class="text-3xl font-bold text-blue-700 mt-1">0</h2>
+                  <!-- SLA Circles Section (from dashboard.html) -->
+                  <div class="sla-container">
+                      <div class="sla-item">
+                          <div class="sla">
+                              <svg width="128" height="128">
+                                  <defs>
+                                      <linearGradient id="gradient-policy" x1="0%" y1="0%" x2="100%" y2="0%">
+                                          <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+                                          <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+                                      </linearGradient>
+                                  </defs>
+                                  <circle class="circle-background" cx="64" cy="64" r="56"></circle>
+                                  <circle class="circle-progress" id="totalPolicy-circle" cx="64" cy="64" r="56" stroke="url(#gradient-policy)"></circle>
+                              </svg>
+                              <p id="totalPolicy-percent">0%</p>
                           </div>
-                          <i class="fa-solid fa-file-contract text-4xl text-blue-300"></i>
+                          <div class="sla-label">Total Policy: <span id="totalPolicy-count">0</span></div>
                       </div>
-                      <div class="metric-card p-5 rounded-xl flex items-center justify-between">
-                          <div>
-                              <p class="text-gray-500 text-sm font-medium">Open Workitems</p>
-                              <h2 id="workitems-count" class="text-3xl font-bold text-teal-700 mt-1">0</h2>
+                      <div class="sla-item">
+                          <div class="sla">
+                              <svg width="128" height="128">
+                                  <defs>
+                                      <linearGradient id="gradient-workitems" x1="0%" y1="0%" x2="100%" y2="0%">
+                                          <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+                                          <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
+                                      </linearGradient>
+                                  </defs>
+                                  <circle class="circle-background" cx="64" cy="64" r="56"></circle>
+                                  <circle class="circle-progress" id="totalWorkItems-circle" cx="64" cy="64" r="56" stroke="url(#gradient-workitems)"></circle>
+                              </svg>
+                              <p id="totalWorkItems-percent">0%</p>
                           </div>
-                          <i class="fa-solid fa-briefcase text-4xl text-teal-300"></i>
+                          <div class="sla-label">Total WorkItems: <span id="totalWorkItems-count">0</span></div>
                       </div>
-                      <div class="metric-card p-5 rounded-xl flex items-center justify-between">
-                          <div>
-                              <p class="text-gray-500 text-sm font-medium">Total Customers</p>
-                              <h2 id="customers-count" class="text-3xl font-bold text-purple-700 mt-1">0</h2>
+                      <div class="sla-item">
+                          <div class="sla">
+                              <svg width="128" height="128">
+                                  <defs>
+                                      <linearGradient id="gradient-bankaccounts" x1="0%" y1="0%" x2="100%" y2="0%">
+                                          <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+                                          <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+                                      </linearGradient>
+                                  </defs>
+                                  <circle class="circle-background" cx="64" cy="64" r="56"></circle>
+                                  <circle class="circle-progress" id="totalBankAccounts-circle" cx="64" cy="64" r="56" stroke="url(#gradient-bankaccounts)"></circle>
+                              </svg>
+                              <p id="totalBankAccounts-percent">0%</p>
                           </div>
-                          <i class="fa-solid fa-users text-4xl text-purple-300"></i>
+                          <div class="sla-label">Total Bank Accounts: <span id="totalBankAccounts-count">0</span></div>
+                      </div>
+                      <div class="sla-item">
+                          <div class="sla">
+                              <svg width="128" height="128">
+                                  <defs>
+                                      <linearGradient id="gradient-verificationrecords" x1="0%" y1="0%" x2="100%" y2="0%">
+                                          <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                                          <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+                                      </linearGradient>
+                                  </defs>
+                                  <circle class="circle-background" cx="64" cy="64" r="56"></circle>
+                                  <circle class="circle-progress" id="totalVerificationRecords-circle" cx="64" cy="64" r="56" stroke="url(#gradient-verificationrecords)"></circle>
+                              </svg>
+                              <p id="totalVerificationRecords-percent">0%</p>
+                          </div>
+                          <div class="sla-label">Total Verification Records: <span id="totalVerificationRecords-count">0</span></div>
+                      </div>
+                      <div class="sla-item">
+                          <div class="sla">
+                              <svg width="128" height="128">
+                                  <defs>
+                                      <linearGradient id="gradient-users" x1="0%" y1="0%" x2="100%" y2="0%">
+                                          <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                          <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
+                                      </linearGradient>
+                                  </defs>
+                                  <circle class="circle-background" cx="64" cy="64" r="56"></circle>
+                                  <circle class="circle-progress" id="totalUsers-circle" cx="64" cy="64" r="56" stroke="url(#gradient-users)"></circle>
+                              </svg>
+                              <p id="totalUsers-percent">0%</p>
+                          </div>
+                          <div class="sla-label">Total Users: <span id="totalUsers-count">0</span></div>
                       </div>
                   </div>
-                  
+
                   <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       <!-- Services will be dynamically styled based on settings -->
                       <button onclick="navigateTo('dashboard')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-border-all text-3xl text-blue-500 mb-4"></i><h3 class="text-lg font-bold">Dashboard</h3></button>
@@ -343,17 +1137,73 @@
                       </div>
                   </div>
 
-                  <!-- New Action Button (Cloud Icon) -->
-                  <div class="grid grid-cols-1 gap-4">
-                      <button onclick="openModal('action-chatbot-modal', 'Quick Actions opened')" class="flex items-center justify-center p-4 bg-indigo-600 text-white rounded-xl shadow-md hover:bg-indigo-700 transition-colors text-lg font-semibold">
-                          <i class="fa-solid fa-cloud mr-3"></i> Quick Actions
-                      </button>
+                  <!-- New Quick Links Section -->
+                  <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+                      <h3 class="text-xl font-bold text-gray-700 mb-4">Quick Links</h3>
+                      <div class="grid grid-cols-1 gap-3">
+                          <button onclick="showComingSoon('New Policy')" class="flex items-center p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-medium">
+                              <i class="fa-solid fa-file-circle-plus mr-3"></i> New Policy
+                          </button>
+                          <button onclick="showComingSoon('View Claims')" class="flex items-center p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors font-medium">
+                              <i class="fa-solid fa-hand-holding-dollar mr-3"></i> View Claims
+                          </button>
+                          <button onclick="showComingSoon('Customer Support')" class="flex items-center p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors font-medium">
+                              <i class="fa-solid fa-headset mr-3"></i> Customer Support
+                          </button>
+                      </div>
+                  </div>
+
+                  <!-- New Announcements/News Feed Section -->
+                  <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+                      <h3 class="text-xl font-bold text-gray-700 mb-4">Announcements</h3>
+                      <div id="announcements-list" class="space-y-4 text-gray-600 text-sm">
+                          <div class="flex items-start gap-3">
+                              <i class="fa-solid fa-bullhorn text-orange-500 mt-1"></i>
+                              <div>
+                                  <p class="font-semibold">System Maintenance Tonight!</p>
+                                  <p class="text-xs text-gray-500">Scheduled downtime from 11 PM to 1 AM IST for critical updates.</p>
+                              </div>
+                          </div>
+                          <div class="flex items-start gap-3">
+                              <i class="fa-solid fa-circle-info text-blue-500 mt-1"></i>
+                              <div>
+                                  <p class="font-semibold">New Feature: Enhanced Reporting</p>
+                                  <p class="text-xs text-gray-500">Explore our new and improved reporting tools available now!</p>
+                              </div>
+                          </div>
+                          <div class="flex items-start gap-3">
+                              <i class="fa-solid fa-star text-yellow-500 mt-1"></i>
+                              <div>
+                                  <p class="font-semibold">Holiday Hours Notification</p>
+                                  <p class="text-xs text-gray-500">Our support hours will be adjusted on July 15th. Check details in the Help section.</p>
+                              </div>
+                          </div>
+                      </div>
                   </div>
               </div>
           </div>
       </main>
     </div>
   </div>
+
+<!-- Chatbot Button -->
+<button id="chatbotButton" class="chatbot-button" title="Chat with Assistant">
+    <i class="fa-solid fa-robot"></i>
+</button>
+
+<!-- Chatbot Container -->
+<div id="chatbotContainer" class="chatbot-container">
+    <div class="chatbot-header">
+        <h3>Dashboard Assistant</h3>
+        <button id="chatbotClose" class="chatbot-close">×</button>
+    </div>
+    <div id="chatbotMessages" class="chatbot-messages"></div>
+    <div class="chatbot-input-container">
+        <input id="chatbotInput" class="chatbot-input" type="text" placeholder="Type a message...">
+        <button id="chatbotSend" class="chatbot-send"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+
 
 <div id="loader" class="loader hidden"> <svg class="colorful-spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
         <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30" stroke="#3b82f6"></circle>
@@ -362,7 +1212,14 @@
   <!-- MODALS -->
   <div class="modal-container">
     <div id="coming-soon-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform"><h3 class="text-2xl font-bold text-gray-800">Coming Soon!</h3><p class="text-gray-600 my-4">This feature is under development and will be available shortly.</p></div>
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Coming Soon!</h3>
+                <!-- Added data-close-modal to the cross button for functionality -->
+                <button data-close-modal="coming-soon-modal" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" aria-label="Close popup">&times;</button>
+            </div>
+            <p class="text-gray-600 my-4">This feature is under development and will be available shortly.</p>
+        </div>
     </div>
     <!-- Updated Profile Modal -->
     <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
@@ -391,7 +1248,7 @@
             </button>
 
             <!-- Extended Details Section (initially hidden) -->
-            <div id="profile-extended-details" class="hidden mt-4 text-gray-600 space-y-3 bg-gray-50 p-4 rounded-lg">
+            <div id="profile-extended-details" class="hidden mt-4 text-gray-600 bg-gray-50 p-4 rounded-lg">
                 <p><i class="fa-solid fa-user-tag w-5 mr-2 text-gray-400"></i><span class="font-medium">Customer No:</span> <span id="profile-customerNo">&nbsp;</span></p>
                 <p><i class="fa-solid fa-cake-candles w-5 mr-2 text-gray-400"></i><span class="font-medium">Date of Birth:</span> <span id="profile-dateOfBirth">&nbsp;</span></p>
                 <p><i class="fa-solid fa-venus-mars w-5 mr-2 text-gray-400"></i><span class="font-medium">Gender:</span> <span id="profile-gender">&nbsp;</span></p>
@@ -399,7 +1256,7 @@
                 <p><i class="fa-solid fa-user-lock w-5 mr-2 text-gray-400"></i><span class="font-medium">Admin Access:</span> <span id="profile-adminAccess">&nbsp;</span></p>
                 <p><i class="fa-solid fa-briefcase w-5 mr-2 text-gray-400"></i><span class="font-medium">Roles:</span> <span id="profile-roles">&nbsp;</span></p>
                 <p><i class="fa-solid fa-map-marker-alt w-5 mr-2 text-gray-400"></i><span class="font-medium">Address:</span> <span id="profile-address">&nbsp;</span></p>
-                
+
                 <h4 class="font-semibold text-gray-700 mt-4 mb-2">Contact Details:</h4>
                 <p><i class="fa-solid fa-at w-5 mr-2 text-gray-400"></i><span class="font-medium">Alternate Email:</span> <span id="profile-alternateEmail">&nbsp;</span></p>
                 <p><i class="fa-solid fa-mobile-alt w-5 mr-2 text-gray-400"></i><span class="font-medium">Phone Country Code:</span> <span id="profile-phoneCountryCode">&nbsp;</span></p>
@@ -464,14 +1321,20 @@
     <!-- New Search Message Modal -->
     <div id="search-message-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
-            <h3 class="text-2xl font-bold text-gray-800 mb-4">Search Initiated</h3>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Search Initiated</h3>
+                <button data-close-modal="search-message-modal" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+            </div>
             <p class="text-gray-600 my-4">Searching for: "<span id="search-query-display" class="font-semibold"></span>"</p>
         </div>
     </div>
     <!-- New Error Message Modal -->
     <div id="error-message-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
-            <h3 class="text-2xl font-bold text-red-600 mb-4">Error!</h3>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-red-600 mb-4">Error!</h3>
+                <button data-close-modal="error-message-modal" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+            </div>
             <p class="text-gray-600 my-4" id="error-message-text">An unexpected error occurred. Please try again.</p>
         </div>
     </div>
@@ -507,27 +1370,76 @@
         </div>
     </div>
 
-    <!-- New Action Chatbot Modal -->
-    <div id="action-chatbot-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-sm text-center transform">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-semibold text-gray-800">Quick Actions</h3>
-                <button data-close-modal="action-chatbot-modal" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
-            </div>
-            <div class="grid grid-cols-1 gap-4">
-                <button onclick="showComingSoon('Create Workitem')" class="flex items-center justify-center p-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-colors text-base font-medium">
-                    <i class="fa-solid fa-briefcase mr-2"></i> Create Workitem
-                </button>
-                <button onclick="showComingSoon('Add Customer')" class="flex items-center justify-center p-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-colors text-base font-medium">
-                    <i class="fa-solid fa-user-plus mr-2"></i> Add Customer
-                </button>
-                <button onclick="showComingSoon('Add Policy')" class="flex items-center justify-center p-3 bg-purple-500 text-white rounded-lg shadow-md hover:bg-purple-600 transition-colors text-base font-medium">
-                    <i class="fa-solid fa-file-contract mr-2"></i> Add Policy
-                </button>
+    <!-- Dashboard Modals (Notes, Feedback, Overview, Analytics) -->
+    <div id="overviewModal" class="dashboard-modal-overlay">
+        <div class="dashboard-modal-box">
+            <h2>📊 Overview</h2>
+            <p id="overviewContent"></p>
+            <button onclick="closeModal('overviewModal')" class="modern-button">Close</button>
+        </div>
+    </div>
+
+    <div id="analyticsModal" class="dashboard-modal-overlay">
+        <div class="dashboard-modal-box">
+            <h2>📈 Analytics</h2>
+            <p id="analyticsContent"></p>
+            <button onclick="closeModal('analyticsModal')" class="modern-button">Close</button>
+        </div>
+    </div>
+
+    <div id="notesModal" class="dashboard-modal-overlay">
+        <div class="dashboard-modal-box">
+            <h3>Notes</h3>
+            <button onclick="openNotePrompt()" class="modern-button secondary">+ Create Note</button>
+            <ol id="notesList" class="notes-list"></ol>
+            <button onclick="closeModal('notesModal')" class="modern-button">Close</button>
+        </div>
+    </div>
+
+    <div id="createNoteModal" class="dashboard-modal-overlay">
+        <div class="dashboard-modal-box">
+            <h4>Add Note</h4>
+            <textarea id="noteInput" rows="4" style="width:100%; padding:10px;" placeholder="Write your note here..."></textarea>
+            <div style="margin-top:15px; text-align:right;">
+                <button onclick="saveNote()" class="modern-button primary">Save</button>
+                <button onclick="closeModal('createNoteModal')" class="modern-button">Cancel</button>
             </div>
         </div>
     </div>
+
+    <div id="deleteConfirmModal" class="dashboard-modal-overlay">
+        <div class="dashboard-modal-box">
+            <p>Are you sure you want to delete this note?</p>
+            <div style="text-align:right; margin-top: 15px;">
+                <button onclick="confirmDelete()" class="modern-button secondary">Yes, Delete</button>
+                <button onclick="closeModal('deleteConfirmModal')" class="modern-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedbackModal" class="dashboard-modal-overlay">
+        <div class="dashboard-modal-box">
+            <h3>Submit Feedback</h3>
+            <textarea id="feedbackInput" rows="4" style="width:100%; padding:10px;" placeholder="Your feedback..."></textarea>
+            <div style="text-align:right; margin-top:15px;">
+                <button onclick="saveFeedback()" class="modern-button primary">Send</button>
+                <button onclick="closeModal('feedbackModal')" class="modern-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedbackSuccessModal" class="dashboard-modal-overlay">
+        <div class="dashboard-modal-box" style="text-align: center;">
+            <div style="font-size: 40px; color: green;">✅</div>
+            <h4 style="margin-top: 10px;">Thank you!</h4>
+            <p>Your feedback was submitted successfully.</p>
+            <button onclick="closeModal('feedbackSuccessModal')" class="modern-button">Close</button>
+        </div>
+    </div>
+
   </div>
+
+<footer class="main-footer">© 2025 Secure Access Limited. All rights reserved ❤️ Company.</footer>
 
 <script>
     const config = { loginUrl: 'login', userCode: null, email: null };
@@ -538,12 +1450,19 @@
       notifications: document.getElementById('notifications-modal'),
       settings: document.getElementById('settings-modal'),
       'coming-soon': document.getElementById('coming-soon-modal'),
-      'search-message-modal': document.getElementById('search-message-modal'), 
-      'error-message-modal': document.getElementById('error-message-modal'),   
-      'search-module-modal': document.getElementById('search-module-modal'), 
-      'action-chatbot-modal': document.getElementById('action-chatbot-modal'), // Added new modal
+      'search-message-modal': document.getElementById('search-message-modal'),
+      'error-message-modal': document.getElementById('error-message-modal'),
+      'search-module-modal': document.getElementById('search-module-modal'),
+      // Dashboard-specific modals
+      overviewModal: document.getElementById('overviewModal'),
+      analyticsModal: document.getElementById('analyticsModal'),
+      notesModal: document.getElementById('notesModal'),
+      createNoteModal: document.getElementById('createNoteModal'),
+      deleteConfirmModal: document.getElementById('deleteConfirmModal'),
+      feedbackModal: document.getElementById('feedbackModal'),
+      feedbackSuccessModal: document.getElementById('feedbackSuccessModal'),
     };
-    
+
     window.showLoader = function() {
         document.getElementById('loader').classList.remove('hidden');
         document.getElementById('loader').classList.add('active');
@@ -553,12 +1472,18 @@
         document.getElementById('loader').classList.remove('active');
     };
 
-    window.openModal = function(modalId, activityText = `Opened ${modalId} modal`) { 
-        modals[modalId]?.classList.remove('hidden'); 
-        logActivity(activityText); 
+    window.openModal = function(modalId, activityText = `Opened ${modalId} modal`) {
+        modals[modalId]?.classList.remove('hidden');
+        if (modals[modalId]?.classList.contains('dashboard-modal-overlay')) {
+            modals[modalId]?.classList.add('active'); // For dashboard modals that use 'active'
+        }
+        logActivity(activityText);
     };
-    window.closeModal = function(modalId) { 
-        modals[modalId]?.classList.add('hidden'); 
+    window.closeModal = function(modalId) {
+        modals[modalId]?.classList.add('hidden');
+        if (modals[modalId]?.classList.contains('dashboard-modal-overlay')) {
+            modals[modalId]?.classList.remove('active'); // For dashboard modals that use 'active'
+        }
         // Reset profile extended details when closing profile modal
         if (modalId === 'profile-modal') {
             const profileExtendedDetails = document.getElementById('profile-extended-details');
@@ -570,25 +1495,28 @@
             toggleIcon.classList.add('fa-chevron-down');
         }
     };
-    window.showComingSoon = function(featureName = 'A feature') { 
-        openModal('coming-soon', `${featureName} feature coming soon`); 
+    window.showComingSoon = function(featureName = 'A feature') {
+        openModal('coming-soon', `${featureName} feature coming soon`);
     };
 
     window.initializeUser = function() {
-      config.userCode = sessionStorage.getItem('userCode') || 'DEMO_USER';
-      config.email = sessionStorage.getItem('email') || 'demouser@example.com';
-      if (!config.userCode) return;
+      config.userCode = sessionStorage.getItem('userCode');
+      config.email = sessionStorage.getItem('email');
+      if (!config.userCode) {
+    	  showErrorAlert('User ID not found. Please log in again.');
+          window.location.href = '/login';
+    	  return};
       document.getElementById('welcome-message').textContent = `Welcome, ${config.email}!`;
     };
 
     window.navigateTo = function(page) {
-        const pageUrls = { 
-            dashboard: 'dashboard', 
-            workitems: 'workItemServices', 
-            policy: 'policy', 
-            bankAccount:'bankAccount', 
-            payment: 'payment', 
-            logout: 'login', 
+        const pageUrls = {
+            dashboard: 'dashboard',
+            workitems: 'workItemServices',
+            policy: 'policy',
+            bankAccount:'bankAccount',
+            payment: 'payment',
+            logout: 'login',
             admin:'AdminPanel',
             policyAdmin:'PolicyAdmin',
             customerService:"CustomerService",
@@ -597,41 +1525,60 @@
         };
 
         const targetFileName = pageUrls[page] ? `${pageUrls[page]}` : null;
-        const currentPageFileName = window.location.pathname.split('/').pop();
 
-      
-        showLoader(); 
+        showLoader();
 
         setTimeout(() => {
             hideLoader();
-        }, 1000); 
+        }, 1000);
 
-        if (page !== 'logout' && !config.userCode) {
+        if (page === 'logout') {
             sessionStorage.removeItem('userCode');
-            window.location.href = '/login'; 
-            logActivity('Logged out due to no user code'); 
+            window.location.href = config.loginUrl; // Use config.loginUrl for consistency
+            logActivity('Logged out');
             return;
         }
-        
+
+        if (!config.userCode) {
+            sessionStorage.removeItem('userCode');
+            window.location.href = config.loginUrl;
+            logActivity('Logged out due to no user code');
+            return;
+        }
+
         if (targetFileName) {
             window.location.href = targetFileName;
-            logActivity(`Navigated to ${pageUrls[page]} page`); 
+            logActivity(`Navigated to ${pageUrls[page]} page`);
         } else {
              console.error(`No URL defined for page: ${page}`);
-             hideLoader(); 
-             openModal('error-message-modal', `Navigation failed for: ${page}`); 
+             hideLoader();
+             openModal('error-message-modal', `Navigation failed for: ${page}`);
         }
     };
-    
-    /**
-     * Fetches customer details from the API and displays them in the profile modal.
-     */
-    window.fetchTeamDetails = async function() { 
+
+    function logout() {
+        sessionStorage.removeItem('userCode');
+        window.location.href = config.loginUrl;
+        logActivity('User logged out');
+    }
+
+    function redirectToAdminPanel() {
+        const userCode = sessionStorage.getItem('userCode');
+        if (!userCode) {
+            showErrorAlert('User ID not found. Please log in again.');
+            window.location.href = config.loginUrl;
+            return;
+        }
+        window.location.href = "AdminPanel";
+        logActivity('Redirected to Admin Panel');
+    }
+
+    window.fetchTeamDetails = async function() {
         showLoader();
-        
+
         // Clear previous data in modal
         document.getElementById('profile-name').innerHTML = '&nbsp;';
-        document.getElementById('profile-role').innerHTML = '&nbsp;'; 
+        document.getElementById('profile-role').innerHTML = '&nbsp;';
         document.getElementById('profile-userCode').innerHTML = '&nbsp;';
         document.getElementById('profile-email').innerHTML = '&nbsp;';
         document.getElementById('profile-phoneNumber').innerHTML = '&nbsp;';
@@ -642,7 +1589,7 @@
         document.getElementById('profile-adminAccess').innerHTML = '&nbsp;';
         document.getElementById('profile-roles').innerHTML = '&nbsp;';
         document.getElementById('profile-address').innerHTML = '&nbsp;';
-        document.getElementById('profile-loginTime').innerHTML = '&nbsp;'; 
+        document.getElementById('profile-loginTime').innerHTML = '&nbsp;';
         document.getElementById('profile-alternateEmail').innerHTML = '&nbsp;';
         document.getElementById('profile-phoneCountryCode').innerHTML = '&nbsp;';
         document.getElementById('profile-emergencyContactName').innerHTML = '&nbsp;';
@@ -666,7 +1613,7 @@
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'userCode': userCode 
+                    'userCode': userCode
                 }
             });
 
@@ -678,11 +1625,11 @@
 
                 // Populate modal with fetched data
                 document.getElementById('profile-name').textContent = `${customer.name || ''} ${customer.middleName || ''} ${customer.surname || ''}`.trim();
-                document.getElementById('profile-role').textContent = customer.roles && customer.roles.length > 0 ? customer.roles.join(', ') : 'Customer'; 
+                document.getElementById('profile-role').textContent = customer.roles && customer.roles.length > 0 ? customer.roles.join(', ') : 'Customer';
                 document.getElementById('profile-userCode').textContent = customer.userCode || 'N/A';
                 document.getElementById('profile-email').textContent = customer.email || 'N/A';
                 document.getElementById('profile-phoneNumber').textContent = customer.phoneNumber || 'N/A';
-                
+
                 // Populate extended details
                 document.getElementById('profile-customerNo').textContent = customer.customerNo || 'N/A';
                 document.getElementById('profile-dateOfBirth').textContent = customer.dateOfBirth || 'N/A';
@@ -690,9 +1637,9 @@
                 document.getElementById('profile-smokerStatus').textContent = customer.smokerStatus || 'N/A';
                 document.getElementById('profile-adminAccess').textContent = customer.adminAccess === 'Y' ? 'Yes' : 'No';
                 document.getElementById('profile-roles').textContent = customer.roles ? customer.roles.join(', ') : 'N/A';
-                
+
                 if (customer.address) {
-                    document.getElementById('profile-address').textContent = 
+                    document.getElementById('profile-address').textContent =
                         `${customer.address.street || ''}, ${customer.address.city || ''}, ${customer.address.state || ''} - ${customer.address.zipCode || '', customer.address.country || ''}`.replace(/, \s*-|, \s*,/g, ', ').replace(/^, | ,$/g, '').trim();
                 } else {
                     document.getElementById('profile-address').textContent = 'N/A';
@@ -709,19 +1656,19 @@
                     document.getElementById('profile-emergencyContactName').textContent = 'N/A';
                     document.getElementById('profile-emergencyContactPhone').textContent = 'N/A';
                 }
-                document.getElementById('profile-loginTime').textContent = new Date().toLocaleString(); 
+                document.getElementById('profile-loginTime').textContent = new Date().toLocaleString();
 
 
                 // Update header welcome message and profile icon
                 document.getElementById('welcome-message').textContent = `Welcome, ${customer.name || customer.email || 'User'}!`;
-                document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?img=25"; 
-                document.getElementById('modal-profile-icon').src = "https://i.pravatar.cc/80?img=25"; 
+                document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?img=25";
+                document.getElementById('modal-profile-icon').src = "https://i.pravatar.cc/80?img=25";
 
                 openModal('profile', 'Customer details loaded successfully');
             } else {
                 const errorMessage = apiResponse.errorMessage || 'Failed to fetch customer details.';
                 console.error("API response indicated failure:", errorMessage);
-                openModal('error-message-modal', errorMessage); 
+                openModal('error-message-modal', errorMessage);
             }
         } catch (error) {
             console.error("Error fetching customer details:", error);
@@ -730,12 +1677,6 @@
             hideLoader();
         }
     }
-
-
-    /**
-     * Logs activity to the Recent Activity list.
-     * @param {string} activityText - The description of the activity.
-     */
     function logActivity(activityText) {
         const activityList = document.getElementById('recent-activity-list');
         // Remove "No recent activity" message if present
@@ -760,35 +1701,19 @@
             activityList.removeChild(activityList.lastChild);
         }
     }
-
-    /**
-     * Updates the key metrics with mock data.
-     */
     function updateKeyMetrics() {
-        // Simulate fetching data from an API
-        const policiesCount = Math.floor(Math.random() * 1000) + 500; 
-        const workitemsCount = Math.floor(Math.random() * 200) + 50;  
-        const customersCount = Math.floor(Math.random() * 5000) + 1000; 
-
-        document.getElementById('policies-count').textContent = policiesCount.toLocaleString();
-        document.getElementById('workitems-count').textContent = workitemsCount.toLocaleString();
-        document.getElementById('customers-count').textContent = customersCount.toLocaleString();
+        const policiesCount = Math.floor(Math.random() * 1000) + 500;
+        const workitemsCount = Math.floor(Math.random() * 200) + 50;
+        const customersCount = Math.floor(Math.random() * 5000) + 1000;
         logActivity('Key metrics updated');
     }
-
-    /**
-     * Simulates a search API call for the search module.
-     * @param {string} query - The search query.
-     * @param {string} type - The type of search (e.g., 'policy', 'complaint').
-     * @returns {Promise<string[]>} A promise that resolves with an array of mock results.
-     */
     async function performModuleSearch(query, type) {
         showLoader();
         const resultsContainer = document.getElementById('module-search-results');
-        resultsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Searching...</p>'; 
+        resultsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Searching...</p>';
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000)); 
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             let results = [];
             const lowerCaseQuery = query.toLowerCase();
@@ -841,53 +1766,267 @@
             hideLoader();
         }
     }
+    function animateCircle(circleId, percentage, percentageTextId) {
+        const circle = document.getElementById(circleId);
+        if (!circle) {
+            console.warn(`Circle element with ID '${circleId}' not found.`);
+            return;
+        }
+        const r = parseFloat(circle.getAttribute('r'));
+        const circumference = 2 * Math.PI * r;
+        circle.style.strokeDasharray = circumference;
+        const offset = circumference - (Math.min(percentage, 100) / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+
+        const percentageTextElement = document.getElementById(percentageTextId);
+        if (percentageTextElement) {
+            percentageTextElement.innerText = `${Math.round(Math.min(percentage, 100))}%`;
+        } else {
+            console.warn(`Percentage text element with ID '${percentageTextId}' not found.`);
+        }
+    }
+
+    async function loadDashboardStats() {
+        const userCode = sessionStorage.getItem('userCode');
+        if (!userCode) return;
+
+        try {
+            const response = await fetch('http://localhost:8081/api/dashboard/stats', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json', 'userCode': userCode }
+            });
+            if (!response.ok) throw new Error('Failed to fetch dashboard stats');
+            const data = await response.json();
+            console.log("Dashboard stats:", data);
+
+            document.getElementById('totalPolicy-count').innerText = data.totalPolicy ?? 0;
+            document.getElementById('totalWorkItems-count').innerText = data.totalWorkItems ?? 0;
+            document.getElementById('totalBankAccounts-count').innerText = data.totalBankAccounts ?? 0;
+            document.getElementById('totalVerificationRecords-count').innerText = data.totalVerificationRecords ?? 0;
+            document.getElementById('totalUsers-count').innerText = data.totalUsers ?? 0;
+
+            const maxPolicy = 1000; 
+            const maxWorkItems = 10000;
+            const maxBankAccounts = 1000;
+            const maxVerificationRecords = 1000;
+            const maxUsers = 5000;
+
+            animateCircle('totalPolicy-circle', (data.totalPolicy / maxPolicy) * 100, 'totalPolicy-percent');
+            animateCircle('totalWorkItems-circle', (data.totalWorkItems / maxWorkItems) * 100, 'totalWorkItems-percent');
+            animateCircle('totalBankAccounts-circle', (data.totalBankAccounts / maxBankAccounts) * 100, 'totalBankAccounts-percent');
+            animateCircle('totalVerificationRecords-circle', (data.totalVerificationRecords / maxVerificationRecords) * 100, 'totalVerificationRecords-percent');
+            animateCircle('totalUsers-circle', (data.totalUsers / maxUsers) * 100, 'totalUsers-percent');
+        } catch (error) {
+            console.error('Error fetching dashboard stats:', error);
+            showErrorAlert('Failed to fetch dashboard stats.');
+        }
+    }
+    function initializeChatbot() {
+        const chatbotContainer = document.getElementById('chatbotContainer');
+        if (chatbotContainer) {
+            chatbotContainer.style.display = 'none';
+        }
+    }
+
+    function toggleChatbot() {
+        const chatbotContainer = document.getElementById('chatbotContainer');
+        chatbotContainer.style.display = chatbotContainer.style.display === 'flex' ? 'none' : 'flex';
+        logActivity('Chatbot toggled');
+    }
+
+    function addMessage(message, sender) {
+        const messages = document.getElementById('chatbotMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chatbot-message ${sender}`;
+        messageDiv.textContent = message;
+        messages.appendChild(messageDiv);
+        messages.scrollTop = messages.scrollHeight;
+    }
+    async function sendMessage() {
+        const input = document.getElementById('chatbotInput');
+        const message = input.value.trim();
+        if (!message) return;
+
+        addMessage(message, 'user');
+        input.value = '';
+
+        try {
+            const userCode = sessionStorage.getItem('userCode');
+            const response = await fetch('http://0.0.0.0:5005/webhooks/rest/webhook', { // Assuming this Rasa endpoint
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sender: userCode, message })
+            });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            data.forEach(msg => {
+                if (msg.text) addMessage(msg.text, 'bot');
+            });
+            logActivity('Chatbot message sent');
+        } catch (error) {
+            console.error('Error sending message to chatbot:', error);
+            addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+            showErrorAlert('Failed to send message to chatbot.');
+        }
+    }
+    function showErrorAlert(message) {
+        const overlay = document.getElementById('error-message-modal');
+        document.getElementById('error-message-text').textContent = message;
+        overlay.classList.remove('hidden');
+        logActivity(`Error displayed: ${message}`);
+    }
+
+    async function fetchActivityTracing() {
+        const ACTIVITY_API = 'http://localhost:8081/activity-tracing';
+        const activityList = document.getElementById('activityList');
+        const userCode = sessionStorage.getItem('userCode') || 'Unknown';
+        const email = sessionStorage.getItem('email') || '';
+
+        try {
+            const response = await fetch(`${ACTIVITY_API}?userCode=${encodeURIComponent(userCode)}&email=${encodeURIComponent(email)}`, {
+                method: 'GET',
+                headers: { 'userCode': userCode }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const loginData = data.data; // Extract the 'data' object from the response
+
+            if (!loginData || !loginData.userCode || !loginData.loginTime) {
+                throw new Error('Invalid response data');
+            }
+
+            // Format the loginTime
+            const loginDate = new Date(loginData.loginTime);
+            const formattedDate = loginDate.toLocaleDateString('en-US', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            }); // e.g., "27 Jun 2025"
+            const formattedTime = loginDate.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            }); // e.g., "5:29 PM"
+
+            // Display the formatted message in activityList
+            activityList.innerHTML = `
+                <li class="sidebar-link">
+                    <i class="fa-solid fa-sign-in-alt"></i>
+                    <span class="sidebar-link-text">Hello ${loginData.userCode}, your login time is ${formattedDate} at ${formattedTime}</span>
+                </li>
+            `;
+            logActivity('Activity tracing fetched');
+        } catch (error) {
+            console.error('Error fetching activities:', error);
+            activityList.innerHTML = `
+                <li class="sidebar-link">
+                    <i class="fa-solid fa-exclamation-circle"></i>
+                    <span class="sidebar-link-text">Failed to load login details.</span>
+                </li>
+            `;
+            showErrorAlert('Failed to load activity tracing.');
+        }
+    }
+
+    function toggleMenuSection(event) {
+        const sectionHeader = event.currentTarget;
+        // Find the ul element that is a direct sibling of the h4 within the same menu-section div
+        const ul = sectionHeader.closest('.menu-section').querySelector('ul');
+        const icon = sectionHeader.querySelector('i');
+        if (ul && icon) {
+            ul.classList.toggle('active');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up'); // Toggle up/down arrow
+            logActivity(`Menu section ${ul.classList.contains('active') ? 'expanded' : 'collapsed'}`);
+        }
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
         initializeUser();
-        hideLoader(); 
-        updateKeyMetrics(); 
+        hideLoader();
+        updateKeyMetrics(); // Still called, but now SLA circles handle the display
+        loadDashboardStats(); // Load data for SLA circles
+        fetchActivityTracing(); // Load initial activity tracing
 
         // --- Event Listeners ---
         const sidebar = document.getElementById('sidebar');
         const logoText = document.getElementById('sidebar-header-logo-text');
         const sidebarCollapsedIcon = document.getElementById('sidebar-header-collapsed-icon');
+        const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn');
 
         // Function to update sidebar header content based on state
         function updateSidebarHeader() {
-            if (sidebar.classList.contains('active') || sidebar.matches(':hover')) {
+            // Check if sidebar is active (mobile expanded) or hovered (desktop expanded)
+            const isExpanded = sidebar.classList.contains('active') || sidebar.classList.contains('expanded');
+
+            if (isExpanded) {
                 logoText.textContent = 'Dashboard Hub';
-                logoText.classList.remove('opacity-0');
-                logoText.classList.remove('hidden'); // Ensure it's displayed
-                sidebarCollapsedIcon.classList.add('hidden'); 
+                logoText.classList.remove('opacity-0', 'w-0');
+                logoText.classList.add('w-auto');
+                sidebarCollapsedIcon.classList.add('hidden');
             } else {
-                logoText.textContent = 'Hub'; 
-                logoText.classList.add('opacity-0');
-                logoText.classList.add('hidden'); // Ensure it's hidden
-                sidebarCollapsedIcon.classList.remove('hidden'); 
+                logoText.textContent = 'Hub'; /* Fallback text for collapsed state if needed, though hidden by width */
+                logoText.classList.add('opacity-0', 'w-0');
+                logoText.classList.remove('w-auto');
+                sidebarCollapsedIcon.classList.remove('hidden');
             }
+
+            // Also update visibility for menu section headers
+            document.querySelectorAll('.menu-section h4 .sidebar-link-text').forEach(textElement => {
+                if (isExpanded) {
+                    textElement.classList.remove('opacity-0', 'w-0');
+                    textElement.classList.add('w-auto');
+                } else {
+                    textElement.classList.add('opacity-0', 'w-0');
+                    textElement.classList.remove('w-auto');
+                }
+            });
         }
 
         // Initial update
         updateSidebarHeader();
 
         // Event listeners for hover (for desktop)
-        sidebar.addEventListener('mouseenter', updateSidebarHeader);
-        sidebar.addEventListener('mouseleave', updateSidebarHeader);
+        sidebar.addEventListener('mouseenter', () => {
+            if (window.innerWidth > 1024) { // Only for desktop
+                sidebar.classList.add('expanded');
+                updateSidebarHeader();
+            }
+        });
+        sidebar.addEventListener('mouseleave', () => {
+            if (window.innerWidth > 1024) { // Only for desktop
+                sidebar.classList.remove('expanded');
+                updateSidebarHeader();
+            }
+        });
+
+        // Event listener for desktop collapse button
+        sidebarCollapseBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('expanded');
+            updateSidebarHeader();
+            logActivity('Sidebar collapsed/expanded via button');
+        });
+
 
         // Event listener for click (for mobile toggle)
         document.getElementById('sidebar-toggle').addEventListener('click', () => {
             sidebar.classList.toggle('active');
-            updateSidebarHeader(); 
+            updateSidebarHeader();
             logActivity('Sidebar toggled');
         });
-        
-        document.getElementById('btn-profile').addEventListener('click', window.fetchTeamDetails); 
+
+        document.getElementById('btn-profile').addEventListener('click', window.fetchTeamDetails);
 
         // Event listener for closing modals by clicking the cross icon or outside the modal content
-        document.querySelectorAll('.modal').forEach(modalElement => {
+        document.querySelectorAll('.modal, .dashboard-modal-overlay').forEach(modalElement => {
             // Add listener to the modal overlay itself
             modalElement.addEventListener('click', (e) => {
-                if (e.target === modalElement) { // Only close if clicking on the backdrop
+                // Ensure the click is directly on the overlay, not on content within the modal
+                if (e.target === modalElement) {
                     closeModal(modalElement.id);
                 }
             });
@@ -901,25 +2040,26 @@
                 e.stopPropagation(); // Prevent event from bubbling up to the modal overlay
             });
         });
-      
+
         window.addEventListener('click', (e) => {
             const sidebar = document.getElementById('sidebar');
             // Close sidebar if clicking outside when it's active (for mobile)
-            if (sidebar.classList.contains('active') && !e.target.closest('#sidebar') && !e.target.closest('#sidebar-toggle')) {
+            if (window.innerWidth <= 1024 && sidebar.classList.contains('active') && !e.target.closest('#sidebar') && !e.target.closest('#sidebar-toggle')) {
                 sidebar.classList.remove('active');
+                updateSidebarHeader(); // Update header state when closing on mobile
                 logActivity('Sidebar closed by clicking outside');
             }
         });
 
         document.getElementById('search-bar').addEventListener('keyup', (e) => {
             if(e.key === 'Enter') {
-                openModal('search-message-modal'); 
-                document.getElementById('search-query-display').textContent = e.target.value; 
-                logActivity(`Searched for: "${e.target.value}"`); 
+                openModal('search-message-modal');
+                document.getElementById('search-query-display').textContent = e.target.value;
+                logActivity(`Searched for: "${e.target.value}"`);
                 e.target.value = '';
             }
         });
-        
+
         // Listener for services submenu in sidebar
         const servicesToggle = document.getElementById('services-submenu-toggle');
         const servicesSubmenu = document.getElementById('services-submenu');
@@ -949,7 +2089,7 @@
         });
 
         // --- Search Module Modal Logic ---
-        let currentSearchType = 'policy'; 
+        let currentSearchType = 'policy';
 
         const searchModuleTabs = document.querySelectorAll('#search-module-modal .tab-button');
         const moduleSearchInput = document.getElementById('module-search-input');
@@ -970,8 +2110,8 @@
                 const query = moduleSearchInput.value.trim();
                 logActivity(`Performed search for "${query}" of type "${currentSearchType}"`);
                 const results = await performModuleSearch(query, currentSearchType);
-                
-                moduleSearchResults.innerHTML = ''; 
+
+                moduleSearchResults.innerHTML = '';
                 if (results.length > 0) {
                     results.forEach(result => {
                         const p = document.createElement('p');
@@ -1027,6 +2167,22 @@
                 localStorage.setItem('theme', 'light');
                 logActivity('Dark mode disabled');
             }
+        });
+
+        // --- Chatbot Event Listeners ---
+        document.getElementById('chatbotButton').addEventListener('click', toggleChatbot);
+        document.getElementById('chatbotClose').addEventListener('click', toggleChatbot);
+        document.getElementById('chatbotSend').addEventListener('click', sendMessage);
+        document.getElementById('chatbotInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // --- Sidebar Menu Section Toggles ---
+        document.getElementById('activitySection').addEventListener('click', toggleMenuSection);
+        document.getElementById('otherSection').addEventListener('click', toggleMenuSection);
+        document.getElementById('viewActivitiesBtn').addEventListener('click', () => {
+            window.location.href = 'activity'; // Assuming 'activity' is the correct page
+            logActivity('Navigated to All Activities page');
         });
     });
   </script>
