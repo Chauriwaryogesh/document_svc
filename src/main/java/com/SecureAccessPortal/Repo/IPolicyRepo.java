@@ -27,4 +27,7 @@ public interface IPolicyRepo extends JpaRepository<Policy, String> {
 
 	@Query(value="Select * from policy p where p.deleted_flag=?1", nativeQuery = true)
 	List<Policy> findAllDeletedflagN(String deletedFlag);
+
+	@Query("SELECT COUNT(DISTINCT p) FROM Policy p WHERE p.userCode = :userCode")
+	long findAllPolicies(String userCode);
 }

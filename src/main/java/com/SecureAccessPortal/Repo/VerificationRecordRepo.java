@@ -41,4 +41,8 @@ public interface VerificationRecordRepo extends JpaRepository<VerificationRecord
 	 @Query("Select u from VerificationRecord u where u.verId=?1 ")
 	Optional<VerificationRecord> findByVerId(String id);
 
+	 
+	 @Query("SELECT COUNT(DISTINCT v) FROM VerificationRecord v  WHERE v.userCode = :userCode")
+	 long findAllRecords(String userCode);
+
 }

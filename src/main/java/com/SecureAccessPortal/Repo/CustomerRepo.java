@@ -27,4 +27,7 @@ public interface CustomerRepo extends JpaRepository<Customer, String> {
 	@Query("SELECT c FROM Customer c WHERE c.userCode = :userCode AND c.deletedFlag= :deletedFlag")
 	Customer findByUserCodeAndDeletedFlagN(String userCode, String deletedFlag);
 
+	@Query("SELECT COUNT(c) FROM Customer c WHERE c.userCode = :userCode")
+	long findAllUsers(String userCode);
+
 }

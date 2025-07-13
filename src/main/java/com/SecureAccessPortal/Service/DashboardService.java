@@ -8,12 +8,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
-import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.Security;
-import com.SecureAccessPortal.Entity.VerificationRecord;
-import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.DashboardStats;
 import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Repo.CustomerRepo;
@@ -29,45 +25,35 @@ import com.SecureAccessPortal.Repo.WorkItemRepo;
 		private ISecurityRepo securityRepo;
 		
 		@Autowired
-		private WorkItemRepo workItem;
+		private WorkItemRepo workitemRepository;
 		
 		@Autowired
-		private VerificationRecordRepo verfRec;
+		private VerificationRecordRepo verificationRecordRepository;
 		
 		@Autowired
-		private BankAccountRepo bankAcc;
+		private BankAccountRepo bankAccountRepository;
 		
 		@Autowired
-		private IPolicyRepo policy;
+		private IPolicyRepo policyRepository;
+		
+		@Autowired
+		private CustomerRepo customerRepository;
 		
 		
 		@Autowired
 		private CustomerRepo customerRepo;
 
 		public DashboardStats getDashboardStats(String userCode) {
-			DashboardStats stats = new DashboardStats();
-			List<Security> security = securityRepo.findAll();
-			long users = security.stream().count();
+	        DashboardStats stats = new DashboardStats();
 
-			List<Workitem> workitem = workItem.findAll();
-			long workItem = workitem.stream().count();
+	        stats.setTotalUsers(customerRepository.findAllUsers(userCode));
+	        stats.setTotalWorkItems(workitemRepository.findAllWorkItems(userCode));
+	        stats.setTotalPolicy(policyRepository.findAllPolicies(userCode));
+	        stats.setTotalBankAccounts(bankAccountRepository.findAllBankAcc(userCode));
+	        stats.setTotalVerificationRecords(verificationRecordRepository.findAllRecords(userCode));
 
-			List<Policy> pol = policy.findAll();
-			long polCnt = pol.stream().count();
-
-			List<BankAccount> bankAccount = bankAcc.findAll();
-			long bank = bankAccount.stream().count();
-
-			List<VerificationRecord> verf = verfRec.findAll();
-			long ver = verf.stream().count();
-
-			stats.setTotalBankAccounts(bank);
-			stats.setTotalPolicy(polCnt);
-			stats.setTotalUsers(users);
-			stats.setTotalWorkItems(workItem);
-			stats.setTotalVerificationRecords(ver);						
-			return stats;
-		}
+	        return stats;
+	    }
 
 		public DashboardStats getEmailCountStats(String userCode) {
 			DashboardStats stats = new DashboardStats();
@@ -77,12 +63,7 @@ import com.SecureAccessPortal.Repo.WorkItemRepo;
 			long expiryDaysCount = security.stream()
 			        .filter(sec -> sec.getEndTime() != null) // Filter out null endTime
 			        .filter(sec -> {
-			            try {
-			                // Parse endTime as LocalDateTime
-			               // LocalDateTime endTimeDateTime = LocalDateTime.parse(sec.getEndTime(), formatter);
-			                // Convert to LocalDate for comparison
-			               // LocalDate endTimeDate = endTimeDateTime.toLocalDate();
-			                // Compare with threshold (10 days from now)
+			            try {			               
 			                LocalDate thresholdDate = LocalDate.now().plusDays(10);
 			                return sec.getEndTime().isAfter(thresholdDate);
 			            } catch (DateTimeParseException e) {

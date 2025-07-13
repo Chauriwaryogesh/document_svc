@@ -26,4 +26,7 @@ public interface BankAccountRepo extends JpaRepository<BankAccount, Long> {
 	BankAccount findByAccountNo(String accountNo, String deletedFlag);
 
 	Page<BankAccount> findAll(Specification<BankAccount> spec, Pageable pageable);
+
+	@Query("SELECT COUNT(DISTINCT b) FROM BankAccount b ")
+	long findAllBankAcc(String userCode);
 }

@@ -46,4 +46,7 @@ public interface WorkItemRepo extends JpaRepository<Workitem, String> {
 
     @Query("SELECT w FROM Workitem w WHERE w.customer.customerNo = (SELECT w2.customer.customerNo FROM Workitem w2 WHERE w2.workItemRefNumber = :workItemRefNumber) ORDER BY w.createdTime DESC")
     Page<Workitem> findWorkItemsByRefNumberCustomerNo(@Param("workItemRefNumber") String workItemRefNumber, Pageable pageable);
+
+    @Query("SELECT COUNT(w) FROM Workitem w WHERE w.userCode = :userCode")
+	long findAllWorkItems(String userCode);
 }
