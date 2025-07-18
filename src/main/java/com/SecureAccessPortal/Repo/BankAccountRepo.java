@@ -29,4 +29,7 @@ public interface BankAccountRepo extends JpaRepository<BankAccount, Long> {
 
 	@Query("SELECT COUNT(DISTINCT b) FROM BankAccount b ")
 	long findAllBankAcc(String userCode);
+
+	@Query("SELECT b FROM BankAccount b WHERE b.customer.userCode= :userCode")
+	List<String> findBankAccountByUserCode(String userCode);
 }
