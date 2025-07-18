@@ -30,4 +30,7 @@ public interface IPolicyRepo extends JpaRepository<Policy, String> {
 
 	@Query("SELECT COUNT(DISTINCT p) FROM Policy p WHERE p.userCode = :userCode")
 	long findAllPolicies(String userCode);
+
+	@Query("SELECT p FROM Policy p WHERE p.userCode = :userCode")
+	List<String> findByPoliciesByUserCode(String userId);
 }

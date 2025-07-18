@@ -51,7 +51,7 @@ public class ChatbotService {
             greeting = "Hi, " + customerName + "!";
         } else if ("POLICY".equals(message)) {
             greeting = "Here are your policy numbers, " + customerName + "!";
-            data = policyRepository.findOPoliciesByUserCode(userId);
+            data = policyRepository.findByPoliciesByUserCode(userId);
         } else if ("BANK ACCOUNT".equals(message)) {
             greeting = "Here are your bank account numbers, " + customerName + "!";
             data = bankAccountRepository.findBankAccountByUserCode(userId);
