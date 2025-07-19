@@ -285,6 +285,7 @@ public class PolicyService {
 			} else {
 				response = mapPolicyListDetails(policies, userCode);
 				resp.setData(response);
+				resp.setStatus(CommonConstant.SUCCESS);
 			}
 		} else if (customerNo != null && !customerNo.isEmpty()) {
 			Optional<Customer> customerDtls = customerRepository.findByCustomerNo(customerNo);
@@ -313,6 +314,7 @@ public class PolicyService {
 				} else {
 					response = mapPolicyListDetails(policies, userCode);
 					resp.setData(response);
+					resp.setStatus(CommonConstant.SUCCESS);
 				}
 			}
 		} else if (workItemRefNo != null && !workItemRefNo.isEmpty()) {
@@ -338,6 +340,7 @@ public class PolicyService {
 			} else {
 				response = mapPolicyListDetails(policies, userCode);
 				resp.setData(response);
+				resp.setStatus(CommonConstant.SUCCESS);
 			}
 		} else {
 			resp.setErrorMessage("At least one parameter (policyNo, customerNo, workItemRefNo) is required");

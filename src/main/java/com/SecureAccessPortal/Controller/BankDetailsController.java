@@ -62,8 +62,10 @@ public class BankDetailsController {
 				pageable);
 		if (bankDetails != null && !bankDetails.isEmpty()) {
 			response.setData(bankDetails);
+			response.setStatus(CommonConstant.SUCCESS);
 		} else {
 			response.setErrorMessage("No Bank account found for Customer");
+			response.setStatus(CommonConstant.FAILURE);
 		}
 		return response;
 	}

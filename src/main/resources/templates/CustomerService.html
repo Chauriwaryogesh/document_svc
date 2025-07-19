@@ -1,10 +1,2522 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Secure Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base styles, fonts, etc. */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Lighter background */
+            display: flex; /* Use flexbox for main layout */
+            min-height: 100vh;
+            color: #334155; /* Default text color */
+        }
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        body.dark-mode .sidebar {
+            background-color: #2d3748;
+            border-right-color: #4a5568;
+        }
+        body.dark-mode .sidebar-item:hover {
+            background-color: #4a5568;
+        }
+        body.dark-mode .sidebar-item.active {
+            background-color: #4c51bf; /* Darker blue */
+        }
+        body.dark-mode .header {
+            background-color: #2d3748;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+        body.dark-mode .card {
+            background-color: #2d3748;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+        }
+        body.dark-mode .modal-content {
+            background-color: #2d3748;
+        }
+        body.dark-mode .modal-header {
+            background-color: #1a202c;
+        }
+        body.dark-mode .modal-body {
+            background: #2d3748;
+        }
+        body.dark-mode .modal-footer {
+            background-color: #1a202c;
+        }
+        body.dark-mode .btn-secondary {
+            background-color: #4a5568;
+            color: #e2e8f0;
+        }
+        body.dark-mode .btn-secondary:hover {
+            background-color: #64748b;
+        }
+        body.dark-mode .text-gray-800 { color: #e2e8f0; }
+        body.dark-mode .text-gray-900 { color: #edf2f7; }
+        body.dark-mode .text-gray-500 { color: #a0aec0; }
+        body.dark-mode .text-gray-600 { color: #cbd5e0; }
+        body.dark-mode .text-blue-600 { color: #63b3ed; } /* Adjusted for dark mode contrast */
+        body.dark-mode .text-purple-600 { color: #a78bfa; }
+        body.dark-mode .text-green-600 { color: #68d391; }
+        body.dark-mode .text-yellow-600 { color: #ecc94b; }
+        body.dark-mode .text-red-600 { color: #fc8181; }
+        body.dark-mode .text-indigo-600 { color: #81e6d9; }
+        body.dark-mode .text-pink-600 { color: #ed64a6; }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 250px;
+            min-width: 250px;
+            background-color: #ffffff;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 0;
+            transition: all 0.3s ease-in-out;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 40; /* Below header, above main content */
+        }
+        .sidebar.collapsed {
+            width: 80px;
+            min-width: 80px;
+        }
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+        .sidebar.collapsed .sidebar-header {
+            justify-content: center;
+        }
+        .sidebar-header .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #3b82f6;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        .sidebar-nav {
+            flex-grow: 1;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            gap: 1rem;
+            color: #4a5568;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        .sidebar-item:hover {
+            background-color: #f0f4f8;
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+        }
+        .sidebar-item.active {
+            background-color: #e0e7ff;
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+        }
+        .sidebar.collapsed .sidebar-item {
+            justify-content: center;
+            padding: 0.75rem 0;
+        }
+        .sidebar.collapsed .sidebar-item span {
+            display: none;
+        }
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .sidebar.collapsed .sidebar-footer {
+            display: none;
+        }
+        .sidebar-toggle-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 50;
+        }
+        .sidebar-toggle-btn:hover {
+            background-color: #e2e8f0;
+            color: #3b82f6;
+        }
+        .sidebar.collapsed .sidebar-toggle-btn {
+            right: -20px; /* Adjust to be outside the collapsed sidebar */
+            transform: translateX(50%);
+        }
+
+        /* Main content area */
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        .header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+        }
+        .header-greeting {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .header-info span {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        .header-info button {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .header-info button:hover {
+            background-color: #e2e8f0;
+            color: #3b82f6;
+        }
+
+        /* Card styles */
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 180px; /* Ensure consistent height */
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+            border-color: #3b82f6; /* Highlight on hover */
+        }
+        .card-header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .card-icon {
+            background-color: #e0e7ff;
+            color: #3b82f6;
+            padding: 1rem;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        .card:hover .card-icon {
+            transform: scale(1.1);
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+        .card-description {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            flex-grow: 1; /* Push button to bottom */
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, #2563eb, #7c3aed);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .btn-secondary:hover {
+            background-color: #cbd5e0;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Modal styles (enhanced) */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            padding: 2rem;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            opacity: 0;
+        }
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        /* Fullscreen modal content */
+        .modal-content-fullscreen {
+            width: 95vw;
+            height: 95vh;
+            max-width: none; /* Override max-width */
+            max-height: none; /* Override max-height */
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* For internal scrolling */
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1rem;
+        }
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .modal-close-btn:hover {
+            color: #ef4444;
+        }
+        .modal-body {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #4a5568;
+            margin-bottom: 2rem;
+            flex-grow: 1; /* Allows body to take available space and scroll */
+            overflow-y: auto; /* Enable scrolling for modal body */
+            padding-right: 1rem; /* Space for scrollbar */
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                height: 100vh;
+                top: 0;
+                z-index: 900;
+            }
+            .sidebar.open {
+                left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar-toggle-btn {
+                display: block; /* Show toggle button on mobile */
+                position: fixed;
+                left: 1rem;
+                top: 1rem;
+                z-index: 950;
+                background-color: white;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            .sidebar.collapsed .sidebar-toggle-btn {
+                right: auto;
+                transform: none;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+            }
+            .header-info {
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: space-between;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .lg\:col-span-2 {
+                grid-column: auto;
+            }
+            .modal-content-fullscreen {
+                width: 100vw;
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        /* Progress Tracker Styles */
+        .progress-tracker {
+            display: flex;
+            flex-direction: row; /* Default horizontal */
+            justify-content: space-between;
+            align-items: flex-start; /* Align items at the top for labels */
+            position: relative;
+            margin-bottom: 2rem;
+            padding-top: 1rem; /* Space for line */
+        }
+
+        .progress-line-container {
+            position: absolute;
+            top: 40px; /* Aligns with icon center */
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #cbd5e0; /* Default grey line */
+            z-index: 5;
+            margin: 0 20px; /* Margin to not overlap first/last icon */
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            width: 0%; /* Controlled by JS */
+            background-color: #10b981; /* Green fill */
+            transition: width 0.5s ease-in-out, background-color 0.3s ease;
+        }
+
+        .progress-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 10; /* Above the line */
+            flex: 1; /* Distribute stages evenly */
+            padding: 0 0.5rem; /* Small padding to prevent overlap */
+        }
+
+        .progress-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            background-color: #e2e8f0; /* Default icon background */
+            color: #64748b; /* Default icon color */
+            border: 2px solid #cbd5e0; /* Default border */
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .progress-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #64748b;
+            white-space: nowrap;
+            transition: color 0.3s ease;
+        }
+
+        /* Active/Completed Stage Styles */
+        .progress-stage.completed .progress-icon {
+            background-color: #10b981; /* Green for completed */
+            color: white;
+            border-color: #10b981;
+            transform: scale(1.1);
+        }
+        .progress-stage.completed .progress-label {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .progress-stage.current .progress-icon {
+            background-color: #3b82f6; /* Blue for current */
+            color: white;
+            border-color: #3b82f6;
+            transform: scale(1.2);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+        }
+        .progress-stage.current .progress-label {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        /* Specific styles for Rejected stage */
+        .progress-stage[data-stage="rejected"].current .progress-icon,
+        .progress-stage[data-stage="rejected"].completed .progress-icon {
+            background-color: #ef4444; /* Red for rejected */
+            border-color: #ef4444;
+        }
+        .progress-stage[data-stage="rejected"].current .progress-label,
+        .progress-stage[data-stage="rejected"].completed .progress-label {
+            color: #ef4444;
+        }
+
+        /* Dark mode for progress bar */
+        body.dark-mode .progress-line-container {
+            background-color: #4a5568;
+        }
+        body.dark-mode .progress-line-fill {
+            background-color: #38a169; /* Darker green */
+        }
+        body.dark-mode .progress-stage .progress-icon {
+            background-color: #4a5568;
+            color: #e2e8f0;
+            border-color: #64748b;
+        }
+        body.dark-mode .progress-stage .progress-label {
+            color: #a0aec0;
+        }
+        body.dark-mode .progress-stage.completed .progress-icon {
+            background-color: #38a169; /* Darker green */
+            border-color: #38a169;
+        }
+        body.dark-mode .progress-stage.completed .progress-label {
+            color: #68d391;
+        }
+        body.dark-mode .progress-stage.current .progress-icon {
+            background-color: #4299e1; /* Darker blue */
+            border-color: #4299e1;
+            box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.3);
+        }
+        body.dark-mode .progress-stage.current .progress-label {
+            color: #63b3ed;
+        }
+        body.dark-mode .progress-stage[data-stage="rejected"].current .progress-icon,
+        body.dark-mode .progress-stage[data-stage="rejected"].completed .progress-icon {
+            background-color: #e53e3e; /* Darker red */
+            border-color: #e53e3e;
+        }
+        body.dark-mode .progress-stage[data-stage="rejected"].current .progress-label,
+        body.dark-mode .progress-stage[data-stage="rejected"].completed .progress-label {
+            color: #fc8181;
+        }
+
+        /* Mobile specific progress tracker */
+        @media (max-width: 768px) {
+            .progress-tracker {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-left: 1rem; /* Space for vertical line */
+            }
+            .progress-line-container {
+                display: none; /* Hide horizontal line */
+            }
+            .progress-stage {
+                flex-direction: row;
+                justify-content: flex-start;
+                width: 100%;
+                padding: 0.75rem 0;
+                border-left: 4px solid #cbd5e0; /* Vertical line */
+                margin-bottom: 0.5rem;
+                align-items: center;
+                gap: 1rem;
+            }
+            .progress-stage.completed {
+                border-left-color: #10b981;
+            }
+            .progress-stage.current {
+                border-left-color: #3b82f6;
+            }
+            .progress-stage[data-stage="rejected"].current,
+            .progress-stage[data-stage="rejected"].completed {
+                border-left-color: #ef4444;
+            }
+            .progress-icon {
+                margin-bottom: 0;
+            }
+        }
+
+        /* Styles for bank account display */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-active, .status-approved, .status-pass { background-color: #dcfce7; color: #166534; }
+        .status-pending, .status-in_review { background-color: #fef3c7; color: #92400e; }
+        .status-rejected, .status-fail, .status-lapsed { background-color: #fee2e2; color: #991b1b; }
+
+        .account-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Default for smaller screens */
+            gap: 1rem;
+        }
+        /* Tailwind responsive classes for grid columns */
+        @media (min-width: 640px) { /* sm */
+            .account-card-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (min-width: 768px) { /* md */
+            .account-card-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        @media (min-width: 1024px) { /* lg */
+            .account-card-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        .account-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.25rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .account-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+        .account-card .title {
+            font-weight: 600; /* font-semibold */
+            color: #1f2937; /* text-gray-900 */
+            margin-bottom: 0.5rem;
+        }
+        .account-card .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px dashed #e5e7eb;
+            margin-bottom: 0.25rem;
+        }
+        .account-card .detail-row:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .account-card .label {
+            font-weight: 500; /* font-medium */
+            color: #4b5563; /* text-gray-700 */
+            font-size: 0.875rem; /* text-sm */
+        }
+        .account-card .value {
+            font-size: 0.875rem; /* text-sm */
+            color: #374151; /* text-gray-800 */
+            text-align: right;
+        }
+        .account-card .ref-link {
+            color: #3b82f6; /* blue-600 */
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .account-card .ref-link:hover {
+            text-decoration: underline;
+        }
+
+        /* List View Styles */
+        .account-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem; /* space-y-3 */
+        }
+        .account-list-item {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 1rem 1.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem 1.5rem; /* row-gap, column-gap */
+            cursor: pointer;
+        }
+        .account-list-item:hover {
+            background-color: #f9fafb;
+        }
+        .account-list-item .info-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.5rem;
+            flex-grow: 1;
+        }
+        .account-list-item .info-item {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.875rem; /* text-sm */
+        }
+        .account-list-item .info-item .label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+        .account-list-item .info-item .value {
+            color: #1f2937;
+        }
+        .account-list-item .ref-link {
+            color: #3b82f6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .account-list-item .ref-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Table View (existing styles are mostly fine, just ensure consistency) */
+        .table-view-container {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        }
+        .table-view-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-view-container th, .table-view-container td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+        .table-view-container th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .table-view-container tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .table-view-container tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .form-input {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 10px 14px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .form-label {
+            font-weight: 600;
+            color: #1a2c50;
+        }
+        .form-label.required::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 4px;
+        }
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            display: none;
+        }
+        .loader.active {
+            display: flex;
+        }
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #3b82f6; /* Blue spinner */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            z-index: 110;
+            font-weight: 500;
+            animation: slide-up 0.3s ease-out, slide-down 0.0s ease-in 2.7s forwards;
+        }
+        .toast-success {
+            background: #10b981;
+        }
+        .toast-error {
+            background: #ef4444;
+        }
+        @keyframes slide-up {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slide-down {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+    </style>
 </head>
-<body>
+<body class="text-gray-800">
+
+    <!-- Sidebar Toggle Button for Mobile -->
+    <button id="sidebar-toggle-btn" class="sidebar-toggle-btn hidden md:block">
+        <i class="fas fa-bars fa-lg"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-shield-alt text-blue-600 fa-2x"></i>
+            <span class="logo-text">Secure Access</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="sidebar-item active" data-section="dashboard">
+                <i class="fas fa-home fa-lg"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="personal-details">
+                <i class="fas fa-user-circle fa-lg"></i>
+                <span>Personal Details</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="policy-details">
+                <i class="fas fa-file-contract fa-lg"></i>
+                <span>Policy Details</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="bank-accounts">
+                <i class="fas fa-university fa-lg"></i>
+                <span>Bank Accounts</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="payments">
+                <i class="fas fa-credit-card fa-lg"></i>
+                <span>Payments</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="complaints">
+                <i class="fas fa-exclamation-triangle fa-lg"></i>
+                <span>Complaints</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="feedback">
+                <i class="fas fa-comment-dots fa-lg"></i>
+                <span>Feedback</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="contact-us">
+                <i class="fas fa-phone-alt fa-lg"></i>
+                <span>Contact Us</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="dark-mode-toggle" class="btn-secondary w-full flex items-center justify-center gap-2">
+                <i class="fas fa-moon"></i>
+                <span>Dark Mode</span>
+            </button>
+            <button id="logout-btn-sidebar" class="btn-danger w-full mt-4 flex items-center justify-center gap-2">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Header for Main Content -->
+        <header class="header">
+            <h1 class="header-greeting">Welcome, <span id="customer-name" class="font-semibold text-blue-600">Customer</span>!</h1>
+            <div class="header-info">
+                <span id="user-id-display">User ID: N/A</span>
+                <button id="notifications-btn" title="Notifications">
+                    <i class="fas fa-bell fa-lg"></i>
+                </button>
+                <button id="settings-btn" title="Settings">
+                    <i class="fas fa-cog fa-lg"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Section (Default View) -->
+        <section id="dashboard-section" class="content-section fade-in">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Overview</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards from original HTML, with updated styling -->
+                <div class="card">
+                    <div class="card-header-content">
+                        <div class="card-icon"><i class="fas fa-user-circle fa-2x"></i></div>
+                        <div><h3 class="card-title">Your Details</h3></div>
+                    </div>
+                    <p class="card-description">View and manage your personal information.</p>
+                    <button class="btn-primary w-full" onclick="openModal('personal-details-modal')">View Your Details</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-content">
+                        <div class="card-icon bg-purple-100 text-purple-600"><i class="fas fa-file-contract fa-2x"></i></div>
+                        <div><h3 class="card-title">Policy Details</h3></div>
+                    </div>
+                    <p class="card-description">Access your active and past policies.</p>
+                    <button class="btn-primary w-full" onclick="openModal('policy-details-modal')">View Policy Details</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-content">
+                        <div class="card-icon bg-green-100 text-green-600"><i class="fas fa-university fa-2x"></i></div>
+                        <div><h3 class="card-title">Bank Accounts</h3></div>
+                    </div>
+                    <p class="card-description">Manage your linked bank accounts.</p>
+                    <div class="flex gap-2">
+                        <button class="btn-primary w-1/2" onclick="openModal('bank-details-modal')">View Details</button>
+                        <button class="btn-secondary w-1/2" onclick="openModal('add-bank-account-modal')">Add Bank Account</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-content">
+                        <div class="card-icon bg-yellow-100 text-yellow-600"><i class="fas fa-credit-card fa-2x"></i></div>
+                        <div><h3 class="card-title">Policy Payment</h3></div>
+                    </div>
+                    <p class="card-description">Pay your premiums quickly and securely.</p>
+                    <button class="btn-primary w-full" onclick="openModal('payment-modal')">Make a Payment</button>
+                </div>
+
+                <div class="card lg:col-span-2">
+                    <div class="card-header-content">
+                        <div class="card-icon bg-red-100 text-red-600"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+                        <div><h3 class="card-title">Complaints</h3></div>
+                    </div>
+                    <p class="card-description">Log a new complaint or track existing ones.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <button class="btn-danger" onclick="openModal('log-complaint-modal')">Log a Complaint</button>
+                        <button class="btn-secondary" onclick="openModal('check-complaint-modal')">Check Progress</button>
+                        <button class="btn-secondary" onclick="openModal('view-complaints-modal')">View Old Complaints</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-content">
+                        <div class="card-icon bg-indigo-100 text-indigo-600"><i class="fas fa-comment-dots fa-2x"></i></div>
+                        <div><h3 class="card-title">Feedback</h3></div>
+                    </div>
+                    <p class="card-description">Share your thoughts with us.</p>
+                    <button class="btn-primary w-full" onclick="openModal('feedback-modal')">Provide Feedback</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-content">
+                        <div class="card-icon bg-pink-100 text-pink-600"><i class="fas fa-phone-alt fa-2x"></i></div>
+                        <div><h3 class="card-title">Contact Us</h3></div>
+                    </div>
+                    <p class="card-description">Get in touch with our support team.</p>
+                    <button class="btn-primary w-full" onclick="openModal('contact-us-modal')">Contact Us</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Other Sections (initially hidden) -->
+        <section id="personal-details-section" class="content-section hidden">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Personal Details</h2>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <p>This section will display your personal information.</p>
+                <p>User ID: <span id="personal-detail-user-id"></span></p>
+                <p>Customer Name: <span id="personal-detail-customer-name"></span></p>
+                <!-- More detailed form/info here -->
+            </div>
+        </section>
+
+        <section id="policy-details-section" class="content-section hidden">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Policies</h2>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <p>This section will list all your policies.</p>
+                <!-- Policy list table/cards here -->
+            </div>
+        </section>
+
+        <section id="bank-accounts-section" class="content-section hidden">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Bank Accounts</h2>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Account No.</th>
+                                <th class="py-3 px-6 text-left">IFSC Code</th>
+                                <th class="py-3 px-6 text-left">Bank Name</th>
+                                <th class="py-3 px-6 text-left">Account Type</th>
+                                <th class="py-3 px-6 text-left">Status</th>
+                                <th class="py-3 px-6 text-left">Customer Name</th>
+                                <th class="py-3 px-6 text-left">Policy No.</th>
+                                <th class="py-3 px-6 text-left">Policy Status</th>
+                                <th class="py-3 px-6 text-left">Last Verification Date</th>
+                                <th class="py-3 px-6 text-left">Created By</th>
+                                <th class="py-3 px-6 text-left">Created Date</th>
+                                <th class="py-3 px-6 text-left">Notes</th>
+                                <th class="py-3 px-6 text-left">Account Holder Type</th>
+                                <th class="py-3 px-6 text-left">Branch Code</th>
+                                <th class="py-3 px-6 text-left">Swift Code</th>
+                                <th class="py-3 px-6 text-left">Payment Method Status</th>
+                                <th class="py-3 px-6 text-left">Last Payment Date</th>
+                                <th class="py-3 px-6 text-left">AML Status</th>
+                                <th class="py-3 px-6 text-left">Verification Attempts</th>
+                                <th class="py-3 px-6 text-left">Comment</th>
+                                <th class="py-3 px-6 text-left">Verification Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light" id="bank-accounts-table-body">
+                            <!-- Bank account data will be inserted here by JS -->
+                            <tr><td colspan="21" class="py-4 text-center text-gray-500">Loading bank accounts...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="payments-section" class="content-section hidden">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Make a Payment</h2>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <p>This section will allow you to make policy payments.</p>
+            </div>
+        </section>
+
+        <section id="complaints-section" class="content-section hidden">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Complaints</h2>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <p>View and manage your complaints here.</p>
+            </div>
+        </section>
+
+        <section id="feedback-section" class="content-section hidden">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Provide Feedback</h2>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <p>Share your valuable feedback with us.</p>
+            </div>
+        </section>
+
+        <section id="contact-us-section" class="content-section hidden">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Contact Our Support</h2>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <p>Get in touch with our support team.</p>
+            </div>
+        </section>
+
+        <!-- Footer for Main Content -->
+        <footer class="mt-auto py-6 text-center text-gray-500 text-sm">
+            &copy; 2025 Secure Access. All rights reserved.
+        </footer>
+    </div>
+
+    <!-- Modals (Full-screen for each module) -->
+
+    <!-- Personal Details Modal -->
+    <div id="personal-details-modal" class="modal-overlay">
+        <div class="modal-content modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Your Personal Details</h3>
+                <button class="modal-close-btn" onclick="closeModal('personal-details-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+                    <div><strong>User Code:</strong> <span id="modal-personal-user-code"></span></div>
+                    <div><strong>Customer Number:</strong> <span id="modal-personal-customer-no"></span></div>
+                    <div><strong>Full Name:</strong> <span id="modal-personal-full-name"></span></div>
+                    <div><strong>Age:</strong> <span id="modal-personal-age"></span></div>
+                    <div><strong>Date of Birth:</strong> <span id="modal-personal-dob"></span></div>
+                    <div><strong>Gender:</strong> <span id="modal-personal-gender"></span></div>
+                    <div><strong>Phone Number:</strong> <span id="modal-personal-phone-number"></span></div>
+                    <div><strong>Email:</strong> <span id="modal-personal-email"></span></div>
+                    <div><strong>Smoker Status:</strong> <span id="modal-personal-smoker-status"></span></div>
+                    <div><strong>Admin Access:</strong> <span id="modal-personal-admin-access"></span></div>
+                    <div class="md:col-span-2"><strong>Roles:</strong> <span id="modal-personal-roles"></span></div>
+                    <div class="md:col-span-2"><strong>Address:</strong> <span id="modal-personal-address"></span></div>
+                    <div class="md:col-span-2"><strong>Alternate Email:</strong> <span id="modal-personal-alt-email"></span></div>
+                    <div class="md:col-span-2"><strong>Emergency Contact:</strong> <span id="modal-personal-emergency-contact"></span></div>
+                </div>
+                <div class="mt-8 flex justify-end">
+                    <button type="button" class="btn-danger" onclick="openModal('log-complaint-modal'); document.getElementById('complaint-description').value='Regarding incorrect personal details for User ID: ' + document.getElementById('modal-personal-user-code').textContent + '. Please review.';">Raise Complaint</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('personal-details-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Policy Details Modal -->
+    <div id="policy-details-modal" class="modal-overlay">
+        <div class="modal-content modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Your Policies</h3>
+                <button class="modal-close-btn" onclick="closeModal('policy-details-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <input type="text" id="policy-search" placeholder="Search policies by number or name..." class="w-full md:w-2/3 p-2 border border-gray-300 rounded-md shadow-sm">
+                    <button class="btn-primary w-full md:w-auto" onclick="alert('Navigating to apply for policy page/modal! (Mock)')">Apply for Policy</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Policy No.</th>
+                                <th class="py-3 px-6 text-left">Policy Name</th>
+                                <th class="py-3 px-6 text-left">Type</th>
+                                <th class="py-3 px-6 text-left">Company</th>
+                                <th class="py-3 px-6 text-left">Premium</th>
+                                <th class="py-3 px-6 text-left">Due Date</th>
+                                <th class="py-3 px-6 text-left">Status</th>
+                                <th class="py-3 px-6 text-left">Renewal Date</th>
+                                <th class="py-3 px-6 text-left">Beneficiary</th>
+                                <th class="py-3 px-6 text-left">FCU Flag</th>
+                                <th class="py-3 px-6 text-left">Claimable Amt.</th>
+                                <th class="py-3 px-6 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light" id="policy-list-table-body">
+                            <!-- Policy data will be inserted here by JS -->
+                            <tr><td colspan="12" class="py-4 text-center text-gray-500">Loading policies...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('policy-details-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Accounts Modal -->
+    <div id="bank-details-modal" class="modal-overlay">
+        <div class="modal-content modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Your Bank Accounts</h3>
+                <button class="modal-close-btn" onclick="closeModal('bank-details-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Account No.</th>
+                                <th class="py-3 px-6 text-left">IFSC Code</th>
+                                <th class="py-3 px-6 text-left">Bank Name</th>
+                                <th class="py-3 px-6 text-left">Account Type</th>
+                                <th class="py-3 px-6 text-left">Status</th>
+                                <th class="py-3 px-6 text-left">Customer Name</th>
+                                <th class="py-3 px-6 text-left">Policy No.</th>
+                                <th class="py-3 px-6 text-left">Policy Status</th>
+                                <th class="py-3 px-6 text-left">Last Verification Date</th>
+                                <th class="py-3 px-6 text-left">Created By</th>
+                                <th class="py-3 px-6 text-left">Created Date</th>
+                                <th class="py-3 px-6 text-left">Notes</th>
+                                <th class="py-3 px-6 text-left">Account Holder Type</th>
+                                <th class="py-3 px-6 text-left">Branch Code</th>
+                                <th class="py-3 px-6 text-left">Swift Code</th>
+                                <th class="py-3 px-6 text-left">Payment Method Status</th>
+                                <th class="py-3 px-6 text-left">Last Payment Date</th>
+                                <th class="py-3 px-6 text-left">AML Status</th>
+                                <th class="py-3 px-6 text-left">Verification Attempts</th>
+                                <th class="py-3 px-6 text-left">Comment</th>
+                                <th class="py-3 px-6 text-left">Verification Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light" id="modal-bank-accounts-table-body">
+                            <!-- Bank account data will be inserted here by JS -->
+                            <tr><td colspan="21" class="py-4 text-center text-gray-500">Loading bank accounts...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('bank-details-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bank Account Modal -->
+    <div id="add-bank-account-modal" class="modal-overlay">
+        <div class="modal-content modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Bank Account</h3>
+                <button class="modal-close-btn" onclick="closeModal('add-bank-account-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="add-bank-account-form" class="space-y-4">
+                    <h4 class="text-lg font-semibold">Policy Details</h4>
+                    <div>
+                        <label for="add-policy-number" class="form-label block text-sm required">Policy Number</label>
+                        <input type="text" id="add-policy-number" class="form-input mt-1" placeholder="Enter policy number" required aria-required="true">
+                    </div>
+                    <div>
+                        <label for="add-customer-number" class="form-label block text-sm required">Customer Number</label>
+                        <input type="text" id="add-customer-number" class="form-input mt-1" placeholder="Customer number (auto-filled)" readonly aria-required="true">
+                    </div>
+                    <div>
+                        <label for="add-cust-name" class="form-label block text-sm required">Customer Name</label>
+                        <input type="text" id="add-cust-name" class="form-input mt-1" placeholder="Customer name (auto-filled)" readonly aria-required="true">
+                    </div>
+                    <div>
+                        <label for="add-email" class="form-label block text-sm required">Email</label>
+                        <input type="email" id="add-email" class="form-input mt-1" placeholder="Email (auto-filled)" readonly aria-required="true">
+                    </div>
+                    <div>
+                        <label for="add-date-of-birth" class="form-label block text-sm required">Date of Birth</label>
+                        <input type="date" id="add-date-of-birth" class="form-input mt-1" readonly aria-required="true">
+                    </div>
+                    <div>
+                        <label for="add-user-code" class="form-label block text-sm required">User Code</label>
+                        <input type="text" id="add-user-code" class="form-input mt-1" placeholder="User code (auto-filled)" readonly aria-required="true">
+                    </div>
+                    <h4 class="text-lg font-semibold mt-6">Bank Account Details</h4>
+                    <div>
+                        <label for="add-account-number" class="form-label block text-sm required">Bank Account Number</label>
+                        <input type="text" id="add-account-number" class="form-input mt-1" placeholder="Enter account number" required aria-required="true">
+                    </div>
+                    <div>
+                        <label for="add-ifsc-code" class="form-label block text-sm required">IFSC Code</label>
+                        <select id="add-ifsc-code" class="form-input mt-1" required aria-required="true">
+                            <option value="" disabled selected>Select IFSC code</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="add-bank-name" class="form-label block text-sm required">Bank Name</label>
+                        <select id="add-bank-name" class="form-input mt-1" required aria-required="true">
+                            <option value="" disabled selected>Select bank name</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="add-branch-code" class="form-label block text-sm">Branch Code</label>
+                        <input type="text" id="add-branch-code" class="form-input mt-1" placeholder="Branch code (auto-filled)" readonly>
+                    </div>
+                    <div>
+                        <label for="add-account-type" class="form-label block text-sm required">Account Type</label>
+                        <select id="add-account-type" class="form-input mt-1" required aria-required="true">
+                            <option value="" disabled selected>Select account type</option>
+                            <option value="Savings">Savings</option>
+                            <option value="Current">Current</option>
+                            <option value="Checking">Checking</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="add-account-holder-type" class="form-label block text-sm required">Account Holder Type</label>
+                        <select id="add-account-holder-type" class="form-input mt-1" required aria-required="true">
+                            <option value="" disabled selected>Select holder type</option>
+                            <option value="Single">Single</option>
+                            <option value="Joint">Joint</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="add-swift-code" class="form-label block text-sm">Swift Code</label>
+                        <input type="text" id="add-swift-code" class="form-input mt-1" placeholder="Enter swift code">
+                    </div>
+                    <div>
+                        <label for="add-payment-method-status" class="form-label block text-sm required">Payment Method</label>
+                        <select id="add-payment-method-status" class="form-input mt-1" required aria-required="true">
+                            <option value="" disabled selected>Select payment method</option>
+                            <option value="CHEQUE">Cheque</option>
+                            <option value="ONLINE">Online</option>
+                            <option value="WIRE">Wire Transfer</option>
+                        </select>
+                    </div>
+                    <div id="add-bank-account-error" class="error-text hidden" aria-live="polite"></div>
+                    <div id="add-bank-account-result" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="add-bank-account-submit" class="btn-primary">Add Account</button>
+                <button class="btn-secondary" onclick="closeModal('add-bank-account-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payments Modal -->
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal-content modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Make a Policy Payment</h3>
+                <button class="modal-close-btn" onclick="closeModal('payment-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="space-y-4">
+                    <div>
+                        <label for="payment-policy-no" class="block text-sm font-medium text-gray-700">Policy Number</label>
+                        <input type="text" id="payment-policy-no" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="e.g., POL123456" required>
+                    </div>
+                    <div>
+                        <label for="payment-amount" class="block text-sm font-medium text-gray-700">Amount to Pay</label>
+                        <input type="number" id="payment-amount" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="e.g., 5000.00" step="0.01" required>
+                    </div>
+                    <div>
+                        <label for="payment-method" class="block text-sm font-medium text-gray-700">Payment Method</label>
+                        <select id="payment-method" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                            <option value="">Select Method</option>
+                            <option value="credit-card">Credit Card</option>
+                            <option value="debit-card">Debit Card</option>
+                            <option value="net-banking">Net Banking</option>
+                            <option value="upi">UPI</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn-primary" onclick="alert('Payment initiated successfully! (Mock)')">Proceed to Pay</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('payment-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complaints Modals (Log, Check, View Old) -->
+    <div id="log-complaint-modal" class="modal-overlay">
+        <div class="modal-content modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Log a New Complaint</h3>
+                <button class="modal-close-btn" onclick="closeModal('log-complaint-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="space-y-4">
+                    <div>
+                        <label for="complaint-type" class="block text-sm font-medium text-gray-700">Complaint Type</label>
+                        <select id="complaint-type" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                            <option value="">Select Type</option>
+                            <option value="policy-issue">Policy Issue</option>
+                            <option value="payment-issue">Payment Issue</option>
+                            <option value="service-issue">Service Issue</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="complaint-description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea id="complaint-description" rows="5" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn-primary" onclick="alert('Complaint logged successfully! (Mock ID: COMP' + Math.floor(Math.random() * 10000) + ')')">Submit Complaint</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('log-complaint-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="check-complaint-modal" class="modal-overlay">
+        <div class="modal-content modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Check Complaint Progress</h3>
+                <button class="modal-close-btn" onclick="closeModal('check-complaint-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="space-y-6">
+                    <div class="progress-tracker">
+                        <!-- Progress Line Container -->
+                        <div class="progress-line-container">
+                            <div class="progress-line-fill" id="progress-line-fill"></div>
+                        </div>
+
+                        <!-- Stages -->
+                        <div class="progress-stage" data-stage="submitted">
+                            <div class="progress-icon"><i class="fas fa-check"></i></div>
+                            <div class="progress-label">Submitted</div>
+                        </div>
+                        <div class="progress-stage" data-stage="acknowledged">
+                            <div class="progress-icon"><i class="fas fa-handshake"></i></div>
+                            <div class="progress-label">Acknowledged</div>
+                        </div>
+                        <div class="progress-stage" data-stage="pending">
+                            <div class="progress-icon"><i class="fas fa-hourglass-half"></i></div>
+                            <div class="progress-label">Pending Review</div>
+                        </div>
+                        <div class="progress-stage" data-stage="approved">
+                            <div class="progress-icon"><i class="fas fa-thumbs-up"></i></div>
+                            <div class="progress-label">Approved</div>
+                        </div>
+                        <div class="progress-stage" data-stage="rejected">
+                            <div class="progress-icon"><i class="fas fa-times-circle"></i></div>
+                            <div class="progress-label">Rejected</div>
+                        </div>
+                    </div>
+
+                    <div id="complaint-status-message" class="text-center text-lg font-medium mt-4 p-4 rounded-lg bg-blue-100 text-blue-800">
+                        Enter a Complaint ID to check its progress.
+                    </div>
+
+                    <form class="space-y-4 mt-8">
+                        <div>
+                            <label for="check-complaint-id" class="block text-sm font-medium text-gray-700">Complaint ID</label>
+                            <input type="text" id="check-complaint-id" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="e.g., COMP1001" required>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="button" class="btn-primary" onclick="checkComplaintProgress()">Check Status</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('check-complaint-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-complaints-modal" class="modal-overlay">
+        <div class="modal-content modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Your Old Complaints</h3>
+                <button class="modal-close-btn" onclick="closeModal('view-complaints-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Complaint ID</th>
+                                <th class="py-3 px-6 text-left">Type</th>
+                                <th class="py-3 px-6 text-left">Description</th>
+                                <th class="py-3 px-6 text-left">Date</th>
+                                <th class="py-3 px-6 text-left">Status</th>
+                                <th class="py-3 px-6 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light" id="complaints-table-body">
+                            <!-- Complaint Data will be dynamically populated or show no data -->
+                            <tr><td colspan="6" class="py-4 text-center text-gray-500">No complaints found.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('view-complaints-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="modal-overlay">
+        <div class="modal-content modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Provide Feedback</h3>
+                <button class="modal-close-btn" onclick="closeModal('feedback-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="space-y-4">
+                    <div>
+                        <label for="feedback-subject" class="block text-sm font-medium text-gray-700">Subject</label>
+                        <input type="text" id="feedback-subject" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                    </div>
+                    <div>
+                        <label for="feedback-message" class="block text-sm font-medium text-gray-700">Your Feedback</label>
+                        <textarea id="feedback-message" rows="5" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn-primary" onclick="alert('Thank you for your feedback! (Mock)')">Submit Feedback</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('feedback-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Us Modal -->
+    <div id="contact-us-modal" class="modal-overlay">
+        <div class="modal-content modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Contact Our Support</h3>
+                <button class="modal-close-btn" onclick="closeModal('contact-us-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-4">We're here to help! You can reach our support team through the following channels:</p>
+                <ul class="space-y-2">
+                    <li><i class="fas fa-envelope text-blue-500 mr-2"></i> <strong>Email:</strong> support@secureaccess.com</li>
+                    <li><i class="fas fa-phone-alt text-blue-500 mr-2"></i> <strong>Phone:</strong> (123) 456-7890</li>
+                    <li><i class="fas fa-headset text-blue-500 mr-2"></i> <strong>Live Chat:</strong> Available during business hours (Mon-Fri, 9 AM - 5 PM IST)</li>
+                </ul>
+                <p class="mt-6">Alternatively, you can send us a message directly:</p>
+                <form class="space-y-4">
+                    <div>
+                        <label for="contact-name" class="block text-sm font-medium text-gray-700">Your Name</label>
+                        <input type="text" id="contact-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                    </div>
+                    <div>
+                        <label for="contact-email" class="block text-sm font-medium text-gray-700">Your Email</label>
+                        <input type="email" id="contact-email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                    </div>
+                    <div>
+                        <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
+                        <textarea id="contact-message" rows="5" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn-primary" onclick="alert('Your message has been sent! We will get back to you shortly. (Mock)')">Send Message</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('contact-us-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loader" class="loader">
+        <div class="spinner"></div>
+    </div>
+
+
+    <script>
+        // JavaScript for interactivity
+        const config = {
+            userCode: sessionStorage.getItem('userCode'), // Get userCode from sessionStorage
+            customerName: sessionStorage.getItem('customerName'), // Get customerName from sessionStorage
+            customerNo: sessionStorage.getItem('customerNo'), // Get customerNo from sessionStorage
+            loginUrl: 'login.html', // Placeholder for login page
+            apiBaseUrl: 'http://localhost:8081/bankService', // Base URL for bank service APIs
+            policyUrl: 'http://localhost:8081/policy', // Base URL for policy APIs
+            itemsPerPage: 20 // Default items per page for bank details API
+        };
+
+        let currentOpenModalId = null; // Track the currently open modal
+        let allPolicies = []; // Global variable to store policies fetched from API
+        let allBankAccounts = []; // Global variable to store bank accounts fetched from API
+
+        // DOM elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const logoutBtnSidebar = document.getElementById('logout-btn-sidebar');
+        const customerNameDisplay = document.getElementById('customer-name');
+        const userIdDisplay = document.getElementById('user-id-display');
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        // Initialize user info in header
+        customerNameDisplay.textContent = config.customerName || 'Customer';
+        userIdDisplay.textContent = `User ID: ${config.userCode || 'N/A'}`;
+
+        // Utility functions for loader and toast
+        function showLoader() {
+            document.getElementById('loader').classList.add('active');
+        }
+
+        function hideLoader() {
+            document.getElementById('loader').classList.remove('active');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Sidebar Toggle
+        sidebarToggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            // On mobile, toggle 'open' class for fixed sidebar
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('open');
+            }
+        });
+
+        // Dark Mode Toggle
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i> <span>Light Mode</span>' : '<i class="fas fa-moon"></i> <span>Dark Mode</span>';
+        });
+
+        // Logout Functionality
+        logoutBtnSidebar.addEventListener('click', () => {
+            sessionStorage.removeItem('userCode');
+            sessionStorage.removeItem('customerName');
+            sessionStorage.removeItem('customerNo'); // Clear customerNo on logout
+            showToast('Logged out successfully!', 'success');
+            setTimeout(() => {
+                window.location.href = config.loginUrl;
+            }, 1000);
+        });
+
+        // Navigation to sections via sidebar
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetSectionId = item.dataset.section + '-section';
+
+                // Remove active class from all sidebar items
+                sidebarItems.forEach(navItem => navItem.classList.remove('active'));
+                // Add active class to the clicked item
+                item.classList.add('active');
+
+                // Hide all content sections
+                contentSections.forEach(section => {
+                    section.classList.remove('fade-in'); // Remove fade-in to re-apply
+                    section.classList.add('hidden');
+                });
+
+                // Show the target section
+                const targetSection = document.getElementById(targetSectionId);
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                    targetSection.classList.add('fade-in'); // Apply fade-in animation
+                }
+
+                // If navigating to bank accounts, fetch data
+                if (item.dataset.section === 'bank-accounts') {
+                    fetchAndPopulateBankAccounts();
+                }
+
+                // On mobile, collapse sidebar after selection
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        });
+
+        // Generic Modal Functions
+        async function openModal(modalId) {
+            // Close any currently open modal first
+            if (currentOpenModalId && document.getElementById(currentOpenModalId)) {
+                document.getElementById(currentOpenModalId).classList.remove('open');
+            }
+
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                currentOpenModalId = modalId; // Set the current open modal
+                modal.classList.add('open');
+
+                // Populate specific modal content if needed
+                if (modalId === 'personal-details-modal') {
+                    await fetchCustomerDetails(); // Fetch and populate personal details
+                } else if (modalId === 'policy-details-modal') {
+                    await fetchAndPopulatePolicies(); // Fetch and populate policies
+                    document.getElementById('policy-search').value = ''; // Clear search on open
+                    document.getElementById('policy-search').addEventListener('input', filterPolicyTable);
+                } else if (modalId === 'bank-details-modal') {
+                    await fetchAndPopulateBankAccounts(); // Fetch and populate bank accounts
+                } else if (modalId === 'add-bank-account-modal') {
+                    await initializeAddBankAccountModal(); // Initialize add bank account modal
+                }
+                else if (modalId === 'check-complaint-modal') {
+                    // Reset progress tracker when opening
+                    const stages = document.querySelectorAll('#check-complaint-modal .progress-stage');
+                    const progressLineFill = document.getElementById('progress-line-fill');
+                    const statusMessage = document.getElementById('complaint-status-message');
+                    const checkComplaintIdInput = document.getElementById('check-complaint-id');
+
+                    stages.forEach(stage => {
+                        stage.classList.remove('completed', 'current');
+                        stage.querySelector('.progress-icon').style.backgroundColor = ''; // Reset to default CSS
+                        stage.querySelector('.progress-icon').style.borderColor = ''; // Reset to default CSS
+                        stage.querySelector('.progress-icon').style.transform = ''; // Reset to default CSS
+                        stage.querySelector('.progress-label').style.color = ''; // Reset to default CSS
+                        stage.querySelector('.progress-label').style.fontWeight = ''; // Reset to default CSS
+                    });
+                    progressLineFill.style.width = '0%';
+                    progressLineFill.style.backgroundColor = ''; // Reset to default CSS
+                    statusMessage.textContent = 'Enter a Complaint ID to check its progress.';
+                    statusMessage.className = 'text-center text-lg font-medium mt-4 p-4 rounded-lg bg-blue-100 text-blue-800';
+                    checkComplaintIdInput.value = ''; // Clear input field
+                }
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('open');
+                currentOpenModalId = null; // Clear the current open modal
+            }
+        }
+
+        // API Integration for Personal Details
+        async function fetchCustomerDetails() {
+            const userCode = config.userCode; // Get userCode from config (which gets from sessionStorage)
+            if (!userCode) {
+                console.error("UserCode not found in session storage. Cannot fetch customer details.");
+                document.getElementById('modal-personal-user-code').textContent = 'N/A';
+                document.getElementById('modal-personal-customer-no').textContent = 'N/A';
+                document.getElementById('modal-personal-full-name').textContent = 'N/A';
+                document.getElementById('modal-personal-age').textContent = 'N/A';
+                document.getElementById('modal-personal-dob').textContent = 'N/A';
+                document.getElementById('modal-personal-gender').textContent = 'N/A';
+                document.getElementById('modal-personal-phone-number').textContent = 'N/A';
+                document.getElementById('modal-personal-email').textContent = 'N/A';
+                document.getElementById('modal-personal-smoker-status').textContent = 'N/A';
+                document.getElementById('modal-personal-admin-access').textContent = 'N/A';
+                document.getElementById('modal-personal-roles').textContent = 'N/A';
+                document.getElementById('modal-personal-address').textContent = 'N/A';
+                document.getElementById('modal-personal-alt-email').textContent = 'N/A';
+                document.getElementById('modal-personal-emergency-contact').textContent = 'N/A';
+                return;
+            }
+
+            showLoader();
+            try {
+                const response = await fetch('http://localhost:8081/customer/getCustomerDetails', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'userCode': userCode // Mandatory header
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Customer Details API Response:', result); // Log API response
+
+                if (!response.ok || result.status !== 'Success') {
+                    throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
+                }
+
+                if (result.data) {
+                    const customerData = result.data;
+
+                    // Set customerNo in session storage for other uses
+                    sessionStorage.setItem('customerNo', customerData.customerNo);
+                    config.customerNo = customerData.customerNo; // Update config
+                    // Update customer name in header if it was previously N/A or default
+                    if (!config.customerName || config.customerName === 'Customer') {
+                        const fullName = `${customerData.name || ''} ${customerData.middleName || ''} ${customerData.surname || ''}`.trim();
+                        sessionStorage.setItem('customerName', fullName);
+                        customerNameDisplay.textContent = fullName;
+                        config.customerName = fullName; // Update config
+                    }
+
+
+                    // Update UI elements in the modal
+                    document.getElementById('modal-personal-user-code').textContent = customerData.userCode || 'N/A';
+                    document.getElementById('modal-personal-customer-no').textContent = customerData.customerNo || 'N/A';
+                    document.getElementById('modal-personal-full-name').textContent = `${customerData.name || ''} ${customerData.middleName || ''} ${customerData.surname || ''}`.trim() || 'N/A';
+                    document.getElementById('modal-personal-age').textContent = customerData.age || 'N/A';
+                    document.getElementById('modal-personal-dob').textContent = customerData.dateOfBirth || 'N/A';
+                    document.getElementById('modal-personal-gender').textContent = customerData.gender || 'N/A';
+                    document.getElementById('modal-personal-phone-number').textContent = customerData.phoneNumber || 'N/A';
+                    document.getElementById('modal-personal-email').textContent = customerData.email || 'N/A';
+                    document.getElementById('modal-personal-smoker-status').textContent = customerData.smokerStatus === 'Y' ? 'Yes' : 'No';
+                    document.getElementById('modal-personal-admin-access').textContent = customerData.adminAccess === 'Y' ? 'Yes' : 'No';
+                    document.getElementById('modal-personal-roles').textContent = customerData.roles && customerData.roles.length > 0 ? customerData.roles.join(', ') : 'None';
+
+                    const address = customerData.address ? `${customerData.address.street || ''}, ${customerData.address.city || ''}, ${customerData.address.state || ''} - ${customerData.address.zipCode || ''}, ${customerData.address.country || ''}`.trim().replace(/,(\s*,)+/g, ',').replace(/^,|,$/g, '') : 'N/A';
+                    document.getElementById('modal-personal-address').textContent = address;
+
+                    document.getElementById('modal-personal-alt-email').textContent = customerData.contactDetails && customerData.contactDetails.alternateEmail ? customerData.contactDetails.alternateEmail : 'N/A';
+                    const emergencyContact = customerData.contactDetails ? `${customerData.contactDetails.emergencyContactName || ''} (${customerData.contactDetails.emergencyContactPhone || ''})` : 'N/A';
+                    document.getElementById('modal-personal-emergency-contact').textContent = emergencyContact.trim() === '()' ? 'N/A' : emergencyContact;
+
+                } else {
+                    console.error('API response data is missing.');
+                    showToast('Failed to fetch customer details: Data missing', 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching customer details:', error);
+                showToast('An error occurred while fetching customer details. Please try again.', 'error');
+            } finally {
+                hideLoader();
+            }
+        }
+
+
+        // Policy Table Functions
+        async function fetchAndPopulatePolicies() {
+            const tableBody = document.getElementById('policy-list-table-body');
+            tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-blue-500">Loading policies...</td></tr>`; // Loading indicator
+
+            const userCode = config.userCode;
+            const customerNo = config.customerNo; // Use from config/session storage
+
+            if (!userCode || !customerNo) {
+                console.error("UserCode or CustomerNo not found in session storage. Cannot fetch policies.");
+                tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-red-500">User or customer information missing. Please ensure you have logged in and your details are loaded.</td></tr>`;
+                return;
+            }
+
+            showLoader();
+            try {
+                const response = await fetch(`${config.policyUrl}/policy-details?allpolSearch=Y&customerNo=${customerNo}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'userCode': userCode
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Policy Details API Response:', result); // Log API response
+
+                if (!response.ok || result.status !== 'Success') {
+                    throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
+                }
+
+                if (result.data && result.data.length > 0 && result.data[0].policyList) {
+                    allPolicies = result.data[0].policyList; // Store all policies
+                    populatePolicyTable(); // Populate table with all policies initially
+                } else {
+                    tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-gray-500">No policies found for this customer.</td></tr>`;
+                    allPolicies = []; // Clear policies if none found
+                }
+            } catch (error) {
+                console.error('Error fetching policy details:', error);
+                tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-red-500">An error occurred while loading policies.</td></tr>`;
+                showToast('Error fetching policy details: ' + error.message, 'error');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function populatePolicyTable(searchQuery = '') {
+            const tableBody = document.getElementById('policy-list-table-body');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            const lowerCaseQuery = searchQuery.toLowerCase();
+            const filteredPolicies = allPolicies.filter(policy => {
+                return (policy.policyNumber && policy.policyNumber.toLowerCase().includes(lowerCaseQuery)) ||
+                       (policy.policyName && policy.policyName.toLowerCase().includes(lowerCaseQuery)) ||
+                       (policy.polCompanyName && policy.polCompanyName.toLowerCase().includes(lowerCaseQuery));
+            });
+
+            if (filteredPolicies.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-gray-500">No matching policies found.</td></tr>`;
+                return;
+            }
+
+            filteredPolicies.forEach(policy => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-200 hover:bg-gray-100';
+                row.innerHTML = `
+                    <td class="py-3 px-6 text-left whitespace-nowrap">${policy.policyNumber || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${policy.policyName || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${policy.policyType || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${policy.polCompanyName || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">$${(policy.policyPremium || 0).toFixed(2)}</td>
+                    <td class="py-3 px-6 text-left">${policy.premiumDueDate || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">
+                        <span class="py-1 px-3 rounded-full text-xs font-semibold ${
+                            policy.policyStatus === 'ACTIVE' ? 'bg-green-200 text-green-600' :
+                            policy.policyStatus === 'PENDING' ? 'bg-yellow-200 text-yellow-600' :
+                            policy.policyStatus === 'LAPSED' ? 'bg-red-200 text-red-600' : /* Added LAPSED status */
+                            'bg-gray-200 text-gray-600' /* Default for other statuses */
+                        }">${policy.policyStatus || 'N/A'}</span>
+                    </td>
+                    <td class="py-3 px-6 text-left">${policy.renewalDate || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${policy.beneficiaryName || 'N/A'} (${policy.beneficiaryRelationship || 'N/A'})</td>
+                    <td class="py-3 px-6 text-left">${policy.fcuFlag || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">$${(policy.totalClaimableAmount || 0).toFixed(2)}</td>
+                    <td class="py-3 px-6 text-center">
+                        <button class="text-blue-500 hover:text-blue-700 font-semibold" onclick="viewPolicyDetails('${policy.policyNumber}')">View</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function filterPolicyTable() {
+            const searchQuery = document.getElementById('policy-search').value;
+            populatePolicyTable(searchQuery);
+        }
+
+        function viewPolicyDetails(policyNumber) {
+            const policy = allPolicies.find(p => p.policyNumber === policyNumber);
+            if (policy) {
+                alert(`Policy Details for ${policy.policyName} (${policy.policyNumber}):\n` +
+                      `Status: ${policy.policyStatus || 'N/A'}\n` +
+                      `Premium: $${(policy.policyPremium || 0).toFixed(2)}\n` +
+                      `Type: ${policy.policyType || 'N/A'}\n` +
+                      `Company: ${policy.polCompanyName || 'N/A'}\n` +
+                      `Renewal Date: ${policy.renewalDate || 'N/A'}\n` +
+                      `Beneficiary: ${policy.beneficiaryName || 'N/A'} (${policy.beneficiaryRelationship || 'N/A'})\n` +
+                      `FCU Flag: ${policy.fcuFlag || 'N/A'}\n` +
+                      `Total Claimable Amount: $${(policy.totalClaimableAmount || 0).toFixed(2)}\n` +
+                      `Premium Due Date: ${policy.premiumDueDate || 'N/A'}`);
+            } else {
+                showToast('Policy details not found.', 'error');
+            }
+        }
+
+        // Bank Account Functions
+        async function fetchAndPopulateBankAccounts() {
+            const tableBody = document.getElementById('modal-bank-accounts-table-body');
+            tableBody.innerHTML = `<tr><td colspan="21" class="py-4 text-center text-blue-500">Loading bank accounts...</td></tr>`; // Loading indicator
+
+            const customerNo = config.customerNo; // Use from config/session storage
+
+            if (!customerNo) {
+                console.error("CustomerNo not found in session storage. Cannot fetch bank accounts.");
+                tableBody.innerHTML = `<tr><td colspan="21" class="py-4 text-center text-red-500">Customer information missing. Please ensure you have logged in and your details are loaded.</td></tr>`;
+                return;
+            }
+
+            showLoader();
+            try {
+                const response = await fetch(`${config.apiBaseUrl}/bank-details?customerNo=${customerNo}&page=0&size=${config.itemsPerPage}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'userCode': config.userCode // Assuming userCode is also needed for this API
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Bank Accounts API Response:', result); // Log API response
+
+                if (!response.ok || result.status !== 'Success') {
+                    throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
+                }
+
+                if (result.data && result.data.content && result.data.content.length > 0) {
+                    allBankAccounts = result.data.content; // Store all bank accounts
+                    populateBankAccountsTable(); // Populate table
+                } else {
+                    tableBody.innerHTML = `<tr><td colspan="21" class="py-4 text-center text-gray-500">No bank accounts found for this customer.</td></tr>`;
+                    allBankAccounts = []; // Clear accounts if none found
+                }
+            } catch (error) {
+                console.error('Error fetching bank account details:', error);
+                tableBody.innerHTML = `<tr><td colspan="21" class="py-4 text-center text-red-500">An error occurred while loading bank accounts.</td></tr>`;
+                showToast('Error fetching bank accounts: ' + error.message, 'error');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function populateBankAccountsTable() {
+            const tableBody = document.getElementById('modal-bank-accounts-table-body');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            if (allBankAccounts.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="21" class="py-4 text-center text-gray-500">No bank accounts found.</td></tr>`;
+                return;
+            }
+
+            allBankAccounts.forEach(account => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-200 hover:bg-gray-100';
+                row.innerHTML = `
+                    <td class="py-3 px-6 text-left whitespace-nowrap">${account.accountNumber || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.ifscCode || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.bankName || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.accountType || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left"><span class="status-badge status-${account.status?.toLowerCase().replace(/ /g, '_')}">${account.status || 'N/A'}</span></td>
+                    <td class="py-3 px-6 text-left">${account.customerName || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.policyNumber || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.policyStatus || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.lastVerificationDate ? new Date(account.lastVerificationDate).toLocaleDateString() : 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.createdBy || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.createdDate ? new Date(account.createdDate).toLocaleDateString() : 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.notes || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.accountHolderType || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.branchCode || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.swiftCode || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.paymentMethodStatus || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.lastPaymentDate ? new Date(account.lastPaymentDate).toLocaleDateString() : 'N/A'}</td>
+                    <td class="py-3 px-6 text-left"><span class="status-badge status-${account.amlStatus?.toLowerCase().replace(/ /g, '_')}">${account.amlStatus || 'N/A'}</span></td>
+                    <td class="py-3 px-6 text-left">${account.verificationAttempts || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">${account.comment || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left"><span class="status-badge status-${account.verificationStatus?.toLowerCase().replace(/ /g, '_')}">${account.verificationStatus || 'N/A'}</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Add Bank Account Modal Functions
+        async function initializeAddBankAccountModal() {
+            const form = document.getElementById('add-bank-account-form');
+            if (form) form.reset();
+            document.getElementById('add-bank-account-error').classList.add('hidden');
+            document.getElementById('add-bank-account-result').classList.add('hidden');
+
+            // Pre-fill customer details from session storage
+            document.getElementById('add-customer-number').value = config.customerNo || '';
+            document.getElementById('add-cust-name').value = config.customerName || '';
+            document.getElementById('add-user-code').value = config.userCode || '';
+
+            // Fetch email and DOB from customer details API if not already available
+            if (!document.getElementById('add-email').value || !document.getElementById('add-date-of-birth').value) {
+                await fetchCustomerDetailsForAddAccount();
+            }
+
+            showLoader();
+            try {
+                const [ifscCodesResponse, bankNamesResponse] = await Promise.all([
+                    fetchIFSCCodes(),
+                    fetchBankNames()
+                ]);
+                populateIFSCDropdown(ifscCodesResponse.data);
+                populateBankNameDropdown(bankNamesResponse.data);
+                document.getElementById('add-branch-code').value = ''; // Clear branch code on init
+            } catch (error) {
+                document.getElementById('add-bank-account-error').textContent = error.message || 'Failed to load bank data.';
+                document.getElementById('add-bank-account-error').classList.remove('hidden');
+                showToast('Failed to load bank data for adding account.', 'error');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function fetchCustomerDetailsForAddAccount() {
+            const userCode = config.userCode;
+            if (!userCode) return; // Should already be checked by parent function
+
+            try {
+                const response = await fetch('http://localhost:8081/customer/getCustomerDetails', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'userCode': userCode
+                    }
+                });
+                const result = await response.json();
+                console.log('Customer Details for Add Account API Response:', result);
+
+                if (response.ok && result.status === 'Success' && result.data) {
+                    document.getElementById('add-email').value = result.data.email || '';
+                    document.getElementById('add-date-of-birth').value = result.data.dateOfBirth || '';
+                } else {
+                    console.error('Failed to fetch customer details for add account modal:', result.errorMessage);
+                }
+            } catch (error) {
+                console.error('Error fetching customer details for add account modal:', error);
+            }
+        }
+
+        async function fetchIFSCCodes() {
+            showLoader();
+            try {
+                const response = await fetch(`${config.apiBaseUrl}/bank-details/branchCodes`, {
+                    method: 'GET',
+                    headers: { 'userCode': config.userCode }
+                });
+                const result = await response.json();
+                console.log('IFSC Codes API Response:', result);
+                if (!response.ok || result.status !== 'Success') {
+                    throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
+                }
+                return result;
+            } catch (error) {
+                console.error('Error fetching IFSC codes:', error);
+                showToast('Error fetching IFSC codes: ' + error.message, 'error');
+                throw error;
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function fetchBankNames() {
+            showLoader();
+            try {
+                const response = await fetch(`${config.apiBaseUrl}/bank-details/BankNames`, {
+                    method: 'GET',
+                    headers: { 'userCode': config.userCode }
+                });
+                const result = await response.json();
+                console.log('Bank Names API Response:', result);
+                if (!response.ok || result.status !== 'Success') {
+                    throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
+                }
+                return result;
+            } catch (error) {
+                console.error('Error fetching bank names:', error);
+                showToast('Error fetching bank names: ' + error.message, 'error');
+                throw error;
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function fetchBranchDetails(ifscCode) {
+            // This is a dummy function as per original code. Replace with actual API call if available.
+            return new Promise(resolve => setTimeout(() => resolve({
+                branchCode: `BR${ifscCode.slice(-4)}`,
+                bankName: ifscCode.startsWith('HDFC') ? 'HDFC Bank' : 'Unknown Bank'
+            }), 500));
+        }
+
+        async function fetchPolicySearchDetails(policyNo) {
+            showLoader();
+            try {
+                const response = await fetch(`${config.policyUrl}/policy-details?policyNo=${encodeURIComponent(policyNo)}`, {
+                    method: 'GET',
+                    headers: { 'userCode': config.userCode }
+                });
+                const result = await response.json();
+                console.log('Policy Search Details API Response:', result);
+                if (!response.ok || result.status !== 'Success') {
+                    throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
+                }
+                return result.data && result.data.length > 0 ? result.data[0] : null;
+            } catch (error) {
+                console.error('Error fetching policy search details:', error);
+                showToast('Error fetching policy search details: ' + error.message, 'error');
+                throw error;
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function addBankAccount(data) {
+            showLoader();
+            try {
+                const response = await fetch(`${config.apiBaseUrl}/addBank-Details`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'userCode': config.userCode
+                    },
+                    body: JSON.stringify({
+                        ...data,
+                        createdBy: config.userCode,
+                        createdDate: new Date().toISOString(),
+                        lastVerificationDate: new Date().toISOString(),
+                        lastPaymentDate: new Date().toISOString(),
+                        status: 'PENDING',
+                        amlStatus: 'PENDING'
+                    })
+                });
+                const result = await response.json();
+                console.log('Add Bank Account API Response:', result);
+                if (!response.ok || result.status !== 'Success') {
+                    throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
+                }
+                return result;
+            } catch (error) {
+                console.error('Error adding bank account:', error);
+                showToast('Error adding bank account: ' + error.message, 'error');
+                throw error;
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function populateIFSCDropdown(ifscCodes) {
+            const ifscSelect = document.getElementById('add-ifsc-code');
+            if (!ifscSelect) return;
+            ifscSelect.innerHTML = '<option value="" disabled selected>Select IFSC code</option>';
+            if (Array.isArray(ifscCodes)) {
+                ifscCodes.forEach(code => {
+                    const option = document.createElement('option');
+                    option.value = code;
+                    option.textContent = code;
+                    ifscSelect.appendChild(option);
+                });
+            } else {
+                ifscSelect.innerHTML += '<option value="" disabled>No IFSC codes found</option>';
+            }
+        }
+
+        function populateBankNameDropdown(bankNames) {
+            const bankNameSelect = document.getElementById('add-bank-name');
+            if (!bankNameSelect) return;
+            bankNameSelect.innerHTML = '<option value="" disabled selected>Select bank name</option>';
+            if (Array.isArray(bankNames) && bankNames.length) {
+                bankNames.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    bankNameSelect.appendChild(option);
+                });
+            } else {
+                bankNameSelect.innerHTML += '<option value="" disabled>No bank names found</option>';
+            }
+        }
+
+        async function handleAddBankAccountSubmit() {
+            const form = document.getElementById('add-bank-account-form');
+            const errorDiv = document.getElementById('add-bank-account-error');
+            const resultDiv = document.getElementById('add-bank-account-result');
+
+            errorDiv.classList.add('hidden');
+            resultDiv.classList.add('hidden');
+            resultDiv.innerHTML = '';
+
+            if (!form.checkValidity()) {
+                errorDiv.textContent = 'Please fill all required fields.';
+                errorDiv.classList.remove('hidden');
+                showToast('Please fill all required fields.', 'error');
+                return;
+            }
+
+            const accountData = {
+                policyNumber: document.getElementById('add-policy-number').value,
+                customerNumber: document.getElementById('add-customer-number').value,
+                customerName: document.getElementById('add-cust-name').value,
+                email: document.getElementById('add-email').value,
+                dateOfBirth: document.getElementById('add-date-of-birth').value,
+                userCode: document.getElementById('add-user-code').value,
+                accountNumber: document.getElementById('add-account-number').value,
+                ifscCode: document.getElementById('add-ifsc-code').value,
+                bankName: document.getElementById('add-bank-name').value,
+                accountType: document.getElementById('add-account-type').value,
+                accountHolderType: document.getElementById('add-account-holder-type').value,
+                swiftCode: document.getElementById('add-swift-code').value,
+                paymentMethodStatus: document.getElementById('add-payment-method-status').value,
+                branchCode: document.getElementById('add-branch-code').value
+            };
+
+            try {
+                await addBankAccount(accountData);
+                closeModal('add-bank-account-modal');
+                showToast(`Bank account ${accountData.accountNumber} added successfully!`, 'success');
+                form.reset();
+                // Refresh bank accounts list if it's open
+                if (!document.getElementById('bank-accounts-section').classList.contains('hidden')) {
+                    fetchAndPopulateBankAccounts();
+                }
+            } catch(error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+
+        // Complaint Progress Tracker Functions (Uses hardcoded mock data for stages as no API provided)
+        window.checkComplaintProgress = () => {
+            const complaintIdInput = document.getElementById('check-complaint-id');
+            const complaintId = complaintIdInput.value.trim().toUpperCase();
+            const statusMessageElement = document.getElementById('complaint-status-message');
+
+            // Hardcoded mock data for complaint statuses. In a real app, this would come from an API.
+            const mockComplaintsData = [
+                { id: 'COMP1001', status: 'Pending', message: 'Your complaint has been submitted and is currently under review.' },
+                { id: 'COMP1002', status: 'Approved', message: 'Your complaint has been successfully approved. Resolution is in progress.' },
+                { id: 'COMP1003', status: 'Acknowledged', message: 'Your complaint has been received and acknowledged. We are assigning it to a specialist.' },
+                { id: 'COMP1004', status: 'Submitted', message: 'Your complaint has been submitted successfully. Awaiting acknowledgment.' },
+                { id: 'COMP1005', status: 'Rejected', message: 'Your complaint has been reviewed and rejected. Please contact support for more details.' },
+            ];
+
+            if (!complaintId) {
+                statusMessageElement.textContent = 'Please enter a Complaint ID.';
+                statusMessageElement.className = 'text-center text-lg font-medium mt-4 p-4 rounded-lg bg-red-100 text-red-800';
+                updateComplaintProgressUI('reset', ''); // Reset UI
+                return;
+            }
+
+            const complaint = mockComplaintsData.find(c => c.id === complaintId);
+
+            if (complaint) {
+                updateComplaintProgressUI(complaint.status, complaint.message);
+            } else {
+                statusMessageElement.textContent = `Complaint ID "${complaintId}" not found. Please check the ID and try again.`;
+                statusMessageElement.className = 'text-center text-lg font-medium mt-4 p-4 rounded-lg bg-red-100 text-red-800';
+                updateComplaintProgressUI('reset', ''); // Reset UI
+            }
+        };
+
+        function updateComplaintProgressUI(status, message) {
+            const stages = document.querySelectorAll('#check-complaint-modal .progress-stage');
+            const progressLineFill = document.getElementById('progress-line-fill');
+            const statusMessageElement = document.getElementById('complaint-status-message');
+
+            // Reset all stages and line
+            stages.forEach(stage => {
+                stage.classList.remove('completed', 'current');
+                stage.querySelector('.progress-icon').style.backgroundColor = ''; // Reset to default CSS
+                stage.querySelector('.progress-icon').style.borderColor = ''; // Reset to default CSS
+                stage.querySelector('.progress-icon').style.transform = ''; // Reset to default CSS
+                stage.querySelector('.progress-label').style.color = ''; // Reset to default CSS
+                stage.querySelector('.progress-label').style.fontWeight = ''; // Reset to default CSS
+            });
+            progressLineFill.style.width = '0%';
+            progressLineFill.style.backgroundColor = ''; // Reset to default CSS
+
+            if (status === 'reset') {
+                statusMessageElement.textContent = message || 'Enter a Complaint ID to check its progress.';
+                statusMessageElement.className = 'text-center text-lg font-medium mt-4 p-4 rounded-lg bg-blue-100 text-blue-800';
+                return;
+            }
+
+            const stageOrder = ['Submitted', 'Acknowledged', 'Pending', 'Approved', 'Rejected'];
+            const currentStatusIndex = stageOrder.indexOf(status);
+
+            let completedStagesCount = 0;
+            let isRejectedPath = false;
+
+            stages.forEach((stage, index) => {
+                const stageName = stage.dataset.stage; // e.g., 'submitted', 'acknowledged'
+                const correspondingStatus = stageOrder[index]; // e.g., 'Submitted', 'Acknowledged'
+
+                if (currentStatusIndex >= index && status !== 'Rejected') {
+                    stage.classList.add('completed');
+                    completedStagesCount++;
+                }
+
+                if (correspondingStatus === status) {
+                    stage.classList.add('current');
+                    if (status === 'Rejected') {
+                        isRejectedPath = true;
+                        // For rejected, only previous stages are completed, and 'Rejected' is current
+                        stages.forEach((prevStage, prevIndex) => {
+                            if (prevIndex < index) {
+                                prevStage.classList.add('completed');
+                            } else if (prevIndex === index) {
+                                prevStage.classList.add('current');
+                            } else {
+                                prevStage.classList.remove('completed', 'current');
+                            }
+                        });
+                        completedStagesCount = index; // Only count stages before rejected as completed for line calculation
+                    }
+                }
+            });
+
+            // Adjust progress line fill
+            if (isRejectedPath) {
+                // For rejected, the line goes up to the 'Rejected' stage, but is red
+                const totalStages = stages.length;
+                const percentage = (currentStatusIndex / (totalStages - 1)) * 100;
+                progressLineFill.style.width = `${percentage}%`;
+                progressLineFill.style.backgroundColor = '#ef4444'; // Red for rejected path
+            } else {
+                const totalStages = stages.length - 1; // Number of segments between stages
+                const percentage = (completedStagesCount / totalStages) * 100;
+                progressLineFill.style.width = `${percentage}%`;
+                progressLineFill.style.backgroundColor = '#10b981'; // Green for successful path
+            }
+
+            // Update status message
+            statusMessageElement.textContent = message;
+            if (status === 'Rejected') {
+                statusMessageElement.className = 'text-center text-lg font-medium mt-4 p-4 rounded-lg bg-red-100 text-red-800';
+            } else if (status === 'Approved') { // Only approved is green for now, 'Resolved' is not a stage
+                statusMessageElement.className = 'text-center text-lg font-medium mt-4 p-4 rounded-lg bg-green-100 text-green-800';
+            } else {
+                statusMessageElement.className = 'text-center text-lg font-medium mt-4 p-4 rounded-lg bg-blue-100 text-blue-800';
+            }
+        }
+
+
+        // Event listener for the original logout button in the header (if it exists)
+        const headerLogoutBtn = document.getElementById('logout-btn');
+        if (headerLogoutBtn) {
+            headerLogoutBtn.addEventListener('click', () => {
+                sessionStorage.removeItem('userCode');
+                sessionStorage.removeItem('customerName');
+                sessionStorage.removeItem('customerNo');
+                showToast('Logged out successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = config.loginUrl;
+                }, 1000);
+            });
+        }
+
+        // Initial load: ensure dashboard is visible and active
+        document.addEventListener('DOMContentLoaded', () => {
+            const dashboardSection = document.getElementById('dashboard-section');
+            if (dashboardSection) {
+                dashboardSection.classList.remove('hidden');
+                dashboardSection.classList.add('fade-in');
+            }
+            const dashboardSidebarItem = document.querySelector('.sidebar-item[data-section="dashboard"]');
+            if (dashboardSidebarItem) {
+                dashboardSidebarItem.classList.add('active');
+            }
+
+            // Hide sidebar toggle button on larger screens by default
+            if (window.innerWidth > 768) {
+                sidebarToggleBtn.classList.add('hidden');
+            } else {
+                sidebarToggleBtn.classList.remove('hidden');
+            }
+
+            // Adjust sidebar toggle button visibility on resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    sidebarToggleBtn.classList.add('hidden');
+                    sidebar.classList.remove('open', 'collapsed'); // Ensure sidebar is open and not mobile-collapsed on desktop
+                } else {
+                    sidebarToggleBtn.classList.remove('hidden');
+                    sidebar.classList.remove('open'); // Ensure sidebar is closed by default on mobile
+                    sidebar.classList.remove('collapsed'); // Remove collapsed class when switching to mobile view
+                }
+            });
+
+            // Event listeners for Add Bank Account Modal
+            document.getElementById('add-policy-number').addEventListener('blur', async () => {
+                const policyNo = document.getElementById('add-policy-number').value.trim();
+                if (policyNo) {
+                    try {
+                        const policyData = await fetchPolicySearchDetails(policyNo);
+                        if (policyData) {
+                            document.getElementById('add-customer-number').value = policyData.customerNo || '';
+                            document.getElementById('add-cust-name').value = policyData.customerName || '';
+                            document.getElementById('add-email').value = policyData.email || '';
+                            document.getElementById('add-date-of-birth').value = policyData.dateOfBirth || '';
+                            document.getElementById('add-user-code').value = policyData.userCode || config.userCode;
+                            showToast('Policy details loaded', 'success');
+                        } else {
+                            showToast('No policy details found for the entered policy number.', 'info');
+                            // Clear fields if no policy found
+                            document.getElementById('add-customer-number').value = '';
+                            document.getElementById('add-cust-name').value = '';
+                            document.getElementById('add-email').value = '';
+                            document.getElementById('add-date-of-birth').value = '';
+                            document.getElementById('add-user-code').value = config.userCode || '';
+                        }
+                    } catch (error) {
+                        // Error handled by fetchPolicySearchDetails
+                        document.getElementById('add-customer-number').value = '';
+                        document.getElementById('add-cust-name').value = '';
+                        document.getElementById('add-email').value = '';
+                        document.getElementById('add-date-of-birth').value = '';
+                        document.getElementById('add-user-code').value = config.userCode || '';
+                    }
+                } else {
+                    // Clear fields if policy number is empty
+                    document.getElementById('add-customer-number').value = '';
+                    document.getElementById('add-cust-name').value = '';
+                    document.getElementById('add-email').value = '';
+                    document.getElementById('add-date-of-birth').value = '';
+                    document.getElementById('add-user-code').value = config.userCode || '';
+                }
+            });
+
+            document.getElementById('add-ifsc-code').addEventListener('change', async () => {
+                const ifscCode = document.getElementById('add-ifsc-code').value;
+                if (ifscCode) {
+                    try {
+                        const { branchCode, bankName } = await fetchBranchDetails(ifscCode);
+                        document.getElementById('add-branch-code').value = branchCode || '';
+                        document.getElementById('add-bank-name').value = bankName || '';
+                        showToast('Branch details loaded', 'success');
+                    } catch (error) {
+                        // Error handled by fetchBranchDetails
+                        document.getElementById('add-branch-code').value = '';
+                        document.getElementById('add-bank-name').value = '';
+                    }
+                } else {
+                    document.getElementById('add-branch-code').value = '';
+                    document.getElementById('add-bank-name').value = '';
+                }
+            });
+
+            document.getElementById('add-bank-account-submit').addEventListener('click', handleAddBankAccountSubmit);
+        });
+    </script>
 
 </body>
 </html>

@@ -90,10 +90,16 @@ public class BankDetailsService {
 	                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("accountNo")), "%" + bankAccNo.toLowerCase() + "%"));
 	            }
 	            if (policyNo != null && !policyNo.isEmpty()) {
-	                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("policy_number")), "%" + policyNo.toLowerCase() + "%"));
+	                predicates.add(criteriaBuilder.like(
+	                    criteriaBuilder.lower(root.get("policy").get("policyNumber")),
+	                    "%" + policyNo.toLowerCase() + "%"
+	                ));
 	            }
 	            if (customerNo != null && !customerNo.isEmpty()) {
-	                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("customerNo")), "%" + customerNo.toLowerCase() + "%"));
+	                predicates.add(criteriaBuilder.like(
+	                    criteriaBuilder.lower(root.get("customer").get("customerNo")), 
+	                    "%" + customerNo.toLowerCase() + "%"
+	                ));
 	            }
 	            if (holderName != null && !holderName.isEmpty()) {
 	                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("holderName")), "%" + holderName.toLowerCase() + "%"));
