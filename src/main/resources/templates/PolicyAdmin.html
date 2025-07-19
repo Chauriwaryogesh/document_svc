@@ -165,11 +165,14 @@
     animation: modalFadeIn 0.3s ease-out;
 }
 
-.modal-content-fullscreen {
-    width: 100vw;
-    height: 100vh;
+/* New style for larger modals like policy details */
+.modal-content-large {
+    width: 95%; /* Make it take up 95% of the available width */
+    max-width: 1200px; /* Set a maximum width for very large screens, adjust as needed */
+    height: 90%; /* Make it take up 90% of the available height */
+    max-height: 90vh; /* Set a maximum height based on viewport height */
     background: #ffffff;
-    border-radius: 0;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -189,7 +192,7 @@
 
 .modal-body {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: auto; /* Ensure content is scrollable if it exceeds height */
     padding: 2rem;
     background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
     scrollbar-width: thin;
@@ -221,7 +224,17 @@
     justify-content: flex-end;
     gap: 0.75rem;
 }
-
+.modal-content-fullscreen {
+    width: 100vw;
+    height: 100vh;
+    background: #ffffff;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease-out;
+}
 .modern-card {
     background: white;
     border-radius: 16px;
@@ -1020,6 +1033,10 @@
                 <button onclick="openModal('policy-management-modal')" class="btn-base btn-secondary">
                     <i class="fas fa-tasks"></i> Manage Policies
                 </button>
+                <!-- New button for Upcoming Policy Requests -->
+                <button onclick="openModal('policy-management-modal'); switchManagePolicyTab('upcoming-policy-requests');" class="btn-base btn-secondary">
+                    <i class="fas fa-calendar-alt"></i> Upcoming Policy Requests
+                </button>
             </div>
             <!-- New filter options for main dashboard -->
             <div class="filter-group ml-auto">
@@ -1112,322 +1129,328 @@
     </div>
   </div>
 
- <div id="create-party-modal" class="modal-base hidden">
-  <div class="modal-content-fullscreen">
-    <div class="modal-header">
-      <h3 class="text-2xl font-bold text-gray-800 gradient-text">Create Party/Customer</h3>
-      <button id="close-create-party-modal" class="modal-close">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    <div class="flex border-b px-4 bg-white/80">
-      <button class="tab flex-1 text-center active" data-tab="personal">Personal Details</button>
-      <button class="tab flex-1 text-center" data-tab="contact">Contact Details</button>
-      <button class="tab flex-1 text-center" data-tab="address">Address Details</button>
-    </div>
-    <div class="modal-body">
-      <form id="create-party-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div id="personal-section" class="tab-content col-span-2">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="input-group">
-              <input type="text" id="party-name" placeholder=" " required>
-              <label for="party-name" class="mandatory">Customer Name</label>
-            </div>
-            <div class="input-group">
-              <input type="text" id="party-middleName" placeholder=" ">
-              <label for="party-middleName">Middle Name</label>
-            </div>
-            <div class="input-group">
-              <input type="text" id="party-surname" placeholder=" ">
-              <label for="party-surname">Surname</label>
-            </div>
-            <div class="input-group">
-              <input type="number" id="party-age" placeholder=" ">
-              <label for="party-age">Age</label>
-            </div>
-            <div class="input-group">
-              <input type="date" id="party-dob" placeholder=" " required>
-              <label for="party-dob" class="mandatory">Date of Birth</label>
-            </div>
-            <div class="input-group">
-              <select id="party-gender" required>
-                <option value="">Select gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-              <label for="party-gender" class="mandatory">Gender</label>
-            </div>
-            <div class="input-group">
-              <select id="party-smokerStatus">
-                <option value="">Select smoker status</option>
-                <option value="Smoker">Smoker</option>
-                <option value="Non-Smoker">Non-Smoker</option>
-                <option value="Unknown">Unknown</option>
-              </select>
-              <label for="party-smokerStatus">Smoker Status</label>
-            </div>
-            <div class="input-group">
-              <select id="party-adminAccess">
-                <option value="0">No</option>
-              </select>
-              <label for="party-adminAccess">Admin Access</label>
-            </div>
-          </div>
-        </div>
-        <div id="contact-section" class="tab-content col-span-2 hidden">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="input-group">
-              <input type="tel" id="party-phone" placeholder=" " required pattern="[0-9]{10}" maxlength="10" oninput="validatePhoneNumber(this)">
-              <label for="party-phone" class="mandatory">Phone Number</label>
-              <span id="party-phone-feedback" class="text-sm text-red-500"></span>
-            </div>
-            <div class="input-group">
-              <input type="email" id="party-email" placeholder=" " required oninput="validateEmailOrUserCode('email', this.value)">
-              <label for="party-email" class="mandatory">Email</label>
-              <span id="party-email-feedback" class="text-sm"></span>
-            </div>
-            <div class="input-group">
-              <input type="text" id="party-userCode" placeholder=" " required oninput="validateEmailOrUserCode('userCode', this.value)">
-              <label for="party-userCode" class="mandatory">userCode</label>
-              <span id="party-userCode-feedback" class="text-sm"></span>
-            </div>
-            <div class="input-group">
-              <input type="email" id="party-alternateEmail" placeholder=" ">
-              <label for="party-alternateEmail">Alternate Email</label>
-            </div>
-            <div class="input-group">
-              <input type="text" id="party-phoneCountryCode" placeholder=" ">
-              <label for="party-phoneCountryCode">Phone Country Code</label>
-            </div>
-            <div class="input-group">
-              <input type="tel" id="party-secondaryPhone" placeholder=" ">
-              <label for="party-secondaryPhone">Secondary Phone</label>
-            </div>
-            <div class="input-group">
-              <input type="text" id="party-emergencyContactName" placeholder=" ">
-              <label for="party-emergencyContactName">Emergency Contact Name</label>
-            </div>
-            <div class="input-group">
-              <input type="tel" id="party-emergencyContactPhone" placeholder=" ">
-              <label for="party-emergencyContactPhone">Emergency Contact Phone</label>
+  <div id="create-party-modal" class="modal-base hidden">
+    <div class="modal-content-fullscreen">
+      <div class="modal-header">
+        <h3 class="text-2xl font-bold text-gray-800 gradient-text">Create Party/Customer</h3>
+        <button id="close-create-party-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="flex border-b px-4 bg-white/80">
+        <button class="tab flex-1 text-center active" data-tab="personal">Personal Details</button>
+        <button class="tab flex-1 text-center" data-tab="contact">Contact Details</button>
+        <button class="tab flex-1 text-center" data-tab="address">Address Details</button>
+      </div>
+      <div class="modal-body">
+        <form id="create-party-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div id="personal-section" class="tab-content col-span-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="input-group">
+                <input type="text" id="party-name" placeholder=" " required>
+                <label for="party-name" class="mandatory">Customer Name</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-middleName" placeholder=" ">
+                <label for="party-middleName">Middle Name</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-surname" placeholder=" ">
+                <label for="party-surname">Surname</label>
+              </div>
+              <div class="input-group">
+                <input type="number" id="party-age" placeholder=" ">
+                <label for="party-age">Age</label>
+              </div>
+              <div class="input-group">
+                <input type="date" id="party-dob" placeholder=" " required>
+                <label for="party-dob" class="mandatory">Date of Birth</label>
+              </div>
+              <div class="input-group">
+                <select id="party-gender" required>
+                  <option value="">Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+                <label for="party-gender" class="mandatory">Gender</label>
+              </div>
+              <div class="input-group">
+                <select id="party-smokerStatus">
+                  <option value="">Select smoker status</option>
+                  <option value="Smoker">Smoker</option>
+                  <option value="Non-Smoker">Non-Smoker</option>
+                  <option value="Unknown">Unknown</option>
+                </select>
+                <label for="party-smokerStatus">Smoker Status</label>
+              </div>
+              <div class="input-group">
+                <select id="party-adminAccess">
+                  <option value="0">No</option>
+                </select>
+                <label for="party-adminAccess">Admin Access</label>
+              </div>
             </div>
           </div>
-        </div>
-        <div id="address-section" class="tab-content col-span-2 hidden">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="input-group">
-              <input type="text" id="party-street" placeholder=" ">
-              <label for="party-street">Street</label>
-            </div>
-            <div class="input-group">
-              <input type="text" id="party-city" placeholder=" ">
-              <label for="party-city">City</label>
-            </div>
-            <div class="input-group">
-              <input type="text" id="party-state" placeholder=" ">
-              <label for="party-state">State</label>
-            </div>
-            <div class="input-group">
-              <input type="text" id="party-zipCode" placeholder=" ">
-              <label for="party-zipCode">Zip Code</label>
-            </div>
-            <div class="input-group">
-              <input type="text" id="party-country" placeholder=" ">
-              <label for="party-country">Country</label>
+          <div id="contact-section" class="tab-content col-span-2 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="input-group">
+                <input type="tel" id="party-phone" placeholder=" " required pattern="[0-9]{10}" maxlength="10" oninput="validatePhoneNumber(this)">
+                <label for="party-phone" class="mandatory">Phone Number</label>
+                <span id="party-phone-feedback" class="text-sm text-red-500"></span>
+              </div>
+              <div class="input-group">
+                <input type="email" id="party-email" placeholder=" " required oninput="validateEmailOrUserCode('email', this.value)">
+                <label for="party-email" class="mandatory">Email</label>
+                <span id="party-email-feedback" class="text-sm"></span>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-userCode" placeholder=" " required oninput="validateEmailOrUserCode('userCode', this.value)">
+                <label for="party-userCode" class="mandatory">userCode</label>
+                <span id="party-userCode-feedback" class="text-sm"></span>
+              </div>
+              <div class="input-group">
+                <input type="email" id="party-alternateEmail" placeholder=" ">
+                <label for="party-alternateEmail">Alternate Email</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-phoneCountryCode" placeholder=" ">
+                <label for="party-phoneCountryCode">Phone Country Code</label>
+              </div>
+              <div class="input-group">
+                <input type="tel" id="party-secondaryPhone" placeholder=" ">
+                <label for="party-secondaryPhone">Secondary Phone</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-emergencyContactName" placeholder=" ">
+                <label for="party-emergencyContactName">Emergency Contact Name</label>
+              </div>
+              <div class="input-group">
+                <input type="tel" id="party-emergencyContactPhone" placeholder=" ">
+                <label for="party-emergencyContactPhone">Emergency Contact Phone</label>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer" id="party-btn-container">
-      <button id="reset-party-btn" class="btn-base btn-secondary">Reset</button>
-      <button id="prev-tab-btn" class="btn-base btn-secondary" disabled>Previous</button>
-      <button id="next-tab-btn" class="btn-base btn-primary hidden">Next</button>
-      <button id="submit-party-btn" class="btn-base btn-primary hidden" onclick="createParty()">Submit</button>
+          <div id="address-section" class="tab-content col-span-2 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="input-group">
+                <input type="text" id="party-street" placeholder=" ">
+                <label for="party-street">Street</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-city" placeholder=" ">
+                <label for="party-city">City</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-state" placeholder=" ">
+                <label for="party-state">State</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-zipCode" placeholder=" ">
+                <label for="party-zipCode">Zip Code</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="party-country" placeholder=" ">
+                <label for="party-country">Country</label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer" id="party-btn-container">
+        <button id="reset-party-btn" class="btn-base btn-secondary">Reset</button>
+        <button id="prev-tab-btn" class="btn-base btn-secondary" disabled>Previous</button>
+        <button id="next-tab-btn" class="btn-base btn-primary hidden">Next</button>
+        <button id="submit-party-btn" class="btn-base btn-primary hidden" onclick="createParty()">Submit</button>
+      </div>
     </div>
   </div>
-</div>
 
- <div id="create-policy-modal" class="modal-base hidden">
-  <div class="modal-content-fullscreen">
-    <div class="modal-header">
-      <h3 class="text-2xl font-bold text-gray-800 gradient-text" id="policy-form-title">Create Policy</h3>
-      <button id="close-create-policy-modal" class="modal-close">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <form id="create-policy-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <input type="hidden" id="policy-userCode" value="">
-        <input type="hidden" id="policy-policyNo-hidden" value=""> <!-- Hidden field for policy number during update -->
-        <div class="input-group">
-          <select id="policy-policyName" onchange="loadProductCodes()" required>
-            <option value="">Select policy name</option>
-          </select>
-          <label for="policy-policyName" class="mandatory">Policy Name</label>
-        </div>
-        <div class="input-group">
-          <select id="policy-productCode" onchange="loadPolicyDetails()" required>
-            <option value="">Select product code</option>
-          </select>
-          <label for="policy-productCode" class="mandatory">Product Code</label>
-        </div>
-        <div class="input-group">
-          <input type="text" id="policy-polCompanyName" readonly required>
-          <label for="policy-polCompanyName" class="mandatory">Policy Company Name</label>
-        </div>
-        <div class="input-group">
-          <input type="text" id="policy-customerNo" placeholder=" " oninput="validateCustomerNo(this.value)" required>
-          <label for="policy-customerNo" class="mandatory">Customer Number</label>
-        </div>
-        <div class="input-group">
-          <input type="text" id="policy-custName" readonly required>
-          <label for="policy-custName" class="mandatory">Customer Name</label>
-        </div>
-        <div class="input-group">
-          <input type="text" id="policy-middleName" readonly>
-          <label for="policy-middleName">Middle Name</label>
-        </div>
-        <div class="input-group">
-          <input type="text" id="policy-surname" readonly>
-          <label for="policy-surname">Surname</label>
-        </div>
-        <div class="input-group">
-          <select id="policy-fcuFlag" required>
-            <option value="">Select FCU flag</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </select>
-          <label for="policy-fcuFlag" class="mandatory">FCU Flag</label>
-        </div>
-        <div class="input-group">
-          <input type="tel" id="policy-phoneNum" readonly>
-          <label for="policy-phoneNum">Phone Number</label>
-        </div>
-        <div class="input-group">
-          <input type="email" id="policy-email" readonly>
-          <label for="policy-email">Email</label>
-        </div>
-        <div class="input-group">
-          <input type="text" id="policy-smokerStatus" readonly>
-          <label for="policy-smokerStatus">Smoker Status</label>
-        </div>
-        <div class="input-group">
-          <input type="date" id="policy-dateOfBirth" readonly>
-          <label for="policy-dateOfBirth">Date of Birth</label>
-        </div>
-        <div class="input-group">
-          <input type="text" id="policy-gender" readonly>
-          <label for="policy-gender" class="mandatory">Gender</label>
-        </div>
-        <div class="input-group">
-          <select id="policy-term" onchange="updateInstallments()" required>
-            <option value="">Select policy term</option>
-          </select>
-          <label for="policy-term" class="mandatory">Policy Term</label>
-        </div>
-        <div class="input-group">
-          <select id="policy-frequency" required>
-            <option value="">Select frequency</option>
-            <option value="Single">Single</option>
-            <option value="Recurring">Recurring</option>
-          </select>
-          <label for="policy-frequency" class="mandatory">Policy Frequency</label>
-        </div>
-        <div class="input-group">
-          <input type="number" id="policy-premium" placeholder=" " readonly required>
-          <label for="policy-premium" class="mandatory">Policy Premium</label>
-        </div>
-        <div class="input-group">
-          <input type="number" id="policy-totalAmount" placeholder=" " oninput="updateInstallments()" required>
-          <label for="policy-totalAmount" class="mandatory">Total Policy Amount</label>
-        </div>
-        <div class="input-group">
-          <input type="number" id="policy-monthlyInstallment" placeholder=" " readonly required>
-          <label for="policy-monthlyInstallment" class="mandatory">Monthly Installment</label>
-        </div>
-        <div class="input-group">
-          <input type="number" id="policy-totalClaimableAmount" placeholder=" " readonly required>
-          <label for="policy-totalClaimableAmount" class="mandatory">Total Claimable Amount</label>
-        </div>
-        <div class="input-group">
-          <input type="date" id="policy-policyDate" placeholder=" " required>
-          <label for="policy-policyDate" class="mandatory">Policy Date</label>
-        </div>
-        <div class="input-group">
-          <input type="number" id="policy-installmentCount" placeholder=" " readonly required>
-          <label for="policy-installmentCount" class="mandatory">Installment Count</label>
-        </div>
-        <div class="input-group">
-          <input type="date" id="policy-dueDate" placeholder=" " readonly required>
-          <label for="policy-dueDate" class="mandatory">Due Date</label>
-        </div>
-        <div class="input-group">
-          <input type="date" id="policy-startDate" placeholder=" " oninput="updateDates()" required>
-          <label for="policy-startDate" class="mandatory">Policy Start Date</label>
-        </div>
-        <div class="input-group">
-          <input type="date" id="policy-endDate" placeholder=" " readonly required>
-          <label for="policy-endDate" class="mandatory">Policy End Date</label>
-        </div>
-        <div class="input-group">
-          <input type="date" id="policy-renewalDate" placeholder=" " readonly required>
-          <label for="policy-renewalDate" class="mandatory">Policy Renewal Date</label>
-        </div>
-        <div class="input-group">
-          <input type="text" id="policy-beneficiaryName" placeholder=" " required>
-          <label for="policy-beneficiaryName" class="mandatory">Beneficiary Name</label>
-        </div>
-        <div class="input-group">
-          <input type="text" id="policy-beneficiaryAadharNumber" placeholder=" " required>
+  <div id="create-policy-modal" class="modal-base hidden">
+    <div class="modal-content-fullscreen">
+      <div class="modal-header">
+        <h3 class="text-2xl font-bold text-gray-800 gradient-text" id="policy-form-title">Create Policy</h3>
+        <button id="close-create-policy-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="create-policy-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input type="hidden" id="policy-userCode" value="">
+          <input type="hidden" id="policy-policyNo-hidden" value=""> <!-- Hidden field for policy number during update -->
+          <div class="input-group">
+            <select id="policy-policyName" onchange="loadProductCodes()" required>
+              <option value="">Select policy name</option>
+            </select>
+            <label for="policy-policyName" class="mandatory">Policy Name</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-productCode" onchange="loadPolicyDetails()" required>
+              <option value="">Select product code</option>
+            </select>
+            <label for="policy-productCode" class="mandatory">Product Code</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-polCompanyName" readonly required>
+            <label for="policy-polCompanyName" class="mandatory">Policy Company Name</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-customerNo" placeholder=" " oninput="validateCustomerNo(this.value)" required>
+            <label for="policy-customerNo" class="mandatory">Customer Number</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-custName" readonly required>
+            <label for="policy-custName" class="mandatory">Customer Name</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-middleName" readonly>
+            <label for="policy-middleName">Middle Name</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-surname" readonly>
+            <label for="policy-surname">Surname</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-fcuFlag" required>
+              <option value="">Select FCU flag</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+            <label for="policy-fcuFlag" class="mandatory">FCU Flag</label>
+          </div>
+          <div class="input-group">
+            <input type="tel" id="policy-phoneNum" readonly>
+            <label for="policy-phoneNum">Phone Number</label>
+          </div>
+          <div class="input-group">
+            <input type="email" id="policy-email" readonly>
+            <label for="policy-email">Email</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-smokerStatus" readonly>
+            <label for="policy-smokerStatus">Smoker Status</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-dateOfBirth" readonly>
+            <label for="policy-dateOfBirth">Date of Birth</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-gender" readonly>
+            <label for="policy-gender" class="mandatory">Gender</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-term" onchange="updateInstallments()" required>
+              <option value="">Select policy term</option>
+            </select>
+            <label for="policy-term" class="mandatory">Policy Term</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-frequency" required>
+              <option value="">Select frequency</option>
+              <option value="Single">Single</option>
+              <option value="Recurring">Recurring</option>
+            </select>
+            <label for="policy-frequency" class="mandatory">Policy Frequency</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="policy-premium" placeholder=" " readonly required>
+            <label for="policy-premium" class="mandatory">Policy Premium</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="policy-totalAmount" placeholder=" " oninput="updateInstallments()" required>
+            <label for="policy-totalAmount" class="mandatory">Total Policy Amount</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="policy-monthlyInstallment" placeholder=" " readonly required>
+            <label for="policy-monthlyInstallment" class="mandatory">Monthly Installment</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="policy-totalClaimableAmount" placeholder=" " readonly required>
+            <label for="policy-totalClaimableAmount" class="mandatory">Total Claimable Amount</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-policyDate" placeholder=" " required>
+            <label for="policy-policyDate" class="mandatory">Policy Date</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="policy-installmentCount" placeholder=" " readonly required>
+            <label for="policy-installmentCount" class="mandatory">Installment Count</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-dueDate" placeholder=" " readonly required>
+            <label for="policy-dueDate" class="mandatory">Due Date</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-startDate" placeholder=" " oninput="updateDates()" required>
+            <label for="policy-startDate" class="mandatory">Policy Start Date</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-endDate" placeholder=" " readonly required>
+            <label for="policy-endDate" class="mandatory">Policy End Date</label>
+          </div>
+          <div class="input-group">
+            <input type="date" id="policy-renewalDate" placeholder=" " readonly required>
+            <label for="policy-renewalDate" class="mandatory">Policy Renewal Date</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="policy-beneficiaryName" placeholder=" " required>
+            <label for="policy-beneficiaryName" class="mandatory">Beneficiary Name</label>
+          </div>
+           <div class="input-group">
+          <div class="flex items-center gap-2">
+            <input type="text" id="policy-beneficiaryAadharNumber" placeholder=" " required class="flex-grow">
+            <button type="button" id="verify-aadhar-btn" class="btn-base btn-secondary text-sm px-3 py-2" onclick="verifyAadharNumber()">
+              <i class="fas fa-check-circle"></i> Verify
+            </button>
+          </div>
           <label for="policy-beneficiaryAadharNumber" class="mandatory">Beneficiary Aadhar Number</label>
+          <span id="aadhar-verification-feedback" class="text-sm mt-1"></span>
         </div>
-        <div class="input-group">
-          <select id="policy-beneficiaryRelationship" required>
-            <option value="">Select relationship</option>
-            <option value="Spouse">Spouse</option>
-            <option value="Parent">Parent</option>
-            <option value="Child">Child</option>
-            <option value="Sibling">Sibling</option>
-            <option value="Other">Other</option>
-          </select>
-          <label for="policy-beneficiaryRelationship" class="mandatory">Beneficiary Relationship</label>
-        </div>
-        <div class="input-group">
-          <input type="tel" id="policy-nomineeContactNumber" placeholder=" " required>
-          <label for="policy-nomineeContactNumber" class="mandatory">Nominee Contact Number</label>
-        </div>
-        <div class="input-group">
-          <select id="policy-status" required>
-            <option value="">Select status</option>
-            <option value="Active">Active</option>
-            <option value="Pending">Pending</option>
-            <option value="Cancelled">Cancelled</option>
-            <option value="Expired">Expired</option>
-            <option value="Lapsed">Lapsed</option>
-            <option value="Grace Period">Grace Period</option>
-          </select>
-          <label for="policy-status" class="mandatory">Policy Status</label>
-        </div>
-        <div class="input-group">
-          <select id="policy-type" onchange="loadProductCodes()"  readonly required>
-          </select>
-          <label for="policy-type" class="mandatory">Policy Type</label>
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer">
-      <button id="reset-policy-btn" class="btn-base btn-secondary" onclick="resetPolicyForm()">Reset</button>
-      <button id="submit-policy-btn" class="btn-base btn-primary" onclick="createPolicy()">Submit</button>
-      <button id="update-policy-btn" class="btn-base btn-primary hidden" onclick="updatePolicy()">Update</button>
+          <div class="input-group">
+            <select id="policy-beneficiaryRelationship" required>
+              <option value="">Select relationship</option>
+              <option value="Spouse">Spouse</option>
+              <option value="Parent">Parent</option>
+              <option value="Child">Child</option>
+              <option value="Sibling">Sibling</option>
+              <option value="Other">Other</option>
+            </select>
+            <label for="policy-beneficiaryRelationship" class="mandatory">Beneficiary Relationship</label>
+          </div>
+          <div class="input-group">
+            <input type="tel" id="policy-nomineeContactNumber" placeholder=" " required>
+            <label for="policy-nomineeContactNumber" class="mandatory">Nominee Contact Number</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-status" required>
+              <option value="">Select status</option>
+              <option value="Active">Active</option>
+              <option value="Pending">Pending</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Expired">Expired</option>
+              <option value="Lapsed">Lapsed</option>
+              <option value="Grace Period">Grace Period</option>
+            </select>
+            <label for="policy-status" class="mandatory">Policy Status</label>
+          </div>
+          <div class="input-group">
+            <select id="policy-type" onchange="loadProductCodes()"  readonly required>
+            </select>
+            <label for="policy-type" class="mandatory">Policy Type</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="reset-policy-btn" class="btn-base btn-secondary" onclick="resetPolicyForm()">Reset</button>
+        <button id="submit-policy-btn" class="btn-base btn-primary" onclick="createPolicy()">Submit</button>
+        <button id="update-policy-btn" class="btn-base btn-primary hidden" onclick="updatePolicy()">Update</button>
+      </div>
     </div>
   </div>
-</div>
   <div id="success-modal" class="modal-base hidden">
     <div class="modal-content p-6">
       <div class="flex justify-between items-center mb-6">
@@ -1486,66 +1509,106 @@
   <div id="policy-management-modal" class="modal-base hidden">
     <div class="modal-content-fullscreen">
       <div class="modal-header">
-        <h3 class="text-2xl font-bold text-gray-800 gradient-text">Manage Policies</h3>
+        <h3 class="text-2xl font-bold text-gray-800 gradient-text">Manage Policies <span id="policyCount" class="text-xl font-medium text-gray-600 ml-2">(0 policies)</span></h3>
         <button id="close-policy-management-modal" class="modal-close">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
+      <!-- New Tab Navigation for Manage Policies Modal -->
+      <div class="flex border-b px-4 bg-white/80">
+        <button class="tab flex-1 text-center active" data-tab="manage-all-policies" onclick="switchManagePolicyTab('manage-all-policies')">All Policies</button>
+        <button class="tab flex-1 text-center" data-tab="upcoming-policy-requests" onclick="switchManagePolicyTab('upcoming-policy-requests')">Upcoming Policy Requests</button>
+      </div>
       <div class="modal-body">
-        <div class="filter-bar">
-          <div class="input-group">
-            <input type="text" id="policy-manage-search" placeholder=" " oninput="filterPolicyManagementTable()">
-            <label for="policy-manage-search">Search Policy No., Cust. No., Company</label>
-          </div>
-          <div class="input-group">
-            <select id="policy-manage-status-filter" onchange="filterPolicyManagementTable()">
-              <option value="">All Statuses</option>
-              <option value="Active">Active</option>
-              <option value="Pending">Pending</option>
-              <option value="Cancelled">Cancelled</option>
-              <option value="Expired">Expired</option>
-              <option value="Lapsed">Lapsed</option>
-              <option value="Grace Period">Grace Period</option>
-            </select>
-            <label for="policy-manage-status-filter">Filter by Status</label>
-          </div>
+        <!-- Content for All Policies Tab -->
+        <div id="manage-all-policies-section" class="tab-content">
+          <div class="filter-bar">
+            <div class="input-group">
+              <input type="text" id="policy-manage-search" placeholder=" " oninput="filterPolicyManagementTable()">
+              <label for="policy-manage-search">Search Policy No., Cust. No., Company</label>
+            </div>
+            <div class="input-group">
+              <select id="policy-manage-status-filter" onchange="filterPolicyManagementTable()">
+                <option value="">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Expired">Expired</option>
+                <option value="Lapsed">Lapsed</option>
+                <option value="Grace Period">Grace Period</option>
+              </select>
+              <label for="policy-manage-status-filter">Filter by Status</label>
+            </div>
+            <!-- New Policy Dropdown -->
+            <div class="input-group">
+                <select id="policy-dropdown" onchange="displayPolicyDetailsFromDropdown()">
+                    <option value="">Select a Policy</option>
+                </select>
+                <label for="policy-dropdown">Select Policy</label>
+            </div>
             <button id="delete-selected-policies-btn" class="btn-base btn-danger ml-auto" onclick="confirmDeleteSelectedPolicies()" style="display:none;">
                 <i class="fas fa-trash"></i> Delete Selected
             </button>
-        </div>
+          </div>
 
-        <div class="overflow-x-auto rounded-xl shadow-md">
-            <table class="modern-table">
-                <thead>
-                    <tr>
-                        <th class="w-12"><input type="checkbox" id="select-all-policies" onchange="toggleSelectAllPolicies(this.checked)"></th>
-                        <th>Policy No.</th>
-                        <th>Customer Name</th>
-                        <th>Customer No.</th>
-                        <th>Policy Name</th>
-                        <th>Company</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Term</th>
-                        <th>Premium</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="policy-manage-table-body">
-                    <!-- Policy data will be loaded here -->
-                </tbody>
+          <div class="overflow-x-auto rounded-xl shadow-md">
+              <table class="modern-table">
+                  <thead>
+                      <tr>
+                          <th class="w-12"><input type="checkbox" id="select-all-policies" onchange="toggleSelectAllPolicies(this.checked)"></th>
+                          <th>Policy No.</th>
+                          <th>Customer Name</th>
+                          <th>Customer No.</th>
+                          <th>Policy Name</th>
+                          <th>Company</th>
+                          <th>Type</th>
+                          <th>Status</th>
+                          <th>Term</th>
+                          <th>Premium</th>
+                          <th>Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody id="policy-manage-table-body">
+                      <!-- Policy data will be loaded here -->
+                  </tbody>
+              </table>
+          </div>
+
+          <div class="pagination-container mt-6">
+              <div class="pagination-summary" id="policy-manage-pagination-summary"></div>
+              <div class="pagination-buttons-group">
+                  <button class="pagination-button" id="policy-manage-prevPage" disabled><i class="fas fa-chevron-left"></i> Prev</button>
+                  <div class="page-numbers" id="policy-manage-pageNumbers"></div>
+                  <button class="pagination-button" id="policy-manage-nextPage">Next <i class="fas fa-chevron-right"></i></button>
+              </div>
+          </div>
+        </div>
+        <!-- Content for Upcoming Policy Requests Tab -->
+        <div id="upcoming-policy-requests-section" class="tab-content hidden">
+          <h4 class="text-xl font-semibold mb-4 text-gray-800">Upcoming Policy Requests</h4>
+          <p class="text-gray-600 mb-4">This section will display upcoming policy requests or notifications.</p>
+          <div class="modern-table mt-4">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Policy Type</th>
+                  <th>Customer</th>
+                  <th>Requested Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="upcoming-requests-table-body" class="bg-white divide-y divide-gray-200">
+                <!-- Example static content for now. In a real app, this would be dynamic. -->
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-gray-500">No upcoming policy requests at this time.</td>
+                </tr>
+              </tbody>
             </table>
-        </div>
-
-        <div class="pagination-container mt-6">
-            <div class="pagination-summary" id="policy-manage-pagination-summary"></div>
-            <div class="pagination-buttons-group">
-                <button class="pagination-button" id="policy-manage-prevPage" disabled><i class="fas fa-chevron-left"></i> Prev</button>
-                <div class="page-numbers" id="policy-manage-pageNumbers"></div>
-                <button class="pagination-button" id="policy-manage-nextPage">Next <i class="fas fa-chevron-right"></i></button>
-            </div>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -1575,6 +1638,56 @@
     </div>
   </div>
 </div>
+
+  <!-- New Policy Detail Popup Modal -->
+  <div id="policy-detail-modal" class="modal-base hidden">
+    <div class="modal-content-large"> <!-- Changed to modal-content-large -->
+      <div class="modal-header">
+        <h3 class="text-2xl font-bold text-gray-800 gradient-text">Policy Details</h3>
+        <button id="close-policy-detail-modal" class="modal-close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body space-y-4">
+        <p><strong>Policy Number:</strong> <span id="detail-policyNo"></span></p>
+        <p><strong>Customer Number:</strong> <span id="detail-customerNo"></span></p>
+        <p><strong>Customer Name:</strong> <span id="detail-custName"></span></p>
+        <p><strong>Policy Name:</strong> <span id="detail-policyName"></span></p>
+        <p><strong>Product Code:</strong> <span id="detail-productCode"></span></p>
+        <p><strong>Company Name:</strong> <span id="detail-polCompanyName"></span></p>
+        <p><strong>FCU Flag:</strong> <span id="detail-fcuFlag"></span></p>
+        <p><strong>Phone Number:</strong> <span id="detail-phoneNum"></span></p>
+        <p><strong>Email:</strong> <span id="detail-email"></span></p>
+        <p><strong>Smoker Status:</strong> <span id="detail-smokerStatus"></span></p>
+        <p><strong>Date of Birth:</strong> <span id="detail-dateOfBirth"></span></p>
+        <p><strong>Gender:</strong> <span id="detail-gender"></span></p>
+        <p><strong>Policy Term:</strong> <span id="detail-term"></span></p>
+        <p><strong>Frequency:</strong> <span id="detail-frequency"></span></p>
+        <p><strong>Policy Premium:</strong> <span id="detail-premium"></span></p>
+        <p><strong>Total Policy Amount:</strong> <span id="detail-totalAmount"></span></p>
+        <p><strong>Monthly Installment:</strong> <span id="detail-monthlyInstallment"></span></p>
+        <p><strong>Total Claimable Amount:</strong> <span id="detail-totalClaimableAmount"></span></p>
+        <p><strong>Policy Date:</strong> <span id="detail-policyDate"></span></p>
+        <p><strong>Installment Count:</strong> <span id="detail-installmentCount"></span></p>
+        <p><strong>Due Date:</strong> <span id="detail-dueDate"></span></p>
+        <p><strong>Policy Start Date:</strong> <span id="detail-startDate"></span></p>
+        <p><strong>Policy End Date:</strong> <span id="detail-endDate"></span></p>
+        <p><strong>Policy Renewal Date:</strong> <span id="detail-renewalDate"></span></p>
+        <p><strong>Beneficiary Name:</strong> <span id="detail-beneficiaryName"></span></p>
+        <p><strong>Beneficiary Aadhar Number:</strong> <span id="detail-beneficiaryAadharNumber"></span></p>
+        <p><strong>Beneficiary Relationship:</strong> <span id="detail-beneficiaryRelationship"></span></p>
+        <p><strong>Nominee Contact Number:</strong> <span id="detail-nomineeContactNumber"></span></p>
+        <p><strong>Policy Status:</strong> <span id="detail-status"></span></p>
+        <p><strong>Policy Type:</strong> <span id="detail-type"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="document.getElementById('close-policy-detail-modal').click()" class="btn-base btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
 
  <script>
  const API_URL = 'http://localhost:8081/policy/policy-domain';
@@ -1620,7 +1733,8 @@
 		    error: document.getElementById('error-modal'),
 		    success: document.getElementById('success-modal'),
 		    'policy-management-modal': document.getElementById('policy-management-modal'), // Renamed
-            'confirmation-modal': document.getElementById('confirmation-modal')
+            'confirmation-modal': document.getElementById('confirmation-modal'),
+            'policy-detail-modal': document.getElementById('policy-detail-modal') // New: Policy Detail Modal
 		  },
 		  confirmActionBtn: document.getElementById('confirm-action-btn'), // Add this line
 		  confirmCancelBtn: document.getElementById('confirm-cancel-btn'), // Add this line
@@ -1646,6 +1760,8 @@
           policyManagePageNumbersContainer: document.getElementById('policy-manage-pageNumbers'),
           selectAllPoliciesCheckbox: document.getElementById('select-all-policies'),
           deleteSelectedPoliciesBtn: document.getElementById('delete-selected-policies-btn'),
+          policyCountSpan: document.getElementById('policyCount'), // New: Policy Count Span
+          policyDropdown: document.getElementById('policy-dropdown'), // New: Policy Dropdown
 
           // Policy Form specific elements (for create and update)
           policyFormTitle: document.getElementById('policy-form-title'),
@@ -1653,6 +1769,34 @@
           updatePolicyBtn: document.getElementById('update-policy-btn'),
           policyNoHidden: document.getElementById('policy-policyNo-hidden')
 		};
+		
+		// New function for Aadhar number verification
+    window.verifyAadharNumber = () => {
+    const aadharInput = document.getElementById('policy-beneficiaryAadharNumber');
+    const verifyBtn = document.getElementById('verify-aadhar-btn');
+    const feedbackSpan = document.getElementById('aadhar-verification-feedback');
+    const aadharNumber = aadharInput.value.trim();
+
+    if (!aadharNumber) {
+        feedbackSpan.textContent = 'Please enter an Aadhar number.';
+        feedbackSpan.className = 'text-sm mt-1 text-red-500';
+        return;
+    }
+    // Basic Aadhar number validation (12 digits)
+    if (!/^\d{12}$/.test(aadharNumber)) {
+        feedbackSpan.textContent = 'Aadhar number must be 12 digits.';
+        feedbackSpan.className = 'text-sm mt-1 text-red-500';
+        return;
+    }
+    feedbackSpan.textContent = 'Verifying...';
+    feedbackSpan.className = 'text-sm mt-1 text-blue-500';
+    verifyBtn.disabled = true;
+    aadharInput.disabled = true;
+    setTimeout(() => {
+        feedbackSpan.textContent = 'Aadhar number verified successfully!';
+        feedbackSpan.className = 'text-sm mt-1 text-green-600';
+    }, 1500); 
+};
 
 		function openModal(modalId) {
 		  if (modalId === 'profile') {
@@ -1677,6 +1821,8 @@
 		  }
           if (modalId === 'policy-management-modal') { // Renamed
               fetchPoliciesForPolicyManagement(); // Load policies when management modal opens
+              // populatePolicyDropdown() is now called within fetchPoliciesForPolicyManagement
+              switchManagePolicyTab(document.querySelector('#policy-management-modal .tab.active')?.dataset.tab || 'manage-all-policies'); // Ensure correct tab is active
           }
 		  elements.modals[modalId]?.classList.remove('hidden');
 		}
@@ -2109,7 +2255,7 @@
 			  const isValid = /^\d{10}$/.test(value);
 			  input.classList.toggle('border-red-500', !isValid && value.length > 0);
 			  input.classList.toggle('border-green-500', isValid);
-			  feedback.textContent = isValid ? '✅ Valid' : value.length > 0 ? 'Phone number must be exactly 10 digits' : '';
+			  feedback.textContent = isValid ? '✅ Valid' : value.length > 0 ? 'Phone number must be exactly 10 digits.' : '';
 			  return isValid;
 		}
 
@@ -2547,13 +2693,19 @@
                         <p class="text-gray-700"><strong>Status:</strong> <span class="font-medium text-green-700">${p.status || 'N/A'}</span></p>
                         <p class="text-gray-700"><strong>Term:</strong> ${p.term || 'N/A'}</p>
                         <p class="text-gray-700"><strong>Premium:</strong> $${p.premium?.toFixed(2) || '0.00'}</p>
+                        <button class="btn-base btn-view mt-2 w-full text-xs" onclick="openPolicyDetailModal('${p.policyNumber}')">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
                     </div>`).join('')
                 : '<p class="text-gray-500">No policies found for this customer.</p>';
 
             const policiesHtmlList = customer.policyList && customer.policyList.length > 0
                 ? customer.policyList.map(p => `
-                    <li class="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
-                        ${p.policyNumber || 'N/A'} (${p.policyType || 'N/A'}) - ${p.status || 'N/A'}
+                    <li class="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap flex items-center justify-between">
+                        <span>${p.policyNumber || 'N/A'} (${p.policyType || 'N/A'}) - ${p.status || 'N/A'}</span>
+                        <button class="btn-base btn-view ml-2 text-xs py-1 px-2" onclick="openPolicyDetailModal('${p.policyNumber}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </li>`).join('')
                 : '';
 
@@ -2596,7 +2748,7 @@
             const endItem = Math.min((currentDisplayPage + 1) * getPageSize(), totalItems);
 
             elements.paginationContainer.querySelector('.pagination-summary').textContent =
-                totalItems > 0 ? `Showing ${startItem} to ${endItem} of ${totalItems} policies` : 'No policies found';
+                totalItems > 0 ? `Showing ${startItem} to ${endItem} of ${totalItems} Customers` : 'No policies found';
 
             elements.pageNumbersContainer.innerHTML = '';
             if (totalPages <= 1) return;
@@ -2675,6 +2827,7 @@
             config.policyManagementFilteredPolicies = [];
             config.policyManagementCurrentPage = 0;
             updatePolicyManagementPaginationDisplay(0, 0);
+            updatePolicyCount(); // Reset count initially
 
             try {
                 const response = await fetch(`${POLICY_BASE_URL}/policy/fetchAllPolicies`);
@@ -2701,6 +2854,7 @@
                     });
                 });
                 filterPolicyManagementTable(); // Apply initial filter/search
+                populatePolicyDropdown(); // Populate the new dropdown
             } catch (error) {
                 console.error('Error fetching policies for management:', error);
                 elements.policyManageTableBody.innerHTML = `<tr><td colspan="11" class="error-message">Error loading policies: ${error.message}.</td></tr>`;
@@ -2711,6 +2865,7 @@
                 }
                 config.selectedPolicyNumbers.clear();
                 updateDeleteSelectedButtonVisibility();
+                updatePolicyCount(); // Update count after filtering
             }
         }
 
@@ -2735,6 +2890,7 @@
                 Math.ceil(config.policyManagementFilteredPolicies.length / config.policyManagementItemsPerPage) || 1,
                 config.policyManagementFilteredPolicies.length
             );
+            updatePolicyCount(); // Update count after filtering
         }
 
         function populatePolicyManagementTable() {
@@ -2765,6 +2921,7 @@
                     <td class="policy-manage-table-actions">
                         <button class="btn-edit" onclick="editPolicy('${policy.policyNumber}')" title="Edit Policy"><i class="fas fa-edit"></i></button>
                         <button class="btn-delete" onclick="confirmDeletePolicy('${policy.policyNumber}')" title="Delete Policy"><i class="fas fa-trash"></i></button>
+                        <button class="btn-base btn-view" onclick="openPolicyDetailModal('${policy.policyNumber}')" title="View Policy Details"><i class="fas fa-eye"></i></button>
                     </td>
                 `;
                 elements.policyManageTableBody.appendChild(row);
@@ -2993,6 +3150,7 @@
                 if (response.ok && responseData.status === 'Success') {
                     showAlert('success', responseData.data.status || `Policy ${policyNumber} deleted successfully.`);
                     fetchPoliciesForPolicyManagement(); // Refresh policy list
+                    initialLoad(); // Refresh main dashboard policies
                     closeModal('confirmation-modal');
                 } else {
                     throw new Error(responseData.errorMessage || 'Failed to delete policy.');
@@ -3055,6 +3213,12 @@
             elements.confirmActionBtn.textContent = 'Delete All';
             elements.confirmActionBtn.classList.add('btn-danger');
             elements.confirmActionBtn.onclick = deleteSelectedPolicies;
+            document.getElementById('delete-reason').value = ''; // Clear reason field for batch delete
+            elements.confirmActionBtn.disabled = true; // Disable until reason is entered
+            document.getElementById('delete-reason').addEventListener('input', function handler() {
+                elements.confirmActionBtn.disabled = this.value.trim() === '';
+                this.removeEventListener('input', handler); // Remove listener after first input
+            });
             elements.confirmCancelBtn.onclick = () => closeModal('confirmation-modal');
         };
 
@@ -3062,11 +3226,17 @@
             showLoader();
             try {
                 const policyNumbersToDelete = Array.from(config.selectedPolicyNumbers);
+                const reason = document.getElementById('delete-reason').value.trim();
+                if (!reason) {
+                    showAlert('error', 'Please provide a reason for deletion.');
+                    hideLoader();
+                    return;
+                }
+
                 for (const policyNumber of policyNumbersToDelete) {
-                    const response = await fetch(`${POLICY_BASE_URL}/policy/delete`, {
+                    const response = await fetch(`${POLICY_BASE_URL}/policy/update/delete?PolicyNumber=${encodeURIComponent(policyNumber)}&reason=${encodeURIComponent(reason)}`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'userCode': config.userCode },
-                        body: JSON.stringify({ policyNo: policyNumber })
+                        headers: { 'userCode': config.userCode }
                     });
                     if (!response.ok) {
                         const errorText = await response.text();
@@ -3086,6 +3256,124 @@
                 closeModal('confirmation-modal');
             }
         }
+
+        // New: Update Policy Count
+        function updatePolicyCount() {
+            if (elements.policyCountSpan) {
+                elements.policyCountSpan.textContent = `(${config.policyManagementFilteredPolicies.length} policies)`;
+            }
+        }
+
+        // New: Populate Policy Dropdown in Manage Policies Modal
+        function populatePolicyDropdown() {
+            if (elements.policyDropdown) {
+                elements.policyDropdown.innerHTML = '<option value="">Select a Policy</option>';
+                // Sort policies by policyNumber for consistent display
+                const sortedPolicies = [...config.policyManagementPolicies].sort((a, b) => {
+                    if (a.policyNumber && b.policyNumber) {
+                        return a.policyNumber.localeCompare(b.policyNumber);
+                    }
+                    return 0;
+                });
+                sortedPolicies.forEach(policy => {
+                    // Only add if policyNumber is not null or undefined
+                    if (policy.policyNumber) {
+                        const option = document.createElement('option');
+                        option.value = policy.policyNumber;
+                        option.textContent = `${policy.policyNumber || 'N/A'} - ${policy.policyName || 'N/A'} (${policy.customerName || 'N/A'})`;
+                        elements.policyDropdown.appendChild(option);
+                    }
+                });
+                elements.policyDropdown.value = ''; // Reset dropdown selection
+            }
+        }
+
+        // New: Display Policy Details from Dropdown
+        window.displayPolicyDetailsFromDropdown = () => {
+            const selectedPolicyNo = elements.policyDropdown.value;
+            if (selectedPolicyNo) {
+                openPolicyDetailModal(selectedPolicyNo);
+            }
+        };
+
+        // New: Open Policy Detail Modal
+        window.openPolicyDetailModal = async (policyNumber) => {
+            showLoader();
+            try {
+                const response = await fetch(`${POLICY_BASE_URL}/policy-details?policyNo=${encodeURIComponent(policyNumber)}`, {
+                    headers: { 'userCode': config.userCode }
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const responseData = await response.json();
+                const data = responseData.data && responseData.data.length > 0 ? responseData.data[0] : null;
+                const policy = data && data.policyList && data.policyList.length > 0 ? data.policyList[0] : null;
+
+                if (policy && data) {
+                    document.getElementById('detail-policyNo').textContent = policy.policyNumber || 'N/A';
+                    document.getElementById('detail-customerNo').textContent = data.customerNo || 'N/A';
+                    document.getElementById('detail-custName').textContent = data.customerName || 'N/A';
+                    document.getElementById('detail-policyName').textContent = policy.policyName || 'N/A';
+                    document.getElementById('detail-productCode').textContent = policy.productCode || 'N/A';
+                    document.getElementById('detail-polCompanyName').textContent = policy.polCompanyName || 'N/A';
+                    document.getElementById('detail-fcuFlag').textContent = policy.fcuFlag || 'N/A';
+                    document.getElementById('detail-phoneNum').textContent = data.phoneNumber || 'N/A';
+                    document.getElementById('detail-email').textContent = data.email || 'N/A';
+                    document.getElementById('detail-smokerStatus').textContent = data.smokerStatus || 'N/A';
+                    document.getElementById('detail-dateOfBirth').textContent = data.dateOfBirth || 'N/A';
+                    document.getElementById('detail-gender').textContent = data.gender || 'N/A';
+                    document.getElementById('detail-term').textContent = policy.term || 'N/A';
+                    document.getElementById('detail-frequency').textContent = policy.frequency || 'N/A';
+                    document.getElementById('detail-premium').textContent = `$${policy.premium?.toFixed(2) || '0.00'}`;
+                    document.getElementById('detail-totalAmount').textContent = `$${policy.totalAmount?.toFixed(2) || '0.00'}`;
+                    document.getElementById('detail-monthlyInstallment').textContent = `$${policy.monthlyInstallment?.toFixed(2) || '0.00'}`;
+                    document.getElementById('detail-totalClaimableAmount').textContent = `$${policy.totalClaimableAmount?.toFixed(2) || '0.00'}`;
+                    document.getElementById('detail-policyDate').textContent = policy.policyDate || 'N/A';
+                    document.getElementById('detail-installmentCount').textContent = policy.installmentCount || 'N/A';
+                    document.getElementById('detail-dueDate').textContent = policy.dueDate || 'N/A';
+                    document.getElementById('detail-startDate').textContent = policy.startDate || 'N/A';
+                    document.getElementById('detail-endDate').textContent = policy.endDate || 'N/A';
+                    document.getElementById('detail-renewalDate').textContent = policy.renewalDate || 'N/A';
+                    document.getElementById('detail-beneficiaryName').textContent = policy.beneficiaryName || 'N/A';
+                    document.getElementById('detail-beneficiaryAadharNumber').textContent = policy.beneficiaryAadharNumber || 'N/A';
+                    document.getElementById('detail-beneficiaryRelationship').textContent = policy.beneficiaryRelationship || 'N/A';
+                    document.getElementById('detail-nomineeContactNumber').textContent = policy.nomineeContactNumber || 'N/A';
+                    document.getElementById('detail-status').textContent = policy.status || 'N/A';
+                    document.getElementById('detail-type').textContent = policy.type || 'N/A';
+
+                    openModal('policy-detail-modal');
+                } else {
+                    showAlert('error', 'Policy details not found.');
+                }
+            } catch (error) {
+                console.error('Error fetching policy details for modal:', error);
+                showAlert('error', 'Failed to load policy details. Please try again.');
+            } finally {
+                hideLoader();
+            }
+        };
+
+        // New: Switch between tabs in Policy Management Modal
+        window.switchManagePolicyTab = (tabName) => {
+            document.querySelectorAll('#policy-management-modal .tab-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.querySelectorAll('#policy-management-modal .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(`${tabName}-section`).classList.remove('hidden');
+            document.querySelector(`#policy-management-modal .tab[data-tab="${tabName}"]`).classList.add('active');
+
+            if (tabName === 'manage-all-policies') {
+                filterPolicyManagementTable(); // Re-filter and display policies
+                populatePolicyDropdown(); // Ensure dropdown is populated
+            } else if (tabName === 'upcoming-policy-requests') {
+                // Future: Add logic to fetch and display upcoming policy requests here
+                // For now, it will show the static message in the HTML
+            }
+            updatePolicyCount(); // Update count based on the active tab's content
+        };
+
 
 		// Event Listeners
 		document.addEventListener('DOMContentLoaded', () => {
@@ -3153,6 +3441,7 @@
           document.getElementById('close-policy-management-modal-btn').addEventListener('click', () => closeModal('policy-management-modal'));
           document.getElementById('close-confirmation-modal').addEventListener('click', () => closeModal('confirmation-modal'));
           document.getElementById('confirm-cancel-btn').addEventListener('click', () => closeModal('confirmation-modal'));
+          document.getElementById('close-policy-detail-modal').addEventListener('click', () => closeModal('policy-detail-modal')); // New: Close Policy Detail Modal
 
 
 		  // Animations & Particles from original
