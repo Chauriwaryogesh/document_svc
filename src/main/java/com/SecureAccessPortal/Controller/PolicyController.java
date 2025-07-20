@@ -92,8 +92,10 @@ public class PolicyController {
 		List<GroupedPolicyDTO> policyDTO = policyService.getDomainData(productCode, userCode);
 		if (policyDTO != null && !policyDTO.isEmpty()) {
 			response.setData(policyDTO);
+			response.setStatus(CommonConstant.SUCCESS);
 		} else {
 			response.setErrorMessage("Error while fetching domin data ");
+			response.setStatus(CommonConstant.FAILURE);
 		}
 		return response;
 	}

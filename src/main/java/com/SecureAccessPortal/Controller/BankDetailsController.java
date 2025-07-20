@@ -98,7 +98,9 @@ public class BankDetailsController {
 		List<String> bankDetails = bankDetailsService.getBankNames(userCode);
 		if (bankDetails != null) {
 			response.setData(bankDetails);
+			response.setStatus(CommonConstant.SUCCESS);
 		} else {
+			response.setStatus(CommonConstant.FAILURE);
 			response.setErrorMessage("No BAnk NAmes found");
 		}
 		return response;
@@ -111,8 +113,10 @@ public class BankDetailsController {
 		List<String> bankDetails = bankDetailsService.getBranchCodes(userCode);
 		if (bankDetails != null) {
 			response.setData(bankDetails);
+			response.setStatus(CommonConstant.SUCCESS);
 		} else {
 			response.setErrorMessage("No BAnk NAmes found");
+			response.setStatus(CommonConstant.FAILURE);
 		}
 		return response;
 	}
@@ -126,8 +130,10 @@ public class BankDetailsController {
 		PolicyRequest custDtl = bankDetailsService.getCustomerDetails(policyNo, customerNo, userCode);
 		if (custDtl != null && !custDtl.isBlank()) {
 			response.setData(custDtl);
+			response.setStatus(CommonConstant.SUCCESS);
 		} else {
 			response.setErrorMessage("No Customer details found for the given Policy");
+			response.setStatus(CommonConstant.FAILURE);
 		}
 		return response;
 	}
@@ -221,8 +227,11 @@ public class BankDetailsController {
 		List<VerificationRecordDTO> document = bankDetailsService.getAllDocuments(accountNo, userCode);
 		if (document != null) {
 			docslist.setData(document);
+			docslist.setStatus(CommonConstant.SUCCESS);
+			
 		} else {
 			docslist.setErrorMessage("document List isEmpty");
+			docslist.setStatus(CommonConstant.FAILURE);
 
 		}
 		return docslist;

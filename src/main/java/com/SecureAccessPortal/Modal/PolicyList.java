@@ -10,6 +10,7 @@ public class PolicyList {
 	private Long id;
     private String policyNumber;
     private List<BankAccountDTO> bankAccounts;
+    private List<PaymentList> paymentListDTO;
     private String createdDate; // ISO string (e.g., "2025-05-27T10:22:00")
     private String productCode;
     private String polCompanyName;
@@ -50,6 +51,13 @@ public class PolicyList {
 	private String status;
 	private String type;
 	
+	
+	public List<PaymentList> getPaymentListDTO() {
+		return paymentListDTO;
+	}
+	public void setPaymentListDTO(List<PaymentList> paymentListDTO) {
+		this.paymentListDTO = paymentListDTO;
+	}
 	public BigDecimal getPremium() {
 		return premium;
 	}

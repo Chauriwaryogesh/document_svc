@@ -1,5 +1,6 @@
 package com.SecureAccessPortal.Repo;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -49,4 +50,7 @@ public interface WorkItemRepo extends JpaRepository<Workitem, String> {
 
     @Query("SELECT COUNT(w) FROM Workitem w WHERE w.userCode = :userCode")
 	long findAllWorkItems(String userCode);
+
+    @Query("SELECT w FROM Workitem w WHERE w.customer.customerNo =:customerNo")
+	List<Workitem> findByCustomerNo(String customerNo);
 }

@@ -165,6 +165,7 @@ public class BankDetailsService {
         if (bankAccount.getCustomer() != null) {
             dto.setCustomerNumber(bankAccount.getCustomer().getCustomerNo());
             dto.setHolderName(bankAccount.getCustomer().getName()); // Assuming Customer has a name field
+            dto.setCustomerName(bankAccount.getCustomer().getName()+" "+ bankAccount.getCustomer().getMiddleName() +" "+ bankAccount.getCustomer().getSurname());
         }
         // Map Policy
         if (bankAccount.getPolicy() != null) {
@@ -180,10 +181,11 @@ public class BankDetailsService {
         dto.setSwiftCode(bankAccount.getSwiftCode());
         dto.setPaymentMethodStatus(bankAccount.getPaymentMethodStatus());
         dto.setLastPaymentDate(bankAccount.getLastPaymentDate());
-        dto.setAmlStatus(bankAccount.getAmlStatus());
+        dto.setAmlStatus("Active");
         dto.setAccountBalance(bankAccount.getAccountBalance());
         dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
         dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
+        dto.setComment(bankAccount.getComment());
         return dto;
     }
 

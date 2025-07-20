@@ -14,6 +14,16 @@ public class PaymentList {
 	private String emailStatus;
 	private String responseStatus;
 	private String message;
+	private String paymentMethod;
+	
+
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
 
 	public String getPaymentId() {
 		return paymentId;

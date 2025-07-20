@@ -47,6 +47,8 @@ public class WorkItemController {
 	public ResponseEntity<Page<WorkItemDTO>> workitems(
 			@RequestParam(value = "workItemRefNum", required = false) String workItemRefNum,
 			@RequestParam(value = "queue", required = false) String queue,
+			@RequestParam(value = "customerNo", required = false) String customerNo,
+			@RequestParam(value = "policyNo", required = false) String policyNo,
 			@RequestParam(value = "userCode", required = false) String filterUserCode,
 			@RequestParam(value = "createdBy", required = false) String createdBy,
 			@RequestParam(value = "status", required = false) String status,
@@ -56,12 +58,14 @@ public class WorkItemController {
 			@RequestHeader(value = "userCode", required = true) String userCode) { 
 
 		ResponseEntity<Page<WorkItemDTO>> response = new ResponseEntity<>();
-		Page<WorkItemDTO> workItem = workItemService.fetchWorkItems(workItemRefNum, queue, filterUserCode, createdBy,
+		Page<WorkItemDTO> workItem = workItemService.fetchWorkItems(workItemRefNum, queue,customerNo,policyNo, filterUserCode, createdBy,
 				status, startDate, endDate, page, size, userCode);
 		if (workItem != null) {
 			response.setData(workItem);
-		} else {
+			response.setStatus(CommonConstant.SUCCESS);	
+			} else {
 			response.setErrorMessage("error in fetch WorkItem");
+			response.setStatus(CommonConstant.FAILURE);	
 		}
 		return response;
 	}
@@ -69,13 +73,16 @@ public class WorkItemController {
 	//@Cacheable("WorkItem")
 	@RequestMapping(value = "workItem-count", method = RequestMethod.GET)
 	public ResponseEntity<WorkItemCount> workItemCount(
-			@RequestHeader(value = "userCode", required = true) String userCode) {
+			@RequestParam(value= "customerNo", required = false) String customerNo,
+			@RequestHeader(value = "userCode", required = false) String userCode) {
 		ResponseEntity<WorkItemCount> response = new ResponseEntity<>();
-		WorkItemCount workItem = workItemService.workItemCount(userCode);
+		WorkItemCount workItem = workItemService.workItemCount(customerNo,userCode);
 		if (workItem != null) {
 			response.setData(workItem);
+			response.setStatus(CommonConstant.SUCCESS);	
 		} else {
 			response.setErrorMessage("error in fetch WorkItem");
+			response.setStatus(CommonConstant.FAILURE);
 		}
 		return response;
 	}

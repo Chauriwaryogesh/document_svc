@@ -27,6 +27,7 @@ import com.SecureAccessPortal.Entity.Policy_Info;
 import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.BankAccountDTO;
 import com.SecureAccessPortal.Modal.GroupedPolicyDTO;
+import com.SecureAccessPortal.Modal.PaymentList;
 import com.SecureAccessPortal.Modal.PolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyInfoDTO;
 import com.SecureAccessPortal.Modal.PolicyList;
@@ -265,7 +266,6 @@ public class PolicyService {
 			String workItemRefNo, String userCode) {
 		ResponseEntity<List<PolicyDTO>> resp = new ResponseEntity<>();
 		List<PolicyDTO> response = new ArrayList<>();
-
 		if (policyNo != null && !policyNo.isEmpty()) {
 			Policy policy = policyRepository.findByPolicyNum(policyNo,"N");
 			if (policy == null) {
@@ -278,8 +278,7 @@ public class PolicyService {
 				return resp;
 			}
 			List<Policy> policies = (allpol != null && allpol.equalsIgnoreCase("Y"))
-					? policyRepository.findByCustomerNo(custNo,"N")
-					: List.of(policy);
+					? policyRepository.findByCustomerNo(custNo,"N"): List.of(policy);
 			if (policies.isEmpty()) {
 				resp.setErrorMessage("No policies found for customer number: " + custNo);
 			} else {
@@ -368,12 +367,10 @@ public class PolicyService {
 					policyDTO.setSurname(customer.getSurname() != null ? customer.getSurname() : "");
 					policyDTO.setGender(customer.getGender() != null ? customer.getGender() : "");
 					policyDTO.setMiddleName(customer.getMiddleName() != null ? customer.getMiddleName() : "");
-					policyDTO.setDateOfBirth(
-							customer.getDateOfBirth() != null ? customer.getDateOfBirth().toString() : "");
+					policyDTO.setDateOfBirth(customer.getDateOfBirth() != null ? customer.getDateOfBirth().toString() : "");
 					policyDTO.setEmail(customer.getEmail() != null ? customer.getEmail() : "");
-					policyDTO.setPolicyList(
-							customerPolicies.stream().map(this::mapPolicyToPolicyList).collect(Collectors.toList()));
-					return policyDTO;
+					policyDTO.setPolicyList(customerPolicies.stream().map(this::mapPolicyToPolicyList).collect(Collectors.toList()));
+					return policyDTO;					
 				}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
@@ -388,27 +385,23 @@ public class PolicyService {
 		pol.setProductCode(policy.getProductCode() != null ? policy.getProductCode() : "");
 		pol.setCreatedBy(policy.getCreatedBy() != null ? policy.getCreatedBy() : "");
 		pol.setCreatedDate(String.valueOf(policy.getCreatedTime()));
-		pol.setWorkItemRefNo(policy.getWorkitems() != null
-				? policy.getWorkitems().stream().map(Workitem::getWorkItemRefNumber).collect(Collectors.toList())
+		pol.setWorkItemRefNo(policy.getWorkitems() != null? policy.getWorkitems().stream().map(Workitem::getWorkItemRefNumber).collect(Collectors.toList())
 				: new ArrayList<>());
 		pol.setUpdatedBy(policy.getUpdatedBy() != null ? policy.getUpdatedBy() : "");
 		pol.setUserCode(policy.getUserCode() != null ? policy.getUserCode() : "");
 		pol.setDeletedFlag(policy.getDeletedFlag() != null ? policy.getDeletedFlag() : "");
 		pol.setPolicyType(policy.getPolicyType() != null ? policy.getPolicyType() : "");
 		pol.setPolicyPremium(policy.getPolicyPremium() != null ? policy.getPolicyPremium() : BigDecimal.ZERO);
-		pol.setPremium(policy.getPolicyPremium() != null ? policy.getPolicyPremium() : BigDecimal.ZERO); // Added for
-																											// frontend
+		pol.setPremium(policy.getPolicyPremium() != null ? policy.getPolicyPremium() : BigDecimal.ZERO);
 		pol.setPolicyStatus(policy.getPolicyStatus() != null ? policy.getPolicyStatus() : "");
 		pol.setCoverageAmount(policy.getCoverageAmount() != null ? policy.getCoverageAmount() : BigDecimal.ZERO);
 		pol.setCustomerNo(policy.getCustomer() != null ? policy.getCustomer().getCustomerNo() : "");
 		pol.setBeneficiaryName(policy.getBeneficiaryName() != null ? policy.getBeneficiaryName() : "");
-		pol.setBeneficiaryRelationship(
-				policy.getBeneficiaryRelationship() != null ? policy.getBeneficiaryRelationship() : "");
+		pol.setBeneficiaryRelationship(policy.getBeneficiaryRelationship() != null ? policy.getBeneficiaryRelationship() : "");
 		pol.setComplianceFlag(policy.getComplianceFlag() != null ? policy.getComplianceFlag() : "");
 		pol.setPaymentFrequency(policy.getPaymentFrequency() != null ? policy.getPaymentFrequency() : "");
 		pol.setSmokerStatus(policy.getSmokerStatus() != null ? policy.getSmokerStatus() : "");
-		pol.setPolicyAmount(
-				String.valueOf(policy.getPolicyPremium() != null ? policy.getPolicyPremium() : BigDecimal.ZERO));
+		pol.setPolicyAmount(String.valueOf(policy.getPolicyPremium() != null ? policy.getPolicyPremium() : BigDecimal.ZERO));
 		pol.setInstallmentCount(String.valueOf(policy.getPolicyfrequency() != null ? policy.getPolicyfrequency() : ""));
 		pol.setFrequency(policy.getPolicyfrequency() != null ? policy.getPolicyfrequency() : "");
 		pol.setPolicyTerm(policy.getPolicyTerm() != null ? policy.getPolicyTerm() : "");
@@ -416,10 +409,8 @@ public class PolicyService {
 		pol.setTotalAmount(policy.getTotalAmount());
 		pol.setMonthlyInstallment(policy.getMonthlyInstallment());
 		pol.setTotalClaimableAmount(policy.getTotalClaimableAmount());
-		pol.setBeneficiaryAadharNumber(
-				policy.getBeneficiaryIdentityNumber() != null ? policy.getBeneficiaryIdentityNumber() : "");
-		pol.setNomineeContactNumber(
-				policy.getBeneficiaryContactNumber() != null ? policy.getBeneficiaryContactNumber() : "");
+		pol.setBeneficiaryAadharNumber(policy.getBeneficiaryIdentityNumber() != null ? policy.getBeneficiaryIdentityNumber() : "");
+		pol.setNomineeContactNumber(policy.getBeneficiaryContactNumber() != null ? policy.getBeneficiaryContactNumber() : "");
 		pol.setStatus(policy.getPolicyStatus() != null ? policy.getPolicyStatus() : "");
 		pol.setType(policy.getPolicyType() != null ? policy.getPolicyType() : "");
 		pol.setPremiumDueDate(String.valueOf(policy.getPremiumDueDate()));
@@ -430,11 +421,29 @@ public class PolicyService {
 		pol.setDueDate(String.valueOf(policy.getPremiumDueDate()));
 
 		List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber());
-		pol.setBankAccounts(
-				bankAccounts != null ? bankAccounts.stream().map(this::mapToBankAccountDTO).collect(Collectors.toList())
+		pol.setBankAccounts(bankAccounts != null ? bankAccounts.stream().map(this::mapToBankAccountDTO).collect(Collectors.toList())
 						: new ArrayList<>());
-
+pol.setPaymentListDTO(mapForPayments(policy.getPayments()));
 		return pol;
+	}
+
+	private List<PaymentList> mapForPayments(List<Payments> payments) {
+		List<PaymentList> paymentL = payments.stream().filter(Objects::nonNull).map(payment -> {
+			PaymentList paymentList = new PaymentList();
+			paymentList.setDueDate(payment.getDueDate());
+			paymentList.setEmailStatus(payment.getEmailStatus());
+			paymentList.setInstallmentAmount(payment.getInstallmentAmount());
+			paymentList.setInstallmentCount(payment.getInstallmentCount());
+			paymentList.setPaymentMethod(payment.getPaymentMethod());
+			// paymentList.setMessage(payment.get);
+			paymentList.setPaymentDate(payment.getPaymentDate());
+			paymentList.setPaymentId(payment.getPaymentId());
+			paymentList.setResponseStatus(CommonConstant.SUCCESS);
+			paymentList.setTransactionId(payment.getTransactionId());
+			paymentList.setStatus(payment.getStatus());
+			return paymentList;
+		}).collect(Collectors.toList());
+		return paymentL;
 	}
 
 	private BankAccountDTO mapToBankAccountDTO(BankAccount bankAccount) {

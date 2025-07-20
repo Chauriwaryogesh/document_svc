@@ -18,10 +18,10 @@ public interface IWorkItemService {
 
 	WorkItemDTO createWorkItem(WorkItemDTO workItemRequest, String userCode);
 
-	Page<WorkItemDTO> fetchWorkItems(String id, String queue, String filterUserCode, String createdBy, String status,
+	Page<WorkItemDTO> fetchWorkItems(String id, String queue,String customerNo,String policyNo, String filterUserCode, String createdBy, String status,
 			String startDate, String endDate, int page, int size, String userCode);
 
-	WorkItemCount workItemCount(String userCode);
+	WorkItemCount workItemCount(String customerNo,String userCode);
 
 	Workitem mapRequetforWorkItem(String userCode, Policy policy, Customer customer, String workType,
 			String workItemName, String comment, BankAccount bankAccount, VerificationRecord verificationRecord,

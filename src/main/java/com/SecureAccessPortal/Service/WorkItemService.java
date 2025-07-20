@@ -112,68 +112,62 @@ public class WorkItemService implements IWorkItemService {
 		return "WI" + year + randomNumber;
 	}
 
-	public Page<WorkItemDTO> fetchWorkItems(String wiRefNum, String queue, String filterUserCode, String createdBy,
+	public Page<WorkItemDTO> fetchWorkItems(String wiRefNum, String queue,String customerNo,String policyNo, String filterUserCode, String createdBy,
 			String status, String startDate, String endDate, int page, int size, String userCodeHeader) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("createdTime").descending());
 
 		Specification<Workitem> spec = (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-
-			// Filter by Work Item Reference Number
 			if (wiRefNum != null && !wiRefNum.isEmpty()) {
 				predicates.add(cb.equal(root.get("workItemRefNumber"), wiRefNum));
 			}
-			// Filter by Queue
+			if (policyNo != null && !policyNo.isEmpty()) {
+                predicates.add(cb.like(
+                		cb.lower(root.get("policy").get("policyNumber")),
+                    "%" + policyNo.toLowerCase() + "%"
+                ));
+            }
+            if (customerNo != null && !customerNo.isEmpty()) {
+                predicates.add(cb.like(
+                		cb.lower(root.get("customer").get("customerNo")), 
+                    "%" + customerNo.toLowerCase() + "%"
+                ));
+            }
 			if (queue != null && !queue.isEmpty()) {
 				predicates.add(cb.equal(root.get("queue"), queue));
 			}
-			// Filter by User Code (as in the Workitem entity's 'userCode' field)
 			if (filterUserCode != null && !filterUserCode.isEmpty()) {
 				predicates.add(cb.equal(root.get("userCode"), filterUserCode));
 			}
-			// Filter by Created By
 			if (createdBy != null && !createdBy.isEmpty()) {
 				predicates.add(cb.equal(root.get("createdBy"), createdBy));
 			}
-			// Filter by Status
 			if (status != null && !status.isEmpty()) {
 				predicates.add(cb.equal(root.get("status"), status));
 			}
-
-			// Date filtering for createdTime
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Assuming format from UI
-
 			if (startDate != null && !startDate.isEmpty()) {
 				try {
-					// Start of the day for startDate
 					LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
 							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 					predicates.add(cb.greaterThanOrEqualTo(root.get("createdTime"), startDateTime));
 				} catch (DateTimeParseException e) {
 					System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
-					// Optionally, throw an exception or return an error response
 				}
 			}
 			if (endDate != null && !endDate.isEmpty()) {
 				try {
-					// End of the day for endDate
 					LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
 							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 					predicates.add(cb.lessThanOrEqualTo(root.get("createdTime"), endDateTime));
 				} catch (DateTimeParseException e) {
 					System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
-					// Optionally, throw an exception or return an error response
 				}
 			}
-
-			// Combine all predicates with AND
 			return cb.and(predicates.toArray(new Predicate[0]));
 		};
-
 		try {
-			// Use findAll with the dynamically built Specification
 			Page<Workitem> workItemsPage = workItemRepo.findAll(spec, pageable);
-
 			return workItemsPage.map(workItems -> {
 				WorkItemDTO workItem = new WorkItemDTO();
 				workItem.setWorkItemId(workItems.getWorkItemId());
@@ -190,16 +184,20 @@ public class WorkItemService implements IWorkItemService {
 			});
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Page.empty(pageable); // Return empty page on error
+			return Page.empty(pageable);
 		}
 	}
 
 	@Override
-	public WorkItemCount workItemCount(String userCode) {
+	public WorkItemCount workItemCount(String customerNo,String userCode) {
 		WorkItemCount workItemCount = new WorkItemCount();
-
+		List<Workitem> workItemsList= new ArrayList<>();
 		Queue queue = new Queue();
-		List<Workitem> workItemsList = workItemRepo.findAll();
+		if(customerNo != null && !customerNo.isEmpty()) {
+			workItemsList = workItemRepo.findByCustomerNo(customerNo);
+		}else {
+			 workItemsList = workItemRepo.findAll();
+		}
 		long pendExternal = workItemsList.stream().filter(sttus -> sttus.getStatus().equalsIgnoreCase("PEND_EXTERNAL"))
 				.count();
 		long pendInternal = workItemsList.stream().filter(sttus -> sttus.getStatus().equalsIgnoreCase("PEND_INTERNAL"))
