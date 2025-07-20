@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Policy;
@@ -88,7 +89,7 @@ public class PolicyMapper {
 						pol.setPolicyDate(String.valueOf(policy.getPolicyStartDate()));
 						pol.setDueDate(String.valueOf(policy.getPremiumDueDate()));
 
-						List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber());
+						List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber(),CommonConstant.N);
 						pol.setBankAccounts(
 								bankAccounts != null ? bankAccounts.stream().map(this::mapToBankAccountDTO).collect(Collectors.toList())
 										: new ArrayList<>());

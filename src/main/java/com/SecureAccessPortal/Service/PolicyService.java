@@ -15,6 +15,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
@@ -278,7 +281,7 @@ public class PolicyService {
 				return resp;
 			}
 			List<Policy> policies = (allpol != null && allpol.equalsIgnoreCase("Y"))
-					? policyRepository.findByCustomerNo(custNo,"N"): List.of(policy);
+					? policyRepository.findByCustomerNoNew(custNo,"N"): List.of(policy);
 			if (policies.isEmpty()) {
 				resp.setErrorMessage("No policies found for customer number: " + custNo);
 			} else {
@@ -292,7 +295,7 @@ public class PolicyService {
 				resp.setErrorMessage("No customer found for customer number: " + customerNo);
 			} else {
 				Customer customer = customerDtls.get();
-				List<Policy> policies = policyRepository.findByCustomerNo(customerNo,"N");
+				List<Policy> policies = policyRepository.findByCustomerNoNew(customerNo,"N");
 				if (policies.isEmpty()) {
 					PolicyDTO policyDTO = new PolicyDTO();
 					policyDTO.setAssociatedPolicyCount("0");
@@ -333,7 +336,7 @@ public class PolicyService {
 				resp.setErrorMessage("No customer associated with policy: " + policy.getPolicyNumber());
 				return resp;
 			}
-			List<Policy> policies = policyRepository.findByCustomerNo(custNo,"N");
+			List<Policy> policies = policyRepository.findByCustomerNoNew(custNo,"N");
 			if (policies.isEmpty()) {
 				resp.setErrorMessage("No policies found for customer number: " + custNo);
 			} else {
@@ -420,7 +423,7 @@ public class PolicyService {
 		pol.setPolicyDate(String.valueOf(policy.getPolicyStartDate()));
 		pol.setDueDate(String.valueOf(policy.getPremiumDueDate()));
 
-		List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber());
+		List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber() , CommonConstant.N);
 		pol.setBankAccounts(bankAccounts != null ? bankAccounts.stream().map(this::mapToBankAccountDTO).collect(Collectors.toList())
 						: new ArrayList<>());
 pol.setPaymentListDTO(mapForPayments(policy.getPayments()));
@@ -676,4 +679,90 @@ pol.setPaymentListDTO(mapForPayments(policy.getPayments()));
 		return response;
 	}
 
+	public ResponseEntity<Page<PolicyDTO>> getPolicyDetailsNew(String policyNo, String customerNo, String allpol,
+			String workItemRefNo, String userCode, Pageable pageable) {
+		    ResponseEntity<Page<PolicyDTO>> resp = new ResponseEntity<>();
+		    Page<PolicyDTO> response;
+
+		    if (policyNo != null && !policyNo.isEmpty()) {
+		        Policy policyList = policyRepository.findByPolicyNum(policyNo, "N");
+		        if (policyList == null) {
+		            resp.setErrorMessage("No policy found for policy number: " + policyNo);
+		            return resp;
+		        }
+		        String custNo = policyList.getCustomer() != null ? policyList.getCustomer().getCustomerNo() : null;
+		        if (custNo == null) {
+		            resp.setErrorMessage("No customer associated with policy number: " + policyNo);
+		            return resp;
+		        }
+		        Page<Policy> policies = (allpol != null && allpol.equalsIgnoreCase("Y"))
+		                ? policyRepository.findByCustomerNo(custNo, "N", pageable)
+		                : new PageImpl<>(List.of(policyList), pageable, 1);
+		        if (policies.isEmpty()) {
+		            resp.setErrorMessage("No policies found for customer number: " + custNo);
+		        } else {
+		            response = policies.map(policy -> mapPolicyListDetails(List.of(policy), userCode).get(0));
+		            resp.setData(response);
+		            resp.setStatus(CommonConstant.SUCCESS);
+		        }
+		    } else if (customerNo != null && !customerNo.isEmpty()) {
+		        Optional<Customer> customerDtls = customerRepository.findByCustomerNo(customerNo);
+		        if (!customerDtls.isPresent()) {
+		            resp.setErrorMessage("No customer found for customer number: " + customerNo);
+		            return resp;
+		        }
+		        Customer customer = customerDtls.get();
+		        Page<Policy> policies = policyRepository.findByCustomerNo(customerNo, "N", pageable);
+		        if (policies.isEmpty()) {
+		            PolicyDTO policyDTO = new PolicyDTO();
+		            policyDTO.setAssociatedPolicyCount("0");
+		            policyDTO.setCustomerNo(customerNo);
+		            policyDTO.setUserCode(userCode != null ? userCode : "");
+		            policyDTO.setPhoneNumber(customer.getPhoneNumber() != null ? customer.getPhoneNumber() : "");
+		            policyDTO.setCustomerName(customer.getName() != null ? customer.getName() : "");
+		            policyDTO.setSmokerStatus(customer.getSmokerStatus() != null ? customer.getSmokerStatus() : "");
+		            policyDTO.setSurname(customer.getSurname() != null ? customer.getSurname() : "");
+		            policyDTO.setGender(customer.getGender() != null ? customer.getGender() : "");
+		            policyDTO.setMiddleName(customer.getMiddleName() != null ? customer.getMiddleName() : "");
+		            policyDTO.setDateOfBirth(
+		                    customer.getDateOfBirth() != null ? customer.getDateOfBirth().toString() : "");
+		            policyDTO.setEmail(customer.getEmail() != null ? customer.getEmail() : "");
+		            policyDTO.setPolicyList(new ArrayList<>());
+		            response = new PageImpl<>(List.of(policyDTO), pageable, 1);
+		            resp.setData(response);
+		        } else {
+		            response = policies.map(policy -> mapPolicyListDetails(List.of(policy), userCode).get(0));
+		            resp.setData(response);
+		            resp.setStatus(CommonConstant.SUCCESS);
+		        }
+		    } else if (workItemRefNo != null && !workItemRefNo.isEmpty()) {
+		        Optional<Workitem> byWiRefNum = workItemRepo.findByWiRefNum(workItemRefNo);
+		        if (!byWiRefNum.isPresent()) {
+		            resp.setErrorMessage("No work item found for reference number: " + workItemRefNo);
+		            return resp;
+		        }
+		        Workitem workitem = byWiRefNum.get();
+		        Policy policyList = workitem.getPolicy();
+		        if (policyList == null) {
+		            resp.setErrorMessage("No policy associated with work item reference number: " + workItemRefNo);
+		            return resp;
+		        }
+		        String custNo = policyList.getCustomer() != null ? policyList.getCustomer().getCustomerNo() : null;
+		        if (custNo == null) {
+		            resp.setErrorMessage("No customer associated with policy: " + policyList.getPolicyNumber());
+		            return resp;
+		        }
+		        Page<Policy> policies = policyRepository.findByCustomerNo(custNo, "N", pageable);
+		        if (policies.isEmpty()) {
+		            resp.setErrorMessage("No policies found for customer number: " + custNo);
+		        } else {
+		            response = policies.map(policy -> mapPolicyListDetails(List.of(policy), userCode).get(0));
+		            resp.setData(response);
+		            resp.setStatus(CommonConstant.SUCCESS);
+		        }
+		    } else {
+		        resp.setErrorMessage("At least one parameter (policyNo, customerNo, workItemRefNo) is required");
+		    }
+		    return resp;
+		}
 }

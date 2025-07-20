@@ -13,8 +13,8 @@ import com.SecureAccessPortal.Entity.BankAccount;
 
 public interface BankAccountRepo extends JpaRepository<BankAccount, Long> {
 
-	@Query("SELECT ba FROM BankAccount ba WHERE ba.policy.policyNumber = :policyNumber")
-	List<BankAccount> findByPolicyNumber(@Param("policyNumber") String policyNumber);
+	@Query("SELECT ba FROM BankAccount ba WHERE ba.policy.policyNumber = :policyNumber AND ba.deletedFlag =:deletedFlag")
+	List<BankAccount> findByPolicyNumber(@Param("policyNumber") String policyNumber, String deletedFlag);
 
 	@Query("SELECT ba FROM BankAccount ba WHERE ba.customer.customerNo = ?1")
 	List<BankAccount> findByCustomerNo(String customerNo);

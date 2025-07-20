@@ -3,6 +3,9 @@ package com.SecureAccessPortal.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -152,6 +155,27 @@ public class PolicyController {
 			response.setErrorMessage("Failed to update policy");
 		}
 		return response;
+	}
+	
+	@GetMapping("/policy-detailsNew")
+	public com.SecureAccessPortal.Service.ResponseEntity<Page<PolicyDTO>> getCustomerlDetails(
+	        @RequestParam(value = "policyNo", required = false) String policyNo,
+	        @RequestParam(value = "allpolSearch", required = false) String allPol,
+	        @RequestParam(value = "customerNo", required = false) String customerNo,
+	        @RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
+	        @RequestHeader(required = false) String userCode,
+	        @RequestParam(value = "page", defaultValue = "0") int page,
+	        @RequestParam(value = "size", defaultValue = "10") int size) {
+	    
+	    if (allPol == null) {
+	        allPol = "N";
+	    }
+	    
+	    Pageable pageable = PageRequest.of(page, size);
+	    com.SecureAccessPortal.Service.ResponseEntity<Page<PolicyDTO>> emailResp = 
+	        policyService.getPolicyDetailsNew(policyNo, customerNo, allPol, workItemRefNo, userCode, pageable);
+	    
+	    return emailResp;
 	}
 	
 	
