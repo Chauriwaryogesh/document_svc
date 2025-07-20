@@ -414,6 +414,14 @@
         .fade-in {
             animation: fadeIn 0.5s ease-out forwards;
         }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slide-down {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -693,14 +701,6 @@
         .toast-error {
             background: #ef4444;
         }
-        @keyframes slide-up {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes slide-down {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(100%); opacity: 0; }
-        }
         .filter-popup {
             display: none;
             width: 24rem;
@@ -863,7 +863,7 @@
         </aside>
         <div class="main-content">
             <header class="header">
-                <h1 class="header-greeting">Welcome, <span id="customer-name" class="font-semibold text-blue-600">Customer</span>!</h1>
+                <h1 class="header-greeting">Welcome, <span id="customer-name" class="font-semibold text-blue-600">Customer</span>.</h1>
                 <div class="flex items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
                     <div class="relative flex-grow">
                         <input type="text" id="universal-search-input" placeholder="Search..." class="w-full p-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -1569,8 +1569,8 @@
         const workitemStatusCardsContainer = document.getElementById('workitem-status-cards');
 
 
-        customerNameDisplay.textContent = config.customerName || 'Customer';
-        userIdDisplay.textContent = `User ID: ${config.userCode || 'N/A'}`;
+        customerNameDisplay.textContent = config.customerName;
+        userIdDisplay.textContent = `User ID: ${config.userCode}`;
         function showLoader() {
             document.getElementById('loader').classList.add('active');
         }
@@ -1790,7 +1790,7 @@
             currentPolicyPage = page;
             showLoader();
             try {
-                const response = await fetch(`${config.policyUrl}/policy-details?allpolSearch=Y&customerNo=${customerNo}&page=${page - 1}&size=${config.itemsPerPage}`, {
+                const response = await fetch(`${config.policyUrl}/policy-detailsNew?allpolSearch=Y&customerNo=${customerNo}&page=${page - 1}&size=${config.itemsPerPage}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1801,16 +1801,23 @@
                 if (!response.ok || result.status !== 'Success') {
                     throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
                 }
-                if (result.data && result.data.length > 0 && result.data[0].policyList) {
-                    allPolicies = result.data[0].policyList;
-                    totalPolicyPages = result.data[0].totalPages || 1; // Assuming totalPages is available
+                if (result.data && result.data.content && result.data.content.length > 0) {
+                    allPolicies = []; // Reset allPolicies to ensure no old data persists
+                    result.data.content.forEach(customerEntry => {
+                        if (customerEntry.policyList && customerEntry.policyList.length > 0) {
+                            allPolicies = allPolicies.concat(customerEntry.policyList);
+                        }
+                    });
+                    
+                    totalPolicyPages = result.data.totalPages; 
                     populatePolicyTable();
-                    renderPolicyPagination();
+                    // Use the generic renderPagination
+                    renderPagination('policy-pagination', currentPolicyPage, totalPolicyPages, fetchAndPopulatePolicies);
                 } else {
                     tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-gray-500">No policies found for this customer.</td></tr>`;
                     allPolicies = [];
                     totalPolicyPages = 0;
-                    renderPolicyPagination();
+                    renderPagination('policy-pagination', currentPolicyPage, totalPolicyPages, fetchAndPopulatePolicies);
                 }
             } catch (error) {
                 console.error('Error fetching policy details:', error);
@@ -1862,10 +1869,11 @@
             });
         }
 
-        function renderPolicyPagination() {
-            const pagination = document.getElementById('policy-pagination');
+        // Renamed and made generic
+        function renderPagination(paginationElementId, currentPage, totalPages, fetchFunction, filters = {}) {
+            const pagination = document.getElementById(paginationElementId);
             pagination.innerHTML = '';
-            if (totalPolicyPages <= 1) return;
+            if (totalPages <= 1) return;
 
             const navContainer = document.createElement('div');
             navContainer.className = 'flex items-center space-x-2';
@@ -1877,33 +1885,33 @@
                 button.className = `py-2 px-4 rounded-md font-semibold transition ${
                     enabled ? 'bg-white text-gray-700 border hover:bg-gray-100' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 }`;
-                if (enabled) button.onclick = () => fetchAndPopulatePolicies(page);
+                if (enabled) button.onclick = () => fetchFunction(page, filters);
                 return button;
             };
 
-            navContainer.appendChild(createButton('<i class="fas fa-angle-double-left"></i>', 1, currentPolicyPage > 1));
-            navContainer.appendChild(createButton('<i class="fas fa-angle-left"></i>', currentPolicyPage - 1, currentPolicyPage > 1));
+            navContainer.appendChild(createButton('<i class="fas fa-angle-double-left"></i>', 1, currentPage > 1));
+            navContainer.appendChild(createButton('<i class="fas fa-angle-left"></i>', currentPage - 1, currentPage > 1));
 
             const pageInfo = document.createElement('span');
             pageInfo.className = 'font-semibold text-gray-600 px-4';
-            pageInfo.textContent = `Page ${currentPolicyPage} of ${totalPolicyPages}`;
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
             navContainer.appendChild(pageInfo);
 
-            navContainer.appendChild(createButton('<i class="fas fa-angle-right"></i>', currentPolicyPage + 1, currentPolicyPage < totalPolicyPages));
-            navContainer.appendChild(createButton('<i class="fas fa-angle-double-right"></i>', totalPolicyPages, currentPolicyPage < totalPolicyPages));
+            navContainer.appendChild(createButton('<i class="fas fa-angle-right"></i>', currentPage + 1, currentPage < totalPages));
+            navContainer.appendChild(createButton('<i class="fas fa-angle-double-right"></i>', totalPages, currentPage < totalPages));
 
             const goToContainer = document.createElement('div');
             goToContainer.className = 'flex items-center space-x-2';
             const goToInput = document.createElement('input');
             goToInput.type = 'number';
             goToInput.min = 1;
-            goToInput.max = totalPolicyPages;
-            goToInput.value = currentPolicyPage;
+            goToInput.max = totalPages;
+            goToInput.value = currentPage;
             goToInput.className = 'pagination-input border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500';
             goToInput.addEventListener('change', (e) => {
                 const page = parseInt(e.target.value);
-                if (page >= 1 && page <= totalPolicyPages) {
-                    fetchAndPopulatePolicies(page);
+                if (page >= 1 && page <= totalPages) {
+                    fetchFunction(page, filters);
                 }
             });
             goToContainer.appendChild(document.createTextNode('Go to:'));
@@ -1912,6 +1920,7 @@
             pagination.appendChild(navContainer);
             pagination.appendChild(goToContainer);
         }
+
         function viewPolicyDetailsModal(policyNumber) {
             const policy = allPolicies.find(p => p.policyNumber === policyNumber);
             if (policy) {
@@ -1987,16 +1996,17 @@
                 if (!response.ok || result.status !== 'Success') {
                     throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
                 }
-                if (result.data && result.data.content && result.data.content.length > 0) {
+                if (result.data && result.data.content) {
                     allBankAccounts = result.data.content;
                     totalBankAccountPages = result.data.totalPages || 1;
                     populateBankAccountsTable();
-                    renderBankAccountPagination();
+                    // Use the generic renderPagination
+                    renderPagination('bank-account-pagination', currentBankAccountPage, totalBankAccountPages, fetchAndPopulateBankAccounts);
                 } else {
                     tableBody.innerHTML = `<tr><td colspan="21" class="py-4 text-center text-gray-500">No bank accounts found for this customer.</td></tr>`;
                     allBankAccounts = [];
                     totalBankAccountPages = 0;
-                    renderBankAccountPagination();
+                    renderPagination('bank-account-pagination', currentBankAccountPage, totalBankAccountPages, fetchAndPopulateBankAccounts);
                 }
             } catch (error) {
                 console.error('Error fetching bank account details:', error);
@@ -2049,57 +2059,6 @@
                 `;
                 tableBody.appendChild(row);
             });
-        }
-
-        function renderBankAccountPagination() {
-            const pagination = document.getElementById('bank-account-pagination');
-            pagination.innerHTML = '';
-            if (totalBankAccountPages <= 1) return;
-
-            const navContainer = document.createElement('div');
-            navContainer.className = 'flex items-center space-x-2';
-
-            const createButton = (text, page, enabled = true) => {
-                const button = document.createElement('button');
-                button.innerHTML = text;
-                button.disabled = !enabled;
-                button.className = `py-2 px-4 rounded-md font-semibold transition ${
-                    enabled ? 'bg-white text-gray-700 border hover:bg-gray-100' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                }`;
-                if (enabled) button.onclick = () => fetchAndPopulateBankAccounts(page);
-                return button;
-            };
-
-            navContainer.appendChild(createButton('<i class="fas fa-angle-double-left"></i>', 1, currentBankAccountPage > 1));
-            navContainer.appendChild(createButton('<i class="fas fa-angle-left"></i>', currentBankAccountPage - 1, currentBankAccountPage > 1));
-
-            const pageInfo = document.createElement('span');
-            pageInfo.className = 'font-semibold text-gray-600 px-4';
-            pageInfo.textContent = `Page ${currentBankAccountPage} of ${totalBankAccountPages}`;
-            navContainer.appendChild(pageInfo);
-
-            navContainer.appendChild(createButton('<i class="fas fa-angle-right"></i>', currentBankAccountPage + 1, currentBankAccountPage < totalBankAccountPages));
-            navContainer.appendChild(createButton('<i class="fas fa-angle-double-right"></i>', totalBankAccountPages, currentBankAccountPage < totalBankAccountPages));
-
-            const goToContainer = document.createElement('div');
-            goToContainer.className = 'flex items-center space-x-2';
-            const goToInput = document.createElement('input');
-            goToInput.type = 'number';
-            goToInput.min = 1;
-            goToInput.max = totalBankAccountPages;
-            goToInput.value = currentBankAccountPage;
-            goToInput.className = 'pagination-input border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500';
-            goToInput.addEventListener('change', (e) => {
-                const page = parseInt(e.target.value);
-                if (page >= 1 && page <= totalBankAccountPages) {
-                    fetchAndPopulateBankAccounts(page);
-                }
-            });
-            goToContainer.appendChild(document.createTextNode('Go to:'));
-            goToContainer.appendChild(goToInput);
-
-            pagination.appendChild(navContainer);
-            pagination.appendChild(goToContainer);
         }
 
         async function initializeAddBankAccountModal() {
@@ -2511,12 +2470,13 @@
                     allWorkItems = result.data.content;
                     totalWorkItemPages = result.data.totalPages;
                     populateWorkItemTable();
-                    renderWorkItemPagination();
+                    // Use the generic renderPagination
+                    renderPagination('workitem-pagination', currentWorkItemPage, totalWorkItemPages, fetchAndPopulateWorkItems, currentWorkItemFilters);
                 } else {
                     tableBody.innerHTML = `<tr><td colspan="9" class="py-4 text-center text-gray-500">No work items found for this customer.</td></tr>`;
                     allWorkItems = [];
                     totalWorkItemPages = 0;
-                    renderWorkItemPagination();
+                    renderPagination('workitem-pagination', currentWorkItemPage, totalWorkItemPages, fetchAndPopulateWorkItems, currentWorkItemFilters);
                 }
             } catch (error) {
                 console.error('Error fetching work items:', error);
@@ -2633,49 +2593,6 @@
                 container.appendChild(card);
             });
             document.getElementById('workitem-total-count').textContent = counts.total || 0;
-        }
-        function renderWorkItemPagination() {
-            const pagination = document.getElementById('workitem-pagination');
-            pagination.innerHTML = '';
-            if (totalWorkItemPages <= 1) return;
-            const navContainer = document.createElement('div');
-            navContainer.className = 'flex items-center space-x-2';
-            const createButton = (text, page, enabled = true) => {
-                const button = document.createElement('button');
-                button.innerHTML = text;
-                button.disabled = !enabled;
-                button.className = `py-2 px-4 rounded-md font-semibold transition ${
-                    enabled ? 'bg-white text-gray-700 border hover:bg-gray-100' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                }`;
-                if (enabled) button.onclick = () => fetchAndPopulateWorkItems(page, currentWorkItemFilters);
-                return button;
-            };
-            navContainer.appendChild(createButton('<i class="fas fa-angle-double-left"></i>', 1, currentWorkItemPage > 1));
-            navContainer.appendChild(createButton('<i class="fas fa-angle-left"></i>', currentWorkItemPage - 1, currentWorkItemPage > 1));
-            const pageInfo = document.createElement('span');
-            pageInfo.className = 'font-semibold text-gray-600 px-4';
-            pageInfo.textContent = `Page ${currentWorkItemPage} of ${totalWorkItemPages}`;
-            navContainer.appendChild(pageInfo);
-            navContainer.appendChild(createButton('<i class="fas fa-angle-right"></i>', currentWorkItemPage + 1, currentWorkItemPage < totalWorkItemPages));
-            navContainer.appendChild(createButton('<i class="fas fa-angle-double-right"></i>', totalWorkItemPages, currentWorkItemPage < totalWorkItemPages));
-            const goToContainer = document.createElement('div');
-            goToContainer.className = 'flex items-center space-x-2';
-            const goToInput = document.createElement('input');
-            goToInput.type = 'number';
-            goToInput.min = 1;
-            goToInput.max = totalWorkItemPages;
-            goToInput.value = currentWorkItemPage;
-            goToInput.className = 'pagination-input border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500';
-            goToInput.addEventListener('change', (e) => {
-                const page = parseInt(e.target.value);
-                if (page >= 1 && page <= totalWorkItemPages) {
-                    fetchAndPopulateWorkItems(page, currentWorkItemFilters);
-                }
-            });
-            goToContainer.appendChild(document.createTextNode('Go to:'));
-            goToContainer.appendChild(goToInput);
-            pagination.appendChild(navContainer);
-            pagination.appendChild(goToContainer);
         }
         function handleWorkItemFilter() {
             const filterPopup = document.getElementById('workitem-filter-popup');
