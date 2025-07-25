@@ -3,7 +3,6 @@ package com.SecureAccessPortal.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -21,9 +20,6 @@ import com.SecureAccessPortal.Service.ResponseEntity;
 @RestController
 @RequestMapping(value = "workItem_Service")
 public class WorkItemController {
-
-	@Autowired
-	private CommonConstant constant;
 
 	@Autowired
 	private IWorkItemService workItemService;

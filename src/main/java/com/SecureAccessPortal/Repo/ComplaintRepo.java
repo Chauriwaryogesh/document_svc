@@ -2,6 +2,9 @@ package com.SecureAccessPortal.Repo;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,5 +35,11 @@ public interface ComplaintRepo extends JpaRepository<Complaint, String> {
 
 	@Query("SELECT c.complaintNumber FROM Complaint c WHERE c.complaintNumber LIKE 'CMPLT/%' ORDER BY c.complaintNumber DESC LIMIT 1")
 	String findLatestComplaintNumber();
+
+
+	Page<Complaint> findAll(Specification<Complaint> spec, Pageable pageable);
+
+    @Query("SELECT c FROM Complaint c where c.customer.customerNo= :customerNo")
+	List<Complaint> findByCustomerNo(String customerNo);
 
 }

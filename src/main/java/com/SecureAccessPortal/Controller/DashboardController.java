@@ -105,4 +105,12 @@ public class DashboardController {
     public String CustomerService(String userCode) {
         return "CustomerService";
     }
+    @GetMapping("/ComplaintsForCustomer")
+    public String ComplaintsForCustomer( @RequestParam (required =false)String customerNo,@RequestParam (required =false)String message,  String userCode) {
+        return "ComplaintsForCustomer";
+    }
+    @GetMapping("/PaymentForCustomer")
+        public String PaymentForCustomer( @RequestParam (required =false)String customerNo,@RequestParam (required =false)String policyNo,@RequestParam (required =false)String paymentId, String userCode) {
+    	return "PaymentForCustomer";
+    }
 }

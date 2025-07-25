@@ -120,10 +120,14 @@ public class ComplaintService {
 		return roleDTO;
 	}
 
-	public DashboardStats getComplaintStats(String userCode) {
+	public DashboardStats getComplaintStats(String customerNo, String userCode) {
 		DashboardStats stats = new DashboardStats();
-		List<Complaint> complaintList = complaintRepository.findAll();
-		
+		List<Complaint> complaintList = new ArrayList<Complaint>();
+		if(customerNo != null) {
+			 complaintList = complaintRepository.findByCustomerNo(customerNo);
+		}else {
+			 complaintList = complaintRepository.findAll();
+		}
 		long complaintteam =complaintList.stream().filter(list -> list.getAssignedTo().equalsIgnoreCase("Complaints Team")).count();
 		long bancsTeam=complaintList.stream().filter(list -> list.getAssignedTo().equalsIgnoreCase("Bancs Team")).count();
 		long adminteam=complaintList.stream().filter(list -> list.getAssignedTo().equalsIgnoreCase("Admin Team")).count();
@@ -145,7 +149,7 @@ public class ComplaintService {
 
 	public ComplaintDTO createComplaint(ComplaintDTO dto, String userCode) {
 		Complaint complaint = new Complaint();
-		
+		try {
 		if(dto.getComplaintNumber() == null) {
 			String complaintNumber= generateComplaintNumber();
 			complaint.setComplaintNumber(complaintNumber);
@@ -183,25 +187,23 @@ public class ComplaintService {
 		        );
 				complaint.setWorkitem(mapRequetforWorkItem);
 		  }
-       
-		
-		
 		complaint.setCategory(dto.getCategory());
 		complaint.setStatus(dto.getStatus());
 		complaint.setPriority(dto.getPriority());
 		complaint.setSlaStatus(dto.getSlaStatus());
 		complaint.setSlaProgress(dto.getSlaProgress());
 		complaint.setDateFiled(LocalDate.parse(dto.getDateFiled()));
-		//complaint.setLastUpdated(LocalDate.parse(dto.getLastUpdated()));
+		if(dto.getAction().equalsIgnoreCase("update")) {
+			complaint.setLastUpdated(LocalDate.parse(dto.getLastUpdated()));
+			complaint.setUpdatedBy(userCode);
+		}else {
+			complaint.setCreatedTime(LocalDate.parse(dto.getCreatedAt()));
+			complaint.setCreatedBy(dto.getCreatedBy());
+		}
 		complaint.setDescription(dto.getDescription());
 		complaint.setAttachmentPath(dto.getAttachmentPath());
-		complaint.setCreatedBy(dto.getCreatedBy());
-		if(dto.getUpdatedBy() != null) {
-			complaint.setUpdatedBy(dto.getUpdatedBy());
-			complaint.setUpdatedTime(LocalDate.parse(dto.getUpdatedAt()));
-		}
 		
-		complaint.setCreatedTime(LocalDate.parse(dto.getCreatedAt()));
+		
 		complaint.setAssignedTo(dto.getAssignedTo());
 		complaint.setDepartmentId(dto.getDepartmentId());
 		complaint.setEscalationLevel(dto.getEscalationLevel());
@@ -219,6 +221,9 @@ public class ComplaintService {
 		complaint.setSlaDueDate(dto.getSlaDueDate());
 		complaint.setReason(dto.getReason());
 		complaint.setDeletedFlag("N");
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		
 		Complaint complaintRepo = complaintRepository.save(complaint);
 		logger.info("Complaint no{}",complaintRepo.getComplaintNumber());

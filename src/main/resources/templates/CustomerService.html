@@ -2710,7 +2710,7 @@
             }
         }
         function navigateToPayments(policyNumber = '', paymentId = '') {
-            let url = `paymentForCustomer?customerNo=${config.customerNo || ''}`;
+            let url = `PaymentForCustomer?customerNo=${config.customerNo || ''}`;
             if (policyNumber) {
                 url += `&policyNo=${policyNumber}`;
             }
@@ -2720,7 +2720,7 @@
             window.location.href = url;
         }
         function navigateToComplaints(message = '') {
-            let url = `complaints?customerNo=${config.customerNo || ''}`;
+            let url = `ComplaintsForCustomer?customerNo=${config.customerNo || ''}`;
             if (message) {
                 url += `&message=${encodeURIComponent(message)}`;
             }

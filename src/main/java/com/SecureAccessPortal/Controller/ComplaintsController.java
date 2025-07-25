@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Modal.ComplaintDTO;
-import com.SecureAccessPortal.Modal.CustomerDTO;
 import com.SecureAccessPortal.Modal.DashboardStats;
 import com.SecureAccessPortal.Modal.RoleDTO;
 import com.SecureAccessPortal.Service.ComplaintService;
@@ -50,9 +49,8 @@ public class ComplaintsController {
 	}
 
 	@GetMapping("/get-stats")
-	public ResponseEntity<DashboardStats> getStats(@RequestParam(required = false) String userCode) {
-		ResponseEntity<DashboardStats> response = new ResponseEntity<>();
-		DashboardStats dashboardStats = complaintService.getComplaintStats(userCode);
+	public ResponseEntity<DashboardStats> getStats(@RequestParam(required = false) String customerNo,@RequestParam(required = false) String userCode) {		ResponseEntity<DashboardStats> response = new ResponseEntity<>();
+		DashboardStats dashboardStats = complaintService.getComplaintStats(customerNo,userCode);
 		response.setData(dashboardStats);
 		return response;
 	}
