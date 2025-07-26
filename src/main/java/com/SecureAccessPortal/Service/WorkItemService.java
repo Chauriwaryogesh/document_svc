@@ -180,8 +180,12 @@ public class WorkItemService implements IWorkItemService {
 				workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
 				workItem.setStatus(workItems.getStatus());
 				workItem.setQueue(workItems.getQueue());
-				workItem.setPolicyNumber(workItems.getPolicy().getPolicyNumber());
-				workItem.setCustomerNo(workItems.getCustomer().getCustomerNo());
+				if(workItems.getPolicy() !=null) {
+				    workItem.setPolicyNumber(Optional.of(workItems.getPolicy().getPolicyNumber()).orElse(null));			
+				} 
+				if(workItems.getCustomer() != null) {
+					workItem.setCustomerNo(Optional.ofNullable(workItems.getCustomer().getCustomerNo()).orElse(null));
+				}
 				return workItem;
 			});
 		} catch (Exception e) {

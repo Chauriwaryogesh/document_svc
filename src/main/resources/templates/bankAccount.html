@@ -781,15 +781,15 @@
             <input type="text" id="add-account-number" class="form-input mt-1" placeholder="Enter account number" required aria-required="true">
         </div>
         <div>
-            <label for="add-ifsc-code" class="form-label block text-sm required">IFSC Code</label>
-            <select id="add-ifsc-code" class="form-input mt-1" required aria-required="true">
-              <option value="" disabled selected>Select IFSC code</option>
-            </select>
-        </div>
-        <div>
             <label for="add-bank-name" class="form-label block text-sm required">Bank Name</label>
             <select id="add-bank-name" class="form-input mt-1" required aria-required="true">
               <option value="" disabled selected>Select bank name</option>
+            </select>
+        </div>
+        <div>
+            <label for="add-ifsc-code" class="form-label block text-sm required">IFSC Code</label>
+            <select id="add-ifsc-code" class="form-input mt-1" required aria-required="true">
+              <option value="" disabled selected>Select IFSC code</option>
             </select>
         </div>
         <div>
@@ -1043,6 +1043,9 @@
     let currentVerificationPage = 1;
     let activeVerificationStatus = 'Pending'; // Default tab for verification view
 
+    // Stores parsed bank data: { "Bank Name": [{ ifsc: "...", branch: "..." }, ...] }
+    let bankDetailsLookup = {}; 
+
     // --- Utility Functions ---
     const show = el => el && el.classList.remove('hidden');
     const hide = el => el && el.classList.add('hidden');
@@ -1158,14 +1161,46 @@
         return fetchApi(`${config.apiBaseUrl}/bank-details/counts`); 
     }
 
-    async function fetchIFSCCodes() {
-        return fetchApi(`${config.apiBaseUrl}/bank-details/branchCodes`);
-    }
-
     async function fetchBankNames() {
-        return fetchApi(`${config.apiBaseUrl}/bank-details/BankNames`);
+        showLoader();
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/bank-details/BankNames`, {
+                method: 'GET',
+                headers: { 'userCode': config.userCode }
+            });
+            const result = await response.json();
+            if (!response.ok || result.status !== 'Success') {
+                throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
+            }
+            
+            // Parse the new, more detailed response format
+            bankDetailsLookup = {}; // Reset lookup
+            if (result.data && Array.isArray(result.data)) {
+                let currentBank = '';
+                result.data.forEach(line => {
+                    if (line.startsWith('Bank: ')) {
+                        currentBank = line.replace('Bank: ', '').trim();
+                        bankDetailsLookup[currentBank] = [];
+                    } else if (currentBank && line.includes('IFSC: ') && line.includes('Branch: ')) {
+                        const parts = line.split(' - ');
+                        const ifsc = parts.find(p => p.includes('IFSC:')).replace('IFSC: ', '').trim();
+                        const branch = parts.find(p => p.includes('Branch:')).replace('Branch: ', '').trim();
+                        bankDetailsLookup[currentBank].push({ ifsc: ifsc, branch: branch });
+                    }
+                });
+            }
+            return result;
+        } catch (error) {
+            console.error('Error fetching bank names:', error);
+            showToast('Error fetching bank names: ' + error.message, 'error');
+            throw error;
+        } finally {
+            hideLoader();
+        }
     }
 
+    // Removed fetchBranchDetails as it's no longer needed with the new BankNames API response
+    /*
     async function fetchBranchDetails(ifscCode) {
         // This is a dummy function as per original code. Replace with actual API call if available.
         return new Promise(resolve => setTimeout(() => resolve({
@@ -1173,6 +1208,7 @@
             bankName: ifscCode.startsWith('HDFC') ? 'HDFC Bank' : 'Unknown Bank'
         }), 500));
     }
+    */
 
     async function fetchPolicySearchDetails(policyNo) {
         // Corrected API endpoint for policy details and accessing the first element of the data array
@@ -1766,12 +1802,10 @@
             
             showLoader();
             try {
-                const [ifscCodesResponse, bankNamesResponse] = await Promise.all([
-                    fetchIFSCCodes(),
-                    fetchBankNames()
-                ]);
-                populateIFSCDropdown(ifscCodesResponse.data);
-                populateBankNameDropdown(bankNamesResponse.data);
+                await fetchBankNames(); // This now populates bankDetailsLookup
+                populateBankNameDropdown(); // Populates only bank names
+                // Clear IFSC and Branch when modal opens
+                modalElement.querySelector('#add-ifsc-code').innerHTML = '<option value="" disabled selected>Select IFSC code</option>';
                 modalElement.querySelector('#add-branch-code').value = '';
                 modalElement.querySelector('#add-user-code').value = config.userCode;
             } catch (error) {
@@ -1840,27 +1874,13 @@
         hide(modalElement);
     }
 
-    function populateIFSCDropdown(ifscCodes) {
-        const ifscSelect = document.getElementById('add-ifsc-code');
-        if (!ifscSelect) return;
-        ifscSelect.innerHTML = '<option value="" disabled selected>Select IFSC code</option>';
-        if (Array.isArray(ifscCodes)) {
-            ifscCodes.forEach(code => {
-                const option = document.createElement('option');
-                option.value = code;
-                option.textContent = code;
-                ifscSelect.appendChild(option);
-            });
-        } else {
-            ifscSelect.innerHTML += '<option value="" disabled>No IFSC codes found</option>';
-        }
-    }
-
-    function populateBankNameDropdown(bankNames) {
+    // Updated populateBankNameDropdown to use bankDetailsLookup for unique bank names
+    function populateBankNameDropdown() {
         const bankNameSelect = document.getElementById('add-bank-name');
         if (!bankNameSelect) return;
         bankNameSelect.innerHTML = '<option value="" disabled selected>Select bank name</option>';
-        if (Array.isArray(bankNames) && bankNames.length) {
+        const bankNames = Object.keys(bankDetailsLookup);
+        if (bankNames.length > 0) {
             bankNames.forEach(name => {
                 const option = document.createElement('option');
                 option.value = name;
@@ -1869,6 +1889,39 @@
             });
         } else {
             bankNameSelect.innerHTML += '<option value="" disabled>No bank names found</option>';
+        }
+    }
+
+    // New function to populate IFSC dropdown based on selected bank
+    function populateIFSCCodeDropdownByBank(selectedBankName) {
+        const ifscSelect = document.getElementById('add-ifsc-code');
+        if (!ifscSelect) return;
+        ifscSelect.innerHTML = '<option value="" disabled selected>Select IFSC code</option>';
+        document.getElementById('add-branch-code').value = ''; // Clear branch code when bank changes
+
+        if (selectedBankName && bankDetailsLookup[selectedBankName]) {
+            const ifscDetails = bankDetailsLookup[selectedBankName];
+            ifscDetails.forEach(detail => {
+                const option = document.createElement('option');
+                option.value = detail.ifsc;
+                option.textContent = detail.ifsc;
+                ifscSelect.appendChild(option);
+            });
+        } else {
+            ifscSelect.innerHTML += '<option value="" disabled>No IFSC codes available for this bank</option>';
+        }
+    }
+
+    // New function to auto-populate branch code based on selected bank and IFSC
+    function autoPopulateBranchCode(selectedBankName, selectedIfscCode) {
+        const branchCodeInput = document.getElementById('add-branch-code');
+        branchCodeInput.value = ''; // Clear current value
+        if (selectedBankName && selectedIfscCode && bankDetailsLookup[selectedBankName]) {
+            const ifscDetails = bankDetailsLookup[selectedBankName];
+            const found = ifscDetails.find(detail => detail.ifsc === selectedIfscCode);
+            if (found) {
+                branchCodeInput.value = found.branch;
+            }
         }
     }
 
@@ -2021,26 +2074,22 @@
             });
         }
 
-        // IFSC Code auto-population in Add Bank Account Modal
+        // Event listener for Bank Name dropdown to populate IFSC codes
+        const addBankNameSelect = document.getElementById('add-bank-name');
+        if (addBankNameSelect) {
+            addBankNameSelect.addEventListener('change', () => {
+                const selectedBankName = addBankNameSelect.value;
+                populateIFSCCodeDropdownByBank(selectedBankName);
+            });
+        }
+
+        // Event listener for IFSC Code dropdown to auto-populate Branch Code
         const addIfscCodeSelect = document.getElementById('add-ifsc-code');
         if (addIfscCodeSelect) {
-            addIfscCodeSelect.addEventListener('change', async () => {
-                const ifscCode = addIfscCodeSelect.value;
-                if (ifscCode) {
-                    showLoader();
-                    try {
-                        const { branchCode, bankName } = await fetchBranchDetails(ifscCode);
-                        document.getElementById('add-branch-code').value = branchCode || '';
-                        document.getElementById('add-bank-name').value = bankName || '';
-                    } catch (error) {
-                        showAlert('error', error.message || 'Failed to fetch branch details for IFSC code.');
-                    } finally {
-                        hideLoader();
-                    }
-                } else {
-                    document.getElementById('add-branch-code').value = '';
-                    document.getElementById('add-bank-name').value = '';
-                }
+            addIfscCodeSelect.addEventListener('change', () => {
+                const selectedBankName = document.getElementById('add-bank-name').value;
+                const selectedIfscCode = addIfscCodeSelect.value;
+                autoPopulateBranchCode(selectedBankName, selectedIfscCode);
             });
         }
 
@@ -2286,7 +2335,7 @@
                 const identityMimeType = doc.idCertificate ? 'image/png' : ''; 
                 const deathMimeType = doc.deathCertificate ? 'application/pdf' : ''; 
                 const sanctionsMimeType = doc.sanctionsCertificate ? 'application/pdf' : ''; 
-
+                
                 const identityDataUrl = doc.idCertificate ? `data:${identityMimeType};base64,${doc.idCertificate}` : null;
                 const deathDataUrl = doc.deathCertificate ? `data:${deathMimeType};base64,${doc.deathCertificate}` : null;
                 const sanctionsDataUrl = doc.sanctionsCertificate ? `data:${sanctionsMimeType};base64,${doc.sanctionsCertificate}` : null;
