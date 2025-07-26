@@ -33,7 +33,7 @@
     border-right: 1px solid #e2e8f0;
     position: relative;
     height: 100vh;
-    flex-shrink: 0; /* Prevent sidebar from shrinking */
+    flex-shrink: 0;
 }
 
 .sidebar:hover,
@@ -42,7 +42,6 @@
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
 }
 
-/* Sidebar Toggle Button for Desktop */
 .sidebar-collapse-btn {
     position: absolute;
     top: 20px;
@@ -100,7 +99,6 @@
     transition: transform 0.3s ease;
 }
 
-/* Sidebar link text and submenu arrow visibility */
 .sidebar-link-text {
     opacity: 0;
     width: 0;
@@ -134,11 +132,10 @@
     transform: rotate(180deg);
 }
 
-/* Sidebar Header Icons and Text */
 .sidebar-header {
     padding: 0 20px;
     justify-content: flex-start;
-    flex-shrink: 0; /* Prevent header from shrinking */
+    flex-shrink: 0;
 }
 
 .sidebar-header .logo-text {
@@ -197,7 +194,6 @@
     background: #9ca3af;
 }
 
-/* Menu Sections within Sidebar */
 .sidebar .menu-section {
     margin-top: 1rem;
     padding-bottom: 0.5rem;
@@ -274,7 +270,6 @@
     transform: translateX(3px);
 }
 
-/* Mobile Sidebar */
 @media (max-width: 1024px) {
     .sidebar {
         position: fixed;
@@ -293,7 +288,6 @@
     }
 }
 
-/* Dark Mode Styles */
 body.dark-mode .sidebar {
     background: #2d3748;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -347,7 +341,7 @@ body.dark-mode .sidebar .menu-section li {
 
 body.dark-mode .sidebar .menu-section li:hover {
     background: #4a5568;
-}/* Header Styles */
+}
 header {
     background-color: #ffffff;
     padding: 1rem;
@@ -358,18 +352,16 @@ header {
     border-bottom: 1px solid #e2e8f0;
     height: 5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    z-index: 50; /* Below sidebar on mobile */
+    z-index: 50;
 }
 
-/* Search Bar */
 header .relative {
     flex: 1;
-    max-width: 32rem; /* Reduced from 36rem to give more space to welcome message */
+    max-width: 32rem;
     margin-left: 1rem;
     margin-right: 1rem;
 }
 
-/* Right-side Header Container */
 header .flex.items-center.gap-4 {
     display: flex;
     align-items: center;
@@ -379,7 +371,6 @@ header .flex.items-center.gap-4 {
     flex-shrink: 1;
 }
 
-/* Welcome Message */
 #welcome-message {
     font-size: 0.875rem;
     font-weight: 500;
@@ -387,24 +378,23 @@ header .flex.items-center.gap-4 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 24rem; /* Increased to accommodate full text */
+    max-width: 24rem;
     flex-shrink: 1;
 }
 
 @media (min-width: 768px) {
     #welcome-message {
         display: block;
-        max-width: 28rem; /* More space for md screens */
+        max-width: 28rem;
     }
 }
 
 @media (min-width: 1024px) {
     #welcome-message {
-        max-width: 32rem; /* More space for lg screens */
+        max-width: 32rem;
     }
 }
 
-/* Dark Mode Styles */
 body.dark-mode header {
     background-color: #2d3748;
     border-color: #4a5568;
@@ -414,7 +404,6 @@ body.dark-mode header {
 body.dark-mode #welcome-message {
     color: #cbd5e1;
 }
-    /* New styles for the small cloud button */
     .quick-action-cloud-btn {
         width: 48px;
         height: 48px;
@@ -439,7 +428,6 @@ body.dark-mode #welcome-message {
         transform: translateY(-2px);
     }
 
-    /* Profile Modal Layout Adjustments */
     #profile-extended-details {
         display: grid;
         grid-template-columns: 1fr;
@@ -470,17 +458,21 @@ body.dark-mode #welcome-message {
         }
     }
 
-    /* Ensure modal content fits and scrolls */
     .modal-content {
         max-height: 85vh;
         overflow-y: auto;
     }
 
-    /* SLA Circles - Resized and adjusted for better fitting */
+    /* Specific styles for the profile modal to make it larger */
+    #profile-modal .modal-content {
+        max-width: 48rem; /* Increased max-width for a larger modal */
+        width: 90%; /* Ensure it's responsive */
+    }
+
     .sla-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); /* Reduced minmax to fit more items */
-        gap: 1rem; /* Reduced gap */
+        grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+        gap: 1rem;
         margin-bottom: 2rem;
         justify-items: center;
     }
@@ -490,12 +482,12 @@ body.dark-mode #welcome-message {
         flex-direction: column;
         align-items: center;
         background: white;
-        padding: 0.75rem; /* Reduced padding */
+        padding: 0.75rem;
         border-radius: 0.75rem;
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         width: 100%;
-        max-width: 10rem; /* Reduced max-width */
+        max-width: 10rem;
     }
 
     .sla-item:hover {
@@ -504,7 +496,7 @@ body.dark-mode #welcome-message {
     }
 
     .sla {
-        --sla-size: 6rem; /* New smaller size for SLA circles */
+        --sla-size: 6rem;
         width: var(--sla-size);
         height: var(--sla-size);
         border-radius: 50%;
@@ -518,7 +510,7 @@ body.dark-mode #welcome-message {
     }
 
     .sla p {
-        font-size: 1rem; /* Reduced font size for percentage */
+        font-size: 1rem;
         font-weight: 700;
         color: #334155;
         position: absolute;
@@ -536,8 +528,8 @@ body.dark-mode #welcome-message {
 
     .sla circle {
         fill: none;
-        stroke-width: 0.5rem; /* Reduced stroke width */
-        r: calc(var(--sla-size) / 2 - 0.25rem); /* Adjusted radius based on new size and stroke */
+        stroke-width: 0.5rem;
+        r: calc(var(--sla-size) / 2 - 0.25rem);
         cx: calc(var(--sla-size) / 2);
         cy: calc(var(--sla-size) / 2);
     }
@@ -553,7 +545,6 @@ body.dark-mode #welcome-message {
         transition: stroke-dashoffset 1s ease-out;
     }
 
-    /* Specific colors for progress circles */
     #totalPolicy-circle { stroke: #22c55e; }
     #totalWorkItems-circle { stroke: #0ea5e9; }
     #totalBankAccounts-circle { stroke: #3b82f6; }
@@ -561,14 +552,13 @@ body.dark-mode #welcome-message {
     #totalUsers-circle { stroke: #ef4444; }
 
     .sla-label {
-        margin-top: 0.5rem; /* Reduced margin */
-        font-size: 0.8rem; /* Reduced font size */
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
         font-weight: 600;
         color: #475569;
         text-align: center;
     }
 
-    /* === Chatbot styles (Enhanced) === */
     .chatbot-button {
         position: fixed;
         bottom: 5.625rem;
@@ -600,8 +590,8 @@ body.dark-mode #welcome-message {
         position: fixed;
         bottom: 10rem;
         right: 1.25rem;
-        width: 22rem; /* Increased width */
-        height: 30rem; /* Increased height */
+        width: 22rem;
+        height: 30rem;
         background-color: #fff;
         border-radius: 0.75rem;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
@@ -754,7 +744,6 @@ body.dark-mode #welcome-message {
         transform: translateY(-0.0625rem);
     }
 
-    /* Custom Alert/Error Overlay (from dashboard.html) */
     .custom-alert-overlay {
         position: fixed;
         top: 0;
@@ -820,8 +809,7 @@ body.dark-mode #welcome-message {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    /* Modal styles for dashboard-specific modals (Notes, Feedback, Overview, Analytics) */
-    .dashboard-modal-overlay {
+    .modal-overlay {
         display: none;
         position: fixed;
         top: 0;
@@ -835,7 +823,7 @@ body.dark-mode #welcome-message {
         backdrop-filter: blur(3px);
     }
 
-    .dashboard-modal-box {
+    .modal-box {
         background: white;
         padding: 1.875rem;
         border-radius: 0.75rem;
@@ -851,19 +839,19 @@ body.dark-mode #welcome-message {
         to { opacity: 1; transform: scale(1); }
     }
 
-    .dashboard-modal-box h2, .dashboard-modal-box h3, .dashboard-modal-box h4 {
+    .modal-box h2, .modal-box h3, .modal-box h4 {
         color: #3b82f6;
         margin-bottom: 0.9375rem;
         font-weight: 700;
     }
-    .dashboard-modal-box p {
+    .modal-box p {
         color: #475569;
         margin-bottom: 1.25rem;
     }
-    .dashboard-modal-box .modern-button {
+    .modal-box .modern-button {
         margin: 0 0.5rem;
     }
-    .dashboard-modal-box textarea {
+    .modal-box textarea {
         border: 1px solid #cbd5e1;
         border-radius: 0.5rem;
         padding: 0.625rem;
@@ -873,7 +861,7 @@ body.dark-mode #welcome-message {
         min-height: 5rem;
         outline: none;
     }
-    .dashboard-modal-box textarea:focus {
+    .modal-box textarea:focus {
         border-color: #3b82f6;
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
     }
@@ -913,14 +901,13 @@ body.dark-mode #welcome-message {
         background-color: #eab308;
     }
 
-    /* Footer styles (from dashboard.html) */
     .main-footer {
         width: 100%;
-        padding: 0.5rem 1rem; /* Reduced padding */
+        padding: 0.5rem 1rem;
         background-color: #e0f2fe;
         color: #1e40af;
         text-align: center;
-        font-size: 0.75rem; /* Reduced font size */
+        font-size: 0.75rem;
         position: fixed;
         bottom: 0;
         border-top: 1px solid #93c5fd;
@@ -932,15 +919,13 @@ body.dark-mode #welcome-message {
     @media (max-width: 768px) {
         .chatbot-container { width: 90%; right: 5%; bottom: 8rem; }
         .chatbot-button { right: 0.8rem; bottom: 4.5rem; width: 2.8rem; height: 2.8rem; font-size: 1.3em; }
-        .main-footer { padding: 0.6rem; font-size: 0.7rem; } /* Further reduced for mobile */
+        .main-footer { padding: 0.6rem; font-size: 0.7rem; }
     }
 
-    /* Adjust main content padding to prevent logout button overlap */
     .main-content-area {
-        padding-bottom: 6rem; /* Increased padding to accommodate footer height and prevent overlap */
+        padding-bottom: 6rem;
     }
 
-    /* Stylish Search Module */
     #search-module-modal .modal-content {
         background-color: #f8f9fa;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -982,15 +967,12 @@ body.dark-mode #welcome-message {
 <body class="bg-gray-100">
   <div class="flex h-screen">
     <aside id="sidebar" class="sidebar flex flex-col h-full flex-shrink-0" aria-label="Main navigation">
-    <!-- Sidebar Collapse Button (Desktop Only) -->
     <button id="sidebar-collapse-btn" class="sidebar-collapse-btn hidden lg:flex" aria-label="Toggle sidebar" aria-expanded="false">
         <i class="fa-solid fa-chevron-left"></i>
     </button>
 
     <div class="sidebar-header flex items-center justify-center h-20 flex-shrink-0 border-b border-gray-200">
-        <!-- Icon for collapsed state -->
         <i id="sidebar-header-collapsed-icon" class="fa-solid fa-cloud text-3xl text-blue-600 sidebar-icon-collapsed"></i>
-        <!-- Text for expanded state -->
         <h2 id="sidebar-header-logo-text" class="text-2xl font-bold ml-3 text-gray-800 logo-text">Dashboard Hub</h2>
     </div>
 
@@ -1001,11 +983,8 @@ body.dark-mode #welcome-message {
         <a href="#" class="sidebar-link w-full" onclick="openModal('contact', 'Contact Us Opened')" aria-label="Contact Us">
             <i class="fa-solid fa-envelope"></i><span class="sidebar-link-text">Contact Us</span>
         </a>
-        <a href="#" class="sidebar-link w-full" onclick="openModal('notifications', 'Notifications Viewed')" aria-label="View Notifications">
-            <i class="fa-solid fa-bell"></i><span class="sidebar-link-text">Notifications</span>
-        </a>
+        <!-- Notifications link removed -->
 
-        <!-- Services Submenu -->
         <div class="menu-section">
             <button id="services-submenu-toggle" class="sidebar-link w-full" aria-expanded="false" aria-controls="services-submenu" aria-label="Toggle Services Submenu">
                 <i class="fa-solid fa-grid-2"></i>
@@ -1023,6 +1002,8 @@ body.dark-mode #welcome-message {
                 <a href="#" class="sidebar-link" onclick="navigateTo('complaints')" aria-label="Go to Complaints">Complaints</a>
                 <a href="#" class="sidebar-link" onclick="navigateTo('feedback')" aria-label="Go to Feedback">Feedback</a>
                 <a href="#" class="sidebar-link" onclick="navigateTo('customerService')" aria-label="Go to Customer Service">Customer Service</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('policyClaimAdmin')" aria-label="Go to Policy Claim Admin">Policy Claim Admin</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('policySurrenderAdmin')" aria-label="Go to Policy Surrender Admin">Policy Surrender Admin</a>
             </div>
         </div>
 
@@ -1030,7 +1011,6 @@ body.dark-mode #welcome-message {
             <i class="fa-solid fa-users-gear"></i><span class="sidebar-link-text">User Management</span>
         </a>
 
-        <!-- Activity Tracing Section -->
         <div class="menu-section">
             <h4 id="activitySection" class="sidebar-link" aria-expanded="true" aria-controls="activityList">
                 <i class="fa-solid fa-chevron-down"></i>
@@ -1039,16 +1019,9 @@ body.dark-mode #welcome-message {
             <ul id="activityList" class="sidebar-submenu active" role="region" aria-hidden="false">
                 <li class="sidebar-link"><i class="fa-solid fa-history"></i><span class="sidebar-link-text">No activities yet.</span></li>
             </ul>
-            <button id="viewActivitiesBtn" class="modern-button primary mx-auto mt-3" style="display: block; width: calc(100% - 56px);" aria-label="View All Activities">View All Activities</button>
+            <button id="viewActivitiesBtn" class="modern-button primary mx-auto mt-3" style="display: block; width: calc(100% - 56px);" onclick="navigateTo('activityLog')" aria-label="View All Activities">View All Activities</button>
         </div>
-
-        <!-- Other Actions Section -->
-        <div class="menu-section">
-            <h4 id="otherSection" class="sidebar-link" aria-expanded="false" aria-controls="otherActionsList">
-                <i class="fa-solid fa-chevron-down"></i>
-                <span class="sidebar-link-text">Other Actions</span>
-            </h4>          
-        </div>
+        <!-- Other Actions section removed -->
     </nav>
 
     <div class="p-4 border-t border-gray-200">
@@ -1062,14 +1035,12 @@ body.dark-mode #welcome-message {
 </aside>
     <div class="flex-1 flex flex-col h-screen">
       <header class="bg-white p-4 flex-shrink-0 flex justify-between items-center border-b h-20">
-    <!-- Sidebar Toggle for smaller screens -->
     <button id="sidebar-toggle" class="lg:hidden text-gray-600"><i class="fa-solid fa-bars text-xl"></i></button>
     <div class="relative flex-1 max-w-xl ml-4">
         <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"></i>
         <input type="text" id="search-bar" placeholder="Search for customer, policy, services..." class="w-full pl-12 pr-4 py-3 border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
     </div>
     <div class="flex items-center gap-4 ml-4 min-w-0">
-        <!-- Quick Help Button -->
         <button onclick="showComingSoon('Quick Help')" title="Quick Help" class="h-10 w-10 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors flex items-center justify-center text-lg">
             <i class="fa-solid fa-question"></i>
         </button>
@@ -1088,14 +1059,12 @@ body.dark-mode #welcome-message {
                       <h1 class="text-3xl font-bold text-gray-800">Your Services Gateway</h1>
                       <p class="text-gray-500 mt-1">Access all your tools and services from one central place.</p>
                     </div>
-                    <!-- View Toggle -->
                     <div class="flex items-center gap-2 rounded-lg bg-gray-200 p-1">
                         <button id="view-grid-btn" title="Grid View" class="w-10 h-9 flex items-center justify-center rounded-md text-sm font-medium bg-white text-blue-600 shadow"><i class="fa-solid fa-grip"></i></button>
                         <button id="view-list-btn" title="List View" class="w-10 h-9 flex items-center justify-center rounded-md text-sm font-medium text-gray-600"><i class="fa-solid fa-list"></i></button>
                     </div>
                   </div>
 
-                  <!-- SLA Circles Section (from dashboard.html) -->
                   <div class="sla-container">
                       <div class="sla-item">
                           <div class="sla">
@@ -1180,20 +1149,21 @@ body.dark-mode #welcome-message {
                   </div>
 
                   <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      <!-- Services will be dynamically styled based on settings -->
                       <button onclick="navigateTo('dashboard')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-border-all text-3xl text-blue-500 mb-4"></i><h3 class="text-lg font-bold">Dashboard</h3></button>
                       <button onclick="navigateTo('workitems')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-briefcase text-3xl text-teal-500 mb-4"></i><h3 class="text-lg font-bold">Workitems</h3></button>
                       <button onclick="navigateTo('policy')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-contract text-3xl text-purple-500 mb-4"></i><h3 class="text-lg font-bold">Policy</h3></button>
                       <button onclick="navigateTo('bankAccount')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-landmark text-3xl text-green-500 mb-4"></i><h3 class="text-lg font-bold">Banking</h3></button>
                       <button onclick="navigateTo('payment')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-credit-card text-3xl text-orange-500 mb-4"></i><h3 class="text-lg font-bold">Payments</h3></button>
-                      <button onclick="openModal('tasks', 'Tasks Opened')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-list-check text-3xl text-rose-500 mb-4"></i><h3 class="text-lg font-bold">Tasks</h3></button>
                       <button onclick="navigateTo('policyAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-user-shield text-3xl text-indigo-500 mb-4"></i><h3 class="text-lg font-bold">Policy Admin</h3></button>
                       <button onclick="navigateTo('admin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-screwdriver-wrench text-3xl text-sky-500 mb-4"></i><h3 class="text-lg font-bold">Admin Module</h3></button>
                       <button onclick="navigateTo('complaints')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-bullhorn text-3xl text-red-500 mb-4"></i><h3 class="text-lg font-bold">Complaints</h3></button>
                       <button onclick="navigateTo('feedback')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-comments text-3xl text-yellow-500 mb-4"></i><h3 class="text-lg font-bold">Feedback</h3></button>
                       <button onclick="navigateTo('customerService')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-headset text-3xl text-lime-500 mb-4"></i><h3 class="text-lg font-bold">Customer Service</h3></button>
-                      <!-- New Search Module Card -->
                       <button onclick="openModal('search-module-modal', 'Search Module Opened')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-magnifying-glass text-3xl text-orange-600 mb-4"></i><h3 class="text-lg font-bold">Search Module</h3></button>
+                      <button onclick="navigateTo('policyClaimAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-invoice-dollar text-3xl text-cyan-500 mb-4"></i><h3 class="text-lg font-bold">Policy Claim Admin</h3></button>
+                      <button onclick="navigateTo('policySurrenderAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-hand-holding-usd text-3xl text-fuchsia-500 mb-4"></i><h3 class="text-lg font-bold">Policy Surrender Admin</h3></button>
+                      <!-- New "Add Notes" module -->
+                      <button onclick="navigateTo('addNotes')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-note-sticky text-3xl text-blue-400 mb-4"></i><h3 class="text-lg font-bold">Add Notes</h3></button>
                   </div>
               </div>
               <div class="lg:col-span-1">
@@ -1207,7 +1177,6 @@ body.dark-mode #welcome-message {
                       </div>
                   </div>
 
-                  <!-- Timeline of Events Card -->
                   <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
                       <h3 class="text-xl font-bold text-gray-700 mb-4">Timeline of Events</h3>
                       <div id="timeline-events-list" class="space-y-4">
@@ -1219,7 +1188,6 @@ body.dark-mode #welcome-message {
                       </div>
                   </div>
 
-                  <!-- New Quick Links Section -->
                   <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
                       <h3 class="text-xl font-bold text-gray-700 mb-4">Quick Links</h3>
                       <div class="grid grid-cols-1 gap-3">
@@ -1229,13 +1197,18 @@ body.dark-mode #welcome-message {
                           <button onclick="showComingSoon('View Claims')" class="flex items-center p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors font-medium">
                               <i class="fa-solid fa-hand-holding-dollar mr-3"></i> View Claims
                           </button>
-                          <button onclick="showComingSoon('Customer Support')" class="flex items-center p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors font-medium">
-                              <i class="fa-solid fa-headset mr-3"></i> Customer Support
+                          <button onclick="navigateTo('customerService')" class="flex items-center p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors font-medium">
+                              <i class="fa-solid fa-headset mr-3"></i> Customer Services Module
+                          </button>
+                          <button onclick="navigateTo('bankAccount')" class="flex items-center p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-medium">
+                              <i class="fa-solid fa-landmark mr-3"></i> Bank Module
+                          </button>
+                          <button onclick="navigateTo('policy')" class="flex items-center p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors font-medium">
+                              <i class="fa-solid fa-file-contract mr-3"></i> Policy Module
                           </button>
                       </div>
                   </div>
 
-                  <!-- New Announcements/News Feed Section -->
                   <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
                       <h3 class="text-xl font-bold text-gray-700 mb-4">Announcements</h3>
                       <div id="announcements-list" class="space-y-4 text-gray-600 text-sm">
@@ -1268,12 +1241,10 @@ body.dark-mode #welcome-message {
     </div>
   </div>
 
-<!-- Chatbot Button -->
 <button id="chatbotButton" class="chatbot-button" title="Chat with Assistant">
     <i class="fa-solid fa-robot"></i>
 </button>
 
-<!-- Chatbot Container -->
 <div id="chatbotContainer" class="chatbot-container">
     <div class="chatbot-header">
         <h3>Dashboard Assistant</h3>
@@ -1291,24 +1262,21 @@ body.dark-mode #welcome-message {
         <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30" stroke="#3b82f6"></circle>
     </svg>
 </div>
-  <!-- MODALS -->
   <div class="modal-container">
     <div id="coming-soon-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-gray-800">Coming Soon!</h3>
-                <!-- Added data-close-modal to the cross button for functionality -->
-                <button data-close-modal="coming-soon-modal" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" aria-label="Close popup">&times;</button>
+                <button onclick="closeModal('coming-soon-modal')" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" aria-label="Close popup">&times;</button>
             </div>
             <p class="text-gray-600 my-4">This feature is under development and will be available shortly.</p>
         </div>
     </div>
-    <!-- Updated Profile Modal -->
     <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md transform">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
-                <button data-close-modal="profile" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+                <button onclick="closeModal('profile')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
             </div>
             <div class="flex items-center gap-6 mb-6">
                 <img id="modal-profile-icon" src="https://placehold.co/80x80/E2E8F0/4A5568?text=U" alt="User" class="h-20 w-20 rounded-full object-cover">
@@ -1323,13 +1291,11 @@ body.dark-mode #welcome-message {
                 <p><i class="fa-solid fa-phone w-5 mr-2 text-gray-400"></i><span class="font-medium">Phone:</span> <span id="profile-phoneNumber">&nbsp;</span></p>
             </div>
 
-            <!-- Toggle for More Details -->
             <button id="toggle-more-details" class="w-full text-blue-600 hover:text-blue-800 font-medium py-2 flex items-center justify-center gap-2">
                 <span id="toggle-text">Show More Details</span>
                 <i id="toggle-icon" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
             </button>
 
-            <!-- Extended Details Section (initially hidden) -->
             <div id="profile-extended-details" class="hidden mt-4 text-gray-600 bg-gray-50 p-4 rounded-lg">
                 <p><i class="fa-solid fa-user-tag w-5 mr-2 text-gray-400"></i><span class="font-medium">Customer No:</span> <span id="profile-customerNo">&nbsp;</span></p>
                 <p><i class="fa-solid fa-cake-candles w-5 mr-2 text-gray-400"></i><span class="font-medium">Date of Birth:</span> <span id="profile-dateOfBirth">&nbsp;</span></p>
@@ -1348,15 +1314,13 @@ body.dark-mode #welcome-message {
             </div>
         </div>
     </div>
-    <!-- Updated Settings Modal -->
     <div id="settings-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-semibold text-gray-800">Settings</h3>
-                <button data-close-modal="settings" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+                <button onclick="closeModal('settings')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
             </div>
             <div class="space-y-6">
-                <!-- Dark Mode Toggle -->
                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
                     <label for="dark-mode-toggle" class="font-semibold text-gray-700">Dark Mode</label>
                     <input type="checkbox" id="dark-mode-toggle" class="toggle-switch appearance-none w-12 h-6 rounded-full bg-gray-300 checked:bg-blue-600 transition-colors cursor-pointer relative">
@@ -1390,46 +1354,35 @@ body.dark-mode #welcome-message {
             </div>
         </div>
     </div>
-    <!-- Other original modals -->
     <div id="contact-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Contact Us</h3><button data-close-modal="contact" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div><p class="text-gray-600 mb-6">Reach out to us at support@example.com or (555) 123-4567.</p></div>
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Contact Us</h3><button onclick="closeModal('contact')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div><p class="text-gray-600 mb-6">Reach out to us at support@example.com or (555) 123-4567.</p></div>
     </div>
-    <div id="tasks-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Tasks</h3><button data-close-modal="tasks" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div><form class="space-y-4"><label class="block"><span class="text-gray-700">Task Name</span><input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Enter task name"></label><label class="block"><span class="text-gray-700">Due Date</span><input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></label></form></div>
-    </div>
-    <div id="notifications-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">Notifications</h3><button data-close-modal="notifications" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div><div class="space-y-3"><p class="text-gray-600 border-b pb-2"><span class="font-medium text-green-600">System Update:</span> New features available!</p><p class="text-gray-600"><span class="font-medium text-yellow-600">Task Due:</span> Complete report by 5 PM.</p></div></div>
-    </div>
-    <!-- New Search Message Modal -->
     <div id="search-message-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-gray-800 mb-4">Search Initiated</h3>
-                <button data-close-modal="search-message-modal" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+                <button onclick="closeModal('search-message-modal')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
             </div>
             <p class="text-gray-600 my-4">Searching for: "<span id="search-query-display" class="font-semibold"></span>"</p>
         </div>
     </div>
-    <!-- New Error Message Modal -->
     <div id="error-message-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-red-600 mb-4">Error!</h3>
-                <button data-close-modal="error-message-modal" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+                <button onclick="closeModal('error-message-modal')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
             </div>
             <p class="text-gray-600 my-4" id="error-message-text">An unexpected error occurred. Please try again.</p>
         </div>
     </div>
 
-    <!-- New Search Module Modal -->
     <div id="search-module-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-2xl transform">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-semibold text-gray-800">Universal Search</h3>
-                <button data-close-modal="search-module-modal" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+                <button onclick="closeModal('search-module-modal')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
             </div>
 
-            <!-- Tabs for search types -->
             <div class="flex border-b border-gray-200 mb-4 overflow-x-auto">
                 <button class="tab-button active" data-tab="policy">Policy</button>
                 <button class="tab-button" data-tab="complaint">Complaint</button>
@@ -1439,119 +1392,44 @@ body.dark-mode #welcome-message {
                 <button class="tab-button" data-tab="payment">Payment</button>
             </div>
 
-            <!-- Search input -->
             <div class="relative mb-4">
                 <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 <input type="text" id="module-search-input" placeholder="Enter search query..." class="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
-            <!-- Search results display -->
             <div id="module-search-results" class="bg-gray-50 p-4 rounded-lg h-48 overflow-y-auto custom-scrollbar">
                 <p class="text-gray-500 text-center py-4">Enter a query and select a type to search.</p>
             </div>
         </div>
     </div>
-
-    <!-- Dashboard Modals (Notes, Feedback, Overview, Analytics) -->
-    <div id="overviewModal" class="dashboard-modal-overlay">
-        <div class="dashboard-modal-box">
-            <h2>📊 Overview</h2>
-            <p id="overviewContent"></p>
-            <button onclick="closeModal('overviewModal')" class="modern-button">Close</button>
-        </div>
-    </div>
-
-    <div id="analyticsModal" class="dashboard-modal-overlay">
-        <div class="dashboard-modal-box">
-            <h2>📈 Analytics</h2>
-            <p id="analyticsContent"></p>
-            <button onclick="closeModal('analyticsModal')" class="modern-button">Close</button>
-        </div>
-    </div>
-
-    <div id="notesModal" class="dashboard-modal-overlay">
-        <div class="dashboard-modal-box">
-            <h3>Notes</h3>
-            <button onclick="openNotePrompt()" class="modern-button secondary">+ Create Note</button>
-            <ol id="notesList" class="notes-list"></ol>
-            <button onclick="closeModal('notesModal')" class="modern-button">Close</button>
-        </div>
-    </div>
-
-    <div id="createNoteModal" class="dashboard-modal-overlay">
-        <div class="dashboard-modal-box">
-            <h4>Add Note</h4>
-            <textarea id="noteInput" rows="4" style="width:100%; padding:10px;" placeholder="Write your note here..."></textarea>
-            <div style="margin-top:15px; text-align:right;">
-                <button onclick="saveNote()" class="modern-button primary">Save</button>
-                <button onclick="closeModal('createNoteModal')" class="modern-button">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="deleteConfirmModal" class="dashboard-modal-overlay">
-        <div class="dashboard-modal-box">
-            <p>Are you sure you want to delete this note?</p>
-            <div style="text-align:right; margin-top: 15px;">
-                <button onclick="confirmDelete()" class="modern-button secondary">Yes, Delete</button>
-                <button onclick="closeModal('deleteConfirmModal')" class="modern-button">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="feedbackModal" class="dashboard-modal-overlay">
-        <div class="dashboard-modal-box">
-            <h3>Submit Feedback</h3>
-            <textarea id="feedbackInput" rows="4" style="width:100%; padding:10px;" placeholder="Your feedback..."></textarea>
-            <div style="text-align:right; margin-top:15px;">
-                <button onclick="saveFeedback()" class="modern-button primary">Send</button>
-                <button onclick="closeModal('feedbackModal')" class="modern-button">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="feedbackSuccessModal" class="dashboard-modal-overlay">
-        <div class="dashboard-modal-box" style="text-align: center;">
-            <div style="font-size: 40px; color: green;">✅</div>
-            <h4 style="margin-top: 10px;">Thank you!</h4>
-            <p>Your feedback was submitted successfully.</p>
-            <button onclick="closeModal('feedbackSuccessModal')" class="modern-button">Close</button>
-        </div>
-    </div>
-
   </div>
 
 <footer class="main-footer">© 2025 Secure Access Limited. All rights reserved ❤️ Company.</footer>
 
 <script>
-    // --- Configuration and Global Elements ---
-    const config = { loginUrl: 'login', userCode: null, email: null };
+    const config = { loginUrl: 'login', userCode: null, email: null, customerNo: null };
+    let customerData = null; // Variable to store fetched customer data
+
     const modals = {
       profile: document.getElementById('profile-modal'),
       contact: document.getElementById('contact-modal'),
-      tasks: document.getElementById('tasks-modal'),
-      notifications: document.getElementById('notifications-modal'),
       settings: document.getElementById('settings-modal'),
-      'coming-soon': document.getElementById('coming-soon-modal'),
+      'coming-soon-modal': document.getElementById('coming-soon-modal'),
       'search-message-modal': document.getElementById('search-message-modal'),
       'error-message-modal': document.getElementById('error-message-modal'),
       'search-module-modal': document.getElementById('search-module-modal'),
-      overviewModal: document.getElementById('overviewModal'),
-      analyticsModal: document.getElementById('analyticsModal'),
-      notesModal: document.getElementById('notesModal'),
-      createNoteModal: document.getElementById('createNoteModal'),
-      deleteConfirmModal: document.getElementById('deleteConfirmModal'),
-      feedbackModal: document.getElementById('feedbackModal'),
-      feedbackSuccessModal: document.getElementById('feedbackSuccessModal'),
     };
 
-    // --- Utility Functions ---
     window.showLoader = () => document.getElementById('loader').classList.remove('hidden');
     window.hideLoader = () => document.getElementById('loader').classList.add('hidden');
     
     window.openModal = (modalId, activityText = `Opened ${modalId} modal`) => {
         modals[modalId]?.classList.remove('hidden');
         logActivity(activityText);
+        // If opening the profile modal, populate it with data
+        if (modalId === 'profile' && customerData) {
+            populateProfileModal(customerData);
+        }
     };
 
     window.closeModal = (modalId) => {
@@ -1564,12 +1442,12 @@ body.dark-mode #welcome-message {
         }
     };
     
-    window.showComingSoon = (featureName = 'A feature') => openModal('coming-soon', `${featureName} feature coming soon`);
+    window.showComingSoon = (featureName = 'A feature') => openModal('coming-soon-modal', `${featureName} feature coming soon`);
 
-    // --- Initialization ---
     window.initializeUser = () => {
       config.userCode = sessionStorage.getItem('userCode');
       config.email = sessionStorage.getItem('email');
+      config.customerNo = sessionStorage.getItem('customerNo');
       if (!config.userCode) {
     	  showErrorAlert('User ID not found. Please log in again.');
           setTimeout(() => window.location.href = '/login', 2000);
@@ -1578,14 +1456,16 @@ body.dark-mode #welcome-message {
       document.getElementById('welcome-message').textContent = `Welcome, ${config.email || 'User'}!`;
     };
 
-    // --- Navigation ---
     window.navigateTo = (page) => {
         const pageUrls = {
             dashboard: 'dashboard', workitems: 'workItemServices', policy: 'policy',
             bankAccount:'bankAccount', payment: 'payment', logout: 'login', admin:'AdminPanel',
             policyAdmin:'PolicyAdmin', customerService:"CustomerService", complaints:'Complaints',
             feedback:'Feedback',
-            // Mapping for chatbot links
+            policyClaimAdmin: 'PolicyClaimAdmin',
+            policySurrenderAdmin: 'PolicySurrenderAdmin',
+            activityLog: 'activity',
+            addNotes: 'AddNotes', // New page for Add Notes
             Policy: 'policy', Workitem: 'workitems', 'Create Customer': 'customerService',
             'Bank Account': 'bankAccount', Payments: 'payment'
         };
@@ -1613,20 +1493,67 @@ body.dark-mode #welcome-message {
             return;
         }
         
-        window.location.href = targetFileName;
+        let url = targetFileName;
+        // Add customerNo to feedback, activityLog, and addNotes module navigation
+        if (page === 'feedback' || page === 'activityLog' || page === 'addNotes') {
+            const customerNo = sessionStorage.getItem('customerNo');
+            if (customerNo) {
+                url = `${targetFileName}?customerNo=${customerNo}`;
+            } else {
+                console.warn("customerNo not found in session storage for navigation.");
+                showErrorAlert("Customer number not available. Cannot navigate to this page.");
+                hideLoader();
+                return;
+            }
+        }
+
+        window.location.href = url;
         logActivity(`Navigated to ${targetFileName} page`);
     };
 
     function logout() { navigateTo('logout'); }
     function redirectToAdminPanel() { navigateTo('admin'); }
 
-    // --- Data Fetching ---
-    window.fetchTeamDetails = async function() {
-        showLoader();
+    // Function to populate the profile modal with data
+    function populateProfileModal(customer) {
+        document.getElementById('profile-name').textContent = `${customer.name || ''} ${customer.middleName || ''} ${customer.surname || ''}`.trim() || 'N/A';
+        document.getElementById('profile-role').textContent = customer.roles?.join(', ') || 'Customer';
+        document.getElementById('profile-userCode').textContent = customer.userCode || 'N/A';
+        document.getElementById('profile-email').textContent = customer.email || 'N/A';
+        document.getElementById('profile-phoneNumber').textContent = customer.phoneNumber || 'N/A';
+
+        document.getElementById('profile-customerNo').textContent = customer.customerNo || 'N/A';
+        document.getElementById('profile-dateOfBirth').textContent = customer.dateOfBirth || 'N/A';
+        document.getElementById('profile-gender').textContent = customer.gender || 'N/A';
+        document.getElementById('profile-smokerStatus').textContent = customer.smokerStatus || 'N/A';
+        document.getElementById('profile-adminAccess').textContent = customer.adminAccess === 'Y' ? 'Yes' : 'No';
+        document.getElementById('profile-roles').textContent = customer.roles?.join(', ') || 'N/A';
+        document.getElementById('profile-address').textContent = customer.address ? `${customer.address.street || ''}, ${customer.address.city || ''}, ${customer.address.state || ''} - ${customer.address.zipCode || ''}`.replace(/, \s*-|, ,/g,', ').trim() : 'N/A';
+        document.getElementById('profile-loginTime').textContent = new Date().toLocaleString();
+        
+        const contact = customer.contactDetails || {};
+        document.getElementById('profile-alternateEmail').textContent = contact.alternateEmail || 'N/A';
+        document.getElementById('profile-phoneCountryCode').textContent = contact.phoneCountryCode || 'N/A';
+        
+        const emergencyContactNameElement = document.getElementById('profile-emergencyContactName');
+        if (emergencyContactNameElement) {
+            emergencyContactNameElement.textContent = contact.emergencyContactName || 'N/A';
+        }
+        const emergencyContactPhoneElement = document.getElementById('profile-emergencyContactPhone');
+        if (emergencyContactPhoneElement) {
+            emergencyContactPhoneElement.textContent = contact.emergencyContactPhone || 'N/A';
+        }
+
+        document.getElementById('welcome-message').textContent = `Welcome, ${customer.name || 'User'}!`;
+        document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?u=" + customer.userCode;
+        document.getElementById('modal-profile-icon').src = "https://i.pravatar.cc/80?u=" + customer.userCode;
+    }
+
+    // Function to fetch and store profile data on page load
+    async function fetchAndStoreProfileData() {
         const userCode = sessionStorage.getItem('userCode');
         if (!userCode) {
-            hideLoader();
-            showErrorAlert('User code not found. Please log in.');
+            console.warn('User code not found. Profile data will not be fetched.');
             return;
         }
 
@@ -1640,42 +1567,18 @@ body.dark-mode #welcome-message {
                 throw new Error(apiResponse.errorMessage || 'Failed to fetch customer details.');
             }
             
-            const customer = apiResponse.data;
-            // Populate basic details
-            document.getElementById('profile-name').textContent = `${customer.name || ''} ${customer.middleName || ''} ${customer.surname || ''}`.trim() || 'N/A';
-            document.getElementById('profile-role').textContent = customer.roles?.join(', ') || 'Customer';
-            document.getElementById('profile-userCode').textContent = customer.userCode || 'N/A';
-            document.getElementById('profile-email').textContent = customer.email || 'N/A';
-            document.getElementById('profile-phoneNumber').textContent = customer.phoneNumber || 'N/A';
+            customerData = apiResponse.data; // Store fetched data globally
+            if (customerData.customerNo) {
+                sessionStorage.setItem('customerNo', customerData.customerNo);
+                config.customerNo = customerData.customerNo;
+            }
+            // Update welcome message and profile icon immediately after fetching
+            document.getElementById('welcome-message').textContent = `Welcome, ${customerData.name || 'User'}!`;
+            document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?u=" + customerData.userCode;
 
-            // Populate extended details
-            document.getElementById('profile-customerNo').textContent = customer.customerNo || 'N/A';
-            document.getElementById('profile-dateOfBirth').textContent = customer.dateOfBirth || 'N/A';
-            document.getElementById('profile-gender').textContent = customer.gender || 'N/A';
-            document.getElementById('profile-smokerStatus').textContent = customer.smokerStatus || 'N/A';
-            document.getElementById('profile-adminAccess').textContent = customer.adminAccess === 'Y' ? 'Yes' : 'No';
-            document.getElementById('profile-roles').textContent = customer.roles?.join(', ') || 'N/A';
-            document.getElementById('profile-address').textContent = customer.address ? `${customer.address.street || ''}, ${customer.address.city || ''}, ${customer.address.state || ''} - ${customer.address.zipCode || ''}`.replace(/, \s*-|, ,/g,', ').trim() : 'N/A';
-            document.getElementById('profile-loginTime').textContent = new Date().toLocaleString();
-            
-            // Contact Details
-            const contact = customer.contactDetails || {};
-            document.getElementById('profile-alternateEmail').textContent = contact.alternateEmail || 'N/A';
-            document.getElementById('profile-phoneCountryCode').textContent = contact.phoneCountryCode || 'N/A';
-            document.getElementById('profile-emergencyContactName').textContent = contact.emergencyContactName || 'N/A';
-            document.getElementById('profile-emergencyContactPhone').textContent = contact.emergencyContactPhone || 'N/A';
-
-            // Update header and icons
-            document.getElementById('welcome-message').textContent = `Welcome, ${customer.name || 'User'}!`;
-            document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?u=" + userCode;
-            document.getElementById('modal-profile-icon').src = "https://i.pravatar.cc/80?u=" + userCode;
-
-            openModal('profile', 'Customer details loaded');
         } catch (error) {
-            console.error("Error fetching customer details:", error);
-            showErrorAlert(error.message);
-        } finally {
-            hideLoader();
+            console.error("Error fetching customer details on load:", error);
+            // Optionally show a less intrusive error, as this is on page load
         }
     }
 
@@ -1696,12 +1599,11 @@ body.dark-mode #welcome-message {
         }
     }
 
-    // --- Chatbot Logic ---
     function initializeChatbot() {
         const chatbotContainer = document.getElementById('chatbotContainer');
         const chatbotMessages = document.getElementById('chatbotMessages');
         if (chatbotContainer) chatbotContainer.style.display = 'none';
-        chatbotMessages.innerHTML = ''; // Clear messages on init
+        chatbotMessages.innerHTML = '';
         addMessage("Hello! How can I assist you today?", 'bot');
     }
 
@@ -1809,7 +1711,6 @@ body.dark-mode #welcome-message {
         logActivity(`Error displayed: ${message}`);
     }
 
-    // --- Stats and Animation Functions (RESTORED) ---
     function animateCircle(circleId, percentage, percentageTextId) {
         const circle = document.getElementById(circleId);
         if (!circle) {
@@ -1841,7 +1742,6 @@ body.dark-mode #welcome-message {
             });
             if (!response.ok) throw new Error('Failed to fetch dashboard stats');
             const data = await response.json();
-            console.log("Dashboard stats:", data);
 
             document.getElementById('totalPolicy-count').innerText = data.totalPolicy ?? 0;
             document.getElementById('totalWorkItems-count').innerText = data.totalWorkItems ?? 0;
@@ -1869,30 +1769,33 @@ body.dark-mode #welcome-message {
     async function fetchActivityTracing() {
         const activityList = document.getElementById('activityList');
         activityList.innerHTML = `<li class="sidebar-link"><i class="fa-solid fa-spinner fa-spin"></i><span class="sidebar-link-text">Loading...</span></li>`;
-        console.log("Activity tracing loading...");
-        // Dummy implementation
         setTimeout(() => {
             activityList.innerHTML = `<li class="sidebar-link"><i class="fa-solid fa-check"></i><span class="sidebar-link-text">Activities loaded.</span></li>`;
         }, 1500);
     }
 
-    // --- DOMContentLoaded ---
     document.addEventListener('DOMContentLoaded', () => {
         initializeUser();
         hideLoader();
         initializeChatbot();
-        loadDashboardStats(); // RESTORED CALL
+        loadDashboardStats();
         fetchActivityTracing();
+        fetchAndStoreProfileData(); // Call API on page load to fetch data
 
-        // --- Event Listeners ---
         document.getElementById('sidebar-toggle').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('active');
         });
 
-        document.getElementById('btn-profile').addEventListener('click', window.fetchTeamDetails);
+        // Only open modal on profile icon click, data is already loaded
+        document.getElementById('btn-profile').addEventListener('click', () => {
+            openModal('profile', 'Profile Viewed');
+        });
 
-        document.querySelectorAll('[data-close-modal]').forEach(btn => {
-            btn.addEventListener('click', () => closeModal(btn.dataset.closeModal));
+        document.querySelectorAll('.modal-container button[onclick^="closeModal"]').forEach(btn => {
+            btn.addEventListener('click', (event) => {
+                const modalId = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+                closeModal(modalId);
+            });
         });
 
         document.getElementById('search-bar').addEventListener('keyup', (e) => {
@@ -1904,7 +1807,6 @@ body.dark-mode #welcome-message {
             }
         });
 
-        // Chatbot listeners
         document.getElementById('chatbotButton').addEventListener('click', toggleChatbot);
         document.getElementById('chatbotClose').addEventListener('click', toggleChatbot);
         document.getElementById('chatbotSend').addEventListener('click', sendMessage);
@@ -1912,7 +1814,6 @@ body.dark-mode #welcome-message {
             if (e.key === 'Enter') sendMessage();
         });
 
-        // Dark Mode Toggle
         const darkModeToggle = document.getElementById('dark-mode-toggle');
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -1924,9 +1825,21 @@ body.dark-mode #welcome-message {
             logActivity(`Toggled ${localStorage.getItem('theme')} mode`);
         });
 
+        const servicesSubmenuToggle = document.getElementById('services-submenu-toggle');
+        const servicesSubmenu = document.getElementById('services-submenu');
+        if (servicesSubmenuToggle && servicesSubmenu) {
+            servicesSubmenuToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const isExpanded = servicesSubmenuToggle.getAttribute('aria-expanded') === 'true';
+                servicesSubmenuToggle.setAttribute('aria-expanded', !isExpanded);
+                servicesSubmenu.setAttribute('aria-hidden', isExpanded);
+                servicesSubmenu.classList.toggle('open');
+                servicesSubmenuToggle.classList.toggle('submenu-open');
+            });
+        }
     });
 
-    // Dummy function for remaining features to avoid errors
     async function performModuleSearch(query, type) { 
         console.log(`Searching for ${query} in ${type}`);
         return [`Mock result for ${query}`];
