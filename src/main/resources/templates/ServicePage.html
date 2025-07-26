@@ -1162,8 +1162,11 @@ body.dark-mode #welcome-message {
                       <button onclick="openModal('search-module-modal', 'Search Module Opened')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-magnifying-glass text-3xl text-orange-600 mb-4"></i><h3 class="text-lg font-bold">Search Module</h3></button>
                       <button onclick="navigateTo('policyClaimAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-invoice-dollar text-3xl text-cyan-500 mb-4"></i><h3 class="text-lg font-bold">Policy Claim Admin</h3></button>
                       <button onclick="navigateTo('policySurrenderAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-hand-holding-usd text-3xl text-fuchsia-500 mb-4"></i><h3 class="text-lg font-bold">Policy Surrender Admin</h3></button>
-                      <!-- New "Add Notes" module -->
                       <button onclick="navigateTo('addNotes')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-note-sticky text-3xl text-blue-400 mb-4"></i><h3 class="text-lg font-bold">Add Notes</h3></button>
+                      <!-- New Modules -->
+                      <button onclick="navigateTo('newBusinessDocCreate')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-circle-plus text-3xl text-indigo-600 mb-4"></i><h3 class="text-lg font-bold">New Business Doc Create</h3></button>
+                      <button onclick="navigateTo('docVerificationManagement')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-circle-check text-3xl text-green-600 mb-4"></i><h3 class="text-lg font-bold">Document Verification</h3></button>
+                      <button onclick="navigateTo('mailServices')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-envelope-open-text text-3xl text-red-500 mb-4"></i><h3 class="text-lg font-bold">Mail Services</h3></button>
                   </div>
               </div>
               <div class="lg:col-span-1">
@@ -1273,7 +1276,7 @@ body.dark-mode #welcome-message {
         </div>
     </div>
     <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md transform">
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-2xl transform"> <!-- Changed max-w-md to max-w-2xl -->
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
                 <button onclick="closeModal('profile')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
@@ -1465,7 +1468,10 @@ body.dark-mode #welcome-message {
             policyClaimAdmin: 'PolicyClaimAdmin',
             policySurrenderAdmin: 'PolicySurrenderAdmin',
             activityLog: 'activity',
-            addNotes: 'AddNotes', // New page for Add Notes
+            addNotes: 'AddNotes',
+            newBusinessDocCreate: 'NewBusinessDocumentCreate', // New module
+            docVerificationManagement: 'DocumentVerificationManagement', // New module
+            mailServices: 'MailServices', // New module
             Policy: 'policy', Workitem: 'workitems', 'Create Customer': 'customerService',
             'Bank Account': 'bankAccount', Payments: 'payment'
         };
@@ -1494,8 +1500,12 @@ body.dark-mode #welcome-message {
         }
         
         let url = targetFileName;
-        // Add customerNo to feedback, activityLog, and addNotes module navigation
-        if (page === 'feedback' || page === 'activityLog' || page === 'addNotes') {
+        // Pages that require customerNo in params
+        const pagesWithCustomerNo = ['feedback', 'activityLog', 'addNotes'];
+        // Pages that are admin modules and should NOT have customerNo
+        const adminPages = ['newBusinessDocCreate', 'docVerificationManagement', 'mailServices'];
+
+        if (pagesWithCustomerNo.includes(page)) {
             const customerNo = sessionStorage.getItem('customerNo');
             if (customerNo) {
                 url = `${targetFileName}?customerNo=${customerNo}`;
@@ -1505,6 +1515,9 @@ body.dark-mode #welcome-message {
                 hideLoader();
                 return;
             }
+        } else if (adminPages.includes(page)) {
+            // No customerNo for admin pages
+            url = targetFileName;
         }
 
         window.location.href = url;
