@@ -1,10 +1,12 @@
 package com.SecureAccessPortal.Repo;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.SecureAccessPortal.Entity.Payments;
 
@@ -28,5 +30,8 @@ public interface PaymentsRepo extends JpaRepository<Payments, String> {
 	Optional<Payments> findByTransactionId(String transaction_id);
 
 	Page<Payments> findAll(Pageable pageable);
+
+	@Query("SELECT p FROM Payments  p WHERE p.status= :status ORDER BY p.createdTime DESC")
+	List<Payments> findByStatus(String status);
 
 }

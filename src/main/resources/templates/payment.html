@@ -17,7 +17,7 @@
             flex-direction: column;
             min-height: 100vh;
         }
-        .modal.hidden {
+        .modal.hidden, .view-section.hidden {
             display: none;
         }
         .status-badge {
@@ -33,17 +33,16 @@
         .status-failed { background-color: #fee2e2; color: #991b1b; }
         .status-sent { background-color: #e0f2fe; color: #0c4a6e; }
         .status-notsent { background-color: #f1f5f9; color: #475569; }
-        .status-service_not_available { background-color: #fef3c7; color: #92400e; }
+        .status-service_not_available_now { background-color: #fef3c7; color: #92400e; }
 
-        /* Sidebar styles */
         #sidebar {
             transition: width 0.3s ease-in-out;
-            width: 5rem; /* Start collapsed */
+            width: 5rem;
         }
         #sidebar.collapsed {
-            width: 5rem; /* 80px */
+            width: 5rem;
         }
-        #sidebar:not(.collapsed) { /* Ensure it expands when not collapsed */
+        #sidebar:not(.collapsed) {
             width: 16rem;
         }
         #sidebar.collapsed .sidebar-text {
@@ -56,23 +55,21 @@
             display: block;
         }
 
-        /* Main content adjustment based on sidebar */
         #main-content {
-            flex-grow: 1; /* Allow main content to take available space */
+            flex-grow: 1;
             transition: margin-left 0.3s ease-in-out;
-            margin-left: 5rem; /* Start with collapsed sidebar margin */
-            display: flex; /* Flex container for header, main, and footer */
+            margin-left: 5rem;
+            display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Ensure main content fills viewport height */
+            min-height: 100vh;
         }
-        #main-content.full { /* This class will be applied when sidebar is collapsed */
+        #main-content.full {
             margin-left: 5rem;
         }
-        #main-content:not(.full) { /* Adjust margin when sidebar is expanded */
+        #main-content:not(.full) {
             margin-left: 16rem;
         }
         
-        /* Responsive adjustments for mobile */
         @media (max-width: 767px) {
             #sidebar {
                 transform: translateX(-100%);
@@ -89,43 +86,40 @@
             }
         }
 
-        /* Filter popup styles */
         .filter-popup { 
             display: none; 
-            width: 28rem; /* Increased width for more filters */
-            max-height: 500px; /* Max height for scrollbar */
-            overflow-y: auto; /* Add vertical scrollbar */
-            position: absolute; /* Position relative to its trigger button */
-            top: calc(100% + 0.5rem); /* Below the button */
-            left: 0; /* Align with the button */
+            width: 28rem;
+            max-height: 500px;
+            overflow-y: auto;
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            left: 0;
             background-color: white;
             border-radius: 0.5rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             padding: 1rem;
-            z-index: 20; /* Above other content but below header */
+            z-index: 20;
         }
         .filter-popup.active { display: block; }
-        /* Removed .pagination-input from here to apply Tailwind classes directly */
 
-        /* Header Search Bar Styles */
         .header-search-container {
             position: relative;
-            width: 40px; /* Initial collapsed width */
+            width: 40px;
             transition: width 0.3s ease-in-out;
         }
         .header-search-container.expanded {
-            width: 250px; /* Expanded width */
+            width: 250px;
         }
         .header-search-input {
             width: 100%;
-            padding-right: 2.5rem; /* Space for icon */
+            padding-right: 2.5rem;
             opacity: 0;
-            pointer-events: none; /* Disable interaction when collapsed */
+            pointer-events: none;
             transition: opacity 0.3s ease-in-out;
         }
         .header-search-container.expanded .header-search-input {
             opacity: 1;
-            pointer-events: auto; /* Enable interaction when expanded */
+            pointer-events: auto;
         }
         .header-search-icon {
             position: absolute;
@@ -133,95 +127,22 @@
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #6b7280; /* gray-500 */
+            color: #6b7280;
             transition: color 0.2s ease-in-out;
         }
         .header-search-icon:hover {
-            color: #3b82f6; /* blue-600 */
+            color: #3b82f6;
         }
 
-        /* Card View Styles (for Policy Cards) */
-        .payment-card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Default for smaller screens */
-            gap: 1rem;
-        }
-        /* Tailwind responsive classes for grid columns */
-        @media (min-width: 640px) { /* sm */
-            .payment-card-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-        @media (min-width: 768px) { /* md */
-            .payment-card-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-        }
-        @media (min-width: 1024px) { /* lg */
-            .payment-card-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-        }
-
-        .payment-card {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem; /* rounded-xl */
-            padding: 1.25rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-        }
-        .payment-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-        }
-        .payment-card .title {
-            font-weight: 600; /* font-semibold */
-            color: #1f2937; /* text-gray-900 */
-            margin-bottom: 0.5rem;
-        }
-        .payment-card .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 0.25rem;
-            border-bottom: 1px dashed #e5e7eb;
-            margin-bottom: 0.25rem;
-        }
-        .payment-card .detail-row:last-of-type {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        .payment-card .label {
-            font-weight: 500; /* font-medium */
-            color: #4b5563; /* text-gray-700 */
-            font-size: 0.875rem; /* text-sm */
-        }
-        .payment-card .value {
-            font-size: 0.875rem; /* text-sm */
-            color: #374151; /* text-gray-800 */
-            text-align: right;
-        }
-        .payment-card .ref-link {
-            color: #3b82f6; /* blue-600 */
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .payment-card .ref-link:hover {
-            text-decoration: underline;
-        }
-
-        /* List View Styles (for Payments within Policy Details Modal) */
-        .payment-list-container {
+        .data-list-container {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem; /* space-y-3 */
+            gap: 0.75rem;
         }
-        .payment-list-item {
+        .data-list-item {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 0.5rem; /* rounded-lg */
+            border-radius: 0.5rem;
             padding: 1rem 1.25rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
             transition: all 0.2s ease-in-out;
@@ -229,84 +150,51 @@
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 0.75rem 1.5rem; /* row-gap, column-gap */
-            cursor: pointer; /* Can be clickable for individual payment details */
+            gap: 0.75rem 1.5rem;
+            cursor: pointer;
         }
-        .payment-list-item:hover {
+        .data-list-item:hover {
             background-color: #f9fafb;
         }
-        .payment-list-item .info-group {
+        .data-list-item .info-group {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem 1.5rem;
             flex-grow: 1;
         }
-        .payment-list-item .info-item {
+        .data-list-item .info-item {
             display: flex;
             flex-direction: column;
-            font-size: 0.875rem; /* text-sm */
+            font-size: 0.875rem;
         }
-        .payment-list-item .info-item .label {
+        .data-list-item .info-item .label {
             font-weight: 500;
             color: #4b5563;
         }
-        .payment-list-item .info-item .value {
+        .data-list-item .info-item .value {
             color: #1f2937;
         }
-        .payment-list-item .ref-link {
+        .data-list-item .ref-link {
             color: #3b82f6;
             font-weight: 600;
             text-decoration: none;
         }
-        .payment-list-item .ref-link:hover {
+        .data-list-item .ref-link:hover {
             text-decoration: underline;
         }
-        @media (max-width: 640px) { /* sm breakpoint */
-            .payment-list-item {
+        @media (max-width: 640px) {
+            .data-list-item {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 0.5rem;
             }
-            .payment-list-item .info-group {
+            .data-list-item .info-group {
                 width: 100%;
                 flex-direction: column;
                 gap: 0.25rem;
             }
         }
 
-        /* Table View (existing styles are mostly fine, just ensure consistency) */
-        .table-view-container {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-        }
-        .table-view-container table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .table-view-container th, .table-view-container td {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            text-align: left;
-            font-size: 0.875rem;
-        }
-        .table-view-container th {
-            background-color: #f9fafb;
-            font-weight: 600;
-            color: #4b5563;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .table-view-container tbody tr:last-child td {
-            border-bottom: none;
-        }
-        .table-view-container tbody tr:hover {
-            background-color: #f9fafb;
-        }
-
-        /* General Modal Styles (unified) */
         .modal {
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
             background-color: rgba(0, 0, 0, 0.6);
@@ -348,7 +236,7 @@
             width: 36px;
             height: 36px;
             border: 4px solid #e5e7eb;
-            border-top: 4px solid #3b82f6; /* Blue spinner */
+            border-top: 4px solid #3b82f6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -357,7 +245,7 @@
             100% { transform: rotate(360deg); }
         }
         .error-text {
-            color: #ef4444; /* Red */
+            color: #ef4444;
             font-size: 0.875rem;
             font-weight: 500;
         }
@@ -375,8 +263,8 @@
             border-color: #3b82f6;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
-        .success-text { /* Renamed from .success-message for consistency */
-            color: #10b981; /* Green */
+        .success-text {
+            color: #10b981;
             font-size: 0.875rem;
             font-weight: 500;
         }
@@ -451,13 +339,12 @@
             display: block;
         }
 
-        /* Tab Specific Styles */
         .tabs-container {
             background-color: #ffffff;
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             margin-bottom: 1.5rem;
-            overflow: hidden; /* Ensures rounded corners apply to children */
+            overflow: hidden;
         }
         .tab-buttons {
             display: flex;
@@ -469,7 +356,7 @@
             padding: 1rem 1.5rem;
             font-size: 1rem;
             font-weight: 600;
-            color: #6b7280; /* gray-500 */
+            color: #6b7280;
             background-color: transparent;
             border: none;
             cursor: pointer;
@@ -478,22 +365,47 @@
             text-align: center;
         }
         .tab-button:hover {
-            color: #3b82f6; /* blue-600 */
-            background-color: #eff6ff; /* blue-50 */
+            color: #3b82f6;
+            background-color: #eff6ff;
         }
         .tab-button.active-tab {
-            color: #1d4ed8; /* blue-800 */
-            border-bottom-color: #3b82f6; /* blue-600 */
+            color: #1d4ed8;
+            border-bottom-color: #3b82f6;
             background-color: #ffffff;
         }
         .tab-content {
             padding: 1.5rem;
         }
+        .customer-detail-link {
+            color: #3b82f6;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .customer-detail-link:hover {
+            color: #2563eb;
+        }
+        .search-input-border {
+            border: 2px solid #3b82f6;
+        }
+        .search-input-border:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .status-count-clickable {
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .status-count-clickable:hover {
+            text-decoration: underline;
+        }
+        .status-count-clickable.active-filter {
+            font-weight: 700;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
     <div id="sidebar" class="fixed top-0 left-0 h-full bg-white shadow-lg z-30 collapsed">
         <div class="flex items-center justify-between p-4 border-b h-16">
             <div class="sidebar-brand-full hidden">
@@ -527,7 +439,7 @@
                 <i class="fas fa-credit-card w-8 text-center text-lg"></i>
                 <span class="ml-3 font-semibold sidebar-text">Payments</span>
             </a>
-            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg mx-2 nav-link" data-view="make-payment-tab"> <!-- Updated data-view for tabbed interface -->
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg mx-2 nav-link" data-view="make-payment-tab">
                 <i class="fas fa-money-bill-alt w-8 text-center text-lg"></i>
                 <span class="ml-3 font-semibold sidebar-text">Make Payment</span>
             </a>
@@ -543,14 +455,12 @@
     </div>
 
     <div id="main-content" class="relative min-h-screen full">
-        <!-- Header -->
         <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-20 shadow-sm p-4 flex justify-between items-center border-b h-16">
             <button id="sidebar-open-btn" class="md:hidden text-gray-500 hover:text-gray-800">
                 <i class="fas fa-bars text-xl"></i>
             </button>
             <h2 id="header-title" class="text-xl font-bold text-gray-800">Payments <span class="text-sm text-gray-500">v2</span></h2>
             <div class="flex items-center space-x-4">
-                <!-- Expanding Search Bar -->
                 <div id="header-search-container" class="header-search-container">
                     <input type="text" id="header-search-input" placeholder="Search payments..."
                            class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm header-search-input">
@@ -566,22 +476,22 @@
         </header>
 
         <main class="p-6 flex-grow">
-            <!-- Action Bar -->
             <div id="action-bar" class="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-col md:flex-row justify-between items-center">
                 <div class="flex items-center space-x-4 mb-4 md:mb-0 relative">
                     <button id="filter-payments-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition flex items-center">
                         <i class="fas fa-filter mr-2"></i> Advanced Filter
                     </button>
                     <div class="text-gray-600 font-semibold">
-                        Total Policies: <span id="total-display-count" class="text-blue-600">0</span>
+                        Total Policies: <span id="total-policies-count" class="text-blue-600">0</span>
                     </div>
-                    <!-- Payment Status Counts Display -->
+                    <div class="text-gray-600 font-semibold">
+                        Total Customers: <span id="total-customers-count" class="text-blue-600">0</span>
+                    </div>
                     <div id="payment-status-counts" class="flex flex-wrap gap-x-4 gap-y-2 text-sm ml-4">
-                        <span class="font-semibold text-gray-700">Paid: <span id="count-paid" class="text-green-600">0</span></span>
-                        <span class="font-semibold text-gray-700">Unpaid: <span id="count-unpaid" class="text-yellow-600">0</span></span>
-                        <span class="font-semibold text-gray-700">Failed: <span id="count-failed" class="text-red-600">0</span></span>
+                        <span class="font-semibold text-gray-700">Paid: <span id="count-paid" class="text-green-600 status-count-clickable" data-status="Paid">0</span></span>
+                        <span class="font-semibold text-gray-700">Unpaid: <span id="count-unpaid" class="text-yellow-600 status-count-clickable" data-status="Unpaid">0</span></span>
+                        <span class="font-semibold text-gray-700">Failed: <span id="count-failed" class="text-red-600 status-count-clickable" data-status="Failed">0</span></span>
                     </div>
-                    <!-- Filter Popup -->
                     <div id="filter-popup" class="filter-popup">
                         <div class="space-y-4">
                             <div>
@@ -625,7 +535,6 @@
                 </div>
             </div>
 
-            <!-- NEW: Tabs Container for Make Payment Section -->
             <div id="make-payment-tabs-container" class="tabs-container hidden">
                 <div class="tab-buttons">
                     <button id="tab-btn-search-payments" class="tab-button active-tab" data-tab="search-payments-tab-content">
@@ -636,7 +545,6 @@
                     </button>
                 </div>
 
-                <!-- Tab Content: Search Payments -->
                 <div id="search-payments-tab-content" class="tab-content active-tab-content">
                     <div class="p-6 rounded-xl shadow-lg w-full max-w-3xl mx-auto bg-white">
                         <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
@@ -645,15 +553,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <div>
                                 <label for="search-payment-id" class="block text-sm font-medium text-gray-700">Payment ID</label>
-                                <input type="text" id="search-payment-id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                                <input type="text" id="search-payment-id" class="form-input mt-1 search-input-border" placeholder="e.g., PAY12345">
                             </div>
                             <div>
                                 <label for="search-policy-number" class="block text-sm font-medium text-gray-700">Policy Number</label>
-                                <input type="text" id="search-policy-number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                                <input type="text" id="search-policy-number" class="form-input mt-1 search-input-border" placeholder="e.g., POLC001">
                             </div>
                             <div>
                                 <label for="search-customer-number" class="block text-sm font-medium text-gray-700">Customer Number</label>
-                                <input type="text" id="search-customer-number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                                <input type="text" id="search-customer-number" class="form-input mt-1 search-input-border" placeholder="e.g., CUST001">
                             </div>
                         </div>
                         <div class="flex justify-end space-x-2">
@@ -668,12 +576,10 @@
                         <div id="payment-search-results-container" class="mt-6 border-t pt-4 border-gray-200">
                             <h4 class="text-md font-semibold text-gray-700 mb-3">Search Results:</h4>
                             <div id="payment-search-results-list" class="space-y-2">
-                                <!-- Search results will be rendered here -->
                             </div>
                             <div id="payment-search-no-results" class="text-center py-4 text-gray-500 hidden">
                                 No payments found for your search.
                             </div>
-                            <!-- Pagination for search results -->
                             <div id="payment-search-pagination" class="p-2 flex justify-center items-center space-x-4 bg-gray-100 rounded-lg mt-4 hidden">
                                 <button id="payment-search-prev-page" class="action-button bg-blue-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed">
                                     <i class="fas fa-chevron-left"></i> Prev
@@ -687,7 +593,6 @@
                     </div>
                 </div>
 
-                <!-- Tab Content: Make Payment (Manual Entry) -->
                 <div id="make-payment-tab-content" class="tab-content hidden">
                     <div class="p-6 rounded-xl shadow-lg w-full max-w-3xl mx-auto bg-white">
                         <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
@@ -705,7 +610,6 @@
                             <p id="manual-payment-id-input-error" class="error-text hidden"></p>
                         </div>
 
-                        <!-- Main Payment Details Form (initially hidden, shown after fetch/selection) -->
                         <form id="payment-form">
                             <div id="payment-details-form" class="form-section hidden">
                                 <div class="relative mb-6">
@@ -721,6 +625,10 @@
                                     <div>
                                         <label for="customer-number" class="form-label block text-sm">Customer Number</label>
                                         <input id="customer-number" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="customer-email" class="form-label block text-sm">Customer Email</label>
+                                        <input id="customer-email" type="email" class="form-input mt-1 bg-gray-100" readonly>
                                     </div>
                                     <div>
                                         <label for="policy-name" class="form-label block text-sm">Policy Name</label>
@@ -768,7 +676,6 @@
                                     <p id="payment-method-error" class="error-text hidden"></p>
                                 </div>
 
-                                <!-- Payment Method Specific Details -->
                                 <div id="check-details" class="hidden mb-4">
                                     <label for="check-number" class="form-label block text-sm required">Check Number</label>
                                     <input id="check-number" type="text" class="form-input mt-1">
@@ -848,6 +755,9 @@
                                     <button type="button" id="send-receipt-btn" class="action-button bg-teal-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-teal-600 hidden">
                                         <i class="fas fa-envelope mr-2"></i>Send Receipt
                                     </button>
+                                    <button type="button" id="send-email-payment-btn" class="action-button bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-600 hidden">
+                                        <i class="fas fa-paper-plane mr-2"></i>Send Email
+                                    </button>
                                     <button type="button" id="clear-payment-form-btn" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300">
                                         <i class="fas fa-eraser mr-2"></i>Clear Form
                                     </button>
@@ -858,16 +768,38 @@
                 </div>
             </div>
 
-            <!-- Payment History Display Area (now for Policy Cards) -->
             <div id="payments-display-area" class="min-h-[500px]">
-                <!-- Policy cards will be rendered here -->
-            </div>
-            <div id="no-results" class="text-center py-10 text-gray-500" style="display: none;">
-                <i class="fas fa-box-open text-4xl mb-4 text-gray-400"></i>
-                <p class="font-semibold">No policies found matching your criteria.</p>
+                <div class="tabs-container">
+                    <div class="tab-buttons">
+                        <button id="main-tab-btn-customers" class="tab-button active-tab" data-main-tab="customers-content">Customers</button>
+                        <button id="main-tab-btn-policies" class="tab-button" data-main-tab="policies-content">Policies</button>
+                        <button id="main-tab-btn-payments" class="tab-button" data-main-tab="payments-content">Payments</button>
+                    </div>
+                    <div id="customers-content" class="tab-content active-tab-content data-list-container">
+                        <div class="flex items-center gap-2 mb-4">
+                            <input type="text" id="customer-search-input" placeholder="Search customers..." class="form-input flex-grow">
+                            <button id="customer-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                        </div>
+                    </div>
+                    <div id="policies-content" class="tab-content hidden data-list-container">
+                        <div class="flex items-center gap-2 mb-4">
+                            <input type="text" id="policy-search-input" placeholder="Search policies..." class="form-input flex-grow">
+                            <button id="policy-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                        </div>
+                    </div>
+                    <div id="payments-content" class="tab-content hidden data-list-container">
+                        <div class="flex items-center gap-2 mb-4">
+                            <input type="text" id="payment-list-search-input" placeholder="Search payments..." class="form-input flex-grow">
+                            <button id="payment-list-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="no-results" class="text-center py-10 text-gray-500 hidden">
+                    <i class="fas fa-box-open text-4xl mb-4 text-gray-400"></i>
+                    <p class="font-semibold">No data found matching your criteria.</p>
+                </div>
             </div>
             
-            <!-- Pagination for policy cards -->
             <div id="pagination" class="p-4 flex flex-col md:flex-row justify-end items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6 hidden">
                 <div class="flex items-center space-x-2">
                     <button id="prev-page" class="action-button bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -883,13 +815,11 @@
             </div>
         </main>
 
-        <!-- Footer -->
         <footer class="bg-white/80 backdrop-blur-sm p-4 text-center text-gray-600 text-sm border-t mt-6">
             &copy; v2 2025 Secure access pvt limited. All rights reserved.
         </footer>
     </div>
 
-    <!-- Modals (Unified Styling) -->
     <div id="payment-confirmation-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="payment-confirmation-title" role="dialog" aria-modal="true">
         <div class="modal-content w-full max-w-2xl">
             <h3 id="payment-confirmation-title" class="text-xl font-bold mb-4">Payment Details</h3>
@@ -899,6 +829,7 @@
                     <p><strong>Payment ID:</strong> <span id="modal-payment-id"></span></p>
                     <p><strong>Policy Number:</strong> <span id="modal-policy-number"></span></p>
                     <p><strong>Customer Number:</strong> <span id="modal-customer-number"></span></p>
+                    <p><strong>Customer Email:</strong> <span id="modal-customer-email"></span></p>
                     <p><strong>Policy Name:</strong> <span id="modal-policy-name"></span></p>
                     <p><strong>Amount:</strong> <span id="modal-installment-amount"></span></p>
                     <p><strong>Installment Count:</strong> <span id="modal-installment-count"></span></p>
@@ -924,12 +855,10 @@
         </div>
     </div>
 
-    <!-- NEW: Payment Details List Modal -->
     <div id="payment-details-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="payment-details-title" role="dialog" aria-modal="true">
         <div class="modal-content w-full max-w-4xl">
             <h3 id="payment-details-title" class="text-xl font-bold mb-4">Payments for Policy: <span id="modal-policy-number-display"></span></h3>
-            <div id="modal-payment-list-container" class="payment-list-container">
-                <!-- Payment list items will be rendered here -->
+            <div id="modal-payment-list-container" class="data-list-container">
             </div>
             <div class="mt-6 flex justify-end">
                 <button id="close-payment-details-modal" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
@@ -937,14 +866,53 @@
         </div>
     </div>
 
-    <!-- NEW: Unpaid Payments Selection Modal -->
+    <div id="customer-details-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="customer-details-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-4xl">
+            <h3 id="customer-details-title" class="text-xl font-bold mb-4">Details for Customer: <span id="modal-customer-number-display"></span></h3>
+            
+            <div class="tabs-container mb-4">
+                <div class="tab-buttons">
+                    <button id="customer-modal-tab-policies" class="tab-button active-tab" data-modal-tab="customer-modal-policies-content">Policies</button>
+                    <button id="customer-modal-tab-payments" class="tab-button" data-modal-tab="customer-modal-payments-content">Payments</button>
+                </div>
+                <div id="customer-modal-policies-content" class="tab-content active-tab-content data-list-container">
+                    <p class="text-center text-gray-500 py-4">No policies found for this customer.</p>
+                </div>
+                <div id="customer-modal-payments-content" class="tab-content hidden data-list-container">
+                    <p class="text-center text-gray-500 py-4">No payments found for this customer.</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button id="close-customer-details-modal" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+
     <div id="unpaid-payments-selection-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="unpaid-payments-title" role="dialog" aria-modal="true">
         <div class="modal-content w-full max-w-2xl">
             <h3 id="unpaid-payments-title" class="text-xl font-bold mb-4 flex items-center gap-2">
                 <i class="fas fa-hand-holding-usd text-yellow-600"></i> Select Unpaid Payment
             </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label for="unpaid-search-payment-id" class="block text-sm font-medium text-gray-700">Payment ID</label>
+                    <input type="text" id="unpaid-search-payment-id" class="form-input mt-1 search-input-border" placeholder="e.g., PAY12345">
+                </div>
+                <div>
+                    <label for="unpaid-search-policy-number" class="block text-sm font-medium text-gray-700">Policy Number</label>
+                    <input type="text" id="unpaid-search-policy-number" class="form-input mt-1 search-input-border" placeholder="e.g., POLC001">
+                </div>
+                <div>
+                    <label for="unpaid-search-customer-number" class="block text-sm font-medium text-gray-700">Customer Number</label>
+                    <input type="text" id="unpaid-search-customer-number" class="form-input mt-1 search-input-border" placeholder="e.g., CUST001">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 mb-4">
+                <button type="button" id="unpaid-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search Unpaid</button>
+                <button type="button" id="unpaid-clear-search-btn" class="action-button bg-gray-200 text-gray-800 hover:bg-gray-300"><i class="fas fa-eraser"></i> Clear Search</button>
+            </div>
             <div id="unpaid-payments-list" class="space-y-3">
-                <!-- Unpaid payments will be rendered here -->
             </div>
             <div id="unpaid-payments-no-results" class="text-center py-4 text-gray-500 hidden">
                 No unpaid payments found.
@@ -1045,32 +1013,33 @@
     </div>
 
     <script>
-        // Config and Auth Functions
         const config = {
             userCode: null,
             email: null,
-            loginUrl: '/login', // Ensure this is correct
+            loginUrl: '/login',
             apiBaseUrl: 'http://localhost:8081',
-            itemsPerPage: 100, // Changed to 100 as requested
-            currentPage: 0, // Current page for policy cards (0-indexed)
-            totalPages: 1, // Initial default value
-            currentPayment: null, // Stores details of the payment currently being processed/viewed
-            currentFilters: {}, // Stores current active filters for payment history
-            sortColumn: 'policyNumber', // Default sort for policies
+            itemsPerPage: 100,
+            currentPage: 0,
+            totalPages: 1,
+            currentPayment: null,
+            currentFilters: {},
+            sortColumn: 'policyNumber',
             sortDirection: 'asc',
-            // New state for payment search within the form
             paymentSearch: {
                 results: [],
                 currentPage: 0,
                 totalPages: 1,
                 filters: {}
-            }
+            },
+            customersData: {},
+            allCustomersFlat: [],
+            allPoliciesFlat: [],
+            allPaymentsFlat: [],
+            currentMainTab: 'customers-content'
         };
 
-        let modals = {}; // Declared globally
-        let allPolicyData = []; // Store the fetched policy data
+        let modals = {};
 
-        // --- Utility Functions ---
         const show = el => el && el.classList.remove('hidden');
         const hide = el => el && el.classList.add('hidden');
         const toggle = (el, className) => el && el.classList.toggle(className);
@@ -1090,7 +1059,6 @@
             const userCode = sessionStorage.getItem('userCode');
             config.email = sessionStorage.getItem('email');
             if (!userCode) {
-                console.warn("User not logged in. Redirecting to login.");
                 showCustomError('User ID not found. Please log in again.');
                 setTimeout(() => window.location.href = config.loginUrl, 2000);
                 return null;
@@ -1104,20 +1072,16 @@
             setTimeout(() => window.location.href = config.loginUrl, 2000);
         }
 
-        // --- Global Modal Functions (Moved to global scope) ---
         function openModal(modalId, data = {}) {
             const modalElement = modals[modalId];
             if (!modalElement) {
-                console.error(`Invalid modal ID: ${modalId}`);
                 showToast('Cannot open modal', 'error');
                 return;
             }
-            // Call specific initializer if exists
             if (modalInitializers[modalId]) {
                 modalInitializers[modalId](data, modalElement);
             }
             show(modalElement);
-            // Optional: focus on first focusable element for accessibility
             const focusable = modalElement.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
             if (focusable) focusable.focus();
         }
@@ -1125,7 +1089,6 @@
         function closeModal(modalId) {
             const modalElement = modals[modalId];
             if (!modalElement) {
-                console.error(`Invalid modal ID: ${modalId}`);
                 return;
             }
             hide(modalElement);
@@ -1154,10 +1117,10 @@
         }
 
         function sendProfileEmail() {
-            const successMessage = document.getElementById('profile-email-success');
-            successMessage.textContent = 'Email sent successfully';
-            show(successMessage);
-            setTimeout(() => hide(successMessage), 3000);
+            const successMessageEl = document.getElementById('profile-email-success');
+            successMessageEl.textContent = 'Email sent successfully';
+            show(successMessageEl);
+            setTimeout(() => hide(successMessageEl), 3000);
         }
 
         function showContactUs() {
@@ -1186,7 +1149,6 @@
             setTimeout(() => closeModal('send-receipt-modal'), 2000);
         }
 
-        // --- API Functions ---
         async function fetchApi(url, options = {}) {
             showLoader();
             try {
@@ -1215,12 +1177,10 @@
             }
         }
 
-        // Modified fetchPaymentHistory to fetch policy grouped data with pagination and date filters
         async function fetchPaymentHistory(filters = {}, page = 0, size = config.itemsPerPage) {
             const userCode = getuserCode();
             if (!userCode) {
-                console.error('User code is missing for fetchPaymentHistory.');
-                return { data: { content: [], totalElements: 0 } }; // Return empty data if not authenticated
+                return { data: { content: [], totalElements: 0 } };
             }
 
             const params = new URLSearchParams({
@@ -1237,21 +1197,34 @@
             if (filters.paymentId) params.append('paymentId', filters.paymentId);
             if (filters.startDate) params.append('startDate', filters.startDate);
             if (filters.endDate) params.append('endDate', filters.endDate);
-            if (filters.status) params.append('status', filters.status); // Added status filter
-
-            console.log(`fetchPaymentHistory: Sending request with page=${page}, size=${size}, filters=`, filters); // Log params being sent
+            if (filters.status) params.append('status', filters.status);
 
             try {
                 const response = await fetchApi(`${config.apiBaseUrl}/Payments/history?${params.toString()}`);
-                console.log('API Response for Payments/history:', response); // Log full API response
                 return response;
             } catch (error) {
-                console.error('Error fetching payment history:', error);
-                throw error; // Re-throw to propagate the error
+                throw error;
             }
         }
 
-        // Re-introduced processPaymentAPI
+        async function fetchPaymentCounts() {
+            const userCode = getuserCode();
+            if (!userCode) return;
+
+            try {
+                const response = await fetchApi(`${config.apiBaseUrl}/Payments/count`);
+                if (response.data) {
+                    document.getElementById('total-policies-count').textContent = response.data.totalPolicies || '0';
+                    document.getElementById('total-customers-count').textContent = response.data.totalCustomers || '0';
+                    document.getElementById('count-paid').textContent = response.data.paid || '0';
+                    document.getElementById('count-unpaid').textContent = response.data.unpaid || '0';
+                    document.getElementById('count-failed').textContent = response.data.failed || '0';
+                }
+            } catch (error) {
+                showToast(`Failed to fetch counts: ${error.message}`, 'error');
+            }
+        }
+
         async function processPaymentAPI(payload) {
             return fetchApi(`${config.apiBaseUrl}/Payments/process`, {
                 method: 'POST',
@@ -1259,25 +1232,28 @@
             });
         }
 
-        // Re-introduced fetchBankAccountDetails
+        async function sendMailAPI(payload) {
+            return fetchApi(`${config.apiBaseUrl}/Payments/send-mail`, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+        }
+
         async function fetchBankAccountDetails(accountNo) {
             return fetchApi(`${config.apiBaseUrl}/bankService/bank-details?bankAccNo=${encodeURIComponent(accountNo)}`);
         }
 
-        /**
-         * Displays detailed information about a single payment in a modal.
-         * @param {object} payment - The payment object to display.
-         */
         function viewPaymentDetails(payment) {
-            config.currentPayment = payment; // Store the payment for PDF generation
+            config.currentPayment = payment;
 
-            // Close other payment-related modals if they are open
             closeModal('payment-details-modal');
             closeModal('unpaid-payments-selection-modal');
+            closeModal('customer-details-modal');
 
             document.getElementById('modal-payment-id').textContent = payment.paymentId || 'N/A';
             document.getElementById('modal-policy-number').textContent = payment.policyNumber || 'N/A';
             document.getElementById('modal-customer-number').textContent = payment.customerNumber || 'N/A';
+            document.getElementById('modal-customer-email').textContent = payment.customerEmail || 'N/A';
             document.getElementById('modal-policy-name').textContent = payment.policyName || 'N/A';
             document.getElementById('modal-installment-amount').textContent = payment.installmentAmount || 'N/A';
             document.getElementById('modal-installment-count').textContent = payment.installmentCount || '0';
@@ -1288,7 +1264,6 @@
             document.getElementById('modal-email-status').textContent = payment.emailStatus || 'N/A';
             document.getElementById('modal-response-status').textContent = payment.responseStatus || 'N/A';
 
-            // Update the "Make Payment" button in the modal based on payment status
             const makePaymentModalBtn = document.getElementById('make-payment-from-modal-btn');
             if (makePaymentModalBtn) {
                 makePaymentModalBtn.disabled = payment.status === 'Paid';
@@ -1298,26 +1273,22 @@
             openModal('payment-confirmation-modal');
         }
 
-        // --- View Management ---
         function switchView(viewName) {
             const paymentsDisplayArea = document.getElementById('payments-display-area');
-            const makePaymentTabsContainer = document.getElementById('make-payment-tabs-container'); // Renamed from payment-form-section
+            const makePaymentTabsContainer = document.getElementById('make-payment-tabs-container');
             const actionBar = document.getElementById('action-bar');
             const pagination = document.getElementById('pagination');
 
-            // Hide all main content sections first
             hide(paymentsDisplayArea);
             hide(makePaymentTabsContainer);
-            hide(actionBar); // Hide action bar when payment form is shown
-            hide(pagination); // Hide pagination when not on main payments view
+            hide(actionBar);
+            hide(pagination);
 
-            // Deactivate all nav links
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('text-blue-600', 'bg-blue-50', 'font-bold');
                 link.classList.add('text-gray-600', 'hover:bg-blue-50', 'hover:text-blue-600');
             });
 
-            // Activate the current nav link
             const activeLink = document.querySelector(`.nav-link[data-view="${viewName}"]`);
             if (activeLink) {
                 activeLink.classList.remove('text-gray-600', 'hover:bg-blue-50', 'hover:text-blue-600');
@@ -1334,22 +1305,21 @@
                 window.location.href = 'workItemServices';
             } else if (viewName === 'payments') {
                 show(paymentsDisplayArea);
-                show(actionBar); // Show action bar when on payments history
-                show(pagination); // Show pagination for policy cards
-                fetchAndRenderPayments(); // Reload policy cards
-            } else if (viewName === 'make-payment-tab') { // Now refers to the container for tabs
+                show(actionBar);
+                show(pagination);
+                fetchAndRenderPayments();
+            } else if (viewName === 'make-payment-tab') {
                 show(makePaymentTabsContainer);
-                // Default to 'search-payments-tab-content' when entering this view
                 switchTab('search-payments-tab-content');
-                clearPaymentFormFields(); // Clear form fields when entering make payment section
-                searchPaymentsInForm(); // Load initial payments for search section
-                // Scroll to the tabs container
+                clearPaymentFormFields();
+                searchPaymentsInForm();
                 makePaymentTabsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             else if (viewName === 'complaints') {
             	window.location.href ='Complaints';
             }
         }
+
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(content => hide(content));
             document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active-tab'));
@@ -1360,85 +1330,386 @@
             if (activeContent) show(activeContent);
             if (activeButton) activeButton.classList.add('active-tab');
 
-            // If switching to make-payment-tab, ensure the payment details form is hidden initially
             if (tabId === 'make-payment-tab-content') {
                 hide(document.getElementById('payment-details-form'));
                 document.getElementById('payment-details-form').classList.remove('visible');
             }
         }
 
-        // --- Rendering Functions ---
+        function switchMainTab(tabId) {
+            document.querySelectorAll('#payments-display-area .tab-content').forEach(content => hide(content));
+            document.querySelectorAll('#payments-display-area .tab-button').forEach(button => button.classList.remove('active-tab'));
 
-        // Function to render the main policy cards
-        function renderPolicyCards(policies) {
-            const paymentsDisplayArea = document.getElementById('payments-display-area');
-            paymentsDisplayArea.innerHTML = '<div id="policy-card-grid" class="payment-card-grid"></div>';
-            const policyCardGrid = document.getElementById('policy-card-grid');
+            const activeContent = document.getElementById(tabId);
+            const activeButton = document.querySelector(`#payments-display-area .tab-button[data-main-tab="${tabId}"]`);
 
-            if (policies.length === 0) {
-                show(document.getElementById('no-results'));
-                return;
-            } else {
-                hide(document.getElementById('no-results'));
-            }
+            if (activeContent) show(activeContent);
+            if (activeButton) activeButton.classList.add('active-tab');
+            config.currentMainTab = tabId;
+        }
 
-            policies.forEach(policy => {
-                const card = document.createElement('div');
-                card.className = 'payment-card';
-                card.innerHTML = `
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">${policy.policyName || 'N/A'}</h3>
-                    <div class="space-y-1">
-                        <div class="detail-row">
-                            <span class="label">Policy Number:</span>
-                            <span class="value">${policy.policyNumber || 'N/A'}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">Customer Number:</span>
-                            <span class="value">${policy.customerNumber || 'N/A'}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">Policy Type:</span>
-                            <span class="value">${policy.policyType || 'N/A'}</span>
-                        </div>
-                    </div>
-                    <div class="mt-4 text-right">
-                        <button class="view-btn" data-policy-number="${policy.policyNumber}">
-                            View Payments <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                        </button>
-                    </div>
-                `;
-                card.policyData = policy;
-                policyCardGrid.appendChild(card);
+        function switchCustomerModalTab(tabId) {
+            document.querySelectorAll('#customer-details-modal .tab-content').forEach(content => hide(content));
+            document.querySelectorAll('#customer-details-modal .tab-button').forEach(button => button.classList.remove('active-tab'));
 
-                const viewPaymentsButton = card.querySelector('.view-btn');
-                viewPaymentsButton.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    renderPaymentDetailsList(policy.paymentList, policy.policyNumber);
+            const activeContent = document.getElementById(tabId);
+            const activeButton = document.querySelector(`#customer-details-modal .tab-button[data-modal-tab="${tabId}"]`);
+
+            if (activeContent) show(activeContent);
+            if (activeButton) activeButton.classList.add('active-tab');
+        }
+
+        async function fetchAndRenderPayments() {
+            document.getElementById('customers-content').innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="customer-search-input" placeholder="Search customers..." class="form-input flex-grow">
+                    <button id="customer-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+                <div class="spinner mx-auto mt-8"></div>
+            `;
+            document.getElementById('policies-content').innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="policy-search-input" placeholder="Search policies..." class="form-input flex-grow">
+                    <button id="policy-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+                <div class="spinner mx-auto mt-8"></div>
+            `;
+            document.getElementById('payments-content').innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="payment-list-search-input" placeholder="Search payments..." class="form-input flex-grow">
+                    <button id="payment-list-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+                <div class="spinner mx-auto mt-8"></div>
+            `;
+            hide(document.getElementById('no-results'));
+
+            try {
+                const response = await fetchPaymentHistory(config.currentFilters, config.currentPage, config.itemsPerPage);
+                const rawPolicies = response.data.content || [];
+                const totalElements = response.data.totalElements || 0;
+
+                config.totalPages = Math.max(1, Math.ceil(totalElements / config.itemsPerPage));
+                // total-policies-count and total-customers-count are now updated by fetchPaymentCounts
+                // document.getElementById('total-policies-count').textContent = totalElements;
+
+                config.customersData = {};
+                config.allPoliciesFlat = [];
+                config.allPaymentsFlat = [];
+
+                rawPolicies.forEach(policy => {
+                    const customerNumber = policy.customerNumber;
+                    if (!config.customersData[customerNumber]) {
+                        config.customersData[customerNumber] = {
+                            customerNumber: customerNumber,
+                            customerEmail: policy.email || 'N/A', // Use 'email' from policy
+                            policies: [],
+                            totalPayments: 0
+                        };
+                    }
+                    config.customersData[customerNumber].policies.push(policy);
+                    config.allPoliciesFlat.push({
+                        policyNumber: policy.policyNumber,
+                        customerNumber: policy.customerNumber,
+                        policyName: policy.policyName,
+                        policyType: policy.policyType,
+                        totalPayments: policy.paymentList ? policy.paymentList.length : 0
+                    });
+
+                    if (policy.paymentList) {
+                        policy.paymentList.forEach(payment => {
+                            config.allPaymentsFlat.push({
+                                ...payment,
+                                policyNumber: policy.policyNumber,
+                                customerNumber: policy.customerNumber,
+                                policyName: policy.policyName,
+                                policyType: policy.policyType,
+                                customerEmail: policy.email || 'N/A' // Use 'email' from policy
+                            });
+                            config.customersData[customerNumber].totalPayments++;
+                        });
+                    }
                 });
 
-                card.addEventListener('click', () => {
-                     renderPaymentDetailsList(policy.paymentList, policy.policyNumber);
+                config.allCustomersFlat = Object.values(config.customersData);
+                // total-customers-count is now updated by fetchPaymentCounts
+                // document.getElementById('total-customers-count').textContent = config.allCustomersFlat.length;
+
+                // updatePaymentStatusCounts(); // This function is no longer needed here as counts come from API
+                renderPagination();
+
+                if (totalElements === 0 && config.allCustomersFlat.length === 0 && config.allPaymentsFlat.length === 0) {
+                    show(document.getElementById('no-results'));
+                } else {
+                    renderAllCustomers();
+                    renderAllPolicies();
+                    renderAllPayments();
+                    switchMainTab(config.currentMainTab);
+                }
+
+                show(document.getElementById('pagination'));
+
+            } catch (error) {
+                show(document.getElementById('no-results'));
+                document.getElementById('no-results').innerHTML = `<i class="fas fa-exclamation-triangle text-4xl mb-4 text-red-400"></i><p class="font-semibold text-red-500">Failed to load payments data: ${error.message || 'Unknown error'}</p>`;
+                showToast(error.message || 'Failed to load payments data', 'error');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function renderAllCustomers() {
+            const customerListSection = document.getElementById('customers-content');
+            const currentSearchInput = customerListSection.querySelector('#customer-search-input');
+            const searchTerm = currentSearchInput ? currentSearchInput.value.toLowerCase() : '';
+            
+            customerListSection.innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="customer-search-input" placeholder="Search customers..." class="form-input flex-grow">
+                    <button id="customer-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+            `;
+            document.getElementById('customer-search-btn').addEventListener('click', renderAllCustomers);
+            document.getElementById('customer-search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') renderAllCustomers();
+            });
+
+            const filteredCustomers = config.allCustomersFlat.filter(customer => 
+                customer.customerNumber.toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredCustomers.length === 0) {
+                customerListSection.innerHTML += '<p class="text-center text-gray-500 py-4">No customers found.</p>';
+                return;
+            }
+
+            filteredCustomers.sort((a, b) => a.customerNumber.localeCompare(b.customerNumber)).forEach(customer => {
+                const customerDiv = document.createElement('div');
+                customerDiv.className = 'data-list-item';
+                customerDiv.innerHTML = `
+                    <div class="info-group">
+                        <div class="info-item">
+                            <span class="label">Customer Number:</span>
+                            <span class="value customer-detail-link" data-customer-number="${customer.customerNumber}">${customer.customerNumber || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Total Policies:</span>
+                            <span class="value">${customer.policies.length || '0'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Total Payments:</span>
+                            <span class="value">${customer.totalPayments || '0'}</span>
+                        </div>
+                    </div>
+                `;
+                customerListSection.appendChild(customerDiv);
+            });
+
+            customerListSection.querySelectorAll('.customer-detail-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showCustomerDetails(e.target.dataset.customerNumber);
                 });
             });
         }
 
-        // Function to render the detailed payment list for a given policy in a modal
-        function renderPaymentDetailsList(paymentList, policyNumber) {
-            const titleDisplay = document.getElementById('modal-policy-number-display');
-            const listContainer = document.getElementById('modal-payment-list-container');
+        function renderAllPolicies() {
+            const policyListSection = document.getElementById('policies-content');
+            const currentSearchInput = policyListSection.querySelector('#policy-search-input');
+            const searchTerm = currentSearchInput ? currentSearchInput.value.toLowerCase() : '';
 
-            titleDisplay.textContent = policyNumber;
-            listContainer.innerHTML = '';
+            policyListSection.innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="policy-search-input" placeholder="Search policies..." class="form-input flex-grow">
+                    <button id="policy-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+            `;
+            document.getElementById('policy-search-btn').addEventListener('click', renderAllPolicies);
+            document.getElementById('policy-search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') renderAllPolicies();
+            });
 
-            if (paymentList && paymentList.length > 0) {
-                paymentList.forEach(payment => {
-                    const listItem = document.createElement('div');
-                    listItem.className = 'flex items-center justify-between p-3 bg-white rounded-md shadow-sm border border-gray-200 hover:bg-blue-50 cursor-pointer transition';
-                    listItem.innerHTML = `
+            const filteredPolicies = config.allPoliciesFlat.filter(policy => 
+                policy.policyNumber.toLowerCase().includes(searchTerm) ||
+                policy.customerNumber.toLowerCase().includes(searchTerm) ||
+                policy.policyName.toLowerCase().includes(searchTerm) ||
+                policy.policyType.toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredPolicies.length === 0) {
+                policyListSection.innerHTML += '<p class="text-center text-gray-500 py-4">No policies found.</p>';
+                return;
+            }
+
+            filteredPolicies.sort((a, b) => a.policyNumber.localeCompare(b.policyNumber)).forEach(policy => {
+                const policyDiv = document.createElement('div');
+                policyDiv.className = 'data-list-item';
+                policyDiv.innerHTML = `
+                    <div class="info-group">
+                        <div class="info-item">
+                            <span class="label">Policy Number:</span>
+                            <span class="value">${policy.policyNumber || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Customer Number:</span>
+                            <span class="value">${policy.customerNumber || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Policy Name:</span>
+                            <span class="value">${policy.policyName || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Policy Type:</span>
+                            <span class="value">${policy.policyType || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Total Payments:</span>
+                            <span class="value">${policy.totalPayments || '0'}</span>
+                        </div>
+                    </div>
+                `;
+                policyListSection.appendChild(policyDiv);
+            });
+        }
+
+        function renderAllPayments() {
+            const paymentListSection = document.getElementById('payments-content');
+            const currentSearchInput = paymentListSection.querySelector('#payment-list-search-input');
+            const searchTerm = currentSearchInput ? currentSearchInput.value.toLowerCase() : '';
+
+            paymentListSection.innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="payment-list-search-input" placeholder="Search payments..." class="form-input flex-grow">
+                    <button id="payment-list-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+            `;
+            document.getElementById('payment-list-search-btn').addEventListener('click', renderAllPayments);
+            document.getElementById('payment-list-search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') renderAllPayments();
+            });
+
+            const filteredPayments = config.allPaymentsFlat.filter(payment => 
+                payment.paymentId.toLowerCase().includes(searchTerm) ||
+                payment.policyNumber.toLowerCase().includes(searchTerm) ||
+                payment.customerNumber.toLowerCase().includes(searchTerm) ||
+                payment.policyName.toLowerCase().includes(searchTerm) ||
+                payment.status.toLowerCase().includes(searchTerm) ||
+                (payment.transactionId && payment.transactionId.toLowerCase().includes(searchTerm))
+            );
+
+            if (filteredPayments.length === 0) {
+                paymentListSection.innerHTML += '<p class="text-center text-gray-500 py-4">No payments found.</p>';
+                return;
+            }
+
+            filteredPayments.sort((a, b) => a.paymentId.localeCompare(b.paymentId)).forEach(payment => {
+                const paymentItemDiv = document.createElement('div');
+                paymentItemDiv.className = 'data-list-item';
+                paymentItemDiv.innerHTML = `
+                    <div class="info-group">
+                        <div class="info-item">
+                            <span class="label">Payment ID:</span>
+                            <span class="value">${payment.paymentId || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Policy No:</span>
+                            <span class="value">${payment.policyNumber || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Customer No:</span>
+                            <span class="value">${payment.customerNumber || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Amount:</span>
+                            <span class="value">${payment.installmentAmount || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Due Date:</span>
+                            <span class="value">${payment.dueDate || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Status:</span>
+                            <span class="value"><span class="status-badge status-${payment.status?.toLowerCase().replace(/ /g, '_')}">${payment.status || 'N/A'}</span></span>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 flex space-x-2">
+                        <button class="view-details-btn action-button bg-blue-600 text-white hover:bg-blue-800">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </button>
+                        <button class="make-payment-list-btn action-button bg-green-500 text-white hover:bg-green-600 ${payment.status === 'Paid' ? 'opacity-50 cursor-not-allowed' : ''}" ${payment.status === 'Paid' ? 'disabled' : ''}>
+                            <i class="fas fa-money-bill-wave"></i> Make Payment
+                        </button>
+                    </div>
+                `;
+                paymentItemDiv.querySelector('.view-details-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    viewPaymentDetails(payment);
+                });
+                paymentItemDiv.querySelector('.make-payment-list-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    initiatePaymentForExisting(payment);
+                });
+                paymentListSection.appendChild(paymentItemDiv);
+            });
+        }
+
+        function showCustomerDetails(customerNumber) {
+            const customer = config.customersData[customerNumber];
+            if (!customer) {
+                showCustomError(`Customer ${customerNumber} not found.`);
+                return;
+            }
+
+            document.getElementById('modal-customer-number-display').textContent = customerNumber;
+            const policiesContent = document.getElementById('customer-modal-policies-content');
+            const paymentsContent = document.getElementById('customer-modal-payments-content');
+
+            policiesContent.innerHTML = '';
+            paymentsContent.innerHTML = '';
+
+            if (customer.policies.length > 0) {
+                customer.policies.sort((a, b) => a.policyNumber.localeCompare(b.policyNumber)).forEach(policy => {
+                    const policyDiv = document.createElement('div');
+                    policyDiv.className = 'data-list-item';
+                    policyDiv.innerHTML = `
+                        <div class="info-group">
+                            <div class="info-item">
+                                <span class="label">Policy Number:</span>
+                                <span class="value">${policy.policyNumber || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Policy Name:</span>
+                                <span class="value">${policy.policyName || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Policy Type:</span>
+                                <span class="value">${policy.policyType || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Total Payments:</span>
+                                <span class="value">${policy.paymentList ? policy.paymentList.length : '0'}</span>
+                            </div>
+                        </div>
+                    `;
+                    policiesContent.appendChild(policyDiv);
+                });
+            } else {
+                policiesContent.innerHTML = '<p class="text-center text-gray-500 py-4">No policies found for this customer.</p>';
+            }
+
+            const customerPayments = config.allPaymentsFlat.filter(p => p.customerNumber === customerNumber);
+            if (customerPayments.length > 0) {
+                customerPayments.sort((a, b) => a.paymentId.localeCompare(b.paymentId)).forEach(payment => {
+                    const paymentDiv = document.createElement('div');
+                    paymentDiv.className = 'data-list-item';
+                    paymentDiv.innerHTML = `
                         <div class="info-group">
                             <div class="info-item">
                                 <span class="label">Payment ID:</span>
                                 <span class="value">${payment.paymentId || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Policy No:</span>
+                                <span class="value">${payment.policyNumber || 'N/A'}</span>
                             </div>
                             <div class="info-item">
                                 <span class="label">Amount:</span>
@@ -1449,20 +1720,8 @@
                                 <span class="value">${payment.dueDate || 'N/A'}</span>
                             </div>
                             <div class="info-item">
-                                <span class="label">Payment Date:</span>
-                                <span class="value">${payment.paymentDate || 'N/A'}</span>
-                            </div>
-                            <div class="info-item">
                                 <span class="label">Status:</span>
                                 <span class="value"><span class="status-badge status-${payment.status?.toLowerCase().replace(/ /g, '_')}">${payment.status || 'N/A'}</span></span>
-                            </div>
-                            <div class="info-item">
-                                <span class="label">Transaction ID:</span>
-                                <span class="value">${payment.transactionId || 'N/A'}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="label">Email Status:</span>
-                                <span class="value"><span class="status-badge status-${payment.emailStatus?.toLowerCase().replace(/ /g, '_')}">${payment.emailStatus || 'N/A'}</span></span>
                             </div>
                         </div>
                         <div class="flex-shrink-0 flex space-x-2">
@@ -1474,134 +1733,58 @@
                             </button>
                         </div>
                     `;
-                    listContainer.appendChild(listItem);
-
-                    // Attach event listener dynamically for View Details
-                    const viewDetailsButton = listItem.querySelector('.view-details-btn');
-                    viewDetailsButton.addEventListener('click', () => {
+                    paymentDiv.querySelector('.view-details-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
                         viewPaymentDetails(payment);
                     });
-
-                    // Attach event listener dynamically for Make Payment
-                    const makePaymentListButton = listItem.querySelector('.make-payment-list-btn');
-                    if (makePaymentListButton) {
-                        makePaymentListButton.addEventListener('click', () => {
-                            initiatePaymentForExisting(payment);
-                        });
-                    }
+                    paymentDiv.querySelector('.make-payment-list-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        initiatePaymentForExisting(payment);
+                    });
+                    paymentsContent.appendChild(paymentDiv);
                 });
             } else {
-                listContainer.innerHTML = '<p class="text-center text-gray-500 py-4">No payments found for this policy.</p>';
+                paymentsContent.innerHTML = '<p class="text-center text-gray-500 py-4">No payments found for this customer.</p>';
             }
 
-            openModal('payment-details-modal');
+            switchCustomerModalTab('customer-modal-policies-content');
+            openModal('customer-details-modal');
         }
 
+        // This function is no longer needed as counts come from API
+        // function updatePaymentStatusCounts() {
+        //     let paidCount = 0;
+        //     let unpaidCount = 0;
+        //     let failedCount = 0;
 
-        function renderPolicyCardSkeleton() {
-            const paymentsDisplayArea = document.getElementById('payments-display-area');
-            paymentsDisplayArea.innerHTML = `
-                <div class="payment-card-grid">
-                    ${Array.from({ length: config.itemsPerPage }).map(() => `
-                        <div class="payment-card animate-pulse">
-                            <div class="h-6 bg-gray-200 rounded-md w-3/4 mb-4"></div>
-                            <div class="space-y-2">
-                                <div class="h-4 bg-gray-200 rounded-md w-full"></div>
-                                <div class="h-4 bg-gray-200 rounded-md w-5/6"></div>
-                                <div class="h-4 bg-gray-200 rounded-md w-full"></div>
-                                <div class="h-4 bg-gray-200 rounded-md w-2/3"></div>
-                            </div>
-                            <div class="mt-4 h-8 bg-gray-200 rounded-lg w-1/2 ml-auto"></div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            hide(document.getElementById('no-results'));
-        }
+        //     config.allPaymentsFlat.forEach(payment => {
+        //         if (payment.status === 'Paid') {
+        //             paidCount++;
+        //         } else if (payment.status === 'Unpaid') {
+        //             unpaidCount++;
+        //         } else if (payment.status === 'Failed') {
+        //             failedCount++;
+        //         }
+        //     });
 
-        async function fetchAndRenderPayments() {
-            renderPolicyCardSkeleton();
-            try {
-                const response = await fetchPaymentHistory(config.currentFilters, config.currentPage, config.itemsPerPage);
-                allPolicyData = response.data.content || [];
-                const totalElements = response.data.totalElements || 0; // Get total elements from API response
-
-                config.totalPages = Math.max(1, Math.ceil(totalElements / config.itemsPerPage));
-
-                console.log('Total policies from API (totalElements):', totalElements);
-                console.log('Calculated total pages (config.totalPages):', config.totalPages);
-
-                renderPolicyCards(allPolicyData); // Render policies for the current page
-                document.getElementById('total-display-count').textContent = totalElements;
-
-                updatePaymentStatusCounts(); // Update counts after fetching data
-                renderPagination(); // Render pagination controls
-
-                if (totalElements === 0) {
-                    show(document.getElementById('no-results'));
-                } else {
-                    hide(document.getElementById('no-results'));
-                }
-
-                show(document.getElementById('pagination')); // Ensure pagination is shown
-
-            } catch (error) {
-                const paymentsDisplayArea = document.getElementById('payments-display-area');
-                paymentsDisplayArea.innerHTML = '';
-                show(document.getElementById('no-results'));
-                showToast(error.message || 'Failed to load policies data', 'error');
-            } finally {
-                hideLoader();
-            }
-        }
-
-        function updatePaymentStatusCounts() {
-            let paidCount = 0;
-            let unpaidCount = 0;
-            let failedCount = 0;
-
-            // Iterate through allPolicyData (which is the data for the current page)
-            allPolicyData.forEach(policy => {
-                if (policy.paymentList) {
-                    policy.paymentList.forEach(payment => {
-                        if (payment.status === 'Paid') {
-                            paidCount++;
-                        } else if (payment.status === 'Unpaid') {
-                            unpaidCount++;
-                        } else if (payment.status === 'Failed') {
-                            failedCount++;
-                        }
-                    });
-                }
-            });
-
-            document.getElementById('count-paid').textContent = paidCount;
-            document.getElementById('count-unpaid').textContent = unpaidCount;
-            document.getElementById('count-failed').textContent = failedCount;
-        }
+        //     document.getElementById('count-paid').textContent = paidCount;
+        //     document.getElementById('count-unpaid').textContent = unpaidCount;
+        //     document.getElementById('count-failed').textContent = failedCount;
+        // }
 
         function renderPagination() {
             document.getElementById('total-pages-display').textContent = config.totalPages;
-            // Update the display for the current page
             document.getElementById('page-jump-input-display').textContent = config.currentPage + 1;
-            document.getElementById('page-jump-input').value = config.currentPage + 1; // Display 1-indexed page
+            document.getElementById('page-jump-input').value = config.currentPage + 1;
 
             document.getElementById('prev-page').disabled = config.currentPage === 0;
             document.getElementById('next-page').disabled = config.currentPage === config.totalPages - 1;
-
-            console.log(`Pagination State: currentPage=${config.currentPage}, totalPages=${config.totalPages}`);
-            console.log(`Prev button disabled: ${document.getElementById('prev-page').disabled}`);
-            console.log(`Next button disabled: ${document.getElementById('next-page').disabled}`);
         }
 
         function changePage(newPage) {
-            console.log(`Attempting to change page from ${config.currentPage} to ${newPage}`);
             if (newPage >= 0 && newPage < config.totalPages) {
                 config.currentPage = newPage;
-                console.log(`Page changed to ${config.currentPage}. Fetching new data...`);
-                fetchAndRenderPayments(); // Re-fetch data for the new page
-            } else {
-                console.log(`Invalid page change requested: ${newPage}. Current total pages: ${config.totalPages}`);
+                fetchAndRenderPayments();
             }
         }
 
@@ -1610,10 +1793,10 @@
             let pageNum = parseInt(pageInput.value, 10);
             if (isNaN(pageNum) || pageNum < 1 || pageNum > config.totalPages) {
                 showToast(`Please enter a valid page number between 1 and ${config.totalPages}`, 'error');
-                pageInput.value = config.currentPage + 1; // Reset to current page
+                pageInput.value = config.currentPage + 1;
                 return;
             }
-            changePage(pageNum - 1); // Convert to 0-indexed
+            changePage(pageNum - 1);
         }
 
         function handleFilter() {
@@ -1623,11 +1806,12 @@
                 customerNumber: document.getElementById('filter-customer-number')?.value.trim(),
                 policyName: document.getElementById('filter-policy-name')?.value.trim(),
                 policyType: document.getElementById('filter-policy-type')?.value.trim(),
-                startDate: document.getElementById('filter-start-date')?.value, // Added
-                endDate: document.getElementById('filter-end-date')?.value,     // Added
-                globalSearch: document.getElementById('header-search-input')?.value.trim()
+                startDate: document.getElementById('filter-start-date')?.value,
+                endDate: document.getElementById('filter-end-date')?.value,
+                globalSearch: document.getElementById('header-search-input')?.value.trim(),
+                status: config.currentFilters.status // Preserve status filter if set by clicking counts
             };
-            config.currentPage = 0; // Reset to first page on new filter
+            config.currentPage = 0;
             fetchAndRenderPayments();
             hide(filterPopup);
         }
@@ -1639,13 +1823,23 @@
                 else el.value = '';
             });
             document.getElementById('header-search-input').value = '';
-            config.currentFilters = {};
-            config.currentPage = 0; // Reset to first page on clear
+            config.currentFilters = {}; // Clear all filters including status
+            config.currentPage = 0;
             fetchAndRenderPayments();
             hide(filterPopup);
+            updateStatusCountActiveClass(null); // Remove active class from status counts
         }
 
-        // Form Validation and Submission
+        function updateStatusCountActiveClass(activeStatus) {
+            document.querySelectorAll('.status-count-clickable').forEach(span => {
+                if (span.dataset.status === activeStatus) {
+                    span.classList.add('active-filter');
+                } else {
+                    span.classList.remove('active-filter');
+                }
+            });
+        }
+
         function showError(fieldId, message) {
             const input = document.getElementById(fieldId);
             const error = document.getElementById(`${fieldId}-error`);
@@ -1667,10 +1861,10 @@
         }
 
         function clearPaymentFormFields() {
-            // Clear main payment form fields
             document.getElementById('payment-id-input').value = '';
             document.getElementById('policy-number').value = '';
             document.getElementById('customer-number').value = '';
+            document.getElementById('customer-email').value = '';
             document.getElementById('policy-name').value = '';
             document.getElementById('installment-amount').value = '';
             document.getElementById('installment-count').value = '';
@@ -1692,13 +1886,11 @@
             document.getElementById('bank-holder-name').value = '';
             document.getElementById('bank-otp').value = '';
 
-            // Hide all specific payment detail sections
             hide(document.getElementById('check-details'));
             hide(document.getElementById('card-details'));
             hide(document.getElementById('upi-details'));
             hide(document.getElementById('bank-account-details'));
 
-            // Clear any error messages for main form
             clearError('payment-id-input');
             clearError('payment-method');
             clearError('check-number');
@@ -1713,19 +1905,17 @@
             clearError('bank-holder-name');
             clearError('bank-otp');
 
-            // Hide success messages for OTP fields
             hide(document.getElementById('otp-success'));
             hide(document.getElementById('bank-otp-success'));
 
-            // Reset button states
             document.getElementById('process-payment-btn').disabled = true;
             hide(document.getElementById('send-receipt-btn'));
+            hide(document.getElementById('send-email-payment-btn'));
             const paymentDetailsFormSection = document.getElementById('payment-details-form');
-            hide(paymentDetailsFormSection); // This already adds 'hidden'
-            paymentDetailsFormSection.classList.remove('visible'); // Ensure 'visible' is removed too
+            hide(paymentDetailsFormSection);
+            paymentDetailsFormSection.classList.remove('visible');
             config.currentPayment = null;
 
-            // Clear payment search fields and results
             document.getElementById('search-payment-id').value = '';
             document.getElementById('search-policy-number').value = '';
             document.getElementById('search-customer-number').value = '';
@@ -1737,44 +1927,31 @@
             config.paymentSearch.totalPages = 1;
             config.paymentSearch.filters = {};
 
-            // Clear manual payment ID input
             document.getElementById('manual-payment-id-input').value = '';
             clearError('manual-payment-id-input');
         }
 
-        /**
-         * Handles sending OTP for card or bank account payments.
-         * @param {string} inputId - The ID of the OTP input field (e.g., 'otp' for card, 'bank-otp' for bank account).
-         */
         function sendOtp(inputId) {
             const successMessageEl = document.getElementById(`${inputId}-success`);
             if (successMessageEl) {
                 successMessageEl.textContent = 'OTP sent successfully!';
                 show(successMessageEl);
                 setTimeout(() => hide(successMessageEl), 3000);
-            } else {
-                console.warn(`Success message element not found for inputId: ${inputId}`);
             }
         }
 
-        /**
-         * Toggles the visibility of payment method-specific detail sections.
-         */
         function togglePaymentDetails() {
             const paymentMethod = document.getElementById('payment-method').value;
-            // Hide all sections first
             hide(document.getElementById('check-details'));
             hide(document.getElementById('card-details'));
             hide(document.getElementById('upi-details'));
             hide(document.getElementById('bank-account-details'));
 
-            // Clear previous errors/success messages from OTP fields
             hide(document.getElementById('otp-error'));
             hide(document.getElementById('otp-success'));
             hide(document.getElementById('bank-otp-error'));
             hide(document.getElementById('bank-otp-success'));
 
-            // Show relevant section based on selected method
             if (paymentMethod === 'Check') {
                 show(document.getElementById('check-details'));
             } else if (paymentMethod === 'Credit Card' || paymentMethod === 'Debit Card') {
@@ -1782,9 +1959,7 @@
             } else if (paymentMethod === 'UPI') {
                 show(document.getElementById('upi-details'));
             } else if (paymentMethod === 'Bank Account') {
-                // When 'Bank Account' is selected, open the search modal
                 openModal('bank-account-search-modal');
-                // Clear the search input and hide previous messages in the modal
                 document.getElementById('bank-account-search-input').value = '';
                 hide(document.getElementById('bank-account-search-error'));
                 hide(document.getElementById('bank-account-redirect'));
@@ -1792,11 +1967,6 @@
             }
         }
 
-        /**
-         * Fetches payment details by ID and populates the form.
-         * This is now primarily used internally after a search result is selected.
-         * @param {string} paymentId - The ID of the payment to fetch.
-         */
         async function fetchPaymentDetailsById(paymentId) {
             if (!paymentId) {
                 showError('manual-payment-id-input', 'Payment ID cannot be empty.');
@@ -1804,11 +1974,8 @@
                 return;
             }
             clearError('manual-payment-id-input');
-            // Do not clear all form fields here, as this is called after a search selection
-            // The `initiatePaymentForExisting` function will handle populating.
 
             try {
-                // Fetch with page and size to get the full policy structure if needed, but extract specific payment
                 const response = await fetchPaymentHistory({ paymentId: paymentId }, 0, 100);
                 let foundPayment = null;
                 if (response.data && response.data.content) {
@@ -1816,10 +1983,11 @@
                         if (policy.paymentList) {
                             foundPayment = policy.paymentList.find(p => p.paymentId === paymentId);
                             if (foundPayment) {
-                                // Attach policy details to the payment object for full context
                                 foundPayment.policyNumber = policy.policyNumber;
                                 foundPayment.customerNumber = policy.customerNumber;
                                 foundPayment.policyName = policy.policyName;
+                                foundPayment.policyType = policy.policyType;
+                                foundPayment.customerEmail = policy.email || 'N/A'; // Use 'email' from policy
                                 break;
                             }
                         }
@@ -1827,22 +1995,20 @@
                 }
 
                 if (foundPayment) {
-                    // Directly call initiatePaymentForExisting to populate the form and switch tab
                     initiatePaymentForExisting(foundPayment);
                     showToast(`Details for Payment ID ${paymentId} loaded.`, 'success');
                 } else {
                     showError('manual-payment-id-input', `Payment ID '${paymentId}' not found.`);
-                    hide(document.getElementById('payment-details-form')); // Hide if not found
-                    document.getElementById('payment-details-form').classList.remove('visible'); // Also remove visible class
+                    hide(document.getElementById('payment-details-form'));
+                    document.getElementById('payment-details-form').classList.remove('visible');
                 }
             } catch (error) {
                 showError('manual-payment-id-input', error.message || 'Failed to fetch payment details.');
-                hide(document.getElementById('payment-details-form')); // Hide on error
-                document.getElementById('payment-details-form').classList.remove('visible'); // Also remove visible class
+                hide(document.getElementById('payment-details-form'));
+                document.getElementById('payment-details-form').classList.remove('visible');
             }
         }
 
-        // New function for searching payments within the form
         async function searchPaymentsInForm(page = 0) {
             const searchFilters = {
                 paymentId: document.getElementById('search-payment-id')?.value.trim(),
@@ -1850,31 +2016,28 @@
                 customerNumber: document.getElementById('search-customer-number')?.value.trim()
             };
 
-            // Store filters in config for pagination
             config.paymentSearch.filters = searchFilters;
             config.paymentSearch.currentPage = page;
 
-            renderPaymentSearchSkeleton(); // Show skeleton loader for search results
+            renderPaymentSearchSkeleton();
 
             try {
-                const response = await fetchPaymentHistory(searchFilters, page, 20); // Use 20 items per page for search results
+                const response = await fetchPaymentHistory(searchFilters, page, 20);
                 const searchResultsContainer = document.getElementById('payment-search-results-list');
                 const noResultsEl = document.getElementById('payment-search-no-results');
                 const paginationEl = document.getElementById('payment-search-pagination');
 
-                searchResultsContainer.innerHTML = ''; // Clear previous results
+                searchResultsContainer.innerHTML = '';
 
                 if (response.data && response.data.content && response.data.content.length > 0) {
                     hide(noResultsEl);
                     show(paginationEl);
-                    config.paymentSearch.results = response.data.content; // Store full policy data
-                    config.paymentSearch.totalPages = Math.max(1, Math.ceil(response.data.totalElements / 20)); // Calculate total pages based on 20 items per page
+                    config.paymentSearch.results = response.data.content;
+                    config.paymentSearch.totalPages = Math.max(1, Math.ceil(response.data.totalElements / 20));
 
                     response.data.content.forEach(policy => {
-                        console.log("Processing policy:", policy.policyNumber, "with paymentList length:", policy.paymentList ? policy.paymentList.length : 0);
                         if (policy.paymentList && policy.paymentList.length > 0) {
                             policy.paymentList.forEach(payment => {
-                                console.log("Creating result item for payment:", payment.paymentId);
                                 const resultItem = document.createElement('div');
                                 resultItem.className = 'flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-white rounded-md shadow-sm border border-gray-200 hover:bg-blue-50 cursor-pointer transition';
                                 resultItem.innerHTML = `
@@ -1896,26 +2059,25 @@
                                 `;
                                 searchResultsContainer.appendChild(resultItem);
 
-                                // Create a combined payment object with policy details for the modal
                                 const combinedPaymentDetails = {
                                     ...payment,
                                     policyNumber: policy.policyNumber,
                                     customerNumber: policy.customerNumber,
-                                    policyName: policy.policyName
+                                    policyName: policy.policyName,
+                                    policyType: policy.policyType,
+                                    customerEmail: policy.email || 'N/A' // Use 'email' from policy
                                 };
 
                                 resultItem.querySelector('.view-details-btn').addEventListener('click', (e) => {
-                                    e.stopPropagation(); // Prevent parent click
-                                    viewPaymentDetails(combinedPaymentDetails); // Open modal with details
+                                    e.stopPropagation();
+                                    viewPaymentDetails(combinedPaymentDetails);
                                 });
-                                // Allow clicking anywhere on the item to select (which opens details modal)
                                 resultItem.addEventListener('click', () => {
-                                    viewPaymentDetails(combinedPaymentDetails); // Open modal with details
+                                    viewPaymentDetails(combinedPaymentDetails);
                                 });
 
-                                // Copy button functionality
                                 resultItem.querySelector('.copy-payment-id-btn').addEventListener('click', (e) => {
-                                    e.stopPropagation(); // Prevent parent click
+                                    e.stopPropagation();
                                     const paymentIdToCopy = e.currentTarget.dataset.paymentId;
                                     copyToClipboard(paymentIdToCopy);
                                 });
@@ -1931,7 +2093,6 @@
                 updatePaymentSearchPaginationDisplay();
 
             } catch (error) {
-                console.error('Error in searchPaymentsInForm:', error);
                 show(noResultsEl);
                 hide(paginationEl);
                 searchResultsContainer.innerHTML = '';
@@ -1947,14 +2108,12 @@
                 navigator.clipboard.writeText(text).then(() => {
                     showToast('Payment ID copied to clipboard!', 'success');
                 }).catch(err => {
-                    console.error('Failed to copy text: ', err);
                     showToast('Failed to copy Payment ID.', 'error');
                 });
             } else {
-                // Fallback for insecure contexts or older browsers
                 const textArea = document.createElement("textarea");
                 textArea.value = text;
-                textArea.style.position = "fixed"; // Avoid scrolling to bottom
+                textArea.style.position = "fixed";
                 textArea.style.left = "-999999px";
                 document.body.appendChild(textArea);
                 textArea.focus();
@@ -1963,7 +2122,6 @@
                     document.execCommand('copy');
                     showToast('Payment ID copied to clipboard!', 'success');
                 } catch (err) {
-                    console.error('Fallback: Oops, unable to copy', err);
                     showToast('Failed to copy Payment ID (fallback).', 'error');
                 }
                 document.body.removeChild(textArea);
@@ -2001,18 +2159,15 @@
             }
         }
 
-        /**
-         * Fetches and renders only unpaid payments into the dedicated modal.
-         */
-        async function fetchAndRenderUnpaidPayments() {
+        async function fetchAndRenderUnpaidPayments(filters = {}) {
             const unpaidListContainer = document.getElementById('unpaid-payments-list');
             const noResultsEl = document.getElementById('unpaid-payments-no-results');
-            unpaidListContainer.innerHTML = ''; // Clear previous results
+            unpaidListContainer.innerHTML = '<div class="spinner mx-auto mt-8"></div>'; // Show spinner
             hide(noResultsEl);
 
             try {
-                // Fetch all payments with status "Unpaid"
-                const response = await fetchPaymentHistory({ status: "Unpaid" }, 0, 1000); // Fetch a large number to ensure all unpaid are retrieved
+                const searchFilters = { status: "Unpaid", ...filters };
+                const response = await fetchPaymentHistory(searchFilters, 0, 1000);
                 const unpaidPayments = [];
 
                 if (response.data && response.data.content) {
@@ -2020,18 +2175,21 @@
                         if (policy.paymentList) {
                             policy.paymentList.forEach(payment => {
                                 if (payment.status === 'Unpaid') {
-                                    // Combine policy details with payment details
                                     unpaidPayments.push({
                                         ...payment,
                                         policyNumber: policy.policyNumber,
                                         customerNumber: policy.customerNumber,
-                                        policyName: policy.policyName
+                                        policyName: policy.policyName,
+                                        policyType: policy.policyType,
+                                        customerEmail: policy.email || 'N/A'
                                     });
                                 }
                             });
                         }
                     });
                 }
+
+                unpaidListContainer.innerHTML = ''; // Clear spinner
 
                 if (unpaidPayments.length > 0) {
                     unpaidPayments.forEach(payment => {
@@ -2050,22 +2208,22 @@
                         `;
                         unpaidListContainer.appendChild(listItem);
 
-                        // Attach event listener to select button and the list item itself
                         const selectButton = listItem.querySelector('.select-unpaid-btn');
                         selectButton.addEventListener('click', (e) => {
-                            e.stopPropagation(); // Prevent parent click
-                            initiatePaymentForExisting(payment); // Populate form directly
-                            closeModal('unpaid-payments-selection-modal'); // Close this modal
+                            e.stopPropagation();
+                            initiatePaymentForExisting(payment);
+                            closeModal('unpaid-payments-selection-modal');
                         });
                         listItem.addEventListener('click', () => {
-                            initiatePaymentForExisting(payment); // Populate form directly
-                            closeModal('unpaid-payments-selection-modal'); // Close this modal
+                            initiatePaymentForExisting(payment);
+                            closeModal('unpaid-payments-selection-modal');
                         });
                     });
                 } else {
                     show(noResultsEl);
                 }
             } catch (error) {
+                unpaidListContainer.innerHTML = ''; // Clear spinner
                 noResultsEl.textContent = `Error loading unpaid payments: ${error.message || 'Unknown error'}`;
                 show(noResultsEl);
                 showToast('Failed to load unpaid payments', 'error');
@@ -2074,10 +2232,7 @@
             }
         }
 
-
-        // --- Event Listeners (Re-integrated for Payment Form) ---
         function initializeEventListeners() {
-            // Sidebar Toggle
             document.getElementById('sidebar-toggle-btn')?.addEventListener('click', () => {
                 const sidebar = document.getElementById('sidebar');
                 const mainContent = document.getElementById('main-content');
@@ -2093,14 +2248,12 @@
                 const filterPopup = document.getElementById('filter-popup');
                 const filterBtn = document.getElementById('filter-payments-btn');
                 
-                // Close filter popup if click is outside of it and not on the button
                 if (filterPopup && filterBtn && filterPopup.classList.contains('active') && !filterPopup.contains(e.target) && !filterBtn.contains(e.target)) {
                     hide(filterPopup);
-                    filterPopup.classList.remove('active'); // Ensure active class is removed
+                    filterPopup.classList.remove('active');
                 }
             });
 
-            // Header Search Bar
             const headerSearchContainer = document.getElementById('header-search-container');
             const headerSearchInput = document.getElementById('header-search-input');
             const headerSearchIcon = document.getElementById('header-search-icon');
@@ -2139,7 +2292,6 @@
             document.getElementById('btn-logout-sidebar')?.addEventListener('click', logout);
             document.getElementById('btn-profile')?.addEventListener('click', showProfile);
 
-            // Navigation Links
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -2147,40 +2299,84 @@
                 });
             });
 
-            // "Make Payment" button in action bar
             document.getElementById('add-new-payment')?.addEventListener('click', () => {
-                switchView('make-payment-tab'); // Switch to the tabbed view
-                switchTab('search-payments-tab-content'); // Default to search tab
-                clearPaymentFormFields(); // Clear form for new payment
-                searchPaymentsInForm(); // Load initial payments for search section
+                switchView('make-payment-tab');
+                switchTab('search-payments-tab-content');
+                clearPaymentFormFields();
+                searchPaymentsInForm();
             });
 
-            // Filter button
             document.getElementById('filter-payments-btn')?.addEventListener('click', () => toggle(document.getElementById('filter-popup'), 'active'));
             document.getElementById('apply-filter')?.addEventListener('click', handleFilter);
             document.getElementById('clear-filter')?.addEventListener('click', clearFilters);
 
-            // Tab Buttons
+            // Event listeners for status counts
+            document.querySelectorAll('.status-count-clickable').forEach(span => {
+                span.addEventListener('click', (e) => {
+                    const status = e.currentTarget.dataset.status;
+                    if (config.currentFilters.status === status) {
+                        // If same status clicked, clear the filter
+                        delete config.currentFilters.status;
+                        updateStatusCountActiveClass(null);
+                    } else {
+                        // Set new status filter
+                        config.currentFilters.status = status;
+                        updateStatusCountActiveClass(status);
+                    }
+                    config.currentPage = 0; // Reset to first page when applying status filter
+                    fetchAndRenderPayments();
+                });
+            });
+
             document.getElementById('tab-btn-search-payments')?.addEventListener('click', () => switchTab('search-payments-tab-content'));
             document.getElementById('tab-btn-make-payment')?.addEventListener('click', () => switchTab('make-payment-tab-content'));
 
-            // Payment Search in Search Payments Tab
+            document.getElementById('main-tab-btn-customers')?.addEventListener('click', () => switchMainTab('customers-content'));
+            document.getElementById('main-tab-btn-policies')?.addEventListener('click', () => switchMainTab('policies-content'));
+            document.getElementById('main-tab-btn-payments')?.addEventListener('click', () => switchMainTab('payments-content'));
+
+            document.getElementById('customer-search-btn')?.addEventListener('click', renderAllCustomers);
+            document.getElementById('customer-search-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') renderAllCustomers(); });
+
+            document.getElementById('policy-search-btn')?.addEventListener('click', renderAllPolicies);
+            document.getElementById('policy-search-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') renderAllPolicies(); });
+
+            document.getElementById('payment-list-search-btn')?.addEventListener('click', renderAllPayments);
+            document.getElementById('payment-list-search-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') renderAllPayments(); });
+
+            document.getElementById('customer-modal-tab-policies')?.addEventListener('click', () => switchCustomerModalTab('customer-modal-policies-content'));
+            document.getElementById('customer-modal-tab-payments')?.addEventListener('click', () => switchCustomerModalTab('customer-modal-payments-content'));
+
+
             document.getElementById('search-payments-in-form-btn')?.addEventListener('click', () => searchPaymentsInForm());
             document.getElementById('search-payment-id')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchPaymentsInForm(); });
             document.getElementById('search-policy-number')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchPaymentsInForm(); });
             document.getElementById('search-customer-number')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchPaymentsInForm(); });
 
-            // Pagination for payment search in Search Payments Tab
             document.getElementById('payment-search-prev-page')?.addEventListener('click', () => changePaymentSearchPage(config.paymentSearch.currentPage - 1));
             document.getElementById('payment-search-next-page')?.addEventListener('click', () => changePaymentSearchPage(config.paymentSearch.currentPage + 1));
 
-            // NEW: Select Unpaid Payment button (in Search Payments Tab)
             document.getElementById('select-unpaid-payment-btn')?.addEventListener('click', () => {
                 openModal('unpaid-payments-selection-modal');
-                fetchAndRenderUnpaidPayments(); // Load unpaid payments when modal opens
+                fetchAndRenderUnpaidPayments({}); // Initial fetch without filters
             });
 
-            // NEW: Fetch Payment Details button (in Make Payment Tab)
+            document.getElementById('unpaid-search-btn')?.addEventListener('click', () => {
+                const unpaidFilters = {
+                    paymentId: document.getElementById('unpaid-search-payment-id')?.value.trim(),
+                    policyNumber: document.getElementById('unpaid-search-policy-number')?.value.trim(),
+                    customerNumber: document.getElementById('unpaid-search-customer-number')?.value.trim()
+                };
+                fetchAndRenderUnpaidPayments(unpaidFilters);
+            });
+
+            document.getElementById('unpaid-clear-search-btn')?.addEventListener('click', () => {
+                document.getElementById('unpaid-search-payment-id').value = '';
+                document.getElementById('unpaid-search-policy-number').value = '';
+                document.getElementById('unpaid-search-customer-number').value = '';
+                fetchAndRenderUnpaidPayments({});
+            });
+
             document.getElementById('fetch-payment-details-btn')?.addEventListener('click', () => {
                 const manualPaymentId = document.getElementById('manual-payment-id-input').value.trim();
                 fetchPaymentDetailsById(manualPaymentId);
@@ -2192,11 +2388,9 @@
                 }
             });
 
-
-            // Payment Form Submission (in Make Payment Tab)
             document.getElementById('payment-form')?.addEventListener('submit', async e => {
                 e.preventDefault();
-                const paymentId = document.getElementById('payment-id-input').value.trim(); // Get from new input
+                const paymentId = document.getElementById('payment-id-input').value.trim();
                 const policyNumber = document.getElementById('policy-number').value.trim();
                 const customerNumber = document.getElementById('customer-number').value.trim();
                 const paymentMethod = document.getElementById('payment-method').value;
@@ -2205,7 +2399,6 @@
                 if (!paymentId) { showError('payment-id-input', 'Payment ID is required'); return; }
                 if (!paymentMethod) { showError('payment-method', 'Payment Method is required'); return; }
 
-                // Collect payment method specific details
                 if (paymentMethod === 'Check') {
                     const checkNumber = document.getElementById('check-number').value.trim();
                     if (!checkNumber) { showError('check-number', 'Check Number is required'); return; }
@@ -2252,37 +2445,57 @@
                         userCode: config.userCode
                     });
                     if (data.data && data.data.responseStatus === 'Success') {
-                        // Update the form fields with the new data
-                        document.getElementById('payment-id-input').value = data.data.paymentId || '';
-                        // Policy number, customer number, policy name remain the same as they were loaded
-                        document.getElementById('installment-amount').value = data.data.installmentAmount || 'N/A';
-                        document.getElementById('installment-count').value = data.data.installmentCount || '0';
-                        document.getElementById('due-date').value = data.data.dueDate || 'N/A';
-                        document.getElementById('payment-date').value = data.data.paymentDate || 'N/A';
-                        document.getElementById('status').value = data.data.status || 'N/A';
-                        document.getElementById('transaction-id').value = data.data.transactionId || 'N/A';
-                        document.getElementById('email-status').value = data.data.emailStatus || 'N/A';
+                        // Update config.currentPayment with new transaction details
+                        if (config.currentPayment) {
+                            config.currentPayment.paymentId = data.data.paymentId || config.currentPayment.paymentId;
+                            config.currentPayment.installmentAmount = data.data.installmentAmount || config.currentPayment.installmentAmount;
+                            config.currentPayment.installmentCount = data.data.installmentCount || config.currentPayment.installmentCount;
+                            config.currentPayment.dueDate = data.data.dueDate || config.currentPayment.dueDate;
+                            config.currentPayment.paymentDate = data.data.paymentDate || config.currentPayment.paymentDate;
+                            config.currentPayment.status = data.data.status || config.currentPayment.status;
+                            config.currentPayment.transactionId = data.data.transactionId || config.currentPayment.transactionId;
+                            config.currentPayment.emailStatus = data.data.emailStatus || config.currentPayment.emailStatus;
+                            config.currentPayment.responseStatus = data.data.responseStatus || config.currentPayment.responseStatus;
+                            config.currentPayment.customerEmail = data.data.customerEmail || config.currentPayment.customerEmail;
+                        } else {
+                            // This case should ideally not happen if initiatePaymentForExisting is always called first
+                            // But as a fallback, create a basic payment object
+                            config.currentPayment = {
+                                paymentId: data.data.paymentId,
+                                policyNumber: policyNumber,
+                                customerNumber: customerNumber,
+                                customerEmail: data.data.customerEmail || 'N/A',
+                                policyName: document.getElementById('policy-name').value || 'N/A', // Fallback to DOM if currentPayment was null
+                                policyType: document.getElementById('policy-type').value || 'N/A', // Fallback to DOM if currentPayment was null
+                                installmentAmount: data.data.installmentAmount,
+                                installmentCount: data.data.installmentCount,
+                                dueDate: data.data.dueDate,
+                                paymentDate: data.data.paymentDate,
+                                status: data.data.status,
+                                transactionId: data.data.transactionId,
+                                emailStatus: data.data.emailStatus,
+                                responseStatus: data.data.responseStatus
+                            };
+                        }
 
-                        // Disable process button and show send receipt button
+                        // Update form fields based on the now complete config.currentPayment
+                        document.getElementById('payment-id-input').value = config.currentPayment.paymentId;
+                        document.getElementById('installment-amount').value = config.currentPayment.installmentAmount;
+                        document.getElementById('installment-count').value = config.currentPayment.installmentCount;
+                        document.getElementById('due-date').value = config.currentPayment.dueDate;
+                        document.getElementById('payment-date').value = config.currentPayment.paymentDate;
+                        document.getElementById('status').value = config.currentPayment.status;
+                        document.getElementById('transaction-id').value = config.currentPayment.transactionId;
+                        document.getElementById('email-status').value = config.currentPayment.emailStatus;
+                        document.getElementById('customer-email').value = config.currentPayment.customerEmail;
+
                         document.getElementById('process-payment-btn').disabled = true;
                         show(document.getElementById('send-receipt-btn'));
+                        show(document.getElementById('send-email-payment-btn'));
 
-                        // Show the payment confirmation modal with the updated details
-                        viewPaymentDetails({
-                            paymentId: data.data.paymentId,
-                            policyNumber: policyNumber, // Use the one from the form
-                            customerNumber: customerNumber, // Use the one from the form
-                            policyName: document.getElementById('policy-name').value, // Use the one from the form
-                            installmentAmount: data.data.installmentAmount,
-                            installmentCount: data.data.installmentCount,
-                            dueDate: data.data.dueDate,
-                            paymentDate: data.data.paymentDate,
-                            status: data.data.status,
-                            transactionId: data.data.transactionId,
-                            emailStatus: data.data.emailStatus,
-                            responseStatus: data.data.responseStatus
-                        });
-                        showToast(data.data.message || `Payment processed successfully for ID: ${data.data.paymentId}`);
+                        viewPaymentDetails(config.currentPayment); // Pass the fully updated object
+                        showToast(data.data.message || `Payment processed successfully for ID: ${data.currentPayment.paymentId}`);
+                        fetchPaymentCounts(); // Refresh counts after a payment is processed
                     } else {
                         showCustomError(data.errorMessage || 'Payment failed. Please try again.');
                     }
@@ -2291,16 +2504,37 @@
                 }
             });
 
-            // Send Receipt button (on form)
             document.getElementById('send-receipt-btn')?.addEventListener('click', openSendReceiptModal);
+            document.getElementById('send-email-payment-btn')?.addEventListener('click', async () => {
+                const currentPayment = config.currentPayment;
+                if (!currentPayment || !currentPayment.customerEmail || !currentPayment.paymentId || !currentPayment.transactionId || !currentPayment.paymentDate || !currentPayment.status) {
+                    showCustomError('Missing payment details to send email. Please ensure payment is processed and details are loaded.');
+                    return;
+                }
+                try {
+                    const payload = {
+                        email: currentPayment.customerEmail,
+                        paymentId: currentPayment.paymentId,
+                        txnId: currentPayment.transactionId,
+                        date: currentPayment.paymentDate,
+                        status: currentPayment.status
+                    };
+                    const response = await sendMailAPI(payload);
+                    if (response.status === 'success' && response.message === 'email send successfully') {
+                        showToast('Email sent successfully!', 'success');
+                        fetchPaymentCounts(); // Refresh counts after email sent (email status might change)
+                    } else {
+                        showCustomError(response.message || 'Failed to send email.');
+                    }
+                } catch (error) {
+                    showCustomError(error.message || 'Error sending email.');
+                }
+            });
 
-            // Send Receipt button (in modal)
             document.getElementById('send-receipt-btn-modal')?.addEventListener('click', sendReceipt);
 
-            // Generate PDF from modal
             document.getElementById('generate-pdf-modal-btn')?.addEventListener('click', generatePaymentPDF);
 
-            // Pagination event listeners
             document.getElementById('prev-page')?.addEventListener('click', () => changePage(config.currentPage - 1));
             document.getElementById('next-page')?.addEventListener('click', () => changePage(config.currentPage + 1));
             document.getElementById('jump-to-page-btn')?.addEventListener('click', jumpToPage);
@@ -2310,7 +2544,6 @@
                 }
             });
 
-            // Bank Account Search Modal Logic
             document.getElementById('search-bank-account-btn-modal')?.addEventListener('click', async () => {
                 const bankAccNo = document.getElementById('bank-account-search-input').value.trim();
                 const errorEl = document.getElementById('bank-account-search-error');
@@ -2361,17 +2594,13 @@
                 window.location.href = 'bankAccount';
             });
 
-            // Clear payment form button (now "Clear Form" button)
             document.getElementById('clear-payment-form-btn')?.addEventListener('click', () => {
-                clearPaymentFormFields(); // Clear the form and hide the details section
-                // Do NOT switch tab automatically, let user decide
+                clearPaymentFormFields();
+                fetchPaymentCounts(); // Refresh counts after clearing form
             });
         }
 
-        // Initialize Modals - Centralized function to get all modal elements
-        const modalInitializers = {
-            // No specific initializers needed for these modals currently
-        };
+        const modalInitializers = {};
 
         function initializeModals() {
             const customAlertModalHtml = `
@@ -2402,7 +2631,8 @@
             modals = {
                 'payment-confirmation-modal': document.getElementById('payment-confirmation-modal'),
                 'payment-details-modal': document.getElementById('payment-details-modal'),
-                'unpaid-payments-selection-modal': document.getElementById('unpaid-payments-selection-modal'), // NEW
+                'customer-details-modal': document.getElementById('customer-details-modal'),
+                'unpaid-payments-selection-modal': document.getElementById('unpaid-payments-selection-modal'),
                 'feature-soon-modal': document.getElementById('feature-soon-modal'),
                 'profile-modal': document.getElementById('profile-modal'),
                 'contact-us-modal': document.getElementById('contact-us-modal'),
@@ -2420,26 +2650,21 @@
             });
         }
 
-        /**
-         * Populates the "Make a Payment" form with details of an existing payment.
-         * This function is called when a user clicks "Pay Now" next to a payment in the history.
-         * @param {object} payment - The payment object from the history.
-         */
         function initiatePaymentForExisting(payment) {
-            // First, switch to the "Make Payment" tab
-            switchView('make-payment-tab'); // This will show the make-payment-tabs-container
-            switchTab('make-payment-tab-content'); // This will activate the "Make Payment" tab content
+            switchView('make-payment-tab');
+            switchTab('make-payment-tab-content');
 
-            // Close any open modals
             closeModal('payment-details-modal');
             closeModal('payment-confirmation-modal');
             closeModal('unpaid-payments-selection-modal');
+            closeModal('customer-details-modal');
 
-            // Now, populate the form fields
-            config.currentPayment = payment; // Store the payment for PDF generation if needed from this context
-            document.getElementById('payment-id-input').value = payment.paymentId || ''; // Set the new input value
+            config.currentPayment = payment; // Set the current payment object
+
+            document.getElementById('payment-id-input').value = payment.paymentId || '';
             document.getElementById('policy-number').value = payment.policyNumber || '';
             document.getElementById('customer-number').value = payment.customerNumber || '';
+            document.getElementById('customer-email').value = payment.customerEmail || '';
             document.getElementById('policy-name').value = payment.policyName || '';
             document.getElementById('installment-amount').value = payment.installmentAmount || '';
             document.getElementById('installment-count').value = payment.installmentCount || '0';
@@ -2449,28 +2674,26 @@
             document.getElementById('transaction-id').value = payment.transactionId || '';
             document.getElementById('email-status').value = payment.emailStatus || '';
 
-            // Show the payment details form section within the make payment form
             const paymentDetailsFormSection = document.getElementById('payment-details-form');
             show(paymentDetailsFormSection);
-            paymentDetailsFormSection.classList.add('visible'); // Add the visible class as per CSS
+            paymentDetailsFormSection.classList.add('visible');
 
-            // Disable process button if already paid
             document.getElementById('process-payment-btn').disabled = payment.status === 'Paid';
-            // Show send receipt button if already paid
             toggle(document.getElementById('send-receipt-btn'), 'hidden', payment.status !== 'Paid');
+            toggle(document.getElementById('send-email-payment-btn'), 'hidden', payment.status !== 'Paid');
             
             showToast(`Details for ${payment.paymentId} loaded into payment form.`, 'success');
         }
 
-
-        // Generate Payment PDF
         function generatePaymentPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            // Use config.currentPayment if available, otherwise fallback to modal content
             const payment = config.currentPayment || {
                 paymentId: document.getElementById('modal-payment-id').textContent,
                 policyNumber: document.getElementById('modal-policy-number').textContent,
                 customerNumber: document.getElementById('modal-customer-number').textContent,
+                customerEmail: document.getElementById('modal-customer-email').textContent,
                 policyName: document.getElementById('modal-policy-name').textContent,
                 installmentAmount: document.getElementById('modal-installment-amount').textContent,
                 installmentCount: document.getElementById('modal-installment-count').textContent,
@@ -2501,6 +2724,7 @@
                 { label: 'Payment ID', value: payment.paymentId },
                 { label: 'Policy Number', value: payment.policyNumber },
                 { label: 'Customer Number', value: payment.customerNumber },
+                { label: 'Customer Email', value: payment.customerEmail },
                 { label: 'Policy Name', value: payment.policyName },
                 { label: 'Amount', value: payment.installmentAmount },
                 { label: 'Installment Count', value: payment.installmentCount },
@@ -2521,38 +2745,32 @@
             doc.save(`payment_details_${payment.paymentId || 'unknown'}.pdf`);
         }
 
-
-        // Initialize Page
         document.addEventListener('DOMContentLoaded', () => {
             initializeModals();
             config.userCode = getuserCode();
             if (!config.userCode) return;
             initializeEventListeners();
+            fetchPaymentCounts(); // Fetch initial counts on page load
             
-            // Determine initial view based on URL parameters (if navigating from "Pay Now")
             const urlParams = new URLSearchParams(window.location.search);
             const paymentIdFromUrl = urlParams.get('paymentId');
 
             if (paymentIdFromUrl) {
-                // If paymentId is in URL, try to fetch and show the payment form
                 showLoader();
-                // Call fetchPaymentDetailsById, which now internally calls initiatePaymentForExisting
                 fetchPaymentDetailsById(paymentIdFromUrl)
                     .then(() => {
-                        // Ensure other main content areas are hidden
                         hide(document.getElementById('payments-display-area'));
                         hide(document.getElementById('action-bar'));
-                        hide(document.getElementById('pagination')); // Hide pagination if directly to form
+                        hide(document.getElementById('pagination'));
                     })
                     .catch(error => {
                         showCustomError(`Error loading payment details: ${error.message}`);
-                        switchView('payments'); // Fallback to history view
+                        switchView('payments');
                     })
                     .finally(() => {
                         hideLoader();
                     });
             } else {
-                // Default view: show payment history (policy cards)
                 switchView('payments');
             }
         });

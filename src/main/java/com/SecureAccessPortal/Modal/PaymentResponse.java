@@ -8,7 +8,17 @@ public class PaymentResponse {
 	private String customerNumber;
 	private String policyName;
 	private String policyType;
+	private String email;
 	private List<PaymentList> paymentList;
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public String getResponseStatus() {
 		return responseStatus;
 	}

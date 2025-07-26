@@ -44,7 +44,78 @@ public class DashboardStats {
 	private long pendingVerifications;
 	private long rejectedBankAccount;
 	
-	
+	//Payments;
+	private long totalPolicies;
+	private long totalCustomers;
+	private long totalPayments;
+	private long paid;
+	private long unpaid;
+	private long failed;
+	private long cancelled;
+	private long pending;
+	public long getTotalPolicies() {
+		return totalPolicies;
+	}
+
+	public void setTotalPolicies(long totalPolicies) {
+		this.totalPolicies = totalPolicies;
+	}
+
+	public long getTotalCustomers() {
+		return totalCustomers;
+	}
+
+	public void setTotalCustomers(long totalCustomers) {
+		this.totalCustomers = totalCustomers;
+	}
+
+	public long getTotalPayments() {
+		return totalPayments;
+	}
+
+	public void setTotalPayments(long totalPayments) {
+		this.totalPayments = totalPayments;
+	}
+
+	public long getPaid() {
+		return paid;
+	}
+
+	public void setPaid(long paid) {
+		this.paid = paid;
+	}
+
+	public long getUnpaid() {
+		return unpaid;
+	}
+
+	public void setUnpaid(long unpaid) {
+		this.unpaid = unpaid;
+	}
+
+	public long getFailed() {
+		return failed;
+	}
+
+	public void setFailed(long failed) {
+		this.failed = failed;
+	}
+
+	public long getCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(long cancelled) {
+		this.cancelled = cancelled;
+	}
+
+	public long getPending() {
+		return pending;
+	}
+
+	public void setPending(long pending) {
+		this.pending = pending;
+	}
 
 	public long getTotalAccounts() {
 		return totalAccounts;
