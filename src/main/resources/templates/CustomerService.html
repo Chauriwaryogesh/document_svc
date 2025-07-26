@@ -691,7 +691,7 @@
             padding: 12px 24px;
             border-radius: 8px;
             color: white;
-            z-index: 110;
+            z-index: 1001; /* Changed from 110 to 1001 for higher priority than modals */
             font-weight: 500;
             animation: slide-up 0.3s ease-out, slide-down 0.0s ease-in 2.7s forwards;
         }
@@ -1154,7 +1154,9 @@
                             <h4 class="text-lg font-semibold">Policy Details</h4>
                             <div>
                                 <label for="add-policy-number" class="form-label block text-sm required">Policy Number</label>
-                                <input type="text" id="add-policy-number" class="form-input mt-1" placeholder="Enter policy number" required aria-required="true">
+                                <select id="add-policy-number" class="form-input mt-1" required aria-required="true">
+                                    <option value="" disabled selected>Select policy number</option>
+                                </select>
                             </div>
                             <div>
                                 <label for="add-customer-number" class="form-label block text-sm required">Customer Number</label>
@@ -1182,15 +1184,15 @@
                                 <input type="text" id="add-account-number" class="form-input mt-1" placeholder="Enter account number" required aria-required="true">
                             </div>
                             <div>
-                                <label for="add-ifsc-code" class="form-label block text-sm required">IFSC Code</label>
-                                <select id="add-ifsc-code" class="form-input mt-1" required aria-required="true">
-                                    <option value="" disabled selected>Select IFSC code</option>
-                                </select>
-                            </div>
-                            <div>
                                 <label for="add-bank-name" class="form-label block text-sm required">Bank Name</label>
                                 <select id="add-bank-name" class="form-input mt-1" required aria-required="true">
                                     <option value="" disabled selected>Select bank name</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="add-ifsc-code" class="form-label block text-sm required">IFSC Code</label>
+                                <select id="add-ifsc-code" class="form-input mt-1" required aria-required="true">
+                                    <option value="" disabled selected>Select IFSC code</option>
                                 </select>
                             </div>
                             <div>
@@ -1297,11 +1299,12 @@
                     <button class="btn-primary" onclick="navigateToPayments()">Click here if you are not redirected</button>
                 </div>
             </section>
+            <!-- Track Workflow Section - Now redirects to activity -->
             <section id="track-workflow-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Track Workflow</h2>
-                <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto text-center">
-                    <p class="text-xl text-gray-700">Working in progress...</p>
-                    <p class="text-gray-500 mt-2">This section will allow you to track the status of your workflows.</p>
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Workflows</h2>
+                <p class="text-gray-600">Redirecting to the workflow tracking page...</p>
+                <div class="mt-6 text-center">
+                    <button class="btn-primary" onclick="window.location.href = 'activity';">Click here if you are not redirected</button>
                 </div>
             </section>
             <section id="manage-workitems-section" class="content-section hidden">
@@ -1532,6 +1535,8 @@
             userCode: sessionStorage.getItem('userCode'),
             customerName: sessionStorage.getItem('customerName'),
             customerNo: sessionStorage.getItem('customerNo'),
+            customerEmail: '', // New: To store customer email
+            customerDob: '',   // New: To store customer DOB
             loginUrl: 'login',
             apiBaseUrl: 'http://localhost:8081/bankService',
             policyUrl: 'http://localhost:8081/policy',
@@ -1551,8 +1556,11 @@
         let totalWorkItemPages = 1;
         let currentWorkItemPage = 1;
         let currentWorkItemFilters = {};
+        // Removed track workflow specific global variables as it now redirects
         let currentSection = 'dashboard'; // Track current active section
         let currentDashboardView = 'card'; // 'card' or 'list'
+        let bankDetailsLookup = {}; // Stores parsed bank data: { "Bank Name": [{ ifsc: "...", branch: "..." }, ...] }
+
 
         const sidebar = document.getElementById('sidebar');
         const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
@@ -1601,6 +1609,7 @@
             sessionStorage.removeItem('userCode');
             sessionStorage.removeItem('customerName');
             sessionStorage.removeItem('customerNo');
+            sessionStorage.removeItem('allPolicyNumbers'); // Clear stored policy numbers on logout
             showToast('Logged out successfully!', 'success');
             setTimeout(() => {
                 window.location.href = config.loginUrl;
@@ -1627,7 +1636,10 @@
 
             // Re-fetch and populate data for sections with dynamic content
             if (sectionName === 'personal-details') {
-                await fetchCustomerDetails();
+                // Only fetch if details are not already populated or if a refresh is explicitly needed
+                if (document.getElementById('detail-customer-no').textContent === 'N/A' || !config.customerNo) {
+                    await fetchCustomerDetails();
+                }
             } else if (sectionName === 'policy-details') {
                 await fetchAndPopulatePolicies(1); // Fetch first page
                 document.getElementById('policy-search').value = ''; // Clear local search
@@ -1636,6 +1648,10 @@
             } else if (sectionName === 'manage-workitems') {
                 await fetchAndPopulateWorkItems(1, {}); // Fetch first page with no filters
                 await fetchWorkItemStatusCounts(); // Fetch and update status counts
+            } else if (sectionName === 'track-workflow') {
+                // Redirect to activity directly
+                window.location.href = 'activity';
+                return; // Prevent further execution in this function
             }
             if (window.innerWidth <= 768) {
                 sidebar.classList.remove('open');
@@ -1651,7 +1667,10 @@
                     navigateToComplaints();
                 } else if (targetSection === 'feedback-nav') {
                     navigateToFeedback();
-                } else {
+                } else if (targetSection === 'track-workflow') { // Handle track-workflow redirect
+                    window.location.href = 'activity';
+                }
+                else {
                     showSection(targetSection);
                 }
                 if (window.innerWidth <= 768) {
@@ -1687,6 +1706,7 @@
             const userCode = config.userCode;
             if (!userCode) {
                 console.error("UserCode not found in session storage. Cannot fetch customer details.");
+                // Populate with N/A values if userCode is missing
                 document.getElementById('detail-customer-no').textContent = 'N/A';
                 document.getElementById('detail-customer-name').textContent = 'N/A';
                 document.getElementById('detail-phone-number').textContent = 'N/A';
@@ -1725,14 +1745,17 @@
                     const customerData = result.data;
                     sessionStorage.setItem('customerNo', customerData.customerNo);
                     config.customerNo = customerData.customerNo;
-                    if (!config.customerName || config.customerName === 'Customer') {
-                        const fullName = `${customerData.name || ''} ${customerData.middleName || ''} ${customerData.surname || ''}`.trim();
-                        sessionStorage.setItem('customerName', fullName);
-                        customerNameDisplay.textContent = fullName;
-                        config.customerName = fullName;
-                    }
+                    const fullName = `${customerData.name || ''} ${customerData.middleName || ''} ${customerData.surname || ''}`.trim();
+                    sessionStorage.setItem('customerName', fullName);
+                    config.customerName = fullName;
+                    config.customerEmail = customerData.email || ''; // Store email in config
+                    config.customerDob = customerData.dateOfBirth || ''; // Store DOB in config
+
+                    // Populate UI elements
+                    customerNameDisplay.textContent = config.customerName;
+                    userIdDisplay.textContent = `User ID: ${config.userCode}`;
                     document.getElementById('detail-customer-no').textContent = customerData.customerNo || 'N/A';
-                    document.getElementById('detail-customer-name').textContent = `${customerData.name || ''} ${customerData.middleName || ''} ${customerData.surname || ''}`.trim() || 'N/A';
+                    document.getElementById('detail-customer-name').textContent = fullName || 'N/A';
                     document.getElementById('detail-phone-number').textContent = customerData.phoneNumber || 'N/A';
                     document.getElementById('detail-email').textContent = customerData.email || 'N/A';
                     document.getElementById('detail-dob').textContent = customerData.dateOfBirth || 'N/A';
@@ -1803,11 +1826,19 @@
                 }
                 if (result.data && result.data.content && result.data.content.length > 0) {
                     allPolicies = []; // Reset allPolicies to ensure no old data persists
+                    const uniquePolicyNumbers = new Set(); // Use a Set to store unique policy numbers
                     result.data.content.forEach(customerEntry => {
                         if (customerEntry.policyList && customerEntry.policyList.length > 0) {
                             allPolicies = allPolicies.concat(customerEntry.policyList);
+                            customerEntry.policyList.forEach(policy => {
+                                if (policy.policyNumber) {
+                                    uniquePolicyNumbers.add(policy.policyNumber);
+                                }
+                            });
                         }
                     });
+                    // Store unique policy numbers in session storage
+                    sessionStorage.setItem('allPolicyNumbers', JSON.stringify(Array.from(uniquePolicyNumbers)));
                     
                     totalPolicyPages = result.data.totalPages; 
                     populatePolicyTable();
@@ -1817,6 +1848,7 @@
                     tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-gray-500">No policies found for this customer.</td></tr>`;
                     allPolicies = [];
                     totalPolicyPages = 0;
+                    sessionStorage.removeItem('allPolicyNumbers'); // Clear if no policies found
                     renderPagination('policy-pagination', currentPolicyPage, totalPolicyPages, fetchAndPopulatePolicies);
                 }
             } catch (error) {
@@ -2071,20 +2103,36 @@
                 resultDiv.classList.add('hidden');
                 resultDiv.innerHTML = '';
             }
+            // Populate fields from config (already fetched on page load)
             document.getElementById('add-customer-number').value = config.customerNo || '';
             document.getElementById('add-cust-name').value = config.customerName || '';
+            document.getElementById('add-email').value = config.customerEmail || ''; // Use from config
+            document.getElementById('add-date-of-birth').value = config.customerDob || ''; // Use from config
             document.getElementById('add-user-code').value = config.userCode || '';
-            if (!document.getElementById('add-email').value || !document.getElementById('add-date-of-birth').value) {
-                await fetchCustomerDetailsForAddAccount();
+
+            // Populate policy number dropdown
+            const policyNumberSelect = document.getElementById('add-policy-number');
+            policyNumberSelect.innerHTML = '<option value="" disabled selected>Select policy number</option>';
+            const storedPolicyNumbers = sessionStorage.getItem('allPolicyNumbers');
+            if (storedPolicyNumbers) {
+                const policyNumbers = JSON.parse(storedPolicyNumbers);
+                policyNumbers.forEach(policyNo => {
+                    const option = document.createElement('option');
+                    option.value = policyNo;
+                    option.textContent = policyNo;
+                    policyNumberSelect.appendChild(option);
+                });
+            } else {
+                policyNumberSelect.innerHTML += '<option value="" disabled>No policies found. Please view Policy Details first.</option>';
             }
+
+            // Fetch and populate bank names and then IFSC codes
             showLoader();
             try {
-                const [ifscCodesResponse, bankNamesResponse] = await Promise.all([
-                    fetchIFSCCodes(),
-                    fetchBankNames()
-                ]);
-                populateIFSCDropdown(ifscCodesResponse.data);
-                populateBankNameDropdown(bankNamesResponse.data);
+                await fetchBankNames(); // This now populates bankDetailsLookup
+                populateBankNameDropdown();
+                // Clear IFSC and Branch when modal opens
+                document.getElementById('add-ifsc-code').innerHTML = '<option value="" disabled selected>Select IFSC code</option>';
                 document.getElementById('add-branch-code').value = '';
             } catch (error) {
                 if (errorDiv) {
@@ -2096,48 +2144,7 @@
                 hideLoader();
             }
         }
-        async function fetchCustomerDetailsForAddAccount() {
-            const userCode = config.userCode;
-            if (!userCode) return;
-            try {
-                const response = await fetch('http://localhost:8081/customer/getCustomerDetails', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'userCode': userCode
-                    }
-                });
-                const result = await response.json();
-                if (response.ok && result.status === 'Success' && result.data) {
-                    document.getElementById('add-email').value = result.data.email || '';
-                    document.getElementById('add-date-of-birth').value = result.data.dateOfBirth || '';
-                } else {
-                    console.error('Failed to fetch customer details for add account modal:', result.errorMessage);
-                }
-            } catch (error) {
-                console.error('Error fetching customer details for add account modal:', error);
-            }
-        }
-        async function fetchIFSCCodes() {
-            showLoader();
-            try {
-                const response = await fetch(`${config.apiBaseUrl}/bank-details/branchCodes`, {
-                    method: 'GET',
-                    headers: { 'userCode': config.userCode }
-                });
-                const result = await response.json();
-                if (!response.ok || result.status !== 'Success') {
-                    throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
-                }
-                return result;
-            } catch (error) {
-                console.error('Error fetching IFSC codes:', error);
-                showToast('Error fetching IFSC codes: ' + error.message, 'error');
-                throw error;
-            } finally {
-                hideLoader();
-            }
-        }
+        
         async function fetchBankNames() {
             showLoader();
             try {
@@ -2149,6 +2156,23 @@
                 if (!response.ok || result.status !== 'Success') {
                     throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
                 }
+                
+                // Parse the new, more detailed response format
+                bankDetailsLookup = {}; // Reset lookup
+                if (result.data && Array.isArray(result.data)) {
+                    let currentBank = '';
+                    result.data.forEach(line => {
+                        if (line.startsWith('Bank: ')) {
+                            currentBank = line.replace('Bank: ', '').trim();
+                            bankDetailsLookup[currentBank] = [];
+                        } else if (currentBank && line.includes('IFSC: ') && line.includes('Branch: ')) {
+                            const parts = line.split(' - ');
+                            const ifsc = parts.find(p => p.includes('IFSC:')).replace('IFSC: ', '').trim();
+                            const branch = parts.find(p => p.includes('Branch:')).replace('Branch: ', '').trim();
+                            bankDetailsLookup[currentBank].push({ ifsc: ifsc, branch: branch });
+                        }
+                    });
+                }
                 return result;
             } catch (error) {
                 console.error('Error fetching bank names:', error);
@@ -2158,12 +2182,55 @@
                 hideLoader();
             }
         }
-        async function fetchBranchDetails(ifscCode) {
-            return new Promise(resolve => setTimeout(() => resolve({
-                branchCode: `BR${ifscCode.slice(-4)}`,
-                bankName: ifscCode.startsWith('HDFC') ? 'HDFC Bank' : 'Unknown Bank'
-            }), 500));
+
+        function populateBankNameDropdown() {
+            const bankNameSelect = document.getElementById('add-bank-name');
+            if (!bankNameSelect) return;
+            bankNameSelect.innerHTML = '<option value="" disabled selected>Select bank name</option>';
+            const bankNames = Object.keys(bankDetailsLookup);
+            if (bankNames.length > 0) {
+                bankNames.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    bankNameSelect.appendChild(option);
+                });
+            } else {
+                bankNameSelect.innerHTML += '<option value="" disabled>No bank names found</option>';
+            }
         }
+
+        function populateIFSCCodeDropdownByBank(selectedBankName) {
+            const ifscSelect = document.getElementById('add-ifsc-code');
+            if (!ifscSelect) return;
+            ifscSelect.innerHTML = '<option value="" disabled selected>Select IFSC code</option>';
+            document.getElementById('add-branch-code').value = ''; // Clear branch code when bank changes
+
+            if (selectedBankName && bankDetailsLookup[selectedBankName]) {
+                const ifscDetails = bankDetailsLookup[selectedBankName];
+                ifscDetails.forEach(detail => {
+                    const option = document.createElement('option');
+                    option.value = detail.ifsc;
+                    option.textContent = detail.ifsc;
+                    ifscSelect.appendChild(option);
+                });
+            } else {
+                ifscSelect.innerHTML += '<option value="" disabled>No IFSC codes available for this bank</option>';
+            }
+        }
+
+        function autoPopulateBranchCode(selectedBankName, selectedIfscCode) {
+            const branchCodeInput = document.getElementById('add-branch-code');
+            branchCodeInput.value = ''; // Clear current value
+            if (selectedBankName && selectedIfscCode && bankDetailsLookup[selectedBankName]) {
+                const ifscDetails = bankDetailsLookup[selectedBankName];
+                const found = ifscDetails.find(detail => detail.ifsc === selectedIfscCode);
+                if (found) {
+                    branchCodeInput.value = found.branch;
+                }
+            }
+        }
+
         async function fetchPolicySearchDetails(policyNo) {
             showLoader();
             try {
@@ -2216,36 +2283,7 @@
                 hideLoader();
             }
         }
-        function populateIFSCDropdown(ifscCodes) {
-            const ifscSelect = document.getElementById('add-ifsc-code');
-            if (!ifscSelect) return;
-            ifscSelect.innerHTML = '<option value="" disabled selected>Select IFSC code</option>';
-            if (Array.isArray(ifscCodes)) {
-                ifscCodes.forEach(code => {
-                    const option = document.createElement('option');
-                    option.value = code;
-                    option.textContent = code;
-                    ifscSelect.appendChild(option);
-                });
-            } else {
-                ifscSelect.innerHTML += '<option value="" disabled>No IFSC codes found</option>';
-            }
-        }
-        function populateBankNameDropdown(bankNames) {
-            const bankNameSelect = document.getElementById('add-bank-name');
-            if (!bankNameSelect) return;
-            bankNameSelect.innerHTML = '<option value="" disabled selected>Select bank name</option>';
-            if (Array.isArray(bankNames) && bankNames.length) {
-                bankNames.forEach(name => {
-                    const option = document.createElement('option');
-                    option.value = name;
-                    option.textContent = name;
-                    bankNameSelect.appendChild(option);
-                });
-            } else {
-                bankNameSelect.innerHTML += '<option value="" disabled>No bank names found</option>';
-            }
-        }
+        
         async function handleAddBankAccountSubmit() {
             const form = document.getElementById('add-bank-account-form');
             const errorDiv = document.getElementById('add-bank-account-error');
@@ -2526,6 +2564,8 @@
             });
         }
         function filterWorkItemTable() {
+            // This function is currently empty and not used.
+            // The filtering logic is handled within handleWorkItemFilter and populateWorkItemTable.
         }
         async function fetchWorkItemStatusCounts() {
             const userCode = config.userCode;
@@ -2627,6 +2667,11 @@
             const allCard = workitemStatusCardsContainer.querySelector('.status-card[data-status="ALL"]');
             if (allCard) allCard.classList.add('active');
         }
+
+        // Removed fetchAndPopulateTrackWorkflows and populateTrackWorkflowTable as it now redirects
+        // async function fetchAndPopulateTrackWorkflows(page = 1) { ... }
+        // function populateTrackWorkflowTable(searchQuery = '') { ... }
+
         async function initializeCreateWorkItemModal() {
             const form = document.getElementById('create-workitem-form');
             if (form) form.reset();
@@ -2702,6 +2747,7 @@
                     fetchAndPopulateWorkItems(currentWorkItemPage, currentWorkItemFilters);
                     fetchWorkItemStatusCounts();
                 }
+                // Track workflow now redirects, so no need to refresh it here.
             } catch (error) {
                 console.error('Error creating work item:', error);
                 showToast('Failed to create work item: ' + error.message, 'error');
@@ -2773,6 +2819,10 @@
             } else if (currentSection === 'manage-workitems') {
                 populateWorkItemTable(query);
             }
+            // Removed track-workflow from universal search as it now redirects
+            // else if (currentSection === 'track-workflow') {
+            //     populateTrackWorkflowTable(query);
+            // }
             // Add other sections as needed
         }
 
@@ -2810,13 +2860,24 @@
         listViewBtn.addEventListener('click', () => toggleDashboardView('list'));
 
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check for userCode in session storage and redirect if not found
+            if (!config.userCode) {
+                console.warn("User code not found in session storage. Redirecting to login page.");
+                window.location.href = config.loginUrl;
+                return; // Stop further execution
+            }
+
+            // Call customer details API when page load only
+            await fetchCustomerDetails(); // Ensure this completes before populating other sections
+
             showSection('dashboard'); // Default to dashboard on load
 
-            const addPolicyNumberInput = document.getElementById('add-policy-number');
-            if (addPolicyNumberInput) {
-                addPolicyNumberInput.addEventListener('blur', async () => {
-                    const policyNo = addPolicyNumberInput.value.trim();
+            // Event listener for policy number dropdown in Add Bank Account modal
+            const addPolicyNumberSelect = document.getElementById('add-policy-number');
+            if (addPolicyNumberSelect) {
+                addPolicyNumberSelect.addEventListener('change', async () => {
+                    const policyNo = addPolicyNumberSelect.value;
                     if (policyNo) {
                         try {
                             const policyData = await fetchPolicySearchDetails(policyNo);
@@ -2828,7 +2889,7 @@
                                 document.getElementById('add-user-code').value = policyData.userCode || config.userCode;
                                 showToast('Policy details loaded', 'success');
                             } else {
-                                showToast('No policy details found for the entered policy number.', 'info');
+                                showToast('No policy details found for the selected policy number.', 'info');
                                 document.getElementById('add-customer-number').value = '';
                                 document.getElementById('add-cust-name').value = '';
                                 document.getElementById('add-email').value = '';
@@ -2851,26 +2912,24 @@
                     }
                 });
             }
-            const addIfscCodeSelect = document.getElementById('add-ifsc-code');
-            if (addIfscCodeSelect) {
-                addIfscCodeSelect.addEventListener('change', async () => {
-                    const ifscCode = addIfscCodeSelect.value;
-                    if (ifscCode) {
-                        try {
-                            const { branchCode, bankName } = await fetchBranchDetails(ifscCode);
-                            document.getElementById('add-branch-code').value = branchCode || '';
-                            document.getElementById('add-bank-name').value = bankName || '';
-                            showToast('Branch details loaded', 'success');
-                        } catch (error) {
-                            document.getElementById('add-branch-code').value = '';
-                            document.getElementById('add-bank-name').value = '';
-                        }
-                    } else {
-                        document.getElementById('add-branch-code').value = '';
-                        document.getElementById('add-bank-name').value = '';
-                    }
+
+            const addBankNameSelect = document.getElementById('add-bank-name');
+            if (addBankNameSelect) {
+                addBankNameSelect.addEventListener('change', () => {
+                    const selectedBankName = addBankNameSelect.value;
+                    populateIFSCCodeDropdownByBank(selectedBankName);
                 });
             }
+
+            const addIfscCodeSelect = document.getElementById('add-ifsc-code');
+            if (addIfscCodeSelect) {
+                addIfscCodeSelect.addEventListener('change', () => {
+                    const selectedBankName = document.getElementById('add-bank-name').value;
+                    const selectedIfscCode = addIfscCodeSelect.value;
+                    autoPopulateBranchCode(selectedBankName, selectedIfscCode);
+                });
+            }
+            
             const addBankAccountSubmitBtn = document.getElementById('add-bank-account-submit');
             if (addBankAccountSubmitBtn) {
                 addBankAccountSubmitBtn.addEventListener('click', handleAddBankAccountSubmit);

@@ -51,7 +51,7 @@ public class WorkItemController {
 			@RequestParam(value = "startDate", required = false) String startDate,
 			@RequestParam(value = "endDate", required = false) String endDate, 
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
-			@RequestHeader(value = "userCode", required = true) String userCode) { 
+			@RequestHeader(value = "userCode", required = false) String userCode) { 
 
 		ResponseEntity<Page<WorkItemDTO>> response = new ResponseEntity<>();
 		Page<WorkItemDTO> workItem = workItemService.fetchWorkItems(workItemRefNum, queue,customerNo,policyNo, filterUserCode, createdBy,

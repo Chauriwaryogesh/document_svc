@@ -12,6 +12,16 @@ public class WorkItemDTO {
 	private String userCode;
 	private String status;
 	private String queue;
+	private String customerNo;
+	
+
+	public String getCustomerNo() {
+		return customerNo;
+	}
+
+	public void setCustomerNo(String customerNo) {
+		this.customerNo = customerNo;
+	}
 
 	public String getWorkItemReferenceNumber() {
 		return workItemReferenceNumber;

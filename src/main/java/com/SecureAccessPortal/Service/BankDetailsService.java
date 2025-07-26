@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -249,9 +250,26 @@ public class BankDetailsService {
 	}
 
 	public List<String> getBankNames(String userCode) {
-		 List<String> bankNames=List.of("Bank of Baroda","Bank of Maharashtra","Bank of India","HDFC Bank","Bank of China");
-		return bankNames;
-	}
+		List<String> bankDetails = new ArrayList<>();
+		String[] bankNames = { "HDFC Bank", "ICICI Bank", "State Bank of India", "Axis Bank", "Kotak Mahindra Bank",
+				"Punjab National Bank", "Bank of Baroda", "Canara Bank", "Union Bank of India", "Yes Bank" };
+		for (String bank : bankNames) {
+			for (int i = 1; i <= 10; i++) {
+				String ifsc = String.format("%sIFSC%04d", bank.substring(0, 4).toUpperCase(), i);
+				String branchCode = String.format("%sBR%04d", bank.substring(0, 4).toUpperCase(), i);
+				bankDetails.add(String.format("%s - IFSC: %s - Branch: %s", bank, ifsc, branchCode));
+			}
+		}
+		Map<String, List<String>> groupedByBank = bankDetails.stream()
+				.collect(Collectors.groupingBy(detail -> detail.split(" - ")[0], // Extract bank name from the string
+						Collectors.toList()));
+		List<String> result = new ArrayList<>();
+		groupedByBank.forEach((bank, details) -> {
+			result.add("Bank: " + bank);
+			details.forEach(detail -> result.add("  " + detail));
+		});
+		return result;
+	}	
 	public List<String> getBranchCodes(String userCode) {
 		 List<String> bankNames=List.of("HDFC00001234","HDFC700989","HDFC700989","HDFC700979","HDFC700990");
 		return bankNames;
@@ -272,7 +290,6 @@ public class BankDetailsService {
 		}
 		return customer;
 	}
-	
 	public VerificationRecordDTO createVerificationRecord(String action, String accountNo, MultipartFile document,
 			String status, String userCode, String details, String customerNo, String policyNumber) {
 		if (!isValidAction(action)) {
