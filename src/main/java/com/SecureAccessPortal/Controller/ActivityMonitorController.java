@@ -3,6 +3,7 @@ package com.SecureAccessPortal.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +29,7 @@ public class ActivityMonitorController {
 		return listOfActiity;
 	}
 	
-	@GetMapping("/login-history")
+	@GetMapping(value="/login-history", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LoginHistroryResponse>> getActivitydtls(
 			@RequestParam(value="email",required= true ) String email,
 			@RequestHeader String userCode) {
@@ -39,7 +40,7 @@ public class ActivityMonitorController {
 		return listOfActiity;
 	}
 	
-	@GetMapping("/activity-tracing")
+	@GetMapping(value="/activity-tracing",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoginHistroryResponse> getActivityTrac(
 			@RequestParam(value="email",required= true ) String email,
 			@RequestHeader String userCode) {

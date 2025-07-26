@@ -19,33 +19,30 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; } 
 
-    /* === Star Rating === */
     .star-rating {
       display: flex;
       gap: 0.25rem;
       font-size: 1.5rem;
-      color: #cbd5e1; /* Gray for unselected stars */
+      color: #cbd5e1;
     }
     .star-rating .star {
       cursor: pointer;
       transition: color 0.2s ease;
     }
     .star-rating .star.selected {
-      color: #facc15; /* Yellow for selected stars */
+      color: #facc15;
     }
     .star-rating .star:hover {
-      color: #fcd34d; /* Lighter yellow on hover */
+      color: #fcd34d;
     }
 
-    /* === Loader === */
     .loader { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
     .loader.active { opacity: 1; pointer-events: all; }
     .colorful-spinner { width: 60px; height: 60px; position: relative; animation: rotator 1.4s linear infinite; }
-    @keyframes rotator { 0% { transform: rotate(0deg); } 100% { transform: rotate(270deg); } }
+    @keyframes rotator { 0% { transform: rotate(0deg); } 50% { stroke-dashoffset: 46.75; transform: rotate(135deg); } 100% { stroke-dashoffset: 187; transform: rotate(450deg); } }
     .path { stroke-dasharray: 187; stroke-dashoffset: 0; transform-origin: center; animation: dash 1.4s ease-in-out infinite; }
     @keyframes dash { 0% { stroke-dashoffset: 187; } 50% { stroke-dashoffset: 46.75; transform: rotate(135deg); } 100% { stroke-dashoffset: 187; transform: rotate(450deg); } }
 
-    /* === Modal === */
     .modal { transition: opacity 0.2s ease, transform 0.2s ease; }
     .modal.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
   </style>
@@ -54,7 +51,7 @@
 
   <header class="bg-white p-4 flex-shrink-0 flex justify-between items-center border-b h-20 shadow-sm">
     <div class="flex items-center">
-      <button onclick="window.location.href='ServicePage.html'" class="text-gray-600 hover:text-blue-600 mr-4">
+      <button onclick="window.location.href='ServicePage'" class="text-gray-600 hover:text-blue-600 mr-4">
         <i class="fa-solid fa-arrow-left text-xl"></i>
       </button>
       <h1 class="text-2xl font-bold text-gray-800">Feedback</h1>
@@ -72,9 +69,8 @@
           <p class="text-gray-600 mb-6">Please help us improve by providing your valuable feedback.</p>
 
           <form id="feedback-form" class="space-y-6">
-              <!-- Question 1 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">1. Are you satisfied with the overall dashboard experience?</p>
+                  <p class="font-semibold text-gray-800 mb-3">1. Are you satisfied with the overall dashboard experience? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q1" value="yes" onchange="toggleReason(1, false)" checked>
@@ -86,7 +82,7 @@
                       </label>
                   </div>
                   <div id="reason-q1" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q1" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q1" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -99,14 +95,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q1" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q1" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q1" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 2 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">2. Was it easy to find the service you were looking for?</p>
+                  <p class="font-semibold text-gray-800 mb-3">2. Was it easy to find the service you were looking for? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q2" value="yes" onchange="toggleReason(2, false)" checked>
@@ -118,7 +113,7 @@
                       </label>
                   </div>
                   <div id="reason-q2" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q2" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q2" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -131,14 +126,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q2" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q2" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q2" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 3 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">3. How would you rate the responsiveness of the application?</p>
+                  <p class="font-semibold text-gray-800 mb-3">3. How would you rate the responsiveness of the application? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q3" value="yes" onchange="toggleReason(3, false)" checked>
@@ -150,7 +144,7 @@
                       </label>
                   </div>
                   <div id="reason-q3" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q3" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q3" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -163,14 +157,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q3" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q3" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q3" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 4 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">4. Are the information and data displayed accurate?</p>
+                  <p class="font-semibold text-gray-800 mb-3">4. Are the information and data displayed accurate? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q4" value="yes" onchange="toggleReason(4, false)" checked>
@@ -182,7 +175,7 @@
                       </label>
                   </div>
                   <div id="reason-q4" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q4" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q4" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -195,14 +188,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q4" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q4" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q4" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 5 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">5. Do you find the design and user interface appealing?</p>
+                  <p class="font-semibold text-gray-800 mb-3">5. Do you find the design and user interface appealing? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q5" value="yes" onchange="toggleReason(5, false)" checked>
@@ -214,7 +206,7 @@
                       </label>
                   </div>
                   <div id="reason-q5" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q5" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q5" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -227,14 +219,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q5" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q5" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q5" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 6 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">6. Are the navigation links intuitive and easy to use?</p>
+                  <p class="font-semibold text-gray-800 mb-3">6. Are the navigation links intuitive and easy to use? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q6" value="yes" onchange="toggleReason(6, false)" checked>
@@ -246,7 +237,7 @@
                       </label>
                   </div>
                   <div id="reason-q6" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q6" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q6" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -259,14 +250,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q6" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q6" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q6" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 7 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">7. Is the information presented clearly and concisely?</p>
+                  <p class="font-semibold text-gray-800 mb-3">7. Is the information presented clearly and concisely? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q7" value="yes" onchange="toggleReason(7, false)" checked>
@@ -278,7 +268,7 @@
                       </label>
                   </div>
                   <div id="reason-q7" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q7" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q7" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q7" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -291,14 +281,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q7" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q7" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q7" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 8 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">8. Do you feel secure when using the application?</p>
+                  <p class="font-semibold text-gray-800 mb-3">8. Do you feel secure when using the application? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q8" value="yes" onchange="toggleReason(8, false)" checked>
@@ -310,7 +299,7 @@
                       </label>
                   </div>
                   <div id="reason-q8" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q8" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q8" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q8" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -323,14 +312,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q8" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q8" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q8" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 9 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">9. Is the search functionality effective in finding what you need?</p>
+                  <p class="font-semibold text-gray-800 mb-3">9. Is the search functionality effective in finding what you need? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q9" value="yes" onchange="toggleReason(9, false)" checked>
@@ -342,7 +330,7 @@
                       </label>
                   </div>
                   <div id="reason-q9" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q9" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q9" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q9" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -355,14 +343,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q9" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q9" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q9" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 10 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">10. Are you satisfied with the level of customer support provided?</p>
+                  <p class="font-semibold text-gray-800 mb-3">10. Are you satisfied with the level of customer support provided? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q10" value="yes" onchange="toggleReason(10, false)" checked>
@@ -374,7 +361,7 @@
                       </label>
                   </div>
                   <div id="reason-q10" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q10" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q10" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -387,14 +374,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q10" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q10" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q10" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 11 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">11. Are the error messages clear and helpful?</p>
+                  <p class="font-semibold text-gray-800 mb-3">11. Are the error messages clear and helpful? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q11" value="yes" onchange="toggleReason(11, false)" checked>
@@ -406,7 +392,7 @@
                       </label>
                   </div>
                   <div id="reason-q11" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q11" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q11" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q11" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -419,14 +405,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q11" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q11" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q11" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 12 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">12. Is the application compatible with your device/browser?</p>
+                  <p class="font-semibold text-gray-800 mb-3">12. Is the application compatible with your device/browser? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q12" value="yes" onchange="toggleReason(12, false)" checked>
@@ -438,7 +423,7 @@
                       </label>
                   </div>
                   <div id="reason-q12" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q12" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q12" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q12" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -451,14 +436,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q12" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q12" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q12" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 13 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">13. Do you find the reporting features useful for your needs?</p>
+                  <p class="font-semibold text-gray-800 mb-3">13. Do you find the reporting features useful for your needs? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q13" value="yes" onchange="toggleReason(13, false)" checked>
@@ -470,7 +454,7 @@
                       </label>
                   </div>
                   <div id="reason-q13" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q13" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q13" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q13" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -483,14 +467,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q13" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q13" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q13" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 14 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">14. Is the data export/import functionality efficient?</p>
+                  <p class="font-semibold text-gray-800 mb-3">14. Is the data export/import functionality efficient? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q14" value="yes" onchange="toggleReason(14, false)" checked>
@@ -502,7 +485,7 @@
                       </label>
                   </div>
                   <div id="reason-q14" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q14" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q14" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q14" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -515,14 +498,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q14" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q14" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q14" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
-              <!-- Question 15 -->
               <div class="feedback-question p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p class="font-semibold text-gray-800 mb-3">15. Would you recommend this application to others?</p>
+                  <p class="font-semibold text-gray-800 mb-3">15. Would you recommend this application to others? <span class="text-red-500">*</span></p>
                   <div class="flex items-center space-x-4 mb-3">
                       <label class="inline-flex items-center">
                           <input type="radio" class="form-radio text-blue-600 h-5 w-5" name="q15" value="yes" onchange="toggleReason(15, false)" checked>
@@ -534,7 +516,7 @@
                       </label>
                   </div>
                   <div id="reason-q15" class="reason-box hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <label for="module-q15" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding?</label>
+                      <label for="module-q15" class="block text-sm font-medium text-gray-700 mb-2">Which module is this regarding? <span class="text-red-500">*</span></label>
                       <select id="module-q15" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                           <option value="">Select Module</option>
                           <option value="Dashboard">Dashboard</option>
@@ -547,14 +529,13 @@
                           <option value="Complaints">Complaints</option>
                           <option value="Customer Service">Customer Service</option>
                       </select>
-                      <label for="reason-text-q15" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No':</label>
+                      <label for="reason-text-q15" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Reason for 'No': <span class="text-red-500">*</span></label>
                       <textarea id="reason-text-q15" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Please provide details..."></textarea>
                   </div>
               </div>
 
               <h3 class="text-xl font-bold text-gray-700 mt-8 mb-4">Module Ratings</h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Module Rating: Dashboard -->
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <p class="font-semibold text-gray-800 mb-2">Dashboard Module</p>
                     <div class="star-rating" data-module="dashboard-rating">
@@ -565,7 +546,6 @@
                         <i class="fa-solid fa-star star" data-value="5"></i>
                     </div>
                 </div>
-                <!-- Module Rating: Bank Services -->
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <p class="font-semibold text-gray-800 mb-2">Bank Services Module</p>
                     <div class="star-rating" data-module="bank_services-rating">
@@ -576,7 +556,6 @@
                         <i class="fa-solid fa-star star" data-value="5"></i>
                     </div>
                 </div>
-                <!-- Module Rating: Payment -->
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <p class="font-semibold text-gray-800 mb-2">Payment Module</p>
                     <div class="star-rating" data-module="payment-rating">
@@ -587,7 +566,6 @@
                         <i class="fa-solid fa-star star" data-value="5"></i>
                     </div>
                 </div>
-                <!-- Module Rating: Policy -->
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <p class="font-semibold text-gray-800 mb-2">Policy Module</p>
                     <div class="star-rating" data-module="policy-rating">
@@ -598,7 +576,6 @@
                         <i class="fa-solid fa-star star" data-value="5"></i>
                     </div>
                 </div>
-                <!-- Module Rating: Policy Admin -->
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <p class="font-semibold text-gray-800 mb-2">Policy Admin Module</p>
                     <div class="star-rating" data-module="policy_admin-rating">
@@ -609,7 +586,6 @@
                         <i class="fa-solid fa-star star" data-value="5"></i>
                     </div>
                 </div>
-                <!-- Module Rating: Admin Module -->
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <p class="font-semibold text-gray-800 mb-2">Admin Module</p>
                     <div class="star-rating" data-module="admin_module-rating">
@@ -641,82 +617,96 @@
         <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30" stroke="#3b82f6"></circle>
     </svg>
 </div>
-  <!-- MODALS (Copied from ServicePage.html for consistency) -->
   <div class="modal-container">
     <div id="coming-soon-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform"><h3 class="text-2xl font-bold text-gray-800">Coming Soon!</h3><p class="text-gray-600 my-4">This feature is under development and will be available shortly.</p><button data-close-modal="coming-soon" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none transition-colors">Got it!</button></div>
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Coming Soon!</h3>
+                <button onclick="closeModal('coming-soon-modal')" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" aria-label="Close popup">&times;</button>
+            </div>
+            <p class="text-gray-600 my-4">This feature is under development and will be available shortly.</p>
+        </div>
     </div>
     <div id="success-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
             <i class="fa-solid fa-circle-check text-green-500 text-5xl mb-4"></i>
             <h3 class="text-2xl font-bold text-gray-800 mb-4">Success!</h3>
             <p class="text-gray-600 my-4" id="success-message">Operation completed successfully.</p>
-            <button data-close-modal="success-modal" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none transition-colors">OK</button>
+            <button onclick="closeModal('success-modal')" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none transition-colors">OK</button>
         </div>
     </div>
     <div id="error-message-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-md text-center transform">
             <h3 class="text-2xl font-bold text-red-600 mb-4">Error!</h3>
             <p class="text-gray-600 my-4" id="error-message-text">An unexpected error occurred. Please try again.</p>
-            <button data-close-modal="error-message-modal" class="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 focus:outline-none transition-colors">Close</button>
+            <button onclick="closeModal('error-message-modal')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
         </div>
     </div>
-    <!-- Profile Modal (copied from ServicePage.html for consistency) -->
     <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-semibold text-gray-800">User Profile</h3><button data-close-modal="profile" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button></div>
-          <div class="flex items-center gap-6 mb-6">
-            <img id="modal-profile-icon" src="https://placehold.co/80x80/E2E8F0/4A5568?text=U" alt="User" class="h-20 w-20 rounded-full object-cover">
-            <div>
-              <p class="text-xl font-bold text-gray-800" id="profile-name">&nbsp;</p>
-              <p class="text-gray-500" id="profile-role">&nbsp;</p>
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-lg transform">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
+                <button onclick="closeModal('profile')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
             </div>
-          </div>
-          <div class="text-gray-600 mb-6 space-y-3 bg-gray-50 p-4 rounded-lg">
-            <p><i class="fa-solid fa-id-card w-5 mr-2 text-gray-400"></i><span class="font-medium">User ID:</span> <span id="profile-userCode">&nbsp;</span></p>
-            <p><i class="fa-solid fa-envelope w-5 mr-2 text-gray-400"></i><span class="font-medium">Email:</span> <span id="profile-email">&nbsp;</span></p>
-            <p><i class="fa-solid fa-clock w-5 mr-2 text-gray-400"></i><span class="font-medium">Last Login:</span> <span id="profile-loginTime">&nbsp;</span></p>
-          </div>
-          <button data-close-modal="profile" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none">Close</button>
+            <div class="flex items-center gap-6 mb-6">
+                <img id="modal-profile-icon" src="https://placehold.co/80x80/E2E8F0/4A5568?text=U" alt="User" class="h-20 w-20 rounded-full object-cover">
+                <div>
+                    <p class="text-xl font-bold text-gray-800" id="profile-name">&nbsp;</p>
+                    <p class="text-gray-500" id="profile-role">&nbsp;</p>
+                </div>
+            </div>
+            <div class="text-gray-600 mb-6 space-y-3 bg-gray-50 p-4 rounded-lg">
+                <p><i class="fa-solid fa-id-card w-5 mr-2 text-gray-400"></i><span class="font-medium">User ID:</span> <span id="profile-userCode">&nbsp;</span></p>
+                <p><i class="fa-solid fa-envelope w-5 mr-2 text-gray-400"></i><span class="font-medium">Email:</span> <span id="profile-email">&nbsp;</span></p>
+                <p><i class="fa-solid fa-phone w-5 mr-2 text-gray-400"></i><span class="font-medium">Phone:</span> <span id="profile-phoneNumber">&nbsp;</span></p>
+            </div>
+            <button id="toggle-more-details" class="w-full text-blue-600 hover:text-blue-800 font-medium py-2 flex items-center justify-center gap-2">
+                <span id="toggle-text">Show More Details</span>
+                <i id="toggle-icon" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+            </button>
+            <div id="profile-extended-details" class="hidden mt-4 text-gray-600 bg-gray-50 p-4 rounded-lg">
+                <p><i class="fa-solid fa-user-tag w-5 mr-2 text-gray-400"></i><span class="font-medium">Customer No:</span> <span id="profile-customerNo">&nbsp;</span></p>
+                <p><i class="fa-solid fa-cake-candles w-5 mr-2 text-gray-400"></i><span class="font-medium">Date of Birth:</span> <span id="profile-dateOfBirth">&nbsp;</span></p>
+                <p><i class="fa-solid fa-venus-mars w-5 mr-2 text-gray-400"></i><span class="font-medium">Gender:</span> <span id="profile-gender">&nbsp;</span></p>
+                <p><i class="fa-solid fa-smoking w-5 mr-2 text-gray-400"></i><span class="font-medium">Smoker Status:</span> <span id="profile-smokerStatus">&nbsp;</span></p>
+                <p><i class="fa-solid fa-user-lock w-5 mr-2 text-gray-400"></i><span class="font-medium">Admin Access:</span> <span id="profile-adminAccess">&nbsp;</span></p>
+                <p><i class="fa-solid fa-briefcase w-5 mr-2 text-gray-400"></i><span class="font-medium">Roles:</span> <span id="profile-roles">&nbsp;</span></p>
+                <p><i class="fa-solid fa-map-marker-alt w-5 mr-2 text-gray-400"></i><span class="font-medium">Address:</span> <span id="profile-address">&nbsp;</span></p>
+                <h4 class="font-semibold text-gray-700 mt-4 mb-2">Contact Details:</h4>
+                <p><i class="fa-solid fa-at w-5 mr-2 text-gray-400"></i><span class="font-medium">Alternate Email:</span> <span id="profile-alternateEmail">&nbsp;</span></p>
+                <p><i class="fa-solid fa-mobile-alt w-5 mr-2 text-gray-400"></i><span class="font-medium">Phone Country Code:</span> <span id="profile-phoneCountryCode">&nbsp;</span></p>
+                <p><i class="fa-solid fa-user-friends w-5 mr-2 text-gray-400"></i><span class="font-medium">Emergency Contact Name:</span> <span id="profile-emergencyContactName">&nbsp;</span></p>
+                <p><i class="fa-solid fa-phone-volume w-5 mr-2 text-gray-400"></i><span class="font-medium">Emergency Contact Phone:</span> <span id="profile-emergencyContactPhone">&nbsp;</span></p>
+                <p><i class="fa-solid fa-clock w-5 mr-2 text-gray-400"></i><span class="font-medium">Last Login:</span> <span id="profile-loginTime">&nbsp;</span></p>
+            </div>
         </div>
     </div>
-
-    <!-- New View Feedback Details Modal -->
     <div id="view-feedback-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
         <div class="modal-content bg-white p-8 rounded-xl w-full max-w-2xl transform max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-semibold text-gray-800">Feedback Details</h3>
-                <button data-close-modal="view-feedback-modal" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+                <button onclick="closeModal('view-feedback-modal')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
             </div>
-            
-            <div id="feedback-details-content" class="space-y-4">
-                <!-- Details will be populated here by JavaScript -->
-            </div>
-
-            <button data-close-modal="view-feedback-modal" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Close</button>
+            <div id="feedback-details-content" class="space-y-4"></div>
+            <button onclick="closeModal('view-feedback-modal')" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700">Close</button>
         </div>
     </div>
   </div>
 
 <script>
-    const config = { loginUrl: 'login', userCode: null, email: null }; 
+    const config = { loginUrl: 'login', userCode: null, email: null, customerNo: null }; 
     const modals = {
-      'coming-soon': document.getElementById('coming-soon-modal'),
+      'coming-soon-modal': document.getElementById('coming-soon-modal'),
       'success-modal': document.getElementById('success-modal'),
       'error-message-modal': document.getElementById('error-message-modal'),
       'profile': document.getElementById('profile-modal'), 
-      'view-feedback-modal': document.getElementById('view-feedback-modal'), // Added new modal
+      'view-feedback-modal': document.getElementById('view-feedback-modal'),
     };
 
-    window.showLoader = function() {
-        document.getElementById('loader').classList.remove('hidden');
-        document.getElementById('loader').classList.add('active');
-    };
-    window.hideLoader = function() {
-        document.getElementById('loader').classList.add('hidden');
-        document.getElementById('loader').classList.remove('active');
-    };
-
-    window.openModal = function(modalId, message = '') {
+    window.showLoader = () => document.getElementById('loader').classList.remove('hidden');
+    window.hideLoader = () => document.getElementById('loader').classList.add('hidden');
+    
+    window.openModal = (modalId, message = '') => {
         if (modalId === 'success-modal' && message) {
             document.getElementById('success-message').textContent = message;
         } else if (modalId === 'error-message-modal' && message) {
@@ -724,46 +714,44 @@
         }
         modals[modalId]?.classList.remove('hidden');
     };
-    window.closeModal = function(modalId) { modals[modalId]?.classList.add('hidden'); };
-    window.showComingSoon = function(featureName = 'A feature') { 
-        openModal('coming-soon', `${featureName} feature coming soon`); 
+
+    window.closeModal = (modalId) => { 
+        modals[modalId]?.classList.add('hidden'); 
+        if (modalId === 'profile') {
+            const extendedDetails = document.getElementById('profile-extended-details');
+            extendedDetails.classList.add('hidden');
+            document.getElementById('toggle-text').textContent = 'Show More Details';
+            document.getElementById('toggle-icon').classList.replace('fa-chevron-up', 'fa-chevron-down');
+        }
     };
 
-    // Function to toggle reason text area and module dropdown
     function toggleReason(questionNumber, show) {
         const reasonBox = document.getElementById(`reason-q${questionNumber}`);
         if (show) {
             reasonBox.classList.remove('hidden');
         } else {
             reasonBox.classList.add('hidden');
-            // Clear reason text and reset module selection when hiding
             document.getElementById(`reason-text-q${questionNumber}`).value = '';
             document.getElementById(`module-q${questionNumber}`).value = '';
         }
     }
 
-    // Function to handle star ratings
     function setupStarRatings() {
         document.querySelectorAll('.star-rating').forEach(ratingContainer => {
             const stars = ratingContainer.querySelectorAll('.star');
             let currentRating = 0;
-
             stars.forEach(star => {
                 star.addEventListener('click', () => {
                     currentRating = parseInt(star.dataset.value);
                     updateStars(stars, currentRating);
                 });
-
                 star.addEventListener('mouseover', () => {
                     updateStars(stars, parseInt(star.dataset.value), true);
                 });
-
                 star.addEventListener('mouseout', () => {
-                    updateStars(stars, currentRating); // Revert to currentRating on mouse out
+                    updateStars(stars, currentRating);
                 });
             });
-            
-            // Function to update star visuals
             function updateStars(starsArray, rating, isHover = false) {
                 starsArray.forEach(s => {
                     const starValue = parseInt(s.dataset.value);
@@ -777,37 +765,34 @@
         });
     }
 
-    /**
-     * API call to save feedback.
-     * @param {object} feedbackData - The feedback data to save.
-     */
     async function saveFeedback(feedbackData) {
         showLoader();
-        console.log("Attempting to save feedback:", feedbackData);
         try {
-            const userCode = config.userCode || 'DEMO_USER'; // Ensure userCode is available
+            const { userCode, customerNo } = config;
+            if (!userCode || !customerNo) {
+                openModal('error-message-modal', 'User ID or Customer Number not found. Please log in again.');
+                window.location.href = config.loginUrl;
+                return;
+            }
             const response = await fetch('http://localhost:8081/customer/save-feedback', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'userCode': userCode // Add userCode to header
+                    'userCode': userCode,
+                    'customerNo': customerNo
                 },
                 body: JSON.stringify(feedbackData)
             });
-
             const result = await response.json();
-            console.log("Save feedback API response:", result);
-
-            if (response.ok) { // Check for HTTP success status (200-299)
+            if (response.ok) {
                 openModal('success-modal', result.message || 'Your feedback has been saved successfully!');
-                document.getElementById('feedback-form').reset(); // Reset form after successful submission
+                document.getElementById('feedback-form').reset();
                 document.querySelectorAll('.star-rating').forEach(ratingContainer => {
                     ratingContainer.querySelectorAll('.star').forEach(star => star.classList.remove('selected'));
                 });
             } else {
                 openModal('error-message-modal', result.message || 'Failed to save feedback.');
             }
-
         } catch (error) {
             console.error("Error saving feedback:", error);
             openModal('error-message-modal', 'An error occurred while saving feedback. Please try again.');
@@ -816,62 +801,43 @@
         }
     }
 
-    /**
-     * API call to get recent feedback and display it.
-     */
     async function getRecentFeedback() {
         showLoader();
         const recentFeedbackList = document.getElementById('recent-feedback-list');
         recentFeedbackList.innerHTML = '<p class="text-gray-500 text-center py-4">Loading recent feedback...</p>';
-        
-        const userCode = config.userCode || 'DEMO_USER'; 
-
+        const { userCode, customerNo } = config;
+        if (!userCode || !customerNo) {
+            openModal('error-message-modal', 'User ID or Customer Number not found. Please log in again.');
+            window.location.href = config.loginUrl;
+            return;
+        }
         try {
-            const response = await fetch('http://localhost:8081/customer/getFeedback', {
+            const params = new URLSearchParams({ userCode, customerNo }).toString();
+            const response = await fetch(`http://localhost:8081/customer/getFeedback?${params}`, {
                 method: 'GET',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'userCode': userCode // Add userCode to header
-                }
+                headers: { 'Content-Type': 'application/json', userCode, customerNo }
             });
-
-            const apiResponse = await response.json(); // Get the full response object
-            console.log("Get recent feedback API response:", apiResponse);
-
-            recentFeedbackList.innerHTML = ''; // Clear loading message
-
+            const apiResponse = await response.json();
+            recentFeedbackList.innerHTML = '';
             if (response.ok && apiResponse.data && apiResponse.data.length > 0) {
-                // Display up to the last 5 feedbacks, reversed to show newest first
                 apiResponse.data.slice(-5).reverse().forEach(feedback => {
                     const feedbackItem = document.createElement('div');
                     feedbackItem.className = 'p-4 bg-white rounded-lg shadow-sm border border-gray-200 flex justify-between items-center';
-                    
-                    // Display a summary of the feedback
-                    const summaryDiv = document.createElement('div');
-                    summaryDiv.className = 'flex-1';
-                    summaryDiv.innerHTML = `
-                        <p class="font-semibold text-gray-800 mb-1">Submitted: ${feedback.timestamp || 'N/A'}</p>
-                        <p class="text-sm text-gray-600">Overall Satisfaction: ${feedback.questions[0]?.answer === 'yes' ? 'Satisfied' : 'Not Satisfied'}</p>
+                    feedbackItem.innerHTML = `
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800 mb-1">Submitted: ${feedback.timestamp || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">Overall Satisfaction: ${feedback.questions[0]?.answer === 'yes' ? 'Satisfied' : 'Not Satisfied'}</p>
+                        </div>
+                        <button class="ml-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors" onclick="viewFeedbackDetails(${JSON.stringify(feedback).replace(/"/g, '&quot;')})">View Details</button>
                     `;
-                    feedbackItem.appendChild(summaryDiv);
-
-                    // Add View Feedback button
-                    const viewButton = document.createElement('button');
-                    viewButton.className = 'ml-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors';
-                    viewButton.textContent = 'View Details';
-                    viewButton.onclick = () => viewFeedbackDetails(feedback);
-                    feedbackItem.appendChild(viewButton);
-
                     recentFeedbackList.appendChild(feedbackItem);
                 });
             } else if (response.ok && apiResponse.data && apiResponse.data.length === 0) {
                 recentFeedbackList.innerHTML = '<p class="text-gray-500 text-center py-4">No recent feedback to display.</p>';
-            }
-            else {
+            } else {
                 openModal('error-message-modal', apiResponse.message || 'Failed to load recent feedback.');
                 recentFeedbackList.innerHTML = '<p class="text-red-500 text-center py-4">Error loading feedback.</p>';
             }
-
         } catch (error) {
             console.error("Error fetching recent feedback:", error);
             openModal('error-message-modal', 'An error occurred while loading recent feedback.');
@@ -881,25 +847,16 @@
         }
     }
 
-    /**
-     * Populates and displays the feedback details modal.
-     * @param {object} feedback - The full feedback object to display.
-     */
     function viewFeedbackDetails(feedback) {
         const detailsContent = document.getElementById('feedback-details-content');
-        detailsContent.innerHTML = ''; // Clear previous content
-
-        // Timestamp
+        detailsContent.innerHTML = '';
         const timestampDiv = document.createElement('div');
         timestampDiv.className = 'bg-blue-50 p-3 rounded-lg flex items-center gap-2';
         timestampDiv.innerHTML = `<i class="fa-solid fa-calendar-alt text-blue-600"></i> <p class="font-semibold text-blue-800">Submitted On: ${feedback.timestamp || 'N/A'}</p>`;
         detailsContent.appendChild(timestampDiv);
-
-        // Questions Section
         const questionsSection = document.createElement('div');
         questionsSection.className = 'bg-gray-50 p-4 rounded-lg border border-gray-200';
         questionsSection.innerHTML = '<h4 class="font-bold text-gray-700 mb-3">Questions & Answers:</h4>';
-        
         if (feedback.questions && feedback.questions.length > 0) {
             feedback.questions.forEach(q => {
                 const qDiv = document.createElement('div');
@@ -908,67 +865,52 @@
                     <p class="text-sm font-medium text-gray-800">Q${q.id}: ${getQuestionText(q.id)}</p>
                     <p class="text-sm text-gray-600 ml-4">Answer: <span class="font-semibold">${q.answer === 'yes' ? 'Yes' : 'No'}</span></p>
                 `;
-                if (q.reason) {
-                    qDiv.innerHTML += `<p class="text-xs text-gray-500 ml-4">Reason: ${q.reason}</p>`;
-                }
-                if (q.module) {
-                    qDiv.innerHTML += `<p class="text-xs text-gray-500 ml-4">Module: ${q.module}</p>`;
-                }
+                if (q.reason) { qDiv.innerHTML += `<p class="text-xs text-gray-500 ml-4">Reason: ${q.reason}</p>`; }
+                if (q.module) { qDiv.innerHTML += `<p class="text-xs text-gray-500 ml-4">Module: ${q.module}</p>`; }
                 questionsSection.appendChild(qDiv);
             });
         } else {
             questionsSection.innerHTML += '<p class="text-sm text-gray-500">No question answers provided.</p>';
         }
         detailsContent.appendChild(questionsSection);
-
-        // Ratings Section
         const ratingsSection = document.createElement('div');
         ratingsSection.className = 'bg-gray-50 p-4 rounded-lg border border-gray-200';
         ratingsSection.innerHTML = '<h4 class="font-bold text-gray-700 mb-3">Module Ratings:</h4>';
-        
         if (feedback.ratings && Object.keys(feedback.ratings).length > 0) {
             for (const module in feedback.ratings) {
-                const ratingDiv = document.createElement('div');
-                ratingDiv.className = 'mb-2 flex items-center';
-                ratingDiv.innerHTML = `
-                    <p class="text-sm font-medium text-gray-800 w-32">${capitalizeFirstLetter(module)}:</p>
-                    <div class="star-rating text-lg">
-                        ${generateStars(feedback.ratings[module])}
-                    </div>
-                `;
-                ratingsSection.appendChild(ratingDiv);
+                if (module) {
+                    const ratingDiv = document.createElement('div');
+                    ratingDiv.className = 'mb-2 flex items-center';
+                    ratingDiv.innerHTML = `
+                        <p class="text-sm font-medium text-gray-800 w-32">${capitalizeFirstLetter(module)}:</p>
+                        <div class="star-rating text-lg">
+                            ${generateStars(feedback.ratings[module])}
+                        </div>
+                    `;
+                    ratingsSection.appendChild(ratingDiv);
+                }
             }
         } else {
             ratingsSection.innerHTML += '<p class="text-sm text-gray-500">No module ratings provided.</p>';
         }
         detailsContent.appendChild(ratingsSection);
-
         openModal('view-feedback-modal');
     }
 
-    // Helper function to get question text by ID (must match your form questions)
     function getQuestionText(id) {
         const questions = {
-            1: "Are you satisfied with the overall dashboard experience?",
-            2: "Was it easy to find the service you were looking for?",
-            3: "How would you rate the responsiveness of the application?",
-            4: "Are the information and data displayed accurate?",
-            5: "Do you find the design and user interface appealing?",
-            6: "Are the navigation links intuitive and easy to use?",
-            7: "Is the information presented clearly and concisely?",
-            8: "Do you feel secure when using the application?",
-            9: "Is the search functionality effective in finding what you need?",
-            10: "Are you satisfied with the level of customer support provided?",
-            11: "Are the error messages clear and helpful?",
-            12: "Is the application compatible with your device/browser?",
-            13: "Do you find the reporting features useful for your needs?",
-            14: "Is the data export/import functionality efficient?",
+            1: "Are you satisfied with the overall dashboard experience?", 2: "Was it easy to find the service you were looking for?",
+            3: "How would you rate the responsiveness of the application?", 4: "Are the information and data displayed accurate?",
+            5: "Do you find the design and user interface appealing?", 6: "Are the navigation links intuitive and easy to use?",
+            7: "Is the information presented clearly and concisely?", 8: "Do you feel secure when using the application?",
+            9: "Is the search functionality effective in finding what you need?", 10: "Are you satisfied with the level of customer support provided?",
+            11: "Are the error messages clear and helpful?", 12: "Is the application compatible with your device/browser?",
+            13: "Do you find the reporting features useful for your needs?", 14: "Is the data export/import functionality efficient?",
             15: "Would you recommend this application to others?",
         };
         return questions[id] || `Question ${id}`;
     }
 
-    // Helper function to generate star icons for display
     function generateStars(rating) {
         let starsHtml = '';
         for (let i = 1; i <= 5; i++) {
@@ -977,105 +919,71 @@
         return starsHtml;
     }
 
-    // Helper function to capitalize the first letter of a string
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    /**
-     * Placeholder for API call to update feedback.
-     * @param {string} feedbackId - The ID of the feedback to update.
-     * @param {object} updatedFeedbackData - The updated feedback data.
-     */
-    async function updateFeedback(feedbackId, updatedFeedbackData) {
+    window.fetchTeamDetails = async function() {
         showLoader();
-        console.log(`Attempting to update feedback ID ${feedbackId}:`, updatedFeedbackData);
-        try {
-            const userCode = config.userCode || 'DEMO_USER'; // Ensure userCode is available
-            const response = await fetch(`http://localhost:8081/customer/updateFeedback`, {
-                method: 'PUT',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'userCode': userCode // Add userCode to header
-                },
-                body: JSON.stringify(updatedFeedbackData)
-            });
+        const profileElements = {
+            name: document.getElementById('profile-name'), role: document.getElementById('profile-role'),
+            userCode: document.getElementById('profile-userCode'), email: document.getElementById('profile-email'),
+            phoneNumber: document.getElementById('profile-phoneNumber'), customerNo: document.getElementById('profile-customerNo'),
+            dateOfBirth: document.getElementById('profile-dateOfBirth'), gender: document.getElementById('profile-gender'),
+            smokerStatus: document.getElementById('profile-smokerStatus'), adminAccess: document.getElementById('profile-adminAccess'),
+            roles: document.getElementById('profile-roles'), address: document.getElementById('profile-address'),
+            alternateEmail: document.getElementById('profile-alternateEmail'), phoneCountryCode: document.getElementById('profile-phoneCountryCode'),
+            emergencyContactName: document.getElementById('profile-emergencyContactName'), emergencyContactPhone: document.getElementById('profile-emergencyContactPhone'),
+            loginTime: document.getElementById('profile-loginTime'), modalProfileIcon: document.getElementById('modal-profile-icon'),
+            profileIcon: document.getElementById('profile-icon'), welcomeMessage: document.getElementById('welcome-message')
+        };
 
-            const result = await response.json();
-            console.log("Update feedback API response:", result);
-
-            if (response.ok) {
-                openModal('success-modal', result.message || 'Feedback updated successfully!');
-            } else {
-                openModal('error-message-modal', result.message || 'Failed to update feedback.');
-            }
-
-        } catch (error) {
-            console.error("Error updating feedback:", error);
-            openModal('error-message-modal', 'An error occurred while updating feedback. Please try again.');
-        } finally {
-            hideLoader();
-        }
-    }
-
-
-    /**
-     * Simulates fetching team/user details from an API.
-     * In a real app, replace the mockApiResponse with an actual fetch call.
-     */
-    window.fetchTeamDetails = async function() { // Made global
-        showLoader();
-        // Reset modal fields (ensure these elements exist in the feedback page if you want to use them)
-        const profileName = document.getElementById('profile-name');
-        const profileRole = document.getElementById('profile-role');
-        const profileUserCode = document.getElementById('profile-userCode');
-        const profileEmail = document.getElementById('profile-email');
-        const profileLoginTime = document.getElementById('profile-loginTime');
-        const modalProfileIcon = document.getElementById('modal-profile-icon');
-        const profileIcon = document.getElementById('profile-icon');
-        const welcomeMessage = document.getElementById('welcome-message');
-
-
-        if (profileName) profileName.innerHTML = '&nbsp;';
-        if (profileRole) profileRole.innerHTML = '&nbsp;';
-        if (profileUserCode) profileUserCode.innerHTML = '&nbsp;';
-        if (profileEmail) profileEmail.innerHTML = '&nbsp;';
-        if (profileLoginTime) profileLoginTime.innerHTML = '&nbsp;';
-        if (modalProfileIcon) modalProfileIcon.src = 'https://placehold.co/80x80/E2E8F0/4A5568?text=U';
-        if (profileIcon) profileIcon.src = 'https://placehold.co/40x40/E2E8F0/4A5568?text=U';
-
+        Object.values(profileElements).forEach(el => { if (el) el.innerHTML = '&nbsp;'; });
+        if (profileElements.modalProfileIcon) profileElements.modalProfileIcon.src = 'https://placehold.co/80x80/E2E8F0/4A5568?text=U';
+        if (profileElements.profileIcon) profileElements.profileIcon.src = 'https://placehold.co/40x40/E2E8F0/4A5568?text=U';
 
         try {
-            // --- MOCK API RESPONSE (REMOVE IN PRODUCTION) ---
-            await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API delay
-            const mockApiResponse = {
-                success: true,
-                data: {
-                    name: "Jane Doe", 
-                    role: "Lead Developer", 
-                    userCode: config.userCode,
-                    email: config.email,
-                    lastLogin: new Date().toLocaleString(),
-                    profileIconUrl: "https://i.pravatar.cc/80?img=25" 
-                }
-            };
-            const user = mockApiResponse.data; 
-            // --- END MOCK API RESPONSE ---
+            const userCode = sessionStorage.getItem('userCode');
+            if (!userCode) throw new Error('User code not found. Please log in.');
 
-            if (mockApiResponse.success) { 
-                if (profileName) profileName.textContent = user.name;
-                if (profileRole) profileRole.textContent = user.role;
-                if (profileUserCode) profileUserCode.textContent = user.userCode;
-                if (profileEmail) profileEmail.textContent = user.email;
-                if (profileLoginTime) profileLoginTime.textContent = user.lastLogin;
-                if (profileIcon) profileIcon.src = user.profileIconUrl;
-                if (modalProfileIcon) modalProfileIcon.src = user.profileIconUrl;
-                if (welcomeMessage) welcomeMessage.textContent = `Welcome, ${user.email}!`; // Update welcome message
-                openModal('profile', 'Profile details fetched and viewed'); // Assuming 'profile' modal exists
-            } else {
-                console.error("API response indicated failure to fetch user details.");
-                openModal('error-message-modal', "Failed to fetch user details."); 
+            const response = await fetch('http://localhost:8081/customer/getCustomerDetails', { headers: { 'userCode': userCode } });
+            const apiResponse = await response.json();
+
+            if (!response.ok || apiResponse.status !== 'Success' || !apiResponse.data) {
+                throw new Error(apiResponse.errorMessage || 'Failed to fetch customer details.');
             }
+            
+            const customer = apiResponse.data;
+            if (customer.customerNo) {
+                sessionStorage.setItem('customerNo', customer.customerNo);
+                config.customerNo = customer.customerNo;
+            }
+
+            profileElements.name.textContent = `${customer.name || ''} ${customer.middleName || ''} ${customer.surname || ''}`.trim() || 'N/A';
+            profileElements.role.textContent = customer.roles?.join(', ') || 'Customer';
+            profileElements.userCode.textContent = customer.userCode || 'N/A';
+            profileElements.email.textContent = customer.email || 'N/A';
+            profileElements.phoneNumber.textContent = customer.phoneNumber || 'N/A';
+            profileElements.customerNo.textContent = customer.customerNo || 'N/A';
+            profileElements.dateOfBirth.textContent = customer.dateOfBirth || 'N/A';
+            profileElements.gender.textContent = customer.gender || 'N/A';
+            profileElements.smokerStatus.textContent = customer.smokerStatus || 'N/A';
+            profileElements.adminAccess.textContent = customer.adminAccess === 'Y' ? 'Yes' : 'No';
+            profileElements.roles.textContent = customer.roles?.join(', ') || 'N/A';
+            profileElements.address.textContent = customer.address ? `${customer.address.street || ''}, ${customer.address.city || ''}, ${customer.address.state || ''} - ${customer.address.zipCode || ''}`.replace(/, \s*-|, ,/g,', ').trim() : 'N/A';
+            profileElements.loginTime.textContent = new Date().toLocaleString();
+            
+            const contact = customer.contactDetails || {};
+            profileElements.alternateEmail.textContent = contact.alternateEmail || 'N/A';
+            profileElements.phoneCountryCode.textContent = contact.phoneCountryCode || 'N/A';
+            profileElements.emergencyContactName.textContent = contact.emergencyContactName || 'N/A';
+            profileElements.emergencyContactPhone.textContent = contact.emergencyContactPhone || 'N/A';
+
+            profileElements.welcomeMessage.textContent = `Welcome, ${customer.name || 'User'}!`;
+            profileElements.profileIcon.src = "https://i.pravatar.cc/40?u=" + userCode;
+            profileElements.modalProfileIcon.src = "https://i.pravatar.cc/80?u=" + userCode;
+
+            openModal('profile', 'Customer details loaded');
         } catch (error) {
             console.error("Error fetching team details:", error);
             openModal('error-message-modal', "An error occurred while fetching user details.");
@@ -1084,54 +992,75 @@
         }
     }
 
-
     document.addEventListener('DOMContentLoaded', () => {
-        // Initialize user data (for welcome message/profile icon in header)
-        config.userCode = sessionStorage.getItem('userCode') || 'DEMO_USER';
-        config.email = sessionStorage.getItem('email') || 'demouser@example.com';
+        const urlParams = new URLSearchParams(window.location.search);
+        config.customerNo = urlParams.get('customerNo');
+        config.userCode = sessionStorage.getItem('userCode');
+        config.email = sessionStorage.getItem('email');
+
+        if (!config.userCode || !config.customerNo) {
+            openModal('error-message-modal', 'User ID or Customer Number not found. Please log in again.');
+            setTimeout(() => window.location.href = config.loginUrl, 2000);
+            return;
+        }
+        sessionStorage.setItem('customerNo', config.customerNo);
+
         if (config.userCode) {
             const welcomeMessage = document.getElementById('welcome-message');
             if (welcomeMessage) welcomeMessage.textContent = `Welcome, ${config.email}!`;
             const profileIcon = document.getElementById('profile-icon');
-            if (profileIcon) profileIcon.src = "https://i.pravatar.cc/40?img=25"; // A generic icon for the header
+            if (profileIcon) profileIcon.src = "https://i.pravatar.cc/40?img=25";
         }
 
-        // Setup for modals
         document.querySelector('.modal-container').addEventListener('click', (e) => {
-            if (e.target.dataset.closeModal) {
-                closeModal(e.target.dataset.closeModal);
+            let targetElement = e.target;
+            if (targetElement.tagName === 'I' && targetElement.parentNode.dataset.closeModal) {
+                targetElement = targetElement.parentNode;
+            }
+            if (targetElement.dataset.closeModal) {
+                closeModal(targetElement.dataset.closeModal);
             }
         });
 
-        setupStarRatings(); // Initialize star rating functionality
+        setupStarRatings();
 
-        // Event listener for the profile button in the header
         const btnProfile = document.getElementById('btn-profile');
         if (btnProfile) {
             btnProfile.addEventListener('click', window.fetchTeamDetails);
         }
 
+        const toggleMoreDetailsButton = document.getElementById('toggle-more-details');
+        if (toggleMoreDetailsButton) {
+            toggleMoreDetailsButton.addEventListener('click', () => {
+                const extendedDetails = document.getElementById('profile-extended-details');
+                const toggleText = document.getElementById('toggle-text');
+                const toggleIcon = document.getElementById('toggle-icon');
+                if (extendedDetails.classList.contains('hidden')) {
+                    extendedDetails.classList.remove('hidden');
+                    toggleText.textContent = 'Show Less Details';
+                    toggleIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                } else {
+                    extendedDetails.classList.add('hidden');
+                    toggleText.textContent = 'Show More Details';
+                    toggleIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                }
+            });
+        }
+
         document.getElementById('feedback-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const feedbackData = {
-                questions: [],
-                ratings: {}
-            };
+            const feedbackData = { questions: [], ratings: {} };
 
-            // Collect question answers (loop through 15 questions)
             for (let i = 1; i <= 15; i++) { 
-                const questionName = `q${i}`;
-                const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
                 if (selectedOption) {
-                    const answer = selectedOption.value;
-                    const questionEntry = { id: i, answer: answer };
-
-                    if (answer === 'no') {
+                    const questionEntry = { id: i, answer: selectedOption.value };
+                    if (selectedOption.value === 'no') {
                         const reasonText = document.getElementById(`reason-text-q${i}`).value.trim();
                         const moduleSelect = document.getElementById(`module-q${i}`).value;
                         if (!reasonText || !moduleSelect) {
                             openModal('error-message-modal', `Please provide a reason and select a module for Question ${i}.`);
-                            return; // Stop submission
+                            return;
                         }
                         questionEntry.reason = reasonText;
                         questionEntry.module = moduleSelect;
@@ -1139,24 +1068,23 @@
                     feedbackData.questions.push(questionEntry);
                 } else {
                     openModal('error-message-modal', `Please answer Question ${i}.`);
-                    return; // Stop submission
+                    return;
                 }
             }
 
-            // Collect module ratings
             document.querySelectorAll('.star-rating').forEach(ratingContainer => {
-                const moduleName = ratingContainer.dataset.module.replace('-rating', ''); // e.g., 'dashboard'
-                const selectedStar = ratingContainer.querySelector('.star.selected:last-child');
-                if (selectedStar) {
-                    feedbackData.ratings[moduleName] = parseInt(selectedStar.dataset.value);
-                } else {
-                    feedbackData.ratings[moduleName] = 0; // Or handle as an error if rating is mandatory
+                if (ratingContainer.dataset.module) {
+                    const moduleName = ratingContainer.dataset.module.replace('-rating', '');
+                    const selectedStar = ratingContainer.querySelector('.star.selected:last-child');
+                    if (selectedStar) {
+                        feedbackData.ratings[moduleName] = parseInt(selectedStar.dataset.value);
+                    } else {
+                        feedbackData.ratings[moduleName] = 0;
+                    }
                 }
             });
-
             await saveFeedback(feedbackData);
         });
-
         document.getElementById('show-recent-btn').addEventListener('click', getRecentFeedback);
     });
 </script>

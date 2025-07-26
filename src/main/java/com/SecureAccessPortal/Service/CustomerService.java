@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,34 +42,31 @@ public class CustomerService {
 					FeedbackEntity feedbackentity = new FeedbackEntity();
 					feedbackentity.setCreatedBy(userCode);
 					feedbackentity.setCreatedTime(LocalDateTime.now());
-					feedbackentity.setCustomerNo(customer.getCustomerNo());
+					feedbackentity.setCustomer(customer);
 					feedbackentity.setDeletedFlag(CommonConstant.N);
-					feedbackentity.setFeedbackData(mapper.writeValueAsString(feedbackResponse));
-					feedbackentity.setUserCode(userCode);
+					feedbackentity.setFeedbackData(mapper.writeValueAsString(feedbackResponse));			
 					feedbackRepository.save(feedbackentity);
                     response.setStatus(CommonConstant.SUCCESS);
 				} catch (JsonProcessingException e) {
-
 					e.printStackTrace();
 				}
 			}else {
 				response.setStatus(CommonConstant.FAILURE);
 				response.setErrorMessage("customerNot found");
 			}
-		} else {
-			
+		} else {	
 			response.setErrorMessage("userCode null");
 		}
 		return response;
 	}
 
-	public ResponseEntity<List<FeedbackResponse>> getFeedback(String userCode) {
+	public ResponseEntity<List<FeedbackResponse>> getFeedback(String customerNo,   String userCode) {
 		ResponseEntity<List<FeedbackResponse>> response = new ResponseEntity<>();
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		List<FeedbackResponse> listResp= new ArrayList<>();
 		if(userCode != null) {
-		List<FeedbackEntity> feedbackList=feedbackRepository.findByUserCodeAndDeletedFlagN(userCode,CommonConstant.N);
+		List<FeedbackEntity> feedbackList=feedbackRepository.findByCustomerNoAndDeletedFlagN(customerNo,CommonConstant.N);
 		listResp=feedbackList.stream().filter(Objects :: nonNull).map(feedback ->{
 			FeedbackResponse feedbackResponse = new FeedbackResponse();
 			try {

@@ -138,7 +138,18 @@ public class Customer {
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Complaint> complaint = new ArrayList<>();
     
-    @Column
+    @OneToMany(mappedBy = "customer",fetch=FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<FeedbackEntity> feedback;
+    
+    public List<FeedbackEntity> getFeedback() {
+		return feedback;
+	}
+
+	public void setFeedback(List<FeedbackEntity> feedback) {
+		this.feedback = feedback;
+	}
+
+	@Column
     private List<String> roles;
     
     @Column

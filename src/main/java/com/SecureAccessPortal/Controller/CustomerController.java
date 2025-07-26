@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.SecureAccessPortal.Entity.FeedbackEntity;
 import com.SecureAccessPortal.Modal.CustomerDTO;
 import com.SecureAccessPortal.Modal.FeedbackResponse;
 import com.SecureAccessPortal.Service.CustomerService;
@@ -33,12 +33,14 @@ public class CustomerController {
 	}
 	
 	@RequestMapping(value="/getFeedback",method=RequestMethod.GET)
-	public ResponseEntity<List<FeedbackResponse>> getFeedback(@RequestHeader String userCode){
-		ResponseEntity<List<FeedbackResponse>> response = customerService.getFeedback( userCode);
+	public ResponseEntity<List<FeedbackResponse>> getFeedback(
+			@RequestParam String customerNo
+			,@RequestHeader String userCode){
+		ResponseEntity<List<FeedbackResponse>> response = customerService.getFeedback(customerNo, userCode);
 		return response;
 	}
 	
-	@RequestMapping(value="/getCustomerDetails",method=RequestMethod.GET)
+	@RequestMapping(value="/getCustomerDetails",method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CustomerDTO> getCustmerDetails(@RequestHeader String userCode){
 		ResponseEntity<CustomerDTO> response = customerService.getCustomerDetails(userCode);
 		return response;

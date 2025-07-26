@@ -47,9 +47,11 @@ public class ActivityMonitorService {
 			}).collect(Collectors.toList());
 
 			response.setData(activityList);
+			response.setStatus(CommonConstant.SUCCESS);
 
 		} else {
 			response.setErrorMessage("Not activity Found");
+			response.setStatus(CommonConstant.FAILURE);
 		}
 
 		return response;
@@ -58,27 +60,25 @@ public class ActivityMonitorService {
 	public ResponseEntity<List<LoginHistroryResponse>> getLoginHistory(String email, String userCode) {
 
 		ResponseEntity<List<LoginHistroryResponse>> response = new ResponseEntity<>();
-		List<LoginHistory> loginHistoryList = loginHistoryRepository.findByEmailAndDeletedFlag(email, userCode,
-				CommonConstant.N);
+		List<LoginHistory> loginHistoryList = loginHistoryRepository.findByEmailAndDeletedFlag(email, userCode,CommonConstant.N);
 		if (loginHistoryList.isEmpty()) {
 			response.setErrorMessage("No Login found for user " + userCode);
+			response.setStatus(CommonConstant.FAILURE);
 			return response;
 		} else {
 			response = activityMonitorMapper.mapLoginHistory(loginHistoryList);
+			response.setStatus(CommonConstant.SUCCESS);
 		}
-
 		return response;
 	}
 
 	public ResponseEntity<LoginHistroryResponse> getLoginActTrac(String email, String userCode) {
 		ResponseEntity<LoginHistroryResponse> response = new ResponseEntity<>();
 		LoginHistroryResponse resp = new LoginHistroryResponse();
-		LoginHistory loginHistoryList = loginHistoryRepository.findByEmailAndDeletedFlagLatest(email, userCode,
-				CommonConstant.N);
-
+		LoginHistory loginHistoryList = loginHistoryRepository.findByEmailAndDeletedFlagLatest(email, userCode,CommonConstant.N);
 		resp = activityMonitorMapper.mapLoginHistoryOneRec(loginHistoryList);
 		response.setData(resp);
-
+		response.setStatus(CommonConstant.SUCCESS);
 		return response;
 	}
 

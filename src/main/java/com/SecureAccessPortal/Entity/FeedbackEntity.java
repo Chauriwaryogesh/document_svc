@@ -9,9 +9,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
@@ -22,14 +23,6 @@ public class FeedbackEntity {
 	@Column
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	
-	@Column
-	@NotBlank
-	private String customerNo;
-	
-	@Column
-	@NotBlank
-	private String userCode;
 	
 	@Column(columnDefinition = "MEDIUMTEXT")
 	@Lob
@@ -53,14 +46,22 @@ public class FeedbackEntity {
 	@Column
 	@NotNull
 	private String deletedFlag;
+	
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn( name ="customerNo",referencedColumnName = "customerNo")
+	private Customer customer;
+	
+	
 
-	public String getUserCode() {
-		return userCode;
+	public Customer getCustomer() {
+		return customer;
 	}
 
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
+
 
 	public long getId() {
 		return id;
@@ -68,14 +69,6 @@ public class FeedbackEntity {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public String getCustomerNo() {
-		return customerNo;
-	}
-
-	public void setCustomerNo(String customerNo) {
-		this.customerNo = customerNo;
 	}
 
 	public String getFeedbackData() {
