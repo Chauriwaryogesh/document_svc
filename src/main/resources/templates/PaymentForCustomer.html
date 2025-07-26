@@ -1,10 +1,2857 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Payments - Dashboard Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.autotable.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f8fc;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .modal.hidden, .view-section.hidden {
+            display: none;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-paid { background-color: #dcfce7; color: #166534; }
+        .status-unpaid { background-color: #fef3c7; color: #92400e; }
+        .status-failed { background-color: #fee2e2; color: #991b1b; }
+        .status-sent { background-color: #e0f2fe; color: #0c4a6e; }
+        .status-notsent { background-color: #f1f5f9; color: #475569; }
+        .status-service_not_available_now { background-color: #fef3c7; color: #92400e; }
+
+        #sidebar {
+            transition: width 0.3s ease-in-out;
+            width: 5rem;
+        }
+        #sidebar.collapsed {
+            width: 5rem;
+        }
+        #sidebar:not(.collapsed) {
+            width: 16rem;
+        }
+        #sidebar.collapsed .sidebar-text {
+            display: none;
+        }
+        #sidebar.collapsed .sidebar-brand-full {
+            display: none;
+        }
+        #sidebar.collapsed .sidebar-brand-collapsed {
+            display: block;
+        }
+
+        #main-content {
+            flex-grow: 1;
+            transition: margin-left 0.3s ease-in-out;
+            margin-left: 5rem;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        #main-content.full {
+            margin-left: 5rem;
+        }
+        #main-content:not(.full) {
+            margin-left: 16rem;
+        }
+        
+        @media (max-width: 767px) {
+            #sidebar {
+                transform: translateX(-100%);
+                width: 16rem;
+            }
+            #sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+            #main-content {
+                margin-left: 0 !important;
+            }
+        }
+
+        .filter-popup { 
+            display: none; 
+            width: 28rem;
+            max-height: 500px;
+            overflow-y: auto;
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            left: 0;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            z-index: 20;
+        }
+        .filter-popup.active { display: block; }
+
+        .header-search-container {
+            position: relative;
+            width: 40px;
+            transition: width 0.3s ease-in-out;
+        }
+        .header-search-container.expanded {
+            width: 250px;
+        }
+        .header-search-input {
+            width: 100%;
+            padding-right: 2.5rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .header-search-container.expanded .header-search-input {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .header-search-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s ease-in-out;
+        }
+        .header-search-icon:hover {
+            color: #3b82f6;
+        }
+
+        .data-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .data-list-item {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem 1.5rem;
+            cursor: pointer;
+        }
+        .data-list-item:hover {
+            background-color: #f9fafb;
+        }
+        .data-list-item .info-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.5rem;
+            flex-grow: 1;
+        }
+        .data-list-item .info-item {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.875rem;
+        }
+        .data-list-item .info-item .label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+        .data-list-item .info-item .value {
+            color: #1f2937;
+        }
+        .data-list-item .ref-link {
+            color: #3b82f6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .data-list-item .ref-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 640px) {
+            .data-list-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .data-list-item .info-group {
+                width: 100%;
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+        }
+
+        .modal {
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        .modal.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+        .modal-content {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        @media (max-width: 640px) {
+            .modal-content {
+                width: 95%;
+                margin: 0 auto;
+            }
+        }
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            display: none;
+        }
+        .loader.active {
+            display: flex;
+        }
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-text {
+            color: #ef4444;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .form-input {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 10px 14px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .success-text {
+            color: #10b981;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            z-index: 110;
+            font-weight: 500;
+            animation: slide-up 0.3s ease-out, slide-down 0.0s ease-in 2.7s forwards;
+        }
+        .toast-success {
+            background: #10b981;
+        }
+        .toast-error {
+            background: #ef4444;
+        }
+        @keyframes slide-up {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slide-down {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+        .sort-icon {
+            display: inline-block;
+            margin-left: 4px;
+            transition: transform 0.2s;
+        }
+        .sort-icon.asc {
+            transform: rotate(180deg);
+        }
+        .form-label {
+            font-weight: 600;
+            color: #1a2c50;
+        }
+        .form-label.required::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 4px;
+        }
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .view-btn {
+            cursor: pointer;
+            color: #3b82f6;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .view-btn:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.visible {
+            display: block;
+        }
+
+        .tabs-container {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            background-color: #f9fafb;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6b7280;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border-bottom: 3px solid transparent;
+            text-align: center;
+        }
+        .tab-button:hover {
+            color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .tab-button.active-tab {
+            color: #1d4ed8;
+            border-bottom-color: #3b82f6;
+            background-color: #ffffff;
+        }
+        .tab-content {
+            padding: 1.5rem;
+        }
+        .customer-detail-link {
+            color: #3b82f6;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .customer-detail-link:hover {
+            color: #2563eb;
+        }
+        .search-input-border {
+            border: 2px solid #3b82f6;
+        }
+        .search-input-border:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .status-count-clickable {
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .status-count-clickable:hover {
+            text-decoration: underline;
+        }
+        .status-count-clickable.active-filter {
+            font-weight: 700;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
+    <div id="sidebar" class="fixed top-0 left-0 h-full bg-white shadow-lg z-30 collapsed">
+        <div class="flex items-center justify-between p-4 border-b h-16">
+            <div class="sidebar-brand-full hidden">
+                <h1 class="text-2xl font-bold text-blue-600">Dashboard</h1>
+            </div>
+            <div class="sidebar-brand-collapsed">
+                <h1 class="text-2xS font-bold text-blue-600">Payments Menu</h1>
+            </div>
+            <button id="sidebar-toggle-btn" class="hidden md:block text-gray-500 hover:text-gray-800">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <nav class="mt-4">
+            <a href="#" class="flex items-center px-4 py-3 text-blue-600 bg-blue-50 font-bold rounded-lg mx-2 nav-link" data-view="payments">
+                <i class="fas fa-credit-card w-8 text-center text-lg"></i>
+                <span class="ml-3 font-semibold sidebar-text">Payments</span>
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg mx-2 nav-link" data-view="make-payment-tab">
+                <i class="fas fa-money-bill-alt w-8 text-center text-lg"></i>
+                <span class="ml-3 font-semibold sidebar-text">Make Payment</span>
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg mx-2 nav-link" data-view="complaints">
+                <i class="fas fa-exclamation-circle w-8 text-center text-lg"></i>
+                <span class="ml-3 font-semibold sidebar-text">Complaints</span>
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg mx-2 nav-link" data-view="bank-accounts">
+                <i class="fas fa-bank w-8 text-center text-lg"></i>
+                <span class="ml-3 font-semibold sidebar-text">Bank Accounts</span>
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg mx-2 nav-link" data-view="customer-service">
+                <i class="fas fa-headset w-8 text-center text-lg"></i>
+                <span class="ml-3 font-semibold sidebar-text">Customer Service</span>
+            </a>
+            <a href="#" id="btn-logout-sidebar" class="flex items-center px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg mx-2 mt-4">
+                <i class="fas fa-sign-out-alt w-8 text-center text-lg"></i>
+                <span class="ml-3 font-semibold sidebar-text">Logout</span>
+            </a>
+        </nav>
+    </div>
+
+    <div id="main-content" class="relative min-h-screen full">
+        <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-20 shadow-sm p-4 flex justify-between items-center border-b h-16">
+            <button id="sidebar-open-btn" class="md:hidden text-gray-500 hover:text-gray-800">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h2 id="header-title" class="text-xl font-bold text-gray-800">Customer Payments <span class="text-sm text-gray-500">v2</span></h2>
+            <div class="flex items-center space-x-4">
+                <div id="header-search-container" class="header-search-container">
+                    <input type="text" id="header-search-input" placeholder="Search payments..."
+                           class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm header-search-input">
+                    <i id="header-search-icon" class="fas fa-search header-search-icon"></i>
+                </div>
+                <button id="btn-profile" class="flex items-center text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-user-circle text-2xl"></i>
+                </button>
+                <button id="btn-logout-header" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition">
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <main class="p-6 flex-grow">
+            <div id="action-bar" class="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-4 mb-4 md:mb-0 relative">
+                    <button id="filter-payments-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition flex items-center">
+                        <i class="fas fa-filter mr-2"></i> Advanced Filter
+                    </button>
+                    <!-- These counts will reflect global data from API, consider hiding or re-purposing for customer view if backend doesn't support customer-specific counts -->
+                    <div class="text-gray-600 font-semibold">
+                        Total Policies: <span id="total-policies-count" class="text-blue-600">0</span>
+                    </div>
+                    <div class="text-gray-600 font-semibold">
+                        Total Customers: <span id="total-customers-count" class="text-blue-600">0</span>
+                    </div>
+                    <div id="payment-status-counts" class="flex flex-wrap gap-x-4 gap-y-2 text-sm ml-4">
+                        <span class="font-semibold text-gray-700">Paid: <span id="count-paid" class="text-green-600 status-count-clickable" data-status="Paid">0</span></span>
+                        <span class="font-semibold text-gray-700">Unpaid: <span id="count-unpaid" class="text-yellow-600 status-count-clickable" data-status="Unpaid">0</span></span>
+                        <span class="font-semibold text-gray-700">Failed: <span id="count-failed" class="text-red-600 status-count-clickable" data-status="Failed">0</span></span>
+                    </div>
+                    <div id="filter-popup" class="filter-popup">
+                        <div class="space-y-4">
+                            <div>
+                                <label for="filter-policy-number" class="block text-sm font-medium text-gray-700">Policy Number</label>
+                                <input type="text" id="filter-policy-number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                            </div>
+                            <div>
+                                <label for="filter-customer-number" class="block text-sm font-medium text-gray-700">Customer Number</label>
+                                <input type="text" id="filter-customer-number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                            </div>
+                            <div>
+                                <label for="filter-policy-name" class="block text-sm font-medium text-gray-700">Policy Name</label>
+                                <input type="text" id="filter-policy-name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                            </div>
+                            <div>
+                                <label for="filter-policy-type" class="block text-sm font-medium text-gray-700">Policy Type</label>
+                                <input type="text" id="filter-policy-type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                            </div>
+                            <div>
+                                <label for="filter-start-date" class="block text-sm font-medium text-gray-700">Start Date</label>
+                                <input type="date" id="filter-start-date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                            </div>
+                            <div>
+                                <label for="filter-end-date" class="block text-sm font-medium text-gray-700">End Date</label>
+                                <input type="date" id="filter-end-date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                            </div>
+                            <div class="flex justify-end space-x-2 mt-4 col-span-full">
+                                <button id="clear-filter" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition">Clear</button>
+                                <button id="apply-filter" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 md:gap-4">
+                    <button id="add-new-payment" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600 transition flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Make Payment
+                    </button>
+                    <button onclick="generatePaymentPDF()" class="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition flex items-center">
+                        <i class="fas fa-file-pdf mr-2"></i> Generate PDF
+                    </button>
+                </div>
+            </div>
+
+            <div id="make-payment-tabs-container" class="tabs-container hidden">
+                <div class="tab-buttons">
+                    <button id="tab-btn-search-payments" class="tab-button active-tab" data-tab="search-payments-tab-content">
+                        <i class="fas fa-search mr-2"></i> Search Payments
+                    </button>
+                    <button id="tab-btn-make-payment" class="tab-button" data-tab="make-payment-tab-content">
+                        <i class="fas fa-money-bill-alt mr-2"></i> Make Payment
+                    </button>
+                </div>
+
+                <div id="search-payments-tab-content" class="tab-content active-tab-content">
+                    <div class="p-6 rounded-xl shadow-lg w-full max-w-3xl mx-auto bg-white">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                            <i class="fas fa-filter text-gray-500"></i> Filter Search Results
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label for="search-payment-id" class="block text-sm font-medium text-gray-700">Payment ID</label>
+                                <input type="text" id="search-payment-id" class="form-input mt-1 search-input-border" placeholder="e.g., PAY12345">
+                            </div>
+                            <div>
+                                <label for="search-policy-number" class="block text-sm font-medium text-gray-700">Policy Number</label>
+                                <input type="text" id="search-policy-number" class="form-input mt-1 search-input-border" placeholder="e.g., POLC001">
+                            </div>
+                            <div>
+                                <label for="search-customer-number" class="block text-sm font-medium text-gray-700">Customer Number</label>
+                                <input type="text" id="search-customer-number" class="form-input mt-1 search-input-border" placeholder="e.g., CUST001">
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <button type="button" id="search-payments-in-form-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600">
+                                <i class="fas fa-search mr-2"></i> Search Payments
+                            </button>
+                            <button type="button" id="select-unpaid-payment-btn" class="action-button bg-yellow-500 text-white hover:bg-yellow-600">
+                                <i class="fas fa-exclamation-triangle mr-2"></i> Select Unpaid
+                            </button>
+                        </div>
+
+                        <div id="payment-search-results-container" class="mt-6 border-t pt-4 border-gray-200">
+                            <h4 class="text-md font-semibold text-gray-700 mb-3">Search Results:</h4>
+                            <div id="payment-search-results-list" class="space-y-2">
+                            </div>
+                            <div id="payment-search-no-results" class="text-center py-4 text-gray-500 hidden">
+                                No payments found for your search.
+                            </div>
+                            <div id="payment-search-pagination" class="p-2 flex justify-center items-center space-x-4 bg-gray-100 rounded-lg mt-4 hidden">
+                                <button id="payment-search-prev-page" class="action-button bg-blue-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <i class="fas fa-chevron-left"></i> Prev
+                                </button>
+                                <span class="text-gray-700 text-sm">Page <span id="payment-search-current-page-display">1</span> of <span id="payment-search-total-pages-display">1</span></span>
+                                <button id="payment-search-next-page" class="action-button bg-blue-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="make-payment-tab-content" class="tab-content hidden">
+                    <div class="p-6 rounded-xl shadow-lg w-full max-w-3xl mx-auto bg-white">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                            <i class="fas fa-money-check-alt text-blue-600"></i>
+                            Process Payment
+                        </h2>
+                        <div class="mb-4">
+                            <label for="manual-payment-id-input" class="form-label block text-sm required">Enter Payment ID</label>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="manual-payment-id-input" class="form-input mt-1 flex-grow" placeholder="e.g., PAY12345" required>
+                                <button type="button" id="fetch-payment-details-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600">
+                                    <i class="fas fa-download mr-2"></i> Fetch Details
+                                </button>
+                            </div>
+                            <p id="manual-payment-id-input-error" class="error-text hidden"></p>
+                        </div>
+
+                        <form id="payment-form">
+                            <div id="payment-details-form" class="form-section hidden">
+                                <div class="relative mb-6">
+                                    <label for="payment-id-input" class="form-label block text-sm">Payment ID</label>
+                                    <input type="text" id="payment-id-input" class="form-input mt-1 bg-gray-100" readonly>
+                                    <p id="payment-id-input-error" class="error-text hidden"></p>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label for="policy-number" class="form-label block text-sm">Policy Number</label>
+                                        <input id="policy-number" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="customer-number" class="form-label block text-sm">Customer Number</label>
+                                        <input id="customer-number" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="customer-email" class="form-label block text-sm">Customer Email</label>
+                                        <input id="customer-email" type="email" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="policy-name" class="form-label block text-sm">Policy Name</label>
+                                        <input id="policy-name" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="installment-amount" class="form-label block text-sm">Installment Amount</label>
+                                        <input id="installment-amount" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="installment-count" class="form-label block text-sm">Installment Count</label>
+                                        <input id="installment-count" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="due-date" class="form-label block text-sm">Due Date</label>
+                                        <input id="due-date" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="payment-date" class="form-label block text-sm">Payment Date</label>
+                                        <input id="payment-date" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="status" class="form-label block text-sm">Status</label>
+                                        <input id="status" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="transaction-id" class="form-label block text-sm">Transaction ID</label>
+                                        <input id="transaction-id" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                    <div>
+                                        <label for="email-status" class="form-label block text-sm">Email Status</label>
+                                        <input id="email-status" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="payment-method" class="form-label block text-sm required">Payment Method</label>
+                                    <select id="payment-method" class="form-input mt-1" required onchange="togglePaymentDetails()">
+                                        <option value="">Select Method</option>
+                                        <option value="Check">Check</option>
+                                        <option value="Credit Card">Credit Card</option>
+                                        <option value="Debit Card">Debit Card</option>
+                                        <option value="UPI">UPI</option>
+                                        <option value="Bank Account">Bank Account</option>
+                                    </select>
+                                    <p id="payment-method-error" class="error-text hidden"></p>
+                                </div>
+
+                                <div id="check-details" class="hidden mb-4">
+                                    <label for="check-number" class="form-label block text-sm required">Check Number</label>
+                                    <input id="check-number" type="text" class="form-input mt-1">
+                                    <p id="check-number-error" class="error-text hidden"></p>
+                                </div>
+                                <div id="card-details" class="hidden mb-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="card-number" class="form-label block text-sm required">Card Number</label>
+                                            <input id="card-number" type="text" class="form-input mt-1">
+                                            <p id="card-number-error" class="error-text hidden"></p>
+                                        </div>
+                                        <div>
+                                            <label for="expiry-date" class="form-label block text-sm required">Expiry Date (MM/YY)</label>
+                                            <input id="expiry-date" type="text" class="form-input mt-1">
+                                            <p id="expiry-date-error" class="error-text hidden"></p>
+                                        </div>
+                                        <div>
+                                            <label for="cvv" class="form-label block text-sm required">CVV</label>
+                                            <input id="cvv" type="text" class="form-input mt-1">
+                                            <p id="cvv-error" class="error-text hidden"></p>
+                                        </div>
+                                        <div>
+                                            <label for="otp" class="form-label block text-sm required">OTP</label>
+                                            <div class="flex items-center gap-2">
+                                                <input id="otp" type="text" class="form-input mt-1 flex-grow">
+                                                <button type="button" onclick="sendOtp('otp')" class="action-button bg-purple-500 text-white hover:bg-purple-600">Send OTP</button>
+                                            </div>
+                                            <p id="otp-error" class="error-text hidden"></p>
+                                            <p id="otp-success" class="success-text hidden"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="upi-details" class="hidden mb-4">
+                                    <label for="upi-id" class="form-label block text-sm required">UPI ID</label>
+                                    <input id="upi-id" type="text" class="form-input mt-1">
+                                    <p id="upi-id-error" class="error-text hidden"></p>
+                                </div>
+                                <div id="bank-account-details" class="hidden mb-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="bank-account-number" class="form-label block text-sm">Account Number</label>
+                                            <input id="bank-account-number" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                            <p id="bank-account-number-error" class="error-text hidden"></p>
+                                        </div>
+                                        <div>
+                                            <label for="bank-ifsc-code" class="form-label block text-sm">IFSC Code</label>
+                                            <input id="bank-ifsc-code" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                            <p id="bank-ifsc-code-error" class="error-text hidden"></p>
+                                        </div>
+                                        <div>
+                                            <label for="bank-name" class="form-label block text-sm">Bank Name</label>
+                                            <input id="bank-name" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                            <p id="bank-name-error" class="error-text hidden"></p>
+                                        </div>
+                                        <div>
+                                            <label for="bank-holder-name" class="form-label block text-sm">Holder Name</label>
+                                            <input id="bank-holder-name" type="text" class="form-input mt-1 bg-gray-100" readonly>
+                                            <p id="bank-holder-name-error" class="error-text hidden"></p>
+                                        </div>
+                                        <div>
+                                            <label for="bank-otp" class="form-label block text-sm required">OTP</label>
+                                            <div class="flex items-center gap-2">
+                                                <input id="bank-otp" type="text" class="form-input mt-1 flex-grow">
+                                                <button type="button" onclick="sendOtp('bank-otp')" class="action-button bg-purple-500 text-white hover:bg-purple-600">Send OTP</button>
+                                            </div>
+                                            <p id="bank-otp-error" class="error-text hidden"></p>
+                                            <p id="bank-otp-success" class="success-text hidden"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 flex flex-wrap gap-4">
+                                    <button type="submit" id="process-payment-btn" class="action-button bg-green-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <i class="fas fa-check-circle mr-2"></i>Process Payment
+                                    </button>
+                                    <button type="button" id="send-receipt-btn" class="action-button bg-teal-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-teal-600 hidden">
+                                        <i class="fas fa-envelope mr-2"></i>Send Receipt
+                                    </button>
+                                    <button type="button" id="send-email-payment-btn" class="action-button bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-600 hidden">
+                                        <i class="fas fa-paper-plane mr-2"></i>Send Email
+                                    </button>
+                                    <button type="button" id="clear-payment-form-btn" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300">
+                                        <i class="fas fa-eraser mr-2"></i>Clear Form
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="payments-display-area" class="min-h-[500px]">
+                <div class="tabs-container">
+                    <div class="tab-buttons">
+                        <button id="main-tab-btn-customers" class="tab-button active-tab" data-main-tab="customers-content">Customers</button>
+                        <button id="main-tab-btn-policies" class="tab-button" data-main-tab="policies-content">Policies</button>
+                        <button id="main-tab-btn-payments" class="tab-button" data-main-tab="payments-content">Payments</button>
+                    </div>
+                    <div id="customers-content" class="tab-content active-tab-content data-list-container">
+                        <div class="flex items-center gap-2 mb-4">
+                            <input type="text" id="customer-search-input" placeholder="Search customers..." class="form-input flex-grow">
+                            <button id="customer-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                        </div>
+                    </div>
+                    <div id="policies-content" class="tab-content hidden data-list-container">
+                        <div class="flex items-center gap-2 mb-4">
+                            <input type="text" id="policy-search-input" placeholder="Search policies..." class="form-input flex-grow">
+                            <button id="policy-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                        </div>
+                    </div>
+                    <div id="payments-content" class="tab-content hidden data-list-container">
+                        <div class="flex items-center gap-2 mb-4">
+                            <input type="text" id="payment-list-search-input" placeholder="Search payments..." class="form-input flex-grow">
+                            <button id="payment-list-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="no-results" class="text-center py-10 text-gray-500 hidden">
+                    <i class="fas fa-box-open text-4xl mb-4 text-gray-400"></i>
+                    <p class="font-semibold">No data found matching your criteria.</p>
+                </div>
+            </div>
+            
+            <div id="pagination" class="p-4 flex flex-col md:flex-row justify-end items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6 hidden">
+                <div class="flex items-center space-x-2">
+                    <button id="prev-page" class="action-button bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span class="text-gray-700 text-sm">Page <span id="page-jump-input-display">1</span> of <span id="total-pages-display">1</span></span>
+                    <input type="number" id="page-jump-input" class="w-16 px-2 py-1 border border-gray-300 rounded-md text-center text-sm" value="1" min="1">
+                    <button id="jump-to-page-btn" class="action-button bg-blue-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-blue-600">Go</button>
+                    <button id="next-page" class="action-button bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="bg-white/80 backdrop-blur-sm p-4 text-center text-gray-600 text-sm border-t mt-6">
+            &copy; v2 2025 Secure access pvt limited. All rights reserved.
+        </footer>
+    </div>
+
+    <div id="payment-confirmation-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="payment-confirmation-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-2xl">
+            <h3 id="payment-confirmation-title" class="text-xl font-bold mb-4">Payment Details</h3>
+            <p id="modal-message" class="mb-4 text-gray-600"></p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p><strong>Payment ID:</strong> <span id="modal-payment-id"></span></p>
+                    <p><strong>Policy Number:</strong> <span id="modal-policy-number"></span></p>
+                    <p><strong>Customer Number:</strong> <span id="modal-customer-number"></span></p>
+                    <p><strong>Customer Email:</strong> <span id="modal-customer-email"></span></p>
+                    <p><strong>Policy Name:</strong> <span id="modal-policy-name"></span></p>
+                    <p><strong>Amount:</strong> <span id="modal-installment-amount"></span></p>
+                    <p><strong>Installment Count:</strong> <span id="modal-installment-count"></span></p>
+                </div>
+                <div>
+                    <p><strong>Due Date:</strong> <span id="modal-due-date"></span></p>
+                    <p><strong>Payment Date:</strong> <span id="modal-payment-date"></span></p>
+                    <p><strong>Status:</strong> <span id="modal-status"></span></p>
+                    <p><strong>Transaction ID:</strong> <span id="modal-transaction-id"></span></p>
+                    <p><strong>Email Status:</strong> <span id="modal-email-status"></span></p>
+                    <p><strong>Response Status:</strong> <span id="modal-response-status"></span></p>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-2">
+                <button id="make-payment-from-modal-btn" class="action-button bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600">
+                    <i class="fas fa-money-bill-wave mr-2"></i>Make Payment
+                </button>
+                <button id="generate-pdf-modal-btn" class="action-button bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600">
+                    <i class="fas fa-file-pdf mr-2"></i>Generate PDF
+                </button>
+                <button id="close-payment-confirmation-modal" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="payment-details-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="payment-details-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-4xl">
+            <h3 id="payment-details-title" class="text-xl font-bold mb-4">Payments for Policy: <span id="modal-policy-number-display"></span></h3>
+            <div id="modal-payment-list-container" class="data-list-container">
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button id="close-payment-details-modal" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customer-details-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="customer-details-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-4xl">
+            <h3 id="customer-details-title" class="text-xl font-bold mb-4">Details for Customer: <span id="modal-customer-number-display"></span></h3>
+            
+            <div class="tabs-container mb-4">
+                <div class="tab-buttons">
+                    <button id="customer-modal-tab-policies" class="tab-button active-tab" data-modal-tab="customer-modal-policies-content">Policies</button>
+                    <button id="customer-modal-tab-payments" class="tab-button" data-modal-tab="customer-modal-payments-content">Payments</button>
+                </div>
+                <div id="customer-modal-policies-content" class="tab-content active-tab-content data-list-container">
+                    <p class="text-center text-gray-500 py-4">No policies found for this customer.</p>
+                </div>
+                <div id="customer-modal-payments-content" class="tab-content hidden data-list-container">
+                    <p class="text-center text-gray-500 py-4">No payments found for this customer.</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button id="close-customer-details-modal" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="unpaid-payments-selection-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="unpaid-payments-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-2xl">
+            <h3 id="unpaid-payments-title" class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-hand-holding-usd text-yellow-600"></i> Select Unpaid Payment
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label for="unpaid-search-payment-id" class="block text-sm font-medium text-gray-700">Payment ID</label>
+                    <input type="text" id="unpaid-search-payment-id" class="form-input mt-1 search-input-border" placeholder="e.g., PAY12345">
+                </div>
+                <div>
+                    <label for="unpaid-search-policy-number" class="block text-sm font-medium text-gray-700">Policy Number</label>
+                    <input type="text" id="unpaid-search-policy-number" class="form-input mt-1 search-input-border" placeholder="e.g., POLC001">
+                </div>
+                <div>
+                    <label for="unpaid-search-customer-number" class="block text-sm font-medium text-gray-700">Customer Number</label>
+                    <input type="text" id="unpaid-search-customer-number" class="form-input mt-1 search-input-border" placeholder="e.g., CUST001">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 mb-4">
+                <button type="button" id="unpaid-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search Unpaid</button>
+                <button type="button" id="unpaid-clear-search-btn" class="action-button bg-gray-200 text-gray-800 hover:bg-gray-300"><i class="fas fa-eraser"></i> Clear Search</button>
+            </div>
+            <div id="unpaid-payments-list" class="space-y-3">
+            </div>
+            <div id="unpaid-payments-no-results" class="text-center py-4 text-gray-500 hidden">
+                No unpaid payments found.
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button id="close-unpaid-payments-modal" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="feature-soon-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="feature-soon-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-sm text-center">
+            <h3 id="feature-soon-title" class="text-xl font-bold mb-4">Feature Coming Soon</h3>
+            <p id="feature-soon-message" class="mb-6 text-gray-700"></p>
+            <button id="close-feature-soon-modal" class="action-button bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">OK</button>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="profile-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-sm">
+            <h3 id="profile-title" class="text-xl font-bold mb-4">User Profile</h3>
+            <p class="mb-2"><strong>Email:</strong> <span id="profile-email"></span></p>
+            <p class="mb-4"><strong>User Code:</strong> <span id="profile-user-code"></span></p>
+            <p id="profile-email-success" class="success-text hidden mb-4"></p>
+            <div class="flex justify-end space-x-2">
+                <button id="send-profile-email-btn" class="action-button bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600">Send Email</button>
+                <button id="close-profile-modal" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="contact-us-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="contact-us-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+            <h3 id="contact-us-title" class="text-xl font-bold mb-4">Contact Us</h3>
+            <p class="mb-4 text-gray-700">For support, please contact <a href="mailto:support@insurance.com" class="text-blue-600 hover:underline">support@insurance.com</a>.</p>
+            <div class="mt-4 flex justify-end">
+                <button id="close-contact-us-modal" class="action-button bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="send-receipt-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="send-receipt-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-sm">
+            <h3 id="send-receipt-title" class="text-xl font-bold mb-4">Send Receipt</h3>
+            <div>
+                <label for="receipt-email" class="form-label block text-sm required">Email Address</label>
+                <input id="receipt-email" type="email" class="form-input mt-1" required>
+                <p id="receipt-email-error" class="error-text hidden"></p>
+                <p id="receipt-email-success" class="success-text hidden mt-2"></p>
+            </div>
+            <div class="mt-6 flex justify-end space-x-2">
+                <button id="send-receipt-btn-modal" class="action-button bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600">Send</button>
+                <button id="close-send-receipt-modal" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bank-account-search-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="bank-account-search-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-md">
+            <h3 id="bank-account-search-title" class="text-xl font-bold mb-4">Search Bank Account</h3>
+            <div>
+                <label for="bank-account-search-input" class="form-label block text-sm required">Account Number</label>
+                <div class="flex items-center gap-2">
+                    <input id="bank-account-search-input" type="text" class="form-input mt-1 flex-grow" required>
+                    <button type="button" id="search-bank-account-btn-modal" class="action-button bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">Search</button>
+                </div>
+                <p id="bank-account-search-error" class="error-text hidden mt-2"></p>
+                <div id="bank-account-loader" class="spinner hidden mx-auto mt-4"></div>
+            </div>
+            <div id="bank-account-redirect" class="hidden mt-4 text-center">
+                <p class="mb-4 text-gray-700">No bank account found. Would you like to add a new bank account?</p>
+                <button id="redirect-to-bank-account-page-btn" class="action-button bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">Add Bank Account</button>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button id="close-bank-account-search-modal" class="action-button bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-alert-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="custom-alert-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-sm text-center">
+            <h3 id="custom-alert-title" class="text-xl font-bold mb-4 text-green-600">Success</h3>
+            <p id="custom-alert-message" class="mb-6 text-gray-700"></p>
+            <button id="close-custom-alert-modal" class="action-button bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600">OK</button>
+        </div>
+    </div>
+
+    <div id="custom-error-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="custom-error-title" role="dialog" aria-modal="true">
+        <div class="modal-content w-full max-w-sm text-center">
+            <h3 id="custom-error-title" class="text-xl font-bold mb-4 text-red-600">Error</h3>
+            <p id="custom-error-message" class="mb-6 text-gray-700"></p>
+            <button id="close-custom-error-modal" class="action-button bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600">OK</button>
+        </div>
+    </div>
+
+    <div id="loader" class="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        const config = {
+            userCode: null,
+            email: null,
+            loginUrl: '/login',
+            apiBaseUrl: 'http://localhost:8081',
+            itemsPerPage: 100,
+            currentPage: 0,
+            totalPages: 1,
+            currentPayment: null,
+            currentFilters: {},
+            sortColumn: 'policyNumber',
+            sortDirection: 'asc',
+            paymentSearch: {
+                results: [],
+                currentPage: 0,
+                totalPages: 1,
+                filters: {}
+            },
+            customersData: {},
+            allCustomersFlat: [],
+            allPoliciesFlat: [],
+            allPaymentsFlat: [],
+            currentMainTab: 'customers-content',
+            customerNoFromUrl: null, // New: To store customer number from URL
+            policyNoFromUrl: null,   // New: To store policy number from URL
+            paymentIdFromUrl: null   // New: To store payment ID from URL
+        };
+
+        let modals = {};
+
+        const show = el => el && el.classList.remove('hidden');
+        const hide = el => el && el.classList.add('hidden');
+        const toggle = (el, className) => el && el.classList.toggle(className);
+
+        function showLoader() { show(document.getElementById('loader')); }
+        function hideLoader() { hide(document.getElementById('loader')); }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function getuserCode() {
+            const userCode = sessionStorage.getItem('userCode');
+            config.email = sessionStorage.getItem('email');
+            if (!userCode) {
+                showCustomError('User ID not found. Please log in again.');
+                setTimeout(() => window.location.href = config.loginUrl, 2000);
+                return null;
+            }
+            return userCode;
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            showCustomAlert('Logged out successfully!');
+            setTimeout(() => window.location.href = config.loginUrl, 2000);
+        }
+
+        function openModal(modalId, data = {}) {
+            const modalElement = modals[modalId];
+            if (!modalElement) {
+                showToast('Cannot open modal', 'error');
+                return;
+            }
+            if (modalInitializers[modalId]) {
+                modalInitializers[modalId](data, modalElement);
+            }
+            show(modalElement);
+            const focusable = modalElement.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (focusable) focusable.focus();
+        }
+
+        function closeModal(modalId) {
+            const modalElement = modals[modalId];
+            if (!modalElement) {
+                return;
+            }
+            hide(modalElement);
+        }
+
+        function showCustomAlert(message) {
+            document.getElementById('custom-alert-message').textContent = message;
+            openModal('custom-alert-modal');
+        }
+
+        function showCustomError(message) {
+            document.getElementById('custom-error-message').textContent = message;
+            openModal('custom-error-modal');
+        }
+
+        function showFeatureSoon(feature) {
+            document.getElementById('feature-soon-message').textContent = `${feature} feature will be implemented soon.`;
+            openModal('feature-soon-modal');
+        }
+
+        function showProfile() {
+            document.getElementById('profile-email').textContent = config.email || 'N/A';
+            document.getElementById('profile-user-code').textContent = config.userCode || 'N/A';
+            document.getElementById('profile-email-success').classList.add('hidden');
+            openModal('profile-modal');
+        }
+
+        function sendProfileEmail() {
+            const successMessageEl = document.getElementById('profile-email-success');
+            successMessageEl.textContent = 'Email sent successfully';
+            show(successMessageEl);
+            setTimeout(() => hide(successMessageEl), 3000);
+        }
+
+        function showContactUs() {
+            openModal('contact-us-modal');
+        }
+
+        function openSendReceiptModal() {
+            document.getElementById('receipt-email').value = '';
+            hide(document.getElementById('receipt-email-error'));
+            hide(document.getElementById('receipt-email-success'));
+            openModal('send-receipt-modal');
+        }
+
+        function sendReceipt() {
+            const email = document.getElementById('receipt-email').value.trim();
+            const error = document.getElementById('receipt-email-error');
+            const success = document.getElementById('receipt-email-success');
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                error.textContent = 'Please enter a valid email address';
+                show(error);
+                return;
+            }
+            hide(error);
+            success.textContent = `Receipt sent to ${email}`;
+            show(success);
+            setTimeout(() => closeModal('send-receipt-modal'), 2000);
+        }
+
+        async function fetchApi(url, options = {}) {
+            showLoader();
+            try {
+                const defaultHeaders = {
+                    'userCode': config.userCode
+                };
+
+                if (options.body && typeof options.body === 'string' && !options.headers?.['Content-Type']) {
+                    defaultHeaders['Content-Type'] = 'application/json';
+                }
+
+                const response = await fetch(url, {
+                    ...options,
+                    headers: { ...defaultHeaders, ...options.headers }
+                });
+                const data = await response.json();
+                if (!response.ok || data.errorMessage) {
+                    throw new Error(data.errorMessage || `HTTP error! status: ${response.status}`);
+                }
+                return data;
+            } catch (error) {
+                showToast(`API Request Failed: ${error.message}`, 'error');
+                throw error;
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function fetchPaymentHistory(filters = {}, page = 0, size = config.itemsPerPage) {
+            const userCode = getuserCode();
+            if (!userCode) {
+                return { data: { content: [], totalElements: 0 } };
+            }
+
+            const params = new URLSearchParams({
+                userCode: userCode,
+                page: page,
+                size: size
+            });
+
+            // Apply URL parameters as initial filters
+            if (config.customerNoFromUrl && !filters.customerNumber) {
+                params.append('customerNumber', config.customerNoFromUrl);
+            }
+            if (config.policyNoFromUrl && !filters.policyNumber) {
+                params.append('policyNumber', config.policyNoFromUrl);
+            }
+            // Existing filters take precedence if they are explicitly set via the filter UI
+            if (filters.policyNumber) params.append('policyNumber', filters.policyNumber);
+            if (filters.customerNumber) params.append('customerNumber', filters.customerNumber);
+            if (filters.policyName) params.append('policyName', filters.policyName);
+            if (filters.policyType) params.append('policyType', filters.policyType);
+            if (filters.globalSearch) params.append('search', filters.globalSearch);
+            if (filters.paymentId) params.append('paymentId', filters.paymentId);
+            if (filters.startDate) params.append('startDate', filters.startDate);
+            if (filters.endDate) params.append('endDate', filters.endDate);
+            if (filters.status) params.append('status', filters.status);
+
+            try {
+                const response = await fetchApi(`${config.apiBaseUrl}/Payments/history?${params.toString()}`);
+                return response;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function fetchPaymentCounts() {
+            const userCode = getuserCode();
+            const customerNo = config.customerNoFromUrl; // Get customerNo from URL
+            if (!userCode || !customerNo) {
+                showCustomError('User ID or Customer Number not found. Please log in again.');
+                setTimeout(() => window.location.href = config.loginUrl, 2000);
+                return;
+            }
+
+            try {
+                // Add customerNumber and userCode to the API call
+                const params = new URLSearchParams({
+                    userCode: userCode,
+                    customerNumber: customerNo
+                });
+                const response = await fetchApi(`${config.apiBaseUrl}/Payments/count?${params.toString()}`);
+                if (response.data) {
+                    document.getElementById('total-policies-count').textContent = response.data.totalPolicies || '0';
+                    document.getElementById('total-customers-count').textContent = response.data.totalCustomers || '0';
+                    document.getElementById('count-paid').textContent = response.data.paid || '0';
+                    document.getElementById('count-unpaid').textContent = response.data.unpaid || '0';
+                    document.getElementById('count-failed').textContent = response.data.failed || '0';
+                }
+            } catch (error) {
+                showToast(`Failed to fetch counts: ${error.message}`, 'error');
+            }
+        }
+
+        async function processPaymentAPI(payload) {
+            return fetchApi(`${config.apiBaseUrl}/Payments/process`, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+        }
+
+        async function sendMailAPI(payload) {
+            return fetchApi(`${config.apiBaseUrl}/Payments/send-mail`, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+        }
+
+        async function fetchBankAccountDetails(accountNo) {
+            return fetchApi(`${config.apiBaseUrl}/bankService/bank-details?bankAccNo=${encodeURIComponent(accountNo)}`);
+        }
+
+        function viewPaymentDetails(payment) {
+            config.currentPayment = payment;
+
+            closeModal('payment-details-modal');
+            closeModal('unpaid-payments-selection-modal');
+            closeModal('customer-details-modal');
+
+            document.getElementById('modal-payment-id').textContent = payment.paymentId || 'N/A';
+            document.getElementById('modal-policy-number').textContent = payment.policyNumber || 'N/A';
+            document.getElementById('modal-customer-number').textContent = payment.customerNumber || 'N/A';
+            document.getElementById('modal-customer-email').textContent = payment.customerEmail || 'N/A';
+            document.getElementById('modal-policy-name').textContent = payment.policyName || 'N/A';
+            document.getElementById('modal-installment-amount').textContent = payment.installmentAmount || 'N/A';
+            document.getElementById('modal-installment-count').textContent = payment.installmentCount || '0';
+            document.getElementById('modal-due-date').textContent = payment.dueDate || 'N/A';
+            document.getElementById('modal-payment-date').textContent = payment.paymentDate || 'N/A';
+            document.getElementById('modal-status').textContent = payment.status || 'N/A';
+            document.getElementById('modal-transaction-id').textContent = payment.transactionId || 'N/A';
+            document.getElementById('modal-email-status').textContent = payment.emailStatus || 'N/A';
+            document.getElementById('modal-response-status').textContent = payment.responseStatus || 'N/A';
+
+            const makePaymentModalBtn = document.getElementById('make-payment-from-modal-btn');
+            if (makePaymentModalBtn) {
+                makePaymentModalBtn.disabled = payment.status === 'Paid';
+                makePaymentModalBtn.onclick = () => initiatePaymentForExisting(payment);
+            }
+
+            openModal('payment-confirmation-modal');
+        }
+
+        function switchView(viewName) {
+            const paymentsDisplayArea = document.getElementById('payments-display-area');
+            const makePaymentTabsContainer = document.getElementById('make-payment-tabs-container');
+            const actionBar = document.getElementById('action-bar');
+            const pagination = document.getElementById('pagination');
+
+            hide(paymentsDisplayArea);
+            hide(makePaymentTabsContainer);
+            hide(actionBar);
+            hide(pagination);
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-blue-600', 'bg-blue-50', 'font-bold');
+                link.classList.add('text-gray-600', 'hover:bg-blue-50', 'hover:text-blue-600');
+            });
+
+            const activeLink = document.querySelector(`.nav-link[data-view="${viewName}"]`);
+            if (activeLink) {
+                activeLink.classList.remove('text-gray-600', 'hover:bg-blue-50', 'hover:text-blue-600');
+                activeLink.classList.add('text-blue-600', 'bg-blue-50', 'font-bold');
+            }
+
+            if (viewName === 'payments') {
+                show(paymentsDisplayArea);
+                show(actionBar);
+                show(pagination);
+                fetchAndRenderPayments();
+            } else if (viewName === 'make-payment-tab') {
+                show(makePaymentTabsContainer);
+                switchTab('search-payments-tab-content');
+                clearPaymentFormFields();
+                // Pre-fill search fields if customerNo or policyNo are from URL
+                if (config.customerNoFromUrl) {
+                    document.getElementById('search-customer-number').value = config.customerNoFromUrl;
+                }
+                if (config.policyNoFromUrl) {
+                    document.getElementById('search-policy-number').value = config.policyNoFromUrl;
+                }
+                searchPaymentsInForm(); // Perform search with pre-filled values
+                makePaymentTabsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else if (viewName === 'complaints') {
+            	window.location.href = `ComplaintsForCustomer?customerNo=${config.customerNoFromUrl}`;
+            } else if (viewName === 'bank-accounts') {
+                window.location.href = `CustomerService?customerNo=${config.customerNoFromUrl}`;
+            } else if (viewName === 'customer-service') {
+                window.location.href = `CustomerService?customerNo=${config.customerNoFromUrl}`;
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => hide(content));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active-tab'));
+
+            const activeContent = document.getElementById(tabId);
+            const activeButton = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
+
+            if (activeContent) show(activeContent);
+            if (activeButton) activeButton.classList.add('active-tab');
+
+            if (tabId === 'make-payment-tab-content') {
+                hide(document.getElementById('payment-details-form'));
+                document.getElementById('payment-details-form').classList.remove('visible');
+            }
+        }
+
+        function switchMainTab(tabId) {
+            document.querySelectorAll('#payments-display-area .tab-content').forEach(content => hide(content));
+            document.querySelectorAll('#payments-display-area .tab-button').forEach(button => button.classList.remove('active-tab'));
+
+            const activeContent = document.getElementById(tabId);
+            const activeButton = document.querySelector(`#payments-display-area .tab-button[data-main-tab="${tabId}"]`);
+
+            if (activeContent) show(activeContent);
+            if (activeButton) activeButton.classList.add('active-tab');
+            config.currentMainTab = tabId;
+        }
+
+        function switchCustomerModalTab(tabId) {
+            document.querySelectorAll('#customer-details-modal .tab-content').forEach(content => hide(content));
+            document.querySelectorAll('#customer-details-modal .tab-button').forEach(button => button.classList.remove('active-tab'));
+
+            const activeContent = document.getElementById(tabId);
+            const activeButton = document.querySelector(`#customer-details-modal .tab-button[data-modal-tab="${tabId}"]`);
+
+            if (activeContent) show(activeContent);
+            if (activeButton) activeButton.classList.add('active-tab');
+        }
+
+        async function fetchAndRenderPayments() {
+            // Clear previous content and show spinners
+            document.getElementById('customers-content').innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="customer-search-input" placeholder="Search customers..." class="form-input flex-grow" value="${config.customerNoFromUrl || ''}" ${config.customerNoFromUrl ? 'readonly' : ''}>
+                    <button id="customer-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+                <div class="spinner mx-auto mt-8"></div>
+            `;
+            document.getElementById('policies-content').innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="policy-search-input" placeholder="Search policies..." class="form-input flex-grow" value="${config.policyNoFromUrl || ''}" ${config.policyNoFromUrl ? 'readonly' : ''}>
+                    <button id="policy-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+                <div class="spinner mx-auto mt-8"></div>
+            `;
+            document.getElementById('payments-content').innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="payment-list-search-input" placeholder="Search payments..." class="form-input flex-grow" value="${config.paymentIdFromUrl || ''}" ${config.paymentIdFromUrl ? 'readonly' : ''}>
+                    <button id="payment-list-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+                <div class="spinner mx-auto mt-8"></div>
+            `;
+            hide(document.getElementById('no-results'));
+
+            try {
+                // Combine current filters with URL-derived filters for the API call
+                const combinedFilters = { ...config.currentFilters };
+                if (config.customerNoFromUrl) {
+                    combinedFilters.customerNumber = config.customerNoFromUrl;
+                }
+                if (config.policyNoFromUrl) {
+                    combinedFilters.policyNumber = config.policyNoFromUrl;
+                }
+                if (config.paymentIdFromUrl) {
+                    combinedFilters.paymentId = config.paymentIdFromUrl;
+                }
+
+
+                const response = await fetchPaymentHistory(combinedFilters, config.currentPage, config.itemsPerPage);
+                const rawPolicies = response.data.content || [];
+                const totalElements = response.data.totalElements || 0;
+
+                config.totalPages = Math.max(1, Math.ceil(totalElements / config.itemsPerPage));
+
+                config.customersData = {};
+                config.allPoliciesFlat = [];
+                config.allPaymentsFlat = [];
+
+                rawPolicies.forEach(policy => {
+                    const customerNumber = policy.customerNumber;
+                    if (!config.customersData[customerNumber]) {
+                        config.customersData[customerNumber] = {
+                            customerNumber: customerNumber,
+                            customerEmail: policy.email || 'N/A', // Use 'email' from policy
+                            policies: [],
+                            totalPayments: 0
+                        };
+                    }
+                    config.customersData[customerNumber].policies.push(policy);
+                    config.allPoliciesFlat.push({
+                        policyNumber: policy.policyNumber,
+                        customerNumber: policy.customerNumber,
+                        policyName: policy.policyName,
+                        policyType: policy.policyType,
+                        totalPayments: policy.paymentList ? policy.paymentList.length : 0
+                    });
+
+                    if (policy.paymentList) {
+                        policy.paymentList.forEach(payment => {
+                            config.allPaymentsFlat.push({
+                                ...payment,
+                                policyNumber: policy.policyNumber,
+                                customerNumber: policy.customerNumber,
+                                policyName: policy.policyName,
+                                policyType: policy.policyType,
+                                customerEmail: policy.email || 'N/A' // Use 'email' from policy
+                            });
+                            config.customersData[customerNumber].totalPayments++;
+                        });
+                    }
+                });
+
+                config.allCustomersFlat = Object.values(config.customersData);
+                
+                renderPagination();
+
+                if (totalElements === 0 && config.allCustomersFlat.length === 0 && config.allPaymentsFlat.length === 0) {
+                    show(document.getElementById('no-results'));
+                } else {
+                    renderAllCustomers();
+                    renderAllPolicies();
+                    renderAllPayments();
+                    switchMainTab(config.currentMainTab); // Re-render active tab
+                }
+
+                show(document.getElementById('pagination'));
+
+            } catch (error) {
+                show(document.getElementById('no-results'));
+                document.getElementById('no-results').innerHTML = `<i class="fas fa-exclamation-triangle text-4xl mb-4 text-red-400"></i><p class="font-semibold text-red-500">Failed to load payments data: ${error.message || 'Unknown error'}</p>`;
+                showToast(error.message || 'Failed to load payments data', 'error');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function renderAllCustomers() {
+            const customerListSection = document.getElementById('customers-content');
+            // Re-initialize search input and button after content is cleared
+            customerListSection.innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="customer-search-input" placeholder="Search customers..." class="form-input flex-grow" value="${config.customerNoFromUrl || ''}" ${config.customerNoFromUrl ? 'readonly' : ''}>
+                    <button id="customer-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+            `;
+            document.getElementById('customer-search-btn').addEventListener('click', renderAllCustomers);
+            document.getElementById('customer-search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') renderAllCustomers();
+            });
+
+            const currentSearchInput = customerListSection.querySelector('#customer-search-input');
+            const searchTerm = currentSearchInput ? currentSearchInput.value.toLowerCase() : '';
+            
+            const filteredCustomers = config.allCustomersFlat.filter(customer => 
+                customer.customerNumber.toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredCustomers.length === 0) {
+                customerListSection.innerHTML += '<p class="text-center text-gray-500 py-4">No customers found.</p>';
+                return;
+            }
+
+            filteredCustomers.sort((a, b) => a.customerNumber.localeCompare(b.customerNumber)).forEach(customer => {
+                const customerDiv = document.createElement('div');
+                customerDiv.className = 'data-list-item';
+                customerDiv.innerHTML = `
+                    <div class="info-group">
+                        <div class="info-item">
+                            <span class="label">Customer Number:</span>
+                            <span class="value customer-detail-link" data-customer-number="${customer.customerNumber}">${customer.customerNumber || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Total Policies:</span>
+                            <span class="value">${customer.policies.length || '0'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Total Payments:</span>
+                            <span class="value">${customer.totalPayments || '0'}</span>
+                        </div>
+                    </div>
+                `;
+                customerListSection.appendChild(customerDiv);
+            });
+
+            customerListSection.querySelectorAll('.customer-detail-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showCustomerDetails(e.target.dataset.customerNumber);
+                });
+            });
+        }
+
+        function renderAllPolicies() {
+            const policyListSection = document.getElementById('policies-content');
+            // Re-initialize search input and button after content is cleared
+            policyListSection.innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="policy-search-input" placeholder="Search policies..." class="form-input flex-grow" value="${config.policyNoFromUrl || ''}" ${config.policyNoFromUrl ? 'readonly' : ''}>
+                    <button id="policy-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+            `;
+            document.getElementById('policy-search-btn').addEventListener('click', renderAllPolicies);
+            document.getElementById('policy-search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') renderAllPolicies();
+            });
+
+            const currentSearchInput = policyListSection.querySelector('#policy-search-input');
+            const searchTerm = currentSearchInput ? currentSearchInput.value.toLowerCase() : '';
+
+            const filteredPolicies = config.allPoliciesFlat.filter(policy => 
+                policy.policyNumber.toLowerCase().includes(searchTerm) ||
+                policy.customerNumber.toLowerCase().includes(searchTerm) ||
+                policy.policyName.toLowerCase().includes(searchTerm) ||
+                policy.policyType.toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredPolicies.length === 0) {
+                policyListSection.innerHTML += '<p class="text-center text-gray-500 py-4">No policies found.</p>';
+                return;
+            }
+
+            filteredPolicies.sort((a, b) => a.policyNumber.localeCompare(b.policyNumber)).forEach(policy => {
+                const policyDiv = document.createElement('div');
+                policyDiv.className = 'data-list-item';
+                policyDiv.innerHTML = `
+                    <div class="info-group">
+                        <div class="info-item">
+                            <span class="label">Policy Number:</span>
+                            <span class="value">${policy.policyNumber || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Customer Number:</span>
+                            <span class="value">${policy.customerNumber || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Policy Name:</span>
+                            <span class="value">${policy.policyName || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Policy Type:</span>
+                            <span class="value">${policy.policyType || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Total Payments:</span>
+                            <span class="value">${policy.totalPayments || '0'}</span>
+                        </div>
+                    </div>
+                `;
+                policyListSection.appendChild(policyDiv);
+            });
+        }
+
+        function renderAllPayments() {
+            const paymentListSection = document.getElementById('payments-content');
+            // Re-initialize search input and button after content is cleared
+            paymentListSection.innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="text" id="payment-list-search-input" placeholder="Search payments..." class="form-input flex-grow" value="${config.paymentIdFromUrl || ''}" ${config.paymentIdFromUrl ? 'readonly' : ''}>
+                    <button id="payment-list-search-btn" class="action-button bg-blue-500 text-white hover:bg-blue-600"><i class="fas fa-search"></i> Search</button>
+                </div>
+            `;
+            document.getElementById('payment-list-search-btn').addEventListener('click', renderAllPayments);
+            document.getElementById('payment-list-search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') renderAllPayments();
+            });
+
+            const currentSearchInput = paymentListSection.querySelector('#payment-list-search-input');
+            const searchTerm = currentSearchInput ? currentSearchInput.value.toLowerCase() : '';
+
+            const filteredPayments = config.allPaymentsFlat.filter(payment => 
+                payment.paymentId.toLowerCase().includes(searchTerm) ||
+                payment.policyNumber.toLowerCase().includes(searchTerm) ||
+                payment.customerNumber.toLowerCase().includes(searchTerm) ||
+                payment.policyName.toLowerCase().includes(searchTerm) ||
+                payment.status.toLowerCase().includes(searchTerm) ||
+                (payment.transactionId && payment.transactionId.toLowerCase().includes(searchTerm))
+            );
+
+            if (filteredPayments.length === 0) {
+                paymentListSection.innerHTML += '<p class="text-center text-gray-500 py-4">No payments found.</p>';
+                return;
+            }
+
+            filteredPayments.sort((a, b) => a.paymentId.localeCompare(b.paymentId)).forEach(payment => {
+                const paymentItemDiv = document.createElement('div');
+                paymentItemDiv.className = 'data-list-item';
+                paymentItemDiv.innerHTML = `
+                    <div class="info-group">
+                        <div class="info-item">
+                            <span class="label">Payment ID:</span>
+                            <span class="value">${payment.paymentId || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Policy No:</span>
+                            <span class="value">${payment.policyNumber || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Customer No:</span>
+                            <span class="value">${payment.customerNumber || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Amount:</span>
+                            <span class="value">${payment.installmentAmount || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Due Date:</span>
+                            <span class="value">${payment.dueDate || 'N/A'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Status:</span>
+                            <span class="value"><span class="status-badge status-${payment.status?.toLowerCase().replace(/ /g, '_')}">${payment.status || 'N/A'}</span></span>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 flex space-x-2">
+                        <button class="view-details-btn action-button bg-blue-600 text-white hover:bg-blue-800">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </button>
+                        <button class="make-payment-list-btn action-button bg-green-500 text-white hover:bg-green-600 ${payment.status === 'Paid' ? 'opacity-50 cursor-not-allowed' : ''}" ${payment.status === 'Paid' ? 'disabled' : ''}>
+                            <i class="fas fa-money-bill-wave"></i> Make Payment
+                        </button>
+                    </div>
+                `;
+                paymentItemDiv.querySelector('.view-details-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    viewPaymentDetails(payment);
+                });
+                paymentItemDiv.querySelector('.make-payment-list-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    initiatePaymentForExisting(payment);
+                });
+                paymentListSection.appendChild(paymentItemDiv);
+            });
+        }
+
+        function showCustomerDetails(customerNumber) {
+            const customer = config.customersData[customerNumber];
+            if (!customer) {
+                showCustomError(`Customer ${customerNumber} not found.`);
+                return;
+            }
+
+            document.getElementById('modal-customer-number-display').textContent = customerNumber;
+            const policiesContent = document.getElementById('customer-modal-policies-content');
+            const paymentsContent = document.getElementById('customer-modal-payments-content');
+
+            policiesContent.innerHTML = '';
+            paymentsContent.innerHTML = '';
+
+            if (customer.policies.length > 0) {
+                customer.policies.sort((a, b) => a.policyNumber.localeCompare(b.policyNumber)).forEach(policy => {
+                    const policyDiv = document.createElement('div');
+                    policyDiv.className = 'data-list-item';
+                    policyDiv.innerHTML = `
+                        <div class="info-group">
+                            <div class="info-item">
+                                <span class="label">Policy Number:</span>
+                                <span class="value">${policy.policyNumber || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Policy Name:</span>
+                                <span class="value">${policy.policyName || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Policy Type:</span>
+                                <span class="value">${policy.policyType || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Total Payments:</span>
+                                <span class="value">${policy.paymentList ? policy.paymentList.length : '0'}</span>
+                            </div>
+                        </div>
+                    `;
+                    policiesContent.appendChild(policyDiv);
+                });
+            } else {
+                policiesContent.innerHTML = '<p class="text-center text-gray-500 py-4">No policies found for this customer.</p>';
+            }
+
+            const customerPayments = config.allPaymentsFlat.filter(p => p.customerNumber === customerNumber);
+            if (customerPayments.length > 0) {
+                customerPayments.sort((a, b) => a.paymentId.localeCompare(b.paymentId)).forEach(payment => {
+                    const paymentDiv = document.createElement('div');
+                    paymentDiv.className = 'data-list-item';
+                    paymentDiv.innerHTML = `
+                        <div class="info-group">
+                            <div class="info-item">
+                                <span class="label">Payment ID:</span>
+                                <span class="value">${payment.paymentId || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Policy No:</span>
+                                <span class="value">${payment.policyNumber || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Amount:</span>
+                                <span class="value">${payment.installmentAmount || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Due Date:</span>
+                                <span class="value">${payment.dueDate || 'N/A'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Status:</span>
+                                <span class="value"><span class="status-badge status-${payment.status?.toLowerCase().replace(/ /g, '_')}">${payment.status || 'N/A'}</span></span>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 flex space-x-2">
+                            <button class="view-details-btn action-button bg-blue-600 text-white hover:bg-blue-800">
+                                <i class="fas fa-info-circle"></i> View Details
+                            </button>
+                            <button class="make-payment-list-btn action-button bg-green-500 text-white hover:bg-green-600 ${payment.status === 'Paid' ? 'opacity-50 cursor-not-allowed' : ''}" ${payment.status === 'Paid' ? 'disabled' : ''}>
+                                <i class="fas fa-money-bill-wave"></i> Make Payment
+                            </button>
+                        </div>
+                    `;
+                    paymentDiv.querySelector('.view-details-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        viewPaymentDetails(payment);
+                    });
+                    paymentDiv.querySelector('.make-payment-list-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        initiatePaymentForExisting(payment);
+                    });
+                    paymentsContent.appendChild(paymentDiv);
+                });
+            } else {
+                paymentsContent.innerHTML = '<p class="text-center text-gray-500 py-4">No payments found for this customer.</p>';
+            }
+
+            switchCustomerModalTab('customer-modal-policies-content');
+            openModal('customer-details-modal');
+        }
+
+        function renderPagination() {
+            document.getElementById('total-pages-display').textContent = config.totalPages;
+            document.getElementById('page-jump-input-display').textContent = config.currentPage + 1;
+            document.getElementById('page-jump-input').value = config.currentPage + 1;
+
+            document.getElementById('prev-page').disabled = config.currentPage === 0;
+            document.getElementById('next-page').disabled = config.currentPage === config.totalPages - 1;
+        }
+
+        function changePage(newPage) {
+            if (newPage >= 0 && newPage < config.totalPages) {
+                config.currentPage = newPage;
+                fetchAndRenderPayments();
+            }
+        }
+
+        function jumpToPage() {
+            const pageInput = document.getElementById('page-jump-input');
+            let pageNum = parseInt(pageInput.value, 10);
+            if (isNaN(pageNum) || pageNum < 1 || pageNum > config.totalPages) {
+                showToast(`Please enter a valid page number between 1 and ${config.totalPages}`, 'error');
+                pageInput.value = config.currentPage + 1;
+                return;
+            }
+            changePage(pageNum - 1);
+        }
+
+        function handleFilter() {
+            const filterPopup = document.getElementById('filter-popup');
+            config.currentFilters = {
+                policyNumber: document.getElementById('filter-policy-number')?.value.trim(),
+                customerNumber: document.getElementById('filter-customer-number')?.value.trim(),
+                policyName: document.getElementById('filter-policy-name')?.value.trim(),
+                policyType: document.getElementById('filter-policy-type')?.value.trim(),
+                startDate: document.getElementById('filter-start-date')?.value,
+                endDate: document.getElementById('filter-end-date')?.value,
+                globalSearch: document.getElementById('header-search-input')?.value.trim(),
+                status: config.currentFilters.status // Preserve status filter if set by clicking counts
+            };
+            config.currentPage = 0;
+            fetchAndRenderPayments();
+            hide(filterPopup);
+        }
+
+        function clearFilters() {
+            const filterPopup = document.getElementById('filter-popup');
+            filterPopup.querySelectorAll('input, select').forEach(el => {
+                if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+                else el.value = '';
+            });
+            document.getElementById('header-search-input').value = '';
+            config.currentFilters = {}; // Clear all filters including status
+            config.currentPage = 0;
+            fetchAndRenderPayments();
+            hide(filterPopup);
+            updateStatusCountActiveClass(null); // Remove active class from status counts
+        }
+
+        function updateStatusCountActiveClass(activeStatus) {
+            document.querySelectorAll('.status-count-clickable').forEach(span => {
+                if (span.dataset.status === activeStatus) {
+                    span.classList.add('active-filter');
+                } else {
+                    span.classList.remove('active-filter');
+                }
+            });
+        }
+
+        function showError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            const error = document.getElementById(`${fieldId}-error`);
+            if (input) input.classList.add('input-error');
+            if (error) {
+                error.textContent = message;
+                show(error);
+            }
+        }
+
+        function clearError(fieldId) {
+            const input = document.getElementById(fieldId);
+            const error = document.getElementById(`${fieldId}-error`);
+            if (input) input.classList.remove('input-error');
+            if (error) {
+                error.textContent = '';
+                hide(error);
+            }
+        }
+
+        function clearPaymentFormFields() {
+            document.getElementById('payment-id-input').value = '';
+            document.getElementById('policy-number').value = '';
+            document.getElementById('customer-number').value = '';
+            document.getElementById('customer-email').value = '';
+            document.getElementById('policy-name').value = '';
+            document.getElementById('installment-amount').value = '';
+            document.getElementById('installment-count').value = '';
+            document.getElementById('due-date').value = '';
+            document.getElementById('payment-date').value = '';
+            document.getElementById('status').value = '';
+            document.getElementById('transaction-id').value = '';
+            document.getElementById('email-status').value = '';
+            document.getElementById('payment-method').value = '';
+            document.getElementById('check-number').value = '';
+            document.getElementById('card-number').value = '';
+            document.getElementById('expiry-date').value = '';
+            document.getElementById('cvv').value = '';
+            document.getElementById('otp').value = '';
+            document.getElementById('upi-id').value = '';
+            document.getElementById('bank-account-number').value = '';
+            document.getElementById('bank-ifsc-code').value = '';
+            document.getElementById('bank-name').value = '';
+            document.getElementById('bank-holder-name').value = '';
+            document.getElementById('bank-otp').value = '';
+
+            hide(document.getElementById('check-details'));
+            hide(document.getElementById('card-details'));
+            hide(document.getElementById('upi-details'));
+            hide(document.getElementById('bank-account-details'));
+
+            clearError('payment-id-input');
+            clearError('payment-method');
+            clearError('check-number');
+            clearError('card-number');
+            clearError('expiry-date');
+            clearError('cvv');
+            clearError('otp');
+            clearError('upi-id');
+            clearError('bank-account-number');
+            clearError('bank-ifsc-code');
+            clearError('bank-name');
+            clearError('bank-holder-name');
+            clearError('bank-otp');
+
+            hide(document.getElementById('otp-success'));
+            hide(document.getElementById('bank-otp-success'));
+
+            document.getElementById('process-payment-btn').disabled = true;
+            hide(document.getElementById('send-receipt-btn'));
+            hide(document.getElementById('send-email-payment-btn'));
+            const paymentDetailsFormSection = document.getElementById('payment-details-form');
+            hide(paymentDetailsFormSection);
+            paymentDetailsFormSection.classList.remove('visible');
+            config.currentPayment = null;
+
+            document.getElementById('search-payment-id').value = '';
+            document.getElementById('search-policy-number').value = '';
+            document.getElementById('search-customer-number').value = '';
+            document.getElementById('payment-search-results-list').innerHTML = '';
+            hide(document.getElementById('payment-search-no-results'));
+            hide(document.getElementById('payment-search-pagination'));
+            config.paymentSearch.results = [];
+            config.paymentSearch.currentPage = 0;
+            config.paymentSearch.totalPages = 1;
+            config.paymentSearch.filters = {};
+
+            document.getElementById('manual-payment-id-input').value = '';
+            clearError('manual-payment-id-input');
+        }
+
+        function sendOtp(inputId) {
+            const successMessageEl = document.getElementById(`${inputId}-success`);
+            if (successMessageEl) {
+                successMessageEl.textContent = 'OTP sent successfully!';
+                show(successMessageEl);
+                setTimeout(() => hide(successMessageEl), 3000);
+            }
+        }
+
+        function togglePaymentDetails() {
+            const paymentMethod = document.getElementById('payment-method').value;
+            hide(document.getElementById('check-details'));
+            hide(document.getElementById('card-details'));
+            hide(document.getElementById('upi-details'));
+            hide(document.getElementById('bank-account-details'));
+
+            hide(document.getElementById('otp-error'));
+            hide(document.getElementById('otp-success'));
+            hide(document.getElementById('bank-otp-error'));
+            hide(document.getElementById('bank-otp-success'));
+
+            if (paymentMethod === 'Check') {
+                show(document.getElementById('check-details'));
+            } else if (paymentMethod === 'Credit Card' || paymentMethod === 'Debit Card') {
+                show(document.getElementById('card-details'));
+            } else if (paymentMethod === 'UPI') {
+                show(document.getElementById('upi-details'));
+            } else if (paymentMethod === 'Bank Account') {
+                openModal('bank-account-search-modal');
+                document.getElementById('bank-account-search-input').value = '';
+                hide(document.getElementById('bank-account-search-error'));
+                hide(document.getElementById('bank-account-redirect'));
+                hide(document.getElementById('bank-account-loader'));
+            }
+        }
+
+        async function fetchPaymentDetailsById(paymentId) {
+            if (!paymentId) {
+                showError('manual-payment-id-input', 'Payment ID cannot be empty.');
+                clearPaymentFormFields();
+                return;
+            }
+            clearError('manual-payment-id-input');
+
+            try {
+                // Include customer and policy filters from URL if present
+                const filters = { paymentId: paymentId };
+                if (config.customerNoFromUrl) filters.customerNumber = config.customerNoFromUrl;
+                if (config.policyNoFromUrl) filters.policyNumber = config.policyNoFromUrl;
+
+                const response = await fetchPaymentHistory(filters, 0, 100);
+                let foundPayment = null;
+                if (response.data && response.data.content) {
+                    for (const policy of response.data.content) {
+                        if (policy.paymentList) {
+                            foundPayment = policy.paymentList.find(p => p.paymentId === paymentId);
+                            if (foundPayment) {
+                                foundPayment.policyNumber = policy.policyNumber;
+                                foundPayment.customerNumber = policy.customerNumber;
+                                foundPayment.policyName = policy.policyName;
+                                foundPayment.policyType = policy.policyType;
+                                foundPayment.customerEmail = policy.email || 'N/A'; // Use 'email' from policy
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (foundPayment) {
+                    initiatePaymentForExisting(foundPayment);
+                    showToast(`Details for Payment ID ${paymentId} loaded.`, 'success');
+                } else {
+                    showError('manual-payment-id-input', `Payment ID '${paymentId}' not found.`);
+                    hide(document.getElementById('payment-details-form'));
+                    document.getElementById('payment-details-form').classList.remove('visible');
+                }
+            } catch (error) {
+                showError('manual-payment-id-input', error.message || 'Failed to fetch payment details.');
+                hide(document.getElementById('payment-details-form'));
+                document.getElementById('payment-details-form').classList.remove('visible');
+            }
+        }
+
+        async function searchPaymentsInForm(page = 0) {
+            const searchFilters = {
+                paymentId: document.getElementById('search-payment-id')?.value.trim(),
+                policyNumber: document.getElementById('search-policy-number')?.value.trim(),
+                customerNumber: document.getElementById('search-customer-number')?.value.trim()
+            };
+
+            // Ensure URL parameters are always included in the search
+            if (config.customerNoFromUrl && !searchFilters.customerNumber) {
+                searchFilters.customerNumber = config.customerNoFromUrl;
+            }
+            if (config.policyNoFromUrl && !searchFilters.policyNumber) {
+                searchFilters.policyNumber = config.policyNoFromUrl;
+            }
+
+            config.paymentSearch.filters = searchFilters;
+            config.paymentSearch.currentPage = page;
+
+            renderPaymentSearchSkeleton();
+
+            try {
+                const response = await fetchPaymentHistory(searchFilters, page, 20);
+                const searchResultsContainer = document.getElementById('payment-search-results-list');
+                const noResultsEl = document.getElementById('payment-search-no-results');
+                const paginationEl = document.getElementById('payment-search-pagination');
+
+                searchResultsContainer.innerHTML = '';
+
+                if (response.data && response.data.content && response.data.content.length > 0) {
+                    hide(noResultsEl);
+                    show(paginationEl);
+                    config.paymentSearch.results = response.data.content;
+                    config.paymentSearch.totalPages = Math.max(1, Math.ceil(response.data.totalElements / 20));
+
+                    response.data.content.forEach(policy => {
+                        if (policy.paymentList && policy.paymentList.length > 0) {
+                            policy.paymentList.forEach(payment => {
+                                const resultItem = document.createElement('div');
+                                resultItem.className = 'flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-white rounded-md shadow-sm border border-gray-200 hover:bg-blue-50 cursor-pointer transition';
+                                resultItem.innerHTML = `
+                                    <div class="flex-grow mb-2 sm:mb-0">
+                                        <p class="font-semibold text-gray-800">Payment ID: ${payment.paymentId || 'N/A'} 
+                                            <button class="copy-payment-id-btn ml-2 text-gray-500 hover:text-blue-600 text-xs" data-payment-id="${payment.paymentId}">
+                                                <i class="fas fa-copy"></i> Copy
+                                            </button>
+                                        </p>
+                                        <p class="text-sm text-gray-600">Policy No: ${policy.policyNumber || 'N/A'} | Customer No: ${policy.customerNumber || 'N/A'}</p>
+                                        <p class="text-sm text-gray-600">Amount: ${payment.installmentAmount || 'N/A'} | Due Date: ${payment.dueDate || 'N/A'}</p>
+                                        <p class="text-sm text-gray-600">Status: <span class="status-badge status-${payment.status?.toLowerCase().replace(/ /g, '_')}">${payment.status || 'N/A'}</span></p>
+                                    </div>
+                                    <div class="flex-shrink-0 flex space-x-2">
+                                        <button class="view-details-btn action-button bg-blue-600 text-white hover:bg-blue-800">
+                                            <i class="fas fa-info-circle"></i> View Details
+                                        </button>
+                                    </div>
+                                `;
+                                searchResultsContainer.appendChild(resultItem);
+
+                                const combinedPaymentDetails = {
+                                    ...payment,
+                                    policyNumber: policy.policyNumber,
+                                    customerNumber: policy.customerNumber,
+                                    policyName: policy.policyName,
+                                    policyType: policy.policyType,
+                                    customerEmail: policy.email || 'N/A' // Use 'email' from policy
+                                };
+
+                                resultItem.querySelector('.view-details-btn').addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    viewPaymentDetails(combinedPaymentDetails);
+                                });
+                                resultItem.addEventListener('click', () => {
+                                    viewPaymentDetails(combinedPaymentDetails);
+                                });
+
+                                resultItem.querySelector('.copy-payment-id-btn').addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    const paymentIdToCopy = e.currentTarget.dataset.paymentId;
+                                    copyToClipboard(paymentIdToCopy);
+                                });
+                            });
+                        }
+                    });
+                } else {
+                    show(noResultsEl);
+                    hide(paginationEl);
+                    config.paymentSearch.results = [];
+                    config.paymentSearch.totalPages = 1;
+                }
+                updatePaymentSearchPaginationDisplay();
+
+            } catch (error) {
+                show(noResultsEl);
+                hide(paginationEl);
+                searchResultsContainer.innerHTML = '';
+                noResultsEl.textContent = `Error searching payments: ${error.message || 'Unknown error'}`;
+                showToast('Failed to search payments', 'error');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (window.isSecureContext && navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Payment ID copied to clipboard!', 'success');
+                }).catch(err => {
+                    showToast('Failed to copy Payment ID.', 'error');
+                });
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Payment ID copied to clipboard!', 'success');
+                } catch (err) {
+                    showToast('Failed to copy Payment ID (fallback).', 'error');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function renderPaymentSearchSkeleton() {
+            const searchResultsContainer = document.getElementById('payment-search-results-list');
+            searchResultsContainer.innerHTML = `
+                ${Array.from({ length: 3 }).map(() => `
+                    <div class="flex items-center justify-between p-3 bg-white rounded-md shadow-sm border border-gray-200 animate-pulse">
+                        <div>
+                            <div class="h-4 bg-gray-200 rounded w-32 mb-1"></div>
+                            <div class="h-3 bg-gray-200 rounded w-48"></div>
+                        </div>
+                        <div class="h-8 bg-gray-200 rounded w-20"></div>
+                    </div>
+                `).join('')}
+            `;
+            hide(document.getElementById('payment-search-no-results'));
+            hide(document.getElementById('payment-search-pagination'));
+        }
+
+        function updatePaymentSearchPaginationDisplay() {
+            document.getElementById('payment-search-current-page-display').textContent = config.paymentSearch.currentPage + 1;
+            document.getElementById('payment-search-total-pages-display').textContent = config.paymentSearch.totalPages;
+            document.getElementById('payment-search-prev-page').disabled = config.paymentSearch.currentPage === 0;
+            document.getElementById('payment-search-next-page').disabled = config.paymentSearch.currentPage === config.paymentSearch.totalPages - 1;
+        }
+
+        function changePaymentSearchPage(newPage) {
+            if (newPage >= 0 && newPage < config.paymentSearch.totalPages) {
+                config.paymentSearch.currentPage = newPage;
+                searchPaymentsInForm(newPage);
+            }
+        }
+
+        async function fetchAndRenderUnpaidPayments(filters = {}) {
+            const unpaidListContainer = document.getElementById('unpaid-payments-list');
+            const noResultsEl = document.getElementById('unpaid-payments-no-results');
+            unpaidListContainer.innerHTML = '<div class="spinner mx-auto mt-8"></div>'; // Show spinner
+            hide(noResultsEl);
+
+            try {
+                const searchFilters = { status: "Unpaid", ...filters };
+                // Ensure URL parameters are always included in the unpaid search
+                if (config.customerNoFromUrl && !searchFilters.customerNumber) {
+                    searchFilters.customerNumber = config.customerNoFromUrl;
+                }
+                if (config.policyNoFromUrl && !searchFilters.policyNumber) {
+                    searchFilters.policyNumber = config.policyNoFromUrl;
+                }
+
+                const response = await fetchPaymentHistory(searchFilters, 0, 1000);
+                const unpaidPayments = [];
+
+                if (response.data && response.data.content) {
+                    response.data.content.forEach(policy => {
+                        if (policy.paymentList) {
+                            policy.paymentList.forEach(payment => {
+                                if (payment.status === 'Unpaid') {
+                                    unpaidPayments.push({
+                                        ...payment,
+                                        policyNumber: policy.policyNumber,
+                                        customerNumber: policy.customerNumber,
+                                        policyName: policy.policyName,
+                                        policyType: policy.policyType,
+                                        customerEmail: policy.email || 'N/A'
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+
+                unpaidListContainer.innerHTML = ''; // Clear spinner
+
+                if (unpaidPayments.length > 0) {
+                    unpaidPayments.forEach(payment => {
+                        const listItem = document.createElement('div');
+                        listItem.className = 'flex items-center justify-between p-3 bg-white rounded-md shadow-sm border border-gray-200 hover:bg-yellow-50 cursor-pointer transition';
+                        listItem.innerHTML = `
+                            <div>
+                                <p class="font-semibold text-gray-800">Payment ID: ${payment.paymentId || 'N/A'}</p>
+                                <p class="text-sm text-gray-600">Policy No: ${payment.policyNumber || 'N/A'} | Customer No: ${payment.customerNumber || 'N/A'}</p>
+                                <p class="text-sm text-gray-600">Amount: ${payment.installmentAmount || 'N/A'} | Due Date: ${payment.dueDate || 'N/A'}</p>
+                                <p class="text-sm text-gray-600">Status: <span class="status-badge status-unpaid">${payment.status || 'N/A'}</span></p>
+                            </div>
+                            <button class="select-unpaid-btn action-button bg-yellow-600 text-white hover:bg-yellow-700">
+                                Select
+                            </button>
+                        `;
+                        unpaidListContainer.appendChild(listItem);
+
+                        const selectButton = listItem.querySelector('.select-unpaid-btn');
+                        selectButton.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            initiatePaymentForExisting(payment);
+                            closeModal('unpaid-payments-selection-modal');
+                        });
+                        listItem.addEventListener('click', () => {
+                            initiatePaymentForExisting(payment);
+                            closeModal('unpaid-payments-selection-modal');
+                        });
+                    });
+                } else {
+                    show(noResultsEl);
+                }
+            } catch (error) {
+                unpaidListContainer.innerHTML = ''; // Clear spinner
+                noResultsEl.textContent = `Error loading unpaid payments: ${error.message || 'Unknown error'}`;
+                show(noResultsEl);
+                showToast('Failed to load unpaid payments', 'error');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function initializeEventListeners() {
+            document.getElementById('sidebar-toggle-btn')?.addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('main-content');
+                toggle(sidebar, 'collapsed');
+                toggle(mainContent, 'full');
+            });
+            document.getElementById('sidebar-open-btn')?.addEventListener('click', () => show(document.getElementById('sidebar')));
+            window.addEventListener('click', (e) => {
+                const sidebar = document.getElementById('sidebar');
+                if (window.innerWidth < 767 && sidebar && !sidebar.contains(e.target) && !e.target.closest('#sidebar-open-btn')) {
+                    hide(sidebar);
+                }
+                const filterPopup = document.getElementById('filter-popup');
+                const filterBtn = document.getElementById('filter-payments-btn');
+                
+                if (filterPopup && filterBtn && filterPopup.classList.contains('active') && !filterPopup.contains(e.target) && !filterBtn.contains(e.target)) {
+                    hide(filterPopup);
+                    filterPopup.classList.remove('active');
+                }
+            });
+
+            const headerSearchContainer = document.getElementById('header-search-container');
+            const headerSearchInput = document.getElementById('header-search-input');
+            const headerSearchIcon = document.getElementById('header-search-icon');
+
+            if (headerSearchContainer && headerSearchInput && headerSearchIcon) {
+                headerSearchContainer.addEventListener('mouseenter', () => headerSearchContainer.classList.add('expanded'));
+                headerSearchContainer.addEventListener('mouseleave', () => {
+                    if (document.activeElement !== headerSearchInput) {
+                        headerSearchContainer.classList.remove('expanded');
+                    }
+                });
+                headerSearchInput.addEventListener('focus', () => headerSearchContainer.classList.add('expanded'));
+                headerSearchInput.addEventListener('blur', () => {
+                    if (!headerSearchInput.value.trim()) {
+                        headerSearchContainer.classList.remove('expanded');
+                    }
+                });
+                headerSearchIcon.addEventListener('click', () => {
+                    if (headerSearchContainer.classList.contains('expanded')) {
+                        config.currentFilters.globalSearch = headerSearchInput.value.trim();
+                        fetchAndRenderPayments();
+                    } else {
+                        headerSearchContainer.classList.add('expanded');
+                        headerSearchInput.focus();
+                    }
+                });
+                headerSearchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        config.currentFilters.globalSearch = headerSearchInput.value.trim();
+                        fetchAndRenderPayments();
+                    }
+                });
+            }
+
+            document.getElementById('btn-logout-header')?.addEventListener('click', logout);
+            document.getElementById('btn-logout-sidebar')?.addEventListener('click', logout);
+            document.getElementById('btn-profile')?.addEventListener('click', showProfile);
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchView(e.currentTarget.dataset.view);
+                });
+            });
+
+            document.getElementById('add-new-payment')?.addEventListener('click', () => {
+                switchView('make-payment-tab');
+                switchTab('search-payments-tab-content');
+                clearPaymentFormFields();
+                // Pre-fill search fields if customerNo or policyNo are from URL
+                if (config.customerNoFromUrl) {
+                    document.getElementById('search-customer-number').value = config.customerNoFromUrl;
+                }
+                if (config.policyNoFromUrl) {
+                    document.getElementById('search-policy-number').value = config.policyNoFromUrl;
+                }
+                searchPaymentsInForm(); // Perform search with pre-filled values
+            });
+
+            document.getElementById('filter-payments-btn')?.addEventListener('click', () => toggle(document.getElementById('filter-popup'), 'active'));
+            document.getElementById('apply-filter')?.addEventListener('click', handleFilter);
+            document.getElementById('clear-filter')?.addEventListener('click', clearFilters);
+
+            // Event listeners for status counts
+            document.querySelectorAll('.status-count-clickable').forEach(span => {
+                span.addEventListener('click', (e) => {
+                    const status = e.currentTarget.dataset.status;
+                    if (config.currentFilters.status === status) {
+                        // If same status clicked, clear the filter
+                        delete config.currentFilters.status;
+                        updateStatusCountActiveClass(null);
+                    } else {
+                        // Set new status filter
+                        config.currentFilters.status = status;
+                        updateStatusCountActiveClass(status);
+                    }
+                    config.currentPage = 0; // Reset to first page when applying status filter
+                    fetchAndRenderPayments();
+                });
+            });
+
+            document.getElementById('tab-btn-search-payments')?.addEventListener('click', () => switchTab('search-payments-tab-content'));
+            document.getElementById('tab-btn-make-payment')?.addEventListener('click', () => switchTab('make-payment-tab-content'));
+
+            document.getElementById('main-tab-btn-customers')?.addEventListener('click', () => switchMainTab('customers-content'));
+            document.getElementById('main-tab-btn-policies')?.addEventListener('click', () => switchMainTab('policies-content'));
+            document.getElementById('main-tab-btn-payments')?.addEventListener('click', () => switchMainTab('payments-content'));
+
+            document.getElementById('customer-search-btn')?.addEventListener('click', renderAllCustomers);
+            document.getElementById('customer-search-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') renderAllCustomers(); });
+
+            document.getElementById('policy-search-btn')?.addEventListener('click', renderAllPolicies);
+            document.getElementById('policy-search-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') renderAllPolicies(); });
+
+            document.getElementById('payment-list-search-btn')?.addEventListener('click', renderAllPayments);
+            document.getElementById('payment-list-search-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') renderAllPayments(); });
+
+            document.getElementById('customer-modal-tab-policies')?.addEventListener('click', () => switchCustomerModalTab('customer-modal-policies-content'));
+            document.getElementById('customer-modal-tab-payments')?.addEventListener('click', () => switchCustomerModalTab('customer-modal-payments-content'));
+
+
+            document.getElementById('search-payments-in-form-btn')?.addEventListener('click', () => searchPaymentsInForm());
+            document.getElementById('search-payment-id')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchPaymentsInForm(); });
+            document.getElementById('search-policy-number')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchPaymentsInForm(); });
+            document.getElementById('search-customer-number')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchPaymentsInForm(); });
+
+            document.getElementById('payment-search-prev-page')?.addEventListener('click', () => changePaymentSearchPage(config.paymentSearch.currentPage - 1));
+            document.getElementById('payment-search-next-page')?.addEventListener('click', () => changePaymentSearchPage(config.paymentSearch.currentPage + 1));
+
+            document.getElementById('select-unpaid-payment-btn')?.addEventListener('click', () => {
+                openModal('unpaid-payments-selection-modal');
+                // Pre-fill unpaid search fields if customerNo or policyNo are from URL
+                const unpaidFilters = {};
+                if (config.customerNoFromUrl) unpaidFilters.customerNumber = config.customerNoFromUrl;
+                if (config.policyNoFromUrl) unpaidFilters.policyNumber = config.policyNoFromUrl;
+                fetchAndRenderUnpaidPayments(unpaidFilters); // Initial fetch with URL filters
+            });
+
+            document.getElementById('unpaid-search-btn')?.addEventListener('click', () => {
+                const unpaidFilters = {
+                    paymentId: document.getElementById('unpaid-search-payment-id')?.value.trim(),
+                    policyNumber: document.getElementById('unpaid-search-policy-number')?.value.trim(),
+                    customerNumber: document.getElementById('unpaid-search-customer-number')?.value.trim()
+                };
+                // Ensure URL parameters are always included in the unpaid search
+                if (config.customerNoFromUrl && !unpaidFilters.customerNumber) {
+                    unpaidFilters.customerNumber = config.customerNoFromUrl;
+                }
+                if (config.policyNoFromUrl && !unpaidFilters.policyNumber) {
+                    unpaidFilters.policyNumber = config.policyNoFromUrl;
+                }
+                fetchAndRenderUnpaidPayments(unpaidFilters);
+            });
+
+            document.getElementById('unpaid-clear-search-btn')?.addEventListener('click', () => {
+                document.getElementById('unpaid-search-payment-id').value = '';
+                document.getElementById('unpaid-search-policy-number').value = '';
+                document.getElementById('unpaid-search-customer-number').value = '';
+                // Clear URL-derived filters from the search input, but keep them in config
+                // Then re-fetch, which will apply the URL filters automatically.
+                fetchAndRenderUnpaidPayments({});
+            });
+
+            document.getElementById('fetch-payment-details-btn')?.addEventListener('click', () => {
+                const manualPaymentId = document.getElementById('manual-payment-id-input').value.trim();
+                fetchPaymentDetailsById(manualPaymentId);
+            });
+            document.getElementById('manual-payment-id-input')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const manualPaymentId = document.getElementById('manual-payment-id-input').value.trim();
+                    fetchPaymentDetailsById(manualPaymentId);
+                }
+            });
+
+            document.getElementById('payment-form')?.addEventListener('submit', async e => {
+                e.preventDefault();
+                const paymentId = document.getElementById('payment-id-input').value.trim();
+                const policyNumber = document.getElementById('policy-number').value.trim();
+                const customerNumber = document.getElementById('customer-number').value.trim();
+                const paymentMethod = document.getElementById('payment-method').value;
+                let paymentDetails = {};
+
+                if (!paymentId) { showError('payment-id-input', 'Payment ID is required'); return; }
+                if (!paymentMethod) { showError('payment-method', 'Payment Method is required'); return; }
+
+                if (paymentMethod === 'Check') {
+                    const checkNumber = document.getElementById('check-number').value.trim();
+                    if (!checkNumber) { showError('check-number', 'Check Number is required'); return; }
+                    paymentDetails = { checkNumber };
+                    clearError('check-number');
+                } else if (paymentMethod === 'Credit Card' || paymentMethod === 'Debit Card') {
+                    const cardNumber = document.getElementById('card-number').value.trim();
+                    const expiryDate = document.getElementById('expiry-date').value.trim();
+                    const cvv = document.getElementById('cvv').value.trim();
+                    const otp = document.getElementById('otp').value.trim();
+                    if (!cardNumber) { showError('card-number', 'Card Number is required'); return; }
+                    if (!expiryDate) { showError('expiry-date', 'Expiry Date is required'); return; }
+                    if (!cvv) { showError('cvv', 'CVV is required'); return; }
+                    if (!otp) { showError('otp', 'OTP is required'); return; }
+                    paymentDetails = { cardNumber, expiryDate, cvv, otp };
+                    clearError('card-number'); clearError('expiry-date'); clearError('cvv'); clearError('otp');
+                } else if (paymentMethod === 'UPI') {
+                    const upiId = document.getElementById('upi-id').value.trim();
+                    if (!upiId) { showError('upi-id', 'UPI ID is required'); return; }
+                    paymentDetails = { upiId };
+                    clearError('upi-id');
+                } else if (paymentMethod === 'Bank Account') {
+                    const accountNumber = document.getElementById('bank-account-number').value.trim();
+                    const ifscCode = document.getElementById('bank-ifsc-code').value.trim();
+                    const bankName = document.getElementById('bank-name').value.trim();
+                    const holderName = document.getElementById('bank-holder-name').value.trim();
+                    const otp = document.getElementById('bank-otp').value.trim();
+                    if (!accountNumber) { showError('bank-account-number', 'Account Number is required'); return; }
+                    if (!ifscCode) { showError('bank-ifsc-code', 'IFSC Code is required'); return; }
+                    if (!bankName) { showError('bank-name', 'Bank Name is required'); return; }
+                    if (!holderName) { showError('bank-holder-name', 'Holder Name is required'); return; }
+                    if (!otp) { showError('bank-otp', 'OTP is required'); return; }
+                    paymentDetails = { accountNumber, ifscCode, bankName, holderName, otp };
+                    clearError('bank-account-number'); clearError('bank-ifsc-code'); clearError('bank-name'); clearError('bank-holder-name'); clearError('bank-otp');
+                }
+
+                try {
+                    const data = await processPaymentAPI({
+                        paymentId,
+                        policyNumber,
+                        customerNumber,
+                        paymentMethod,
+                        paymentDetails,
+                        userCode: config.userCode
+                    });
+                    if (data.data && data.data.responseStatus === 'Success') {
+                        // Update config.currentPayment with new transaction details
+                        if (config.currentPayment) {
+                            config.currentPayment.paymentId = data.data.paymentId || config.currentPayment.paymentId;
+                            config.currentPayment.installmentAmount = data.data.installmentAmount || config.currentPayment.installmentAmount;
+                            config.currentPayment.installmentCount = data.data.installmentCount || config.currentPayment.installmentCount;
+                            config.currentPayment.dueDate = data.data.dueDate || config.currentPayment.dueDate;
+                            config.currentPayment.paymentDate = data.data.paymentDate || config.currentPayment.paymentDate;
+                            config.currentPayment.status = data.data.status || config.currentPayment.status;
+                            config.currentPayment.transactionId = data.data.transactionId || config.currentPayment.transactionId;
+                            config.currentPayment.emailStatus = data.data.emailStatus || config.currentPayment.emailStatus;
+                            config.currentPayment.responseStatus = data.data.responseStatus || config.currentPayment.responseStatus;
+                            config.currentPayment.customerEmail = data.data.customerEmail || config.currentPayment.customerEmail;
+                        } else {
+                            // This case should ideally not happen if initiatePaymentForExisting is always called first
+                            // But as a fallback, create a basic payment object
+                            config.currentPayment = {
+                                paymentId: data.data.paymentId,
+                                policyNumber: policyNumber,
+                                customerNumber: customerNumber,
+                                customerEmail: data.data.customerEmail || 'N/A',
+                                policyName: document.getElementById('policy-name').value || 'N/A', // Fallback to DOM if currentPayment was null
+                                policyType: document.getElementById('policy-type').value || 'N/A', // Fallback to DOM if currentPayment was null
+                                installmentAmount: data.data.installmentAmount,
+                                installmentCount: data.data.installmentCount,
+                                dueDate: data.data.dueDate,
+                                paymentDate: data.data.paymentDate,
+                                status: data.data.status,
+                                transactionId: data.data.transactionId,
+                                emailStatus: data.data.emailStatus,
+                                responseStatus: data.data.responseStatus
+                            };
+                        }
+
+                        // Update form fields based on the now complete config.currentPayment
+                        document.getElementById('payment-id-input').value = config.currentPayment.paymentId;
+                        document.getElementById('installment-amount').value = config.currentPayment.installmentAmount;
+                        document.getElementById('installment-count').value = config.currentPayment.installmentCount;
+                        document.getElementById('due-date').value = config.currentPayment.dueDate;
+                        document.getElementById('payment-date').value = config.currentPayment.paymentDate;
+                        document.getElementById('status').value = config.currentPayment.status;
+                        document.getElementById('transaction-id').value = config.currentPayment.transactionId;
+                        document.getElementById('email-status').value = config.currentPayment.emailStatus;
+                        document.getElementById('customer-email').value = config.currentPayment.customerEmail;
+
+                        document.getElementById('process-payment-btn').disabled = true;
+                        show(document.getElementById('send-receipt-btn'));
+                        show(document.getElementById('send-email-payment-btn'));
+
+                        viewPaymentDetails(config.currentPayment); // Pass the fully updated object
+                        showToast(data.data.message || `Payment processed successfully for ID: ${data.currentPayment.paymentId}`);
+                        fetchPaymentCounts(); // Refresh counts after a payment is processed
+                    } else {
+                        showCustomError(data.errorMessage || 'Payment failed. Please try again.');
+                    }
+                } catch (error) {
+                    showCustomError(error.message || 'An unexpected error occurred during payment processing.');
+                }
+            });
+
+            document.getElementById('send-receipt-btn')?.addEventListener('click', openSendReceiptModal);
+            document.getElementById('send-email-payment-btn')?.addEventListener('click', async () => {
+                const currentPayment = config.currentPayment;
+                if (!currentPayment || !currentPayment.customerEmail || !currentPayment.paymentId || !currentPayment.transactionId || !currentPayment.paymentDate || !currentPayment.status) {
+                    showCustomError('Missing payment details to send email. Please ensure payment is processed and details are loaded.');
+                    return;
+                }
+                try {
+                    const payload = {
+                        email: currentPayment.customerEmail,
+                        paymentId: currentPayment.paymentId,
+                        txnId: currentPayment.transactionId,
+                        date: currentPayment.paymentDate,
+                        status: currentPayment.status
+                    };
+                    const response = await sendMailAPI(payload);
+                    if (response.status === 'success' && response.message === 'email send successfully') {
+                        showToast('Email sent successfully!', 'success');
+                        fetchPaymentCounts(); // Refresh counts after email sent (email status might change)
+                    } else {
+                        showCustomError(response.message || 'Failed to send email.');
+                    }
+                } catch (error) {
+                    showCustomError(error.message || 'Error sending email.');
+                }
+            });
+
+            document.getElementById('send-receipt-btn-modal')?.addEventListener('click', sendReceipt);
+
+            document.getElementById('generate-pdf-modal-btn')?.addEventListener('click', generatePaymentPDF);
+
+            document.getElementById('prev-page')?.addEventListener('click', () => changePage(config.currentPage - 1));
+            document.getElementById('next-page')?.addEventListener('click', () => changePage(config.currentPage + 1));
+            document.getElementById('jump-to-page-btn')?.addEventListener('click', jumpToPage);
+            document.getElementById('page-jump-input')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    jumpToPage();
+                }
+            });
+
+            document.getElementById('search-bank-account-btn-modal')?.addEventListener('click', async () => {
+                const bankAccNo = document.getElementById('bank-account-search-input').value.trim();
+                const errorEl = document.getElementById('bank-account-search-error');
+                const redirectEl = document.getElementById('bank-account-redirect');
+                const loaderEl = document.getElementById('bank-account-loader');
+
+                if (!bankAccNo) {
+                    errorEl.textContent = 'Please enter a bank account number';
+                    show(errorEl);
+                    hide(redirectEl);
+                    return;
+                }
+                clearError('bank-account-search-input');
+                hide(errorEl);
+                hide(redirectEl);
+                show(loaderEl);
+
+                try {
+                    const response = await fetchBankAccountDetails(bankAccNo);
+                    const bankDetails = response.data && response.data.content && response.data.content.length > 0 ? response.data.content[0] : null;
+
+                    if (bankDetails) {
+                        document.getElementById('bank-account-number').value = bankDetails.accountNumber || '';
+                        document.getElementById('bank-ifsc-code').value = bankDetails.ifscCode || '';
+                        document.getElementById('bank-name').value = bankDetails.bankName || '';
+                        document.getElementById('bank-holder-name').value = bankDetails.holderName || '';
+                        show(document.getElementById('bank-account-details'));
+                        show(document.getElementById('payment-details-form'));
+                        closeModal('bank-account-search-modal');
+                        showToast('Bank account found and details loaded.', 'success');
+                    } else {
+                        errorEl.textContent = 'No bank account found for this number.';
+                        show(errorEl);
+                        show(redirectEl);
+                        hide(document.getElementById('bank-account-details'));
+                    }
+                } catch (error) {
+                    errorEl.textContent = error.message || 'Error fetching bank details.';
+                    show(errorEl);
+                    show(redirectEl);
+                    hide(document.getElementById('bank-account-details'));
+                } finally {
+                    hide(loaderEl);
+                }
+            });
+
+            document.getElementById('redirect-to-bank-account-page-btn')?.addEventListener('click', () => {
+                window.location.href = 'bankAccount';
+            });
+
+            document.getElementById('clear-payment-form-btn')?.addEventListener('click', () => {
+                clearPaymentFormFields();
+                fetchPaymentCounts(); // Refresh counts after clearing form
+            });
+        }
+
+        const modalInitializers = {};
+
+        function initializeModals() {
+            const customAlertModalHtml = `
+                <div id="custom-alert-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="custom-alert-title" role="dialog" aria-modal="true">
+                    <div class="modal-content w-full max-w-sm text-center">
+                        <h3 id="custom-alert-title" class="text-xl font-bold mb-4 text-green-600">Success</h3>
+                        <p id="custom-alert-message" class="mb-6 text-gray-700"></p>
+                        <button id="close-custom-alert-modal" class="action-button bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600">OK</button>
+                    </div>
+                </div>
+            `;
+            const customErrorModalHtml = `
+                <div id="custom-error-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-labelledby="custom-error-title" role="dialog" aria-modal="true">
+                    <div class="modal-content w-full max-w-sm text-center">
+                        <h3 id="custom-error-title" class="text-xl font-bold mb-4 text-red-600">Error</h3>
+                        <p id="custom-error-message" class="mb-6 text-gray-700"></p>
+                        <button id="close-custom-error-modal" class="action-button bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600">OK</button>
+                    </div>
+                </div>
+            `;
+            if (!document.getElementById('custom-alert-modal')) {
+                document.body.insertAdjacentHTML('beforeend', customAlertModalHtml);
+            }
+            if (!document.getElementById('custom-error-modal')) {
+                document.body.insertAdjacentHTML('beforeend', customErrorModalHtml);
+            }
+
+            modals = {
+                'payment-confirmation-modal': document.getElementById('payment-confirmation-modal'),
+                'payment-details-modal': document.getElementById('payment-details-modal'),
+                'customer-details-modal': document.getElementById('customer-details-modal'),
+                'unpaid-payments-selection-modal': document.getElementById('unpaid-payments-selection-modal'),
+                'feature-soon-modal': document.getElementById('feature-soon-modal'),
+                'profile-modal': document.getElementById('profile-modal'),
+                'contact-us-modal': document.getElementById('contact-us-modal'),
+                'send-receipt-modal': document.getElementById('send-receipt-modal'),
+                'bank-account-search-modal': document.getElementById('bank-account-search-modal'),
+                'custom-alert-modal': document.getElementById('custom-alert-modal'),
+                'custom-error-modal': document.getElementById('custom-error-modal')
+            };
+
+            Object.keys(modals).forEach(modalId => {
+                const closeBtn = document.getElementById(`close-${modalId}`);
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => closeModal(modalId));
+                }
+            });
+        }
+        // Add a specific initializer for the unpaid payments modal
+        // This ensures the close button listener is always active when the modal is opened
+        modalInitializers['unpaid-payments-selection-modal'] = (data, modalElement) => {
+            const closeUnpaidBtn = modalElement.querySelector('#close-unpaid-payments-modal');
+            if (closeUnpaidBtn) {
+                // Remove any existing listener to prevent duplicates
+                closeUnpaidBtn.removeEventListener('click', () => closeModal('unpaid-payments-selection-modal'));
+                // Re-add the listener
+                closeUnpaidBtn.addEventListener('click', () => closeModal('unpaid-payments-selection-modal'));
+            }
+        };
+  
+
+        function initiatePaymentForExisting(payment) {
+            switchView('make-payment-tab');
+            switchTab('make-payment-tab-content');
+
+            closeModal('payment-details-modal');
+            closeModal('payment-confirmation-modal');
+            closeModal('unpaid-payments-selection-modal');
+            closeModal('customer-details-modal');
+
+            config.currentPayment = payment; // Set the current payment object
+
+            document.getElementById('payment-id-input').value = payment.paymentId || '';
+            document.getElementById('policy-number').value = payment.policyNumber || '';
+            document.getElementById('customer-number').value = payment.customerNumber || '';
+            document.getElementById('customer-email').value = payment.customerEmail || '';
+            document.getElementById('policy-name').value = payment.policyName || '';
+            document.getElementById('installment-amount').value = payment.installmentAmount || '';
+            document.getElementById('installment-count').value = payment.installmentCount || '0';
+            document.getElementById('due-date').value = payment.dueDate || '';
+            document.getElementById('payment-date').value = payment.paymentDate || '';
+            document.getElementById('status').value = payment.status || '';
+            document.getElementById('transaction-id').value = payment.transactionId || '';
+            document.getElementById('email-status').value = payment.emailStatus || '';
+
+            const paymentDetailsFormSection = document.getElementById('payment-details-form');
+            show(paymentDetailsFormSection);
+            paymentDetailsFormSection.classList.add('visible');
+
+            document.getElementById('process-payment-btn').disabled = payment.status === 'Paid';
+            toggle(document.getElementById('send-receipt-btn'), 'hidden', payment.status !== 'Paid');
+            toggle(document.getElementById('send-email-payment-btn'), 'hidden', payment.status !== 'Paid');
+            
+            showToast(`Details for ${payment.paymentId} loaded into payment form.`, 'success');
+        }
+
+        function generatePaymentPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            // Use config.currentPayment if available, otherwise fallback to modal content
+            const payment = config.currentPayment || {
+                paymentId: document.getElementById('modal-payment-id').textContent,
+                policyNumber: document.getElementById('modal-policy-number').textContent,
+                customerNumber: document.getElementById('modal-customer-number').textContent,
+                customerEmail: document.getElementById('modal-customer-email').textContent,
+                policyName: document.getElementById('modal-policy-name').textContent,
+                installmentAmount: document.getElementById('modal-installment-amount').textContent,
+                installmentCount: document.getElementById('modal-installment-count').textContent,
+                dueDate: document.getElementById('modal-due-date').textContent,
+                paymentDate: document.getElementById('modal-payment-date').textContent,
+                status: document.getElementById('modal-status').textContent,
+                transactionId: document.getElementById('modal-transaction-id').textContent,
+                emailStatus: document.getElementById('modal-email-status').textContent,
+                responseStatus: document.getElementById('modal-response-status').textContent
+            };
+            
+            const userEmail = config.email || 'N/A';
+            const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+            doc.setFontSize(18);
+            doc.text('Payment Receipt', 20, 20);
+            doc.setFontSize(12);
+            doc.text(`Generated on: ${timestamp}`, 20, 30);
+            doc.text(`User Email: ${userEmail}`, 20, 38);
+
+            doc.setFontSize(14);
+            doc.text('Payment Details', 20, 50);
+            doc.setLineWidth(0.5);
+            doc.line(20, 52, 190, 52);
+
+            doc.setFontSize(12);
+            const details = [
+                { label: 'Payment ID', value: payment.paymentId },
+                { label: 'Policy Number', value: payment.policyNumber },
+                { label: 'Customer Number', value: payment.customerNumber },
+                { label: 'Customer Email', value: payment.customerEmail },
+                { label: 'Policy Name', value: payment.policyName },
+                { label: 'Amount', value: payment.installmentAmount },
+                { label: 'Installment Count', value: payment.installmentCount },
+                { label: 'Due Date', value: payment.dueDate },
+                { label: 'Payment Date', value: payment.paymentDate },
+                { label: 'Status', value: payment.status },
+                { label: 'Transaction ID', value: payment.transactionId },
+                { label: 'Email Status', value: payment.emailStatus },
+                { label: 'Response Status', value: payment.responseStatus }
+            ];
+
+            let y = 60;
+            details.forEach(detail => {
+                doc.text(`${detail.label}: ${detail.value}`, 20, y);
+                y += 10;
+            });
+
+            doc.save(`payment_details_${payment.paymentId || 'unknown'}.pdf`);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeModals();
+            config.userCode = getuserCode();
+            if (!config.userCode) return;
+            initializeEventListeners();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            config.customerNoFromUrl = urlParams.get('customerNo');
+            config.policyNoFromUrl = urlParams.get('policyNo');
+            config.paymentIdFromUrl = urlParams.get('paymentId');
+
+            // Set initial filters based on URL parameters
+            if (config.customerNoFromUrl) {
+                config.currentFilters.customerNumber = config.customerNoFromUrl;
+                // Pre-fill filter input if it exists
+                const filterCustomerInput = document.getElementById('filter-customer-number');
+                if (filterCustomerInput) filterCustomerInput.value = config.customerNoFromUrl;
+            }
+            if (config.policyNoFromUrl) {
+                config.currentFilters.policyNumber = config.policyNoFromUrl;
+                // Pre-fill filter input if it exists
+                const filterPolicyInput = document.getElementById('filter-policy-number');
+                if (filterPolicyInput) filterPolicyInput.value = config.policyNoFromUrl;
+            }
+
+            // Fetch counts after URL parameters are parsed
+            fetchPaymentCounts(); 
+
+            if (config.paymentIdFromUrl) {
+                showLoader();
+                fetchPaymentDetailsById(config.paymentIdFromUrl)
+                    .then(() => {
+                        hide(document.getElementById('payments-display-area'));
+                        hide(document.getElementById('action-bar'));
+                        hide(document.getElementById('pagination'));
+                    })
+                    .catch(error => {
+                        showCustomError(`Error loading payment details: ${error.message}`);
+                        switchView('payments'); // Fallback to payments list view
+                    })
+                    .finally(() => {
+                        hideLoader();
+                    });
+            } else {
+                switchView('payments'); // Default to payments list view
+            }
+        });
+    </script>
 </body>
 </html>
