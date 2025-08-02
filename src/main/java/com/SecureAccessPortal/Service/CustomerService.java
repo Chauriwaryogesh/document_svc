@@ -218,8 +218,18 @@ public class CustomerService {
 		case CommonConstant.CUSTOMER -> {
 			if (allSearch.equalsIgnoreCase(CommonConstant.N)) {
 				customer = customerRepository.findByCustomerNoNew(number, CommonConstant.N);
+				if(customer == null) {
+					response.setStatus(CommonConstant.FAILURE);	
+					response.setErrorMessage("Invalid CustomerNo");
+					return response;
+				}
 			} else {
 				customer = customerRepository.findByCustomerNoNew(number, CommonConstant.N);
+				if(customer == null) {
+					response.setStatus(CommonConstant.FAILURE);	
+					response.setErrorMessage("Invalid CustomerNo");
+					return response;
+				}
 				policy = policyRepository.findByCustomerNoNew(number, "N");
 				workitems = workItemRepository.findByCustomerNo(number);
 				complaints = complaintRepository.findByCustomerNo(number);
@@ -230,28 +240,52 @@ public class CustomerService {
 		}
 		case CommonConstant.POLICY -> {
 			List<Policy> policies = policyRepository.findByPolicyNumber(number, CommonConstant.N);
+			if(policies.isEmpty()) {
+				response.setStatus(CommonConstant.FAILURE);
+				response.setErrorMessage("Invalid PolicyNo");
+				return response;
+			}
 			List<PolicyDTO> mapPolicyToPolicyList = policyService.mapPolicyListDetails(policies, userCode);
 			customerDTO.setPolicy(mapPolicyToPolicyList);
-
 		}
 		case CommonConstant.COMPLAINT -> {
 			Complaint complaint = complaintRepository.findByComplaintNo(number, CommonConstant.N);
+			if(complaint == null) {
+				response.setStatus(CommonConstant.FAILURE);	
+				response.setErrorMessage("Invalid complaintNo");
+				return response;
+			}
 			ComplaintDTO mapComplaint = complaintService.mapComplaint(complaint);
 			customerDTO.setComplaint(Arrays.asList(mapComplaint));
 
 		}
 		case CommonConstant.WORKITEM -> {
 			List<Workitem> workitem = workItemRepository.findByWorkItemReferenceNo(number);
+			if(workitem.isEmpty()) {
+				response.setStatus(CommonConstant.FAILURE);	
+				response.setErrorMessage("Invalid WorkitemNo");
+				return response;
+			}
 			List<WorkItemDTO> allWorkitems = workItemService.getAllWorkitems(workitem);
 			customerDTO.setWorkitems(allWorkitems);
 		}
 		case CommonConstant.BANK -> {
 			BankAccount bankAccount = bankRepository.findByAccountNo(number, CommonConstant.N);
+			if(bankAccount == null) {
+				response.setStatus(CommonConstant.FAILURE);	
+				response.setErrorMessage("Invalid BankAccount No");
+				return response;
+			}
 			BankDetailsDTO  banlAccountDTO=bankDetailsService.convertToDTO( bankAccount);
 			customerDTO.setBank(Arrays.asList(banlAccountDTO));
 		}
 		case CommonConstant.PAYMENT -> {
 			Payments payment = paymentRepository.findByPaymentId(number);
+			if(payment == null) {
+				response.setStatus(CommonConstant.FAILURE);	
+				response.setErrorMessage("Invalid PaymentId");
+				return response;
+			}
 			//will add
 		}
 		}
