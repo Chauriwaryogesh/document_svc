@@ -147,5 +147,5 @@ public class PhotoCaptureController {
 		boolean deleted = docmentSrvice.deleteNoteById(id);
 		return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
 	}
-		
+
 }

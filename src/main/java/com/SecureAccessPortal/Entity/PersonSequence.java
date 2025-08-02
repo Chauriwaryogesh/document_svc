@@ -10,9 +10,9 @@ import jakarta.persistence.Table;
 @Table(name = "person_sequence")
 public class PersonSequence {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	/**
 	 * @return the id
@@ -28,5 +28,4 @@ public class PersonSequence {
 		this.id = id;
 	}
 
-    
 }

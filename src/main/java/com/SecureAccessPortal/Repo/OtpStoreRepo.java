@@ -14,11 +14,11 @@ import com.SecureAccessPortal.Entity.OtpStore;
 @Repository
 public interface OtpStoreRepo extends JpaRepository<OtpStore, String> {
 
-	
 	@Query("SELECT o FROM OtpStore o WHERE o.email = :email AND o.otp = :otp AND o.deletedFlag = :deletedFlag")
 	Optional<OtpStore> findByEmailAndOtpAndDeletedFlag(String email, String otp, String deletedFlag);
 
 	@Modifying
 	@Query("UPDATE OtpStore o SET o.deletedFlag = 'Y', o.updatedTime = :updatedTime WHERE o.email = :email AND o.userCode = :userCode AND o.deletedFlag = 'N'")
-	void markAsDeletedByEmail(@Param("email") String email, @Param("userCode") String userCode, @Param("updatedTime") LocalDateTime updatedTime);
+	void markAsDeletedByEmail(@Param("email") String email, @Param("userCode") String userCode,
+			@Param("updatedTime") LocalDateTime updatedTime);
 }

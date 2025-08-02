@@ -30,21 +30,20 @@ public class DashboardStats {
 	private long totalUsers;
 	private long totalBankAccounts;
 	private long totalVerificationRecords;
-	
-	//complaints
+
+	// complaints
 	private long complaintsTeam;
 	private long adminTeam;
 	private long escalationTeam;
 	private long bancsTeam;
-	
-	
-	//bank account
+
+	// bank account
 	private long totalAccounts;
 	private long verifiedAccounts;
 	private long pendingVerifications;
 	private long rejectedBankAccount;
-	
-	//Payments;
+
+	// Payments;
 	private long totalPolicies;
 	private long totalCustomers;
 	private long totalPayments;
@@ -53,6 +52,7 @@ public class DashboardStats {
 	private long failed;
 	private long cancelled;
 	private long pending;
+
 	public long getTotalPolicies() {
 		return totalPolicies;
 	}

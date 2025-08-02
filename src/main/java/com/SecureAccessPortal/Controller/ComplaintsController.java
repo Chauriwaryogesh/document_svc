@@ -30,12 +30,11 @@ public class ComplaintsController {
 	public ResponseEntity<List<ComplaintDTO>> searchComplaints(@RequestParam(required = false) String complaintId,
 			@RequestParam(required = false) String complaintNumber, @RequestParam(required = false) String customerNo,
 			@RequestParam(required = false) String policyNumber, @RequestParam(required = false) String workitemNumber,
-			@RequestParam(required = false) String type,
-			@RequestHeader(required = false) String userCode) {
+			@RequestParam(required = false) String type, @RequestHeader(required = false) String userCode) {
 
 		ResponseEntity<List<ComplaintDTO>> response = new ResponseEntity<>();
 		List<ComplaintDTO> complaints = complaintService.searchComplaints(complaintId, complaintNumber, customerNo,
-				policyNumber, workitemNumber,type, userCode);
+				policyNumber, workitemNumber, type, userCode);
 		response.setData(complaints);
 		return response;
 	}
@@ -49,34 +48,37 @@ public class ComplaintsController {
 	}
 
 	@GetMapping("/get-stats")
-	public ResponseEntity<DashboardStats> getStats(@RequestParam(required = false) String customerNo,@RequestParam(required = false) String userCode) {		ResponseEntity<DashboardStats> response = new ResponseEntity<>();
-		DashboardStats dashboardStats = complaintService.getComplaintStats(customerNo,userCode);
+	public ResponseEntity<DashboardStats> getStats(@RequestParam(required = false) String customerNo,
+			@RequestParam(required = false) String userCode) {
+		ResponseEntity<DashboardStats> response = new ResponseEntity<>();
+		DashboardStats dashboardStats = complaintService.getComplaintStats(customerNo, userCode);
 		response.setData(dashboardStats);
 		return response;
 	}
-	
+
 	@GetMapping("/get-complaint")
 	public ResponseEntity<List<ComplaintDTO>> getComplaint(@RequestParam(required = false) String complaintNumber,
 			@RequestHeader(required = false) String userCode) {
 
 		ResponseEntity<List<ComplaintDTO>> response = new ResponseEntity<>();
 		List<ComplaintDTO> complaints = complaintService.getComplaint(complaintNumber, userCode);
-		if(complaints.isEmpty()) {
+		if (complaints.isEmpty()) {
 			response.setErrorMessage("No Complaint found");
 			response.setStatus(CommonConstant.FAILURE);
-		}else {
+		} else {
 			response.setData(complaints);
 			response.setStatus(CommonConstant.SUCCESS);
 		}
-		
+
 		return response;
 	}
-	@PostMapping(value="create-complaint", consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
+
+	@PostMapping(value = "create-complaint", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public com.SecureAccessPortal.Service.ResponseEntity<ComplaintDTO> getCustomerlDetails(
 			@RequestBody ComplaintDTO complaintDTO, @RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<ComplaintDTO> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		ComplaintDTO complaint = complaintService.createComplaint(complaintDTO, userCode);
-		if (complaint != null ) {
+		if (complaint != null) {
 			resp.setData(complaint);
 			resp.setStatus(CommonConstant.SUCCESS);
 		} else {
@@ -85,7 +87,5 @@ public class ComplaintsController {
 		}
 		return resp;
 	}
-	
-	
 
 }

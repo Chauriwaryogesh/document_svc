@@ -20,128 +20,128 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "Customer")
 public class Customer {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Long id;
 
-    @Column( unique = true)
-    @NotBlank
-    private String customerNo;
+	@Column(unique = true)
+	@NotBlank
+	private String customerNo;
 
-    @NotBlank
-    @Column( unique = true)
-    private String email;
+	@NotBlank
+	@Column(unique = true)
+	private String email;
 
-    @Column
-    private String name;
+	@Column
+	private String name;
 
-    @Column
-    private String middleName;
+	@Column
+	private String middleName;
 
-    @Column
-    private String surname;
+	@Column
+	private String surname;
 
-    @Column
-    private String age; 
-    
-    @Column
-    private String dateOfBirth;
+	@Column
+	private String age;
 
-    @Column
-    private String gender;
+	@Column
+	private String dateOfBirth;
 
-    @Column
-    private String createdBy;
+	@Column
+	private String gender;
 
-    @Column
-    private LocalDateTime createdTime;
+	@Column
+	private String createdBy;
 
-    @Column
-    private String userCode;
+	@Column
+	private LocalDateTime createdTime;
 
-    @Column
-    private String smokerStatus;
+	@Column
+	private String userCode;
 
-    @Column
-    private String adminAccess;
-    
-    @Column
-    private String deletedFlag;
+	@Column
+	private String smokerStatus;
 
-    @Column
-    private String street;
+	@Column
+	private String adminAccess;
 
-    @Column
-    private String city;
+	@Column
+	private String deletedFlag;
 
-    @Column
-    private String state;
+	@Column
+	private String street;
 
-    @Column
-    private String zipCode;
+	@Column
+	private String city;
 
-    @Column
-    private String country;
+	@Column
+	private String state;
 
-    @Column
-    private String alternateEmail;
+	@Column
+	private String zipCode;
 
-    @Column
-    private String phoneCountryCode;
+	@Column
+	private String country;
 
-    @Column
-    private String phoneNumber;
+	@Column
+	private String alternateEmail;
 
-    @Column
-    private String emergencyContactName;
+	@Column
+	private String phoneCountryCode;
 
-    @Column
-    private String emergencyContactPhone;
+	@Column
+	private String phoneNumber;
 
-    @Column
-    private String verificationStatus;
+	@Column
+	private String emergencyContactName;
 
-    @Column
-    private LocalDateTime lastLoginDate;
+	@Column
+	private String emergencyContactPhone;
 
-    @Column
-    private String kycStatus;
+	@Column
+	private String verificationStatus;
 
-    @Column
-    private double riskScore;
+	@Column
+	private LocalDateTime lastLoginDate;
 
-    @Column
-    private String preferredContactMethod;
+	@Column
+	private String kycStatus;
 
-    @Column
-    private String documentId;
+	@Column
+	private double riskScore;
 
-    @Column
-    private LocalDate documentExpiryDate;
-    
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Payments> payment = new ArrayList<>(); 
+	@Column
+	private String preferredContactMethod;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Policy> policies = new ArrayList<>();
+	@Column
+	private String documentId;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<BankAccount> bankAccounts = new ArrayList<>();
+	@Column
+	private LocalDate documentExpiryDate;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<VerificationRecord> verificationRecords = new ArrayList<>();
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Payments> payment = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Workitem> workitems = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Complaint> complaint = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "customer",fetch=FetchType.LAZY,cascade = CascadeType.ALL)
-    private List<FeedbackEntity> feedback;
-    
-    public List<FeedbackEntity> getFeedback() {
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Policy> policies = new ArrayList<>();
+
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<BankAccount> bankAccounts = new ArrayList<>();
+
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<VerificationRecord> verificationRecords = new ArrayList<>();
+
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Workitem> workitems = new ArrayList<>();
+
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Complaint> complaint = new ArrayList<>();
+
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<FeedbackEntity> feedback;
+
+	public List<FeedbackEntity> getFeedback() {
 		return feedback;
 	}
 
@@ -150,15 +150,15 @@ public class Customer {
 	}
 
 	@Column
-    private List<String> roles;
-    
-    @Column
-    private String updatedBy;
+	private List<String> roles;
 
-    @Column
-    private LocalDateTime updatedTime;
-    
-    public String getUpdatedBy() {
+	@Column
+	private String updatedBy;
+
+	@Column
+	private LocalDateTime updatedTime;
+
+	public String getUpdatedBy() {
 		return updatedBy;
 	}
 
@@ -215,56 +215,55 @@ public class Customer {
 	}
 
 	// Getters and Setters
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getCustomerNo() {
-        return customerNo;
-    }
+	public String getCustomerNo() {
+		return customerNo;
+	}
 
-    public void setCustomerNo(String customerNo) {
-        this.customerNo = customerNo;
-    }
+	public void setCustomerNo(String customerNo) {
+		this.customerNo = customerNo;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getMiddleName() {
-        return middleName;
-    }
+	public String getMiddleName() {
+		return middleName;
+	}
 
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
 
-    public String getSurname() {
-        return surname;
-    }
+	public String getSurname() {
+		return surname;
+	}
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
 
-
-    public String getDateOfBirth() {
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
 
@@ -273,239 +272,239 @@ public class Customer {
 	}
 
 	public String getGender() {
-        return gender;
-    }
+		return gender;
+	}
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+	public String getCreatedBy() {
+		return createdBy;
+	}
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
-    }
+	public LocalDateTime getCreatedTime() {
+		return createdTime;
+	}
 
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
-    }
+	public void setCreatedTime(LocalDateTime createdTime) {
+		this.createdTime = createdTime;
+	}
 
-    public String getUserCode() {
-        return userCode;
-    }
+	public String getUserCode() {
+		return userCode;
+	}
 
-    public void setUserCode(String userCode) {
-        this.userCode = userCode;
-    }
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
 
-    public String getSmokerStatus() {
-        return smokerStatus;
-    }
+	public String getSmokerStatus() {
+		return smokerStatus;
+	}
 
-    public void setSmokerStatus(String smokerStatus) {
-        this.smokerStatus = smokerStatus;
-    }
+	public void setSmokerStatus(String smokerStatus) {
+		this.smokerStatus = smokerStatus;
+	}
 
-    public String getAdminAccess() {
-        return adminAccess;
-    }
+	public String getAdminAccess() {
+		return adminAccess;
+	}
 
-    public void setAdminAccess(String adminAccess) {
-        this.adminAccess = adminAccess;
-    }
+	public void setAdminAccess(String adminAccess) {
+		this.adminAccess = adminAccess;
+	}
 
-    public String getStreet() {
-        return street;
-    }
+	public String getStreet() {
+		return street;
+	}
 
-    public void setStreet(String street) {
-        this.street = street;
-    }
+	public void setStreet(String street) {
+		this.street = street;
+	}
 
-    public String getCity() {
-        return city;
-    }
+	public String getCity() {
+		return city;
+	}
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    public String getState() {
-        return state;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public void setState(String state) {
-        this.state = state;
-    }
+	public void setState(String state) {
+		this.state = state;
+	}
 
-    public String getZipCode() {
-        return zipCode;
-    }
+	public String getZipCode() {
+		return zipCode;
+	}
 
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
 
-    public String getCountry() {
-        return country;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public String getAlternateEmail() {
-        return alternateEmail;
-    }
+	public String getAlternateEmail() {
+		return alternateEmail;
+	}
 
-    public void setAlternateEmail(String alternateEmail) {
-        this.alternateEmail = alternateEmail;
-    }
+	public void setAlternateEmail(String alternateEmail) {
+		this.alternateEmail = alternateEmail;
+	}
 
-    public String getPhoneCountryCode() {
-        return phoneCountryCode;
-    }
+	public String getPhoneCountryCode() {
+		return phoneCountryCode;
+	}
 
-    public void setPhoneCountryCode(String phoneCountryCode) {
-        this.phoneCountryCode = phoneCountryCode;
-    }
+	public void setPhoneCountryCode(String phoneCountryCode) {
+		this.phoneCountryCode = phoneCountryCode;
+	}
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 
-    public String getEmergencyContactName() {
-        return emergencyContactName;
-    }
+	public String getEmergencyContactName() {
+		return emergencyContactName;
+	}
 
-    public void setEmergencyContactName(String emergencyContactName) {
-        this.emergencyContactName = emergencyContactName;
-    }
+	public void setEmergencyContactName(String emergencyContactName) {
+		this.emergencyContactName = emergencyContactName;
+	}
 
-    public String getEmergencyContactPhone() {
-        return emergencyContactPhone;
-    }
+	public String getEmergencyContactPhone() {
+		return emergencyContactPhone;
+	}
 
-    public void setEmergencyContactPhone(String emergencyContactPhone) {
-        this.emergencyContactPhone = emergencyContactPhone;
-    }
+	public void setEmergencyContactPhone(String emergencyContactPhone) {
+		this.emergencyContactPhone = emergencyContactPhone;
+	}
 
-    public String getVerificationStatus() {
-        return verificationStatus;
-    }
+	public String getVerificationStatus() {
+		return verificationStatus;
+	}
 
-    public void setVerificationStatus(String verificationStatus) {
-        this.verificationStatus = verificationStatus;
-    }
+	public void setVerificationStatus(String verificationStatus) {
+		this.verificationStatus = verificationStatus;
+	}
 
-    public LocalDateTime getLastLoginDate() {
-        return lastLoginDate;
-    }
+	public LocalDateTime getLastLoginDate() {
+		return lastLoginDate;
+	}
 
-    public void setLastLoginDate(LocalDateTime lastLoginDate) {
-        this.lastLoginDate = lastLoginDate;
-    }
+	public void setLastLoginDate(LocalDateTime lastLoginDate) {
+		this.lastLoginDate = lastLoginDate;
+	}
 
-    public String getKycStatus() {
-        return kycStatus;
-    }
+	public String getKycStatus() {
+		return kycStatus;
+	}
 
-    public void setKycStatus(String kycStatus) {
-        this.kycStatus = kycStatus;
-    }
+	public void setKycStatus(String kycStatus) {
+		this.kycStatus = kycStatus;
+	}
 
-    public double getRiskScore() {
-        return riskScore;
-    }
+	public double getRiskScore() {
+		return riskScore;
+	}
 
-    public void setRiskScore(double riskScore) {
-        this.riskScore = riskScore;
-    }
+	public void setRiskScore(double riskScore) {
+		this.riskScore = riskScore;
+	}
 
-    public String getPreferredContactMethod() {
-        return preferredContactMethod;
-    }
+	public String getPreferredContactMethod() {
+		return preferredContactMethod;
+	}
 
-    public void setPreferredContactMethod(String preferredContactMethod) {
-        this.preferredContactMethod = preferredContactMethod;
-    }
+	public void setPreferredContactMethod(String preferredContactMethod) {
+		this.preferredContactMethod = preferredContactMethod;
+	}
 
-    public String getDocumentId() {
-        return documentId;
-    }
+	public String getDocumentId() {
+		return documentId;
+	}
 
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
-    }
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
+	}
 
-    public LocalDate getDocumentExpiryDate() {
-        return documentExpiryDate;
-    }
+	public LocalDate getDocumentExpiryDate() {
+		return documentExpiryDate;
+	}
 
-    public void setDocumentExpiryDate(LocalDate documentExpiryDate) {
-        this.documentExpiryDate = documentExpiryDate;
-    }
+	public void setDocumentExpiryDate(LocalDate documentExpiryDate) {
+		this.documentExpiryDate = documentExpiryDate;
+	}
 
-    public List<Policy> getPolicies() {
-        return policies;
-    }
+	public List<Policy> getPolicies() {
+		return policies;
+	}
 
-    public void setPolicies(List<Policy> policies) {
-        this.policies = policies;
-    }
+	public void setPolicies(List<Policy> policies) {
+		this.policies = policies;
+	}
 
-    public List<BankAccount> getBankAccounts() {
-        return bankAccounts;
-    }
+	public List<BankAccount> getBankAccounts() {
+		return bankAccounts;
+	}
 
-    public void setBankAccounts(List<BankAccount> bankAccounts) {
-        this.bankAccounts = bankAccounts;
-    }
+	public void setBankAccounts(List<BankAccount> bankAccounts) {
+		this.bankAccounts = bankAccounts;
+	}
 
-    public List<VerificationRecord> getVerificationRecords() {
-        return verificationRecords;
-    }
+	public List<VerificationRecord> getVerificationRecords() {
+		return verificationRecords;
+	}
 
-    public void setVerificationRecords(List<VerificationRecord> verificationRecords) {
-        this.verificationRecords = verificationRecords;
-    }
+	public void setVerificationRecords(List<VerificationRecord> verificationRecords) {
+		this.verificationRecords = verificationRecords;
+	}
 
-    public List<Workitem> getWorkitems() {
-        return workitems;
-    }
+	public List<Workitem> getWorkitems() {
+		return workitems;
+	}
 
-    public void setWorkitems(List<Workitem> workitems) {
-        this.workitems = workitems;
-    }
+	public void setWorkitems(List<Workitem> workitems) {
+		this.workitems = workitems;
+	}
 
-    // Helper methods to maintain bidirectional relationships
-    public void addPolicy(Policy policy) {
-        policies.add(policy);
-        policy.setCustomer(this);
-    }
+	// Helper methods to maintain bidirectional relationships
+	public void addPolicy(Policy policy) {
+		policies.add(policy);
+		policy.setCustomer(this);
+	}
 
-    public void addBankAccount(BankAccount bankAccount) {
-        bankAccounts.add(bankAccount);
-        bankAccount.setCustomer(this);
-    }
+	public void addBankAccount(BankAccount bankAccount) {
+		bankAccounts.add(bankAccount);
+		bankAccount.setCustomer(this);
+	}
 
-    public void addVerificationRecord(VerificationRecord verificationRecord) {
-        verificationRecords.add(verificationRecord);
-        verificationRecord.setCustomer(this);
-    }
+	public void addVerificationRecord(VerificationRecord verificationRecord) {
+		verificationRecords.add(verificationRecord);
+		verificationRecord.setCustomer(this);
+	}
 
-    public void addWorkitem(Workitem workitem) {
-        workitems.add(workitem);
-        workitem.setCustomer(this);
-    }
+	public void addWorkitem(Workitem workitem) {
+		workitems.add(workitem);
+		workitem.setCustomer(this);
+	}
 }

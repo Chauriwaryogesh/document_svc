@@ -15,18 +15,13 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 @EnableCaching
 public class RedisConfig {
 
-    @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        // Set cache expiration time to 2 hours
-        RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-            .entryTtl(Duration.ofHours(2));  // Data will expire after 2 hours
+	@Bean
+	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+		// Set cache expiration time to 2 hours
+		RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(
+				RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+				.entryTtl(Duration.ofHours(2)); // Data will expire after 2 hours
 
-        return RedisCacheManager.builder(redisConnectionFactory)
-            .cacheDefaults(cacheConfig)
-            .build();
-    }
+		return RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(cacheConfig).build();
+	}
 }
-
-
-

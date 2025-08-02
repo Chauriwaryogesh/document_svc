@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.SecureAccessPortal.Entity.PaymentSequence;
 
-public interface PaymentSequenceRepo  extends JpaRepository<PaymentSequence, String>{
-	  Optional<PaymentSequence> findByYearMonth(String yearMonth);
+public interface PaymentSequenceRepo extends JpaRepository<PaymentSequence, String> {
+	Optional<PaymentSequence> findByYearMonth(String yearMonth);
 }

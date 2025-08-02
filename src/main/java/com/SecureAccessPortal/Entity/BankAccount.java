@@ -21,96 +21,95 @@ import jakarta.persistence.Table;
 @Table(name = "BankAccount")
 public class BankAccount {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Long id;
 
-    @Column(name = "accountNo", unique = true)
-    private String accountNo;
+	@Column(name = "accountNo", unique = true)
+	private String accountNo;
 
-    @Column(name = "ifscCode")
-    private String ifscCode;
+	@Column(name = "ifscCode")
+	private String ifscCode;
 
-    @Column(name = "bankName")
-    private String bankName;
+	@Column(name = "bankName")
+	private String bankName;
 
-    @Column(name = "accountType")
-    private String accountType;
+	@Column(name = "accountType")
+	private String accountType;
 
-    @Column(name = "status")
-    private String status;
-    
-    @Column(name = "deletedFlag")
-    private String deletedFlag;
+	@Column(name = "status")
+	private String status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
-    private Customer customer;
+	@Column(name = "deletedFlag")
+	private String deletedFlag;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "policy_number", referencedColumnName = "policyNumber")
-    private Policy policy;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
+	private Customer customer;
 
-    @OneToMany(mappedBy = "bankAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<VerificationRecord> verificationRecords = new ArrayList<>();
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "policy_number", referencedColumnName = "policyNumber")
+	private Policy policy;
 
-    @OneToMany(mappedBy = "bankAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Workitem> workitems = new ArrayList<>();
+	@OneToMany(mappedBy = "bankAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<VerificationRecord> verificationRecords = new ArrayList<>();
 
-    @Column(name = "last_verification_date")
-    private LocalDateTime lastVerificationDate;
+	@OneToMany(mappedBy = "bankAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Workitem> workitems = new ArrayList<>();
 
-    @Column(name = "created_by")
-    private String createdBy;
+	@Column(name = "last_verification_date")
+	private LocalDateTime lastVerificationDate;
 
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
-    
-    @Column(name = "updated_by")
-    private String updatedBy;
-    
-    @Column(name = "updated_Time")
-    private LocalDateTime updatedTime;
+	@Column(name = "created_by")
+	private String createdBy;
 
-    @Column(name = "notes", columnDefinition = "TEXT")
-    private String notes;
+	@Column(name = "created_date")
+	private LocalDateTime createdDate;
 
-    @Column(name = "account_holder_type")
-    private String accountHolderType;
+	@Column(name = "updated_by")
+	private String updatedBy;
 
-    @Column(name = "branch_code")
-    private String branchCode;
+	@Column(name = "updated_Time")
+	private LocalDateTime updatedTime;
 
-    @Column(name = "swift_code")
-    private String swiftCode;
+	@Column(name = "notes", columnDefinition = "TEXT")
+	private String notes;
 
-    @Column(name = "payment_method_status")
-    private String paymentMethodStatus;
+	@Column(name = "account_holder_type")
+	private String accountHolderType;
 
-    @Column(name = "last_payment_date")
-    private LocalDateTime lastPaymentDate;
+	@Column(name = "branch_code")
+	private String branchCode;
 
-    @Column(name = "aml_status")
-    private String amlStatus;
+	@Column(name = "swift_code")
+	private String swiftCode;
 
-    @Column(name = "account_balance")
-    private BigDecimal accountBalance;
+	@Column(name = "payment_method_status")
+	private String paymentMethodStatus;
 
-    @Column(name = "linked_payment_method")
-    private String linkedPaymentMethod;
+	@Column(name = "last_payment_date")
+	private LocalDateTime lastPaymentDate;
 
-    @Column(name = "verification_attempts")
-    private Integer verificationAttempts;
-    
-    @Column(name = "comment")
-    private String comment;
-    
-    @Column(name = "account_holder_name")
-    private String accountHolderName;
-    
+	@Column(name = "aml_status")
+	private String amlStatus;
 
-    public String getAccountHolderName() {
+	@Column(name = "account_balance")
+	private BigDecimal accountBalance;
+
+	@Column(name = "linked_payment_method")
+	private String linkedPaymentMethod;
+
+	@Column(name = "verification_attempts")
+	private Integer verificationAttempts;
+
+	@Column(name = "comment")
+	private String comment;
+
+	@Column(name = "account_holder_name")
+	private String accountHolderName;
+
+	public String getAccountHolderName() {
 		return accountHolderName;
 	}
 
@@ -151,198 +150,198 @@ public class BankAccount {
 	}
 
 	// Getters and Setters
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getAccountNo() {
-        return accountNo;
-    }
+	public String getAccountNo() {
+		return accountNo;
+	}
 
-    public void setAccountNo(String accountNo) {
-        this.accountNo = accountNo;
-    }
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
+	}
 
-    public String getIfscCode() {
-        return ifscCode;
-    }
+	public String getIfscCode() {
+		return ifscCode;
+	}
 
-    public void setIfscCode(String ifscCode) {
-        this.ifscCode = ifscCode;
-    }
+	public void setIfscCode(String ifscCode) {
+		this.ifscCode = ifscCode;
+	}
 
-    public String getBankName() {
-        return bankName;
-    }
+	public String getBankName() {
+		return bankName;
+	}
 
-    public void setBankName(String bankName) {
-        this.bankName = bankName;
-    }
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
 
-    public String getAccountType() {
-        return accountType;
-    }
+	public String getAccountType() {
+		return accountType;
+	}
 
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
-    }
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public Customer getCustomer() {
-        return customer;
-    }
+	public Customer getCustomer() {
+		return customer;
+	}
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 
-    public Policy getPolicy() {
-        return policy;
-    }
+	public Policy getPolicy() {
+		return policy;
+	}
 
-    public void setPolicy(Policy policy) {
-        this.policy = policy;
-    }
+	public void setPolicy(Policy policy) {
+		this.policy = policy;
+	}
 
-    public List<VerificationRecord> getVerificationRecords() {
-        return verificationRecords;
-    }
+	public List<VerificationRecord> getVerificationRecords() {
+		return verificationRecords;
+	}
 
-    public void setVerificationRecords(List<VerificationRecord> verificationRecords) {
-        this.verificationRecords = verificationRecords;
-    }
+	public void setVerificationRecords(List<VerificationRecord> verificationRecords) {
+		this.verificationRecords = verificationRecords;
+	}
 
-    public List<Workitem> getWorkitems() {
-        return workitems;
-    }
+	public List<Workitem> getWorkitems() {
+		return workitems;
+	}
 
-    public void setWorkitems(List<Workitem> workitems) {
-        this.workitems = workitems;
-    }
+	public void setWorkitems(List<Workitem> workitems) {
+		this.workitems = workitems;
+	}
 
-    public LocalDateTime getLastVerificationDate() {
-        return lastVerificationDate;
-    }
+	public LocalDateTime getLastVerificationDate() {
+		return lastVerificationDate;
+	}
 
-    public void setLastVerificationDate(LocalDateTime lastVerificationDate) {
-        this.lastVerificationDate = lastVerificationDate;
-    }
+	public void setLastVerificationDate(LocalDateTime lastVerificationDate) {
+		this.lastVerificationDate = lastVerificationDate;
+	}
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+	public String getCreatedBy() {
+		return createdBy;
+	}
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
+	}
 
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
+	public void setCreatedDate(LocalDateTime createdDate) {
+		this.createdDate = createdDate;
+	}
 
-    public String getNotes() {
-        return notes;
-    }
+	public String getNotes() {
+		return notes;
+	}
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
 
-    public String getAccountHolderType() {
-        return accountHolderType;
-    }
+	public String getAccountHolderType() {
+		return accountHolderType;
+	}
 
-    public void setAccountHolderType(String accountHolderType) {
-        this.accountHolderType = accountHolderType;
-    }
+	public void setAccountHolderType(String accountHolderType) {
+		this.accountHolderType = accountHolderType;
+	}
 
-    public String getBranchCode() {
-        return branchCode;
-    }
+	public String getBranchCode() {
+		return branchCode;
+	}
 
-    public void setBranchCode(String branchCode) {
-        this.branchCode = branchCode;
-    }
+	public void setBranchCode(String branchCode) {
+		this.branchCode = branchCode;
+	}
 
-    public String getSwiftCode() {
-        return swiftCode;
-    }
+	public String getSwiftCode() {
+		return swiftCode;
+	}
 
-    public void setSwiftCode(String swiftCode) {
-        this.swiftCode = swiftCode;
-    }
+	public void setSwiftCode(String swiftCode) {
+		this.swiftCode = swiftCode;
+	}
 
-    public String getPaymentMethodStatus() {
-        return paymentMethodStatus;
-    }
+	public String getPaymentMethodStatus() {
+		return paymentMethodStatus;
+	}
 
-    public void setPaymentMethodStatus(String paymentMethodStatus) {
-        this.paymentMethodStatus = paymentMethodStatus;
-    }
+	public void setPaymentMethodStatus(String paymentMethodStatus) {
+		this.paymentMethodStatus = paymentMethodStatus;
+	}
 
-    public LocalDateTime getLastPaymentDate() {
-        return lastPaymentDate;
-    }
+	public LocalDateTime getLastPaymentDate() {
+		return lastPaymentDate;
+	}
 
-    public void setLastPaymentDate(LocalDateTime lastPaymentDate) {
-        this.lastPaymentDate = lastPaymentDate;
-    }
+	public void setLastPaymentDate(LocalDateTime lastPaymentDate) {
+		this.lastPaymentDate = lastPaymentDate;
+	}
 
-    public String getAmlStatus() {
-        return amlStatus;
-    }
+	public String getAmlStatus() {
+		return amlStatus;
+	}
 
-    public void setAmlStatus(String amlStatus) {
-        this.amlStatus = amlStatus;
-    }
+	public void setAmlStatus(String amlStatus) {
+		this.amlStatus = amlStatus;
+	}
 
-    public BigDecimal getAccountBalance() {
-        return accountBalance;
-    }
+	public BigDecimal getAccountBalance() {
+		return accountBalance;
+	}
 
-    public void setAccountBalance(BigDecimal accountBalance) {
-        this.accountBalance = accountBalance;
-    }
+	public void setAccountBalance(BigDecimal accountBalance) {
+		this.accountBalance = accountBalance;
+	}
 
-    public String getLinkedPaymentMethod() {
-        return linkedPaymentMethod;
-    }
+	public String getLinkedPaymentMethod() {
+		return linkedPaymentMethod;
+	}
 
-    public void setLinkedPaymentMethod(String linkedPaymentMethod) {
-        this.linkedPaymentMethod = linkedPaymentMethod;
-    }
+	public void setLinkedPaymentMethod(String linkedPaymentMethod) {
+		this.linkedPaymentMethod = linkedPaymentMethod;
+	}
 
-    public Integer getVerificationAttempts() {
-        return verificationAttempts;
-    }
+	public Integer getVerificationAttempts() {
+		return verificationAttempts;
+	}
 
-    public void setVerificationAttempts(Integer verificationAttempts) {
-        this.verificationAttempts = verificationAttempts;
-    }
+	public void setVerificationAttempts(Integer verificationAttempts) {
+		this.verificationAttempts = verificationAttempts;
+	}
 
-    // Helper methods to maintain bidirectional relationships
-    public void addVerificationRecord(VerificationRecord verificationRecord) {
-        verificationRecords.add(verificationRecord);
-        verificationRecord.setBankAccount(this);
-    }
+	// Helper methods to maintain bidirectional relationships
+	public void addVerificationRecord(VerificationRecord verificationRecord) {
+		verificationRecords.add(verificationRecord);
+		verificationRecord.setBankAccount(this);
+	}
 
-    public void addWorkitem(Workitem workitem) {
-        workitems.add(workitem);
-        workitem.setBankAccount(this);
-    }
+	public void addWorkitem(Workitem workitem) {
+		workitems.add(workitem);
+		workitem.setBankAccount(this);
+	}
 }

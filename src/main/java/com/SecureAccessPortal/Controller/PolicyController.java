@@ -28,15 +28,14 @@ import com.SecureAccessPortal.Service.ResponseEntity;
 @RestController
 @RequestMapping("/policy")
 public class PolicyController {
-	
+
 	@Autowired
-	private  PolicyService policyService;
-	
+	private PolicyService policyService;
+
 	@Autowired
 	private EmailService otpService;
 
-	@PostMapping(value = "/policy-create", consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/policy-create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseDTO> createPolicy(@RequestBody PolicyRequest policyDTO,
 			@RequestHeader String userCode) {
 		ResponseEntity<ResponseDTO> response = new ResponseEntity<ResponseDTO>();
@@ -51,22 +50,23 @@ public class PolicyController {
 		}
 		return response;
 	}
+
 	@GetMapping("/policy-details")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<PolicyDTO>> getCustomerlDetails(
 			@RequestParam(value = "policyNo", required = false) String policyNo,
 			@RequestParam(value = "allpolSearch", required = false) String allPol,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
 			@RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
-			@RequestHeader (required =false)String userCode) {
+			@RequestHeader(required = false) String userCode) {
 		if (allPol == null) {
 			allPol = "N";
 		}
-		com.SecureAccessPortal.Service.ResponseEntity<List<PolicyDTO>> emailResp = policyService.getPolicyDetails(policyNo,
-				customerNo, allPol, workItemRefNo, userCode);
+		com.SecureAccessPortal.Service.ResponseEntity<List<PolicyDTO>> emailResp = policyService
+				.getPolicyDetails(policyNo, customerNo, allPol, workItemRefNo, userCode);
 
 		return emailResp;
 	}
-	
+
 	@PostMapping("/customer-details/update")
 	public com.SecureAccessPortal.Service.ResponseEntity<String> getCustomerlDetails(
 			@RequestBody CustomerDTO customerDTO, @RequestHeader String userCode) {
@@ -81,6 +81,7 @@ public class PolicyController {
 		}
 		return resp;
 	}
+
 	@GetMapping("/policy-domain")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<GroupedPolicyDTO>> getPolicyDomain(
 			@RequestParam(value = "policyName", required = false) String policyName,
@@ -88,9 +89,12 @@ public class PolicyController {
 			@RequestParam(value = "policyTAmount", required = false) String policyTAmount,
 			@RequestParam(value = "policyFrequency", required = false) String policyFrequency,
 			@RequestParam(value = "policyInstallment", required = false) String policyInstallment,
-			/*@RequestParam(value = "policyNo", required = false) String policyNo
-			@RequestParam(value = "policyNo", required = false) String policyNo*/
-			@RequestHeader(value="useCode", required=false) String userCode) {
+			/*
+			 * @RequestParam(value = "policyNo", required = false) String policyNo
+			 * 
+			 * @RequestParam(value = "policyNo", required = false) String policyNo
+			 */
+			@RequestHeader(value = "useCode", required = false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<GroupedPolicyDTO>> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		List<GroupedPolicyDTO> policyDTO = policyService.getDomainData(productCode, userCode);
 		if (policyDTO != null && !policyDTO.isEmpty()) {
@@ -102,9 +106,8 @@ public class PolicyController {
 		}
 		return response;
 	}
-	
-	@PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
+
+	@PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseDTO> updatePolicy(@RequestBody PolicyRequest policyDTO,
 			@RequestHeader String userCode) {
 		ResponseEntity<ResponseDTO> response = new ResponseEntity<ResponseDTO>();
@@ -121,7 +124,7 @@ public class PolicyController {
 		}
 		return response;
 	}
-	
+
 	@GetMapping("validate/EmailOrUserCode")
 	public ResponseEntity<String> validateEmailUserCode(@RequestParam(value = "email", required = false) String email,
 			@RequestParam(value = "userCode", required = false) String userCode) {
@@ -130,23 +133,23 @@ public class PolicyController {
 		return response;
 
 	}
-	
+
 	@GetMapping("policy/fetchAllPolicies")
-	public ResponseEntity<List<PolicyDTO>> fetchAllPolicies(@RequestParam(value = "email", required = false) String email,
+	public ResponseEntity<List<PolicyDTO>> fetchAllPolicies(
+			@RequestParam(value = "email", required = false) String email,
 			@RequestParam(value = "userCode", required = false) String userCode) {
 		ResponseEntity<List<PolicyDTO>> response = new ResponseEntity<>();
 		response = policyService.fetchAllPolicies(email, userCode);
 		return response;
 
 	}
-	
+
 	@PostMapping(value = "/update/delete", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ResponseDTO> updateDeletePolicy(@RequestParam String  PolicyNumber,
-			@RequestParam  String reason,
-			@RequestHeader String userCode) {
+	public ResponseEntity<ResponseDTO> updateDeletePolicy(@RequestParam String PolicyNumber,
+			@RequestParam String reason, @RequestHeader String userCode) {
 		ResponseEntity<ResponseDTO> response = new ResponseEntity<ResponseDTO>();
 		ResponseDTO responseDTO = new ResponseDTO();
-		responseDTO = policyService.updateDeletePolicy(PolicyNumber,reason, userCode);
+		responseDTO = policyService.updateDeletePolicy(PolicyNumber, reason, userCode);
 		if (responseDTO.getStatus().equalsIgnoreCase("Success")) {
 			response.setData(responseDTO);
 			response.setStatus(CommonConstant.SUCCESS);
@@ -156,27 +159,33 @@ public class PolicyController {
 		}
 		return response;
 	}
-	
+
 	@GetMapping("/policy-detailsNew")
 	public com.SecureAccessPortal.Service.ResponseEntity<Page<PolicyDTO>> getCustomerlDetails(
-	        @RequestParam(value = "policyNo", required = false) String policyNo,
-	        @RequestParam(value = "allpolSearch", required = false) String allPol,
-	        @RequestParam(value = "customerNo", required = false) String customerNo,
-	        @RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
-	        @RequestHeader(required = false) String userCode,
-	        @RequestParam(value = "page", defaultValue = "0") int page,
-	        @RequestParam(value = "size", defaultValue = "10") int size) {
-	    
-	    if (allPol == null) {
-	        allPol = "N";
-	    }
-	    
-	    Pageable pageable = PageRequest.of(page, size);
-	    com.SecureAccessPortal.Service.ResponseEntity<Page<PolicyDTO>> emailResp = 
-	        policyService.getPolicyDetailsNew(policyNo, customerNo, allPol, workItemRefNo, userCode, pageable);
-	    
-	    return emailResp;
+			@RequestParam(value = "policyNo", required = false) String policyNo,
+			@RequestParam(value = "allpolSearch", required = false) String allPol,
+			@RequestParam(value = "customerNo", required = false) String customerNo,
+			@RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
+			@RequestHeader(required = false) String userCode,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size) {
+
+		if (allPol == null) {
+			allPol = "N";
+		}
+
+		Pageable pageable = PageRequest.of(page, size);
+		com.SecureAccessPortal.Service.ResponseEntity<Page<PolicyDTO>> emailResp = policyService
+				.getPolicyDetailsNew(policyNo, customerNo, allPol, workItemRefNo, userCode, pageable);
+
+		return emailResp;
 	}
-	
-	
+
+	@PostMapping(value = "/apply-policy", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> applyPolicy(@RequestBody PolicyDTO policyDTO,
+			@RequestHeader(required = false) String userCode) {
+		ResponseEntity<String> response = policyService.applyForPolicy(policyDTO, userCode);
+		return response;
+	}
+
 }

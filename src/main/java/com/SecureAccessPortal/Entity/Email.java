@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "Email_Service")
-public class Email{
+public class Email {
 	@Id
 	@Column
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +39,7 @@ public class Email{
 	private String isVerified;
 	@Column
 	private String comment;
-	
-	
+
 	public String getComment() {
 		return comment;
 	}

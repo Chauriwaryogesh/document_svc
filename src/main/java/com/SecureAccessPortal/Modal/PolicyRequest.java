@@ -21,7 +21,7 @@ public class PolicyRequest {
 	private String policyDate;
 	private int installmentCount;
 	private String dueDate;
-	//new fields added
+	// new fields added
 	private String term;
 	private String frequency;
 	private int premium;
@@ -37,7 +37,7 @@ public class PolicyRequest {
 	private String nomineeContactNumber;
 	private String status;
 	private String type;
-	
+
 	public String getUserCode() {
 		return userCode;
 	}

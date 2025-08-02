@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.SecureAccessPortal.Entity.Note;
 
-public interface NotesRepo extends JpaRepository<Note, Long>{
+public interface NotesRepo extends JpaRepository<Note, Long> {
 
 }

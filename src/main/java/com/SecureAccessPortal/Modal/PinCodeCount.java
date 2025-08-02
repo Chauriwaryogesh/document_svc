@@ -3,6 +3,7 @@ package com.SecureAccessPortal.Modal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PinCodeCount {
 	private String pinCount;
@@ -32,7 +33,5 @@ public class PinCodeCount {
 	public void setPinCodeOrBranchDTO(List<PinCodeOrBranchDTO> pinCodeOrBranchDTO) {
 		this.pinCodeOrBranchDTO = pinCodeOrBranchDTO;
 	}
-	
-	
 
 }

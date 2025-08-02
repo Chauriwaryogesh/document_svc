@@ -8,83 +8,99 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="Activity_Monitor")
+@Table(name = "Activity_Monitor")
 public class ActivityDtls {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private long id;
 	@Column
-	private String userCode ;
+	private String userCode;
 	@Column
-	private String email ;
+	private String email;
 	@Column
-	private String activityType ;
+	private String activityType;
 	@Column
-	private String activityTime ;
+	private String activityTime;
 	@Column
-	private String screenName; 
+	private String screenName;
 	@Column
-	private String timeSpentSeconds; 
+	private String timeSpentSeconds;
 	@Column
-	private String	details; 
+	private String details;
 	@Column
 	private String ipAddress;
+
 	public long getId() {
 		return id;
 	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 	public String getuserCode() {
 		return userCode;
 	}
+
 	public void setuserCode(String userCode) {
 		this.userCode = userCode;
 	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 	public String getActivityType() {
 		return activityType;
 	}
+
 	public void setActivityType(String activityType) {
 		this.activityType = activityType;
 	}
+
 	public String getActivityTime() {
 		return activityTime;
 	}
+
 	public void setActivityTime(String activityTime) {
 		this.activityTime = activityTime;
 	}
+
 	public String getScreenName() {
 		return screenName;
 	}
+
 	public void setScreenName(String screenName) {
 		this.screenName = screenName;
 	}
+
 	public String getTimeSpentSeconds() {
 		return timeSpentSeconds;
 	}
+
 	public void setTimeSpentSeconds(String timeSpentSeconds) {
 		this.timeSpentSeconds = timeSpentSeconds;
 	}
+
 	public String getDetails() {
 		return details;
 	}
+
 	public void setDetails(String details) {
 		this.details = details;
 	}
+
 	public String getIpAddress() {
 		return ipAddress;
 	}
+
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
-	
 
 }

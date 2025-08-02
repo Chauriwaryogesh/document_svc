@@ -14,43 +14,47 @@ import com.SecureAccessPortal.Entity.Workitem;
 
 public interface WorkItemRepo extends JpaRepository<Workitem, String> {
 
-	@Query(value="Select * from WorkItem w where w.workItemRefNumber=?1 ", nativeQuery = true)
+	@Query(value = "Select * from WorkItem w where w.workItemRefNumber=?1 ", nativeQuery = true)
 	Optional<Workitem> findByWiRefNum(String wiRefNum);
-	
-	@Query(value="Select * from WorkItem w where w.workItemRefNumber=?1 ", nativeQuery = true)
+
+	@Query(value = "Select * from WorkItem w where w.workItemRefNumber=?1 ", nativeQuery = true)
 	Page<Workitem> findByWiRefNum(String wiRefNum, Pageable pageable);
-	
-    Page<Workitem> findAll(Specification<Workitem> spec, Pageable pageable);
-    
-    @Query("SELECT COUNT(w) FROM Workitem w WHERE w.status = :status")
-    long countByStatus(@Param("status") String status);
 
-    @Query("SELECT COUNT(w) FROM Workitem w WHERE w.queue = :queue")
-    long countByQueue(@Param("queue") String queue);
+	Page<Workitem> findAll(Specification<Workitem> spec, Pageable pageable);
 
-    @Query("SELECT COUNT(w) FROM Workitem w")
-    long countAll();
+	@Query("SELECT COUNT(w) FROM Workitem w WHERE w.status = :status")
+	long countByStatus(@Param("status") String status);
 
-    // If userCode filtering is needed
-    @Query("SELECT COUNT(w) FROM Workitem w WHERE w.status = :status AND w.userCode = :userCode")
-    long countByStatusAndUserCode(@Param("status") String status, @Param("userCode") String userCode);
+	@Query("SELECT COUNT(w) FROM Workitem w WHERE w.queue = :queue")
+	long countByQueue(@Param("queue") String queue);
 
-    @Query("SELECT COUNT(w) FROM Workitem w WHERE w.queue = :queue AND w.userCode = :userCode")
-    long countByQueueAndUserCode(@Param("queue") String queue, @Param("userCode") String userCode);
+	@Query("SELECT COUNT(w) FROM Workitem w")
+	long countAll();
 
-    @Query("SELECT COUNT(w) FROM Workitem w WHERE w.userCode = :userCode")
-    long countAllByUserCode(@Param("userCode") String userCode);
+	// If userCode filtering is needed
+	@Query("SELECT COUNT(w) FROM Workitem w WHERE w.status = :status AND w.userCode = :userCode")
+	long countByStatusAndUserCode(@Param("status") String status, @Param("userCode") String userCode);
 
+	@Query("SELECT COUNT(w) FROM Workitem w WHERE w.queue = :queue AND w.userCode = :userCode")
+	long countByQueueAndUserCode(@Param("queue") String queue, @Param("userCode") String userCode);
 
-    @Query("SELECT w FROM Workitem w WHERE w.policy.policyNumber = (SELECT w2.policy.policyNumber FROM Workitem w2 WHERE w2.workItemRefNumber = :workItemRefNumber) ORDER BY w.createdTime DESC")
-    Page<Workitem> findWorkItemsByRefNumberPolicy(@Param("workItemRefNumber") String workItemRefNumber, Pageable pageable);
+	@Query("SELECT COUNT(w) FROM Workitem w WHERE w.userCode = :userCode")
+	long countAllByUserCode(@Param("userCode") String userCode);
 
-    @Query("SELECT w FROM Workitem w WHERE w.customer.customerNo = (SELECT w2.customer.customerNo FROM Workitem w2 WHERE w2.workItemRefNumber = :workItemRefNumber) ORDER BY w.createdTime DESC")
-    Page<Workitem> findWorkItemsByRefNumberCustomerNo(@Param("workItemRefNumber") String workItemRefNumber, Pageable pageable);
+	@Query("SELECT w FROM Workitem w WHERE w.policy.policyNumber = (SELECT w2.policy.policyNumber FROM Workitem w2 WHERE w2.workItemRefNumber = :workItemRefNumber) ORDER BY w.createdTime DESC")
+	Page<Workitem> findWorkItemsByRefNumberPolicy(@Param("workItemRefNumber") String workItemRefNumber,
+			Pageable pageable);
 
-    @Query("SELECT COUNT(w) FROM Workitem w WHERE w.userCode = :userCode")
+	@Query("SELECT w FROM Workitem w WHERE w.customer.customerNo = (SELECT w2.customer.customerNo FROM Workitem w2 WHERE w2.workItemRefNumber = :workItemRefNumber) ORDER BY w.createdTime DESC")
+	Page<Workitem> findWorkItemsByRefNumberCustomerNo(@Param("workItemRefNumber") String workItemRefNumber,
+			Pageable pageable);
+
+	@Query("SELECT COUNT(w) FROM Workitem w WHERE w.userCode = :userCode")
 	long findAllWorkItems(String userCode);
 
-    @Query("SELECT w FROM Workitem w WHERE w.customer.customerNo =:customerNo")
+	@Query("SELECT w FROM Workitem w WHERE w.customer.customerNo =:customerNo")
 	List<Workitem> findByCustomerNo(String customerNo);
+
+	@Query("SELECT w FROM Workitem w WHERE w.workItemRefNumber =:number")
+	List<Workitem> findByWorkItemReferenceNo(String number);
 }

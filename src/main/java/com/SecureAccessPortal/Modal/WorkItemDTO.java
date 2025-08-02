@@ -13,7 +13,6 @@ public class WorkItemDTO {
 	private String status;
 	private String queue;
 	private String customerNo;
-	
 
 	public String getCustomerNo() {
 		return customerNo;

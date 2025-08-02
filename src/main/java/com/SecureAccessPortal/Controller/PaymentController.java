@@ -68,7 +68,7 @@ public class PaymentController {
 			@RequestHeader(value = "userCode", required = false) String userCode) {
 		ResponseEntity<Page<PaymentResponse>> responseList = new ResponseEntity<>();
 		Page<Payments> paymentsPage = paymentService.findHistoryOfPayments(policyNumber, customerNumber, paymentId,
-				transactionId, page, size,status,userCode);
+				transactionId, page, size, status, userCode);
 		Map<String, List<Payments>> groupedByPolicy = paymentsPage.getContent().stream()
 				.collect(Collectors.groupingBy(p -> p.getPolicy().getPolicyNumber()));
 

@@ -1,21 +1,22 @@
 package com.SecureAccessPortal.Modal;
 
 public class ChatbotRequest {
-    private String userId;
-    private String message;
-    public String getUserId() {
-        return userId;
-    }
+	private String userId;
+	private String message;
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+	public String getUserId() {
+		return userId;
+	}
 
-    public String getMessage() {
-        return message;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }

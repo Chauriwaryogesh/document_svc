@@ -29,7 +29,7 @@ public class CapturePhoto {
 	private String createdBy;
 	@Column
 	private String updatedBy;
-	
+
 	@Lob
 	private byte[] data;
 

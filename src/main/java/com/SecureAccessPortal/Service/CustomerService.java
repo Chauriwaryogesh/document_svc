@@ -2,6 +2,7 @@ package com.SecureAccessPortal.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -10,14 +11,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
+import com.SecureAccessPortal.Entity.BankAccount;
+import com.SecureAccessPortal.Entity.Complaint;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.FeedbackEntity;
+import com.SecureAccessPortal.Entity.Payments;
+import com.SecureAccessPortal.Entity.Policy;
+import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.Address;
+import com.SecureAccessPortal.Modal.BankDetailsDTO;
+import com.SecureAccessPortal.Modal.ComplaintDTO;
 import com.SecureAccessPortal.Modal.ContactDetails;
 import com.SecureAccessPortal.Modal.CustomerDTO;
 import com.SecureAccessPortal.Modal.FeedbackResponse;
+import com.SecureAccessPortal.Modal.PolicyDTO;
+import com.SecureAccessPortal.Modal.PolicyList;
+import com.SecureAccessPortal.Modal.WorkItemDTO;
+import com.SecureAccessPortal.Repo.BankAccountRepo;
+import com.SecureAccessPortal.Repo.ComplaintRepo;
 import com.SecureAccessPortal.Repo.CustomerRepo;
 import com.SecureAccessPortal.Repo.FeedbackRepo;
+import com.SecureAccessPortal.Repo.IPolicyRepo;
+import com.SecureAccessPortal.Repo.PaymentsRepo;
+import com.SecureAccessPortal.Repo.WorkItemRepo;
+import com.SecureAccessPortal.Transformer.CustomerMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +47,36 @@ public class CustomerService {
 
 	@Autowired
 	private FeedbackRepo feedbackRepository;
+
+	@Autowired
+	private IPolicyRepo policyRepository;
+
+	@Autowired
+	private WorkItemRepo workItemRepository;
+
+	@Autowired
+	private ComplaintRepo complaintRepository;
+
+	@Autowired
+	private BankAccountRepo bankRepository;
+
+	@Autowired
+	private PaymentsRepo paymentRepository;
+
+	@Autowired
+	private CustomerMapper customerMapper;
+	
+	@Autowired
+	private PolicyService policyService;
+	
+	@Autowired
+	private ComplaintService complaintService;
+	
+	@Autowired
+	private IWorkItemService workItemService;
+	
+	@Autowired
+	private BankDetailsService bankDetailsService;
 
 	public ResponseEntity<FeedbackResponse> saveFeedback(FeedbackResponse feedbackResponse, String userCode) {
 		ResponseEntity<FeedbackResponse> response = new ResponseEntity<>();
@@ -44,44 +91,45 @@ public class CustomerService {
 					feedbackentity.setCreatedTime(LocalDateTime.now());
 					feedbackentity.setCustomer(customer);
 					feedbackentity.setDeletedFlag(CommonConstant.N);
-					feedbackentity.setFeedbackData(mapper.writeValueAsString(feedbackResponse));			
+					feedbackentity.setFeedbackData(mapper.writeValueAsString(feedbackResponse));
 					feedbackRepository.save(feedbackentity);
-                    response.setStatus(CommonConstant.SUCCESS);
+					response.setStatus(CommonConstant.SUCCESS);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
-			}else {
+			} else {
 				response.setStatus(CommonConstant.FAILURE);
 				response.setErrorMessage("customerNot found");
 			}
-		} else {	
+		} else {
 			response.setErrorMessage("userCode null");
 		}
 		return response;
 	}
 
-	public ResponseEntity<List<FeedbackResponse>> getFeedback(String customerNo,   String userCode) {
+	public ResponseEntity<List<FeedbackResponse>> getFeedback(String customerNo, String userCode) {
 		ResponseEntity<List<FeedbackResponse>> response = new ResponseEntity<>();
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		List<FeedbackResponse> listResp= new ArrayList<>();
-		if(userCode != null) {
-		List<FeedbackEntity> feedbackList=feedbackRepository.findByCustomerNoAndDeletedFlagN(customerNo,CommonConstant.N);
-		listResp=feedbackList.stream().filter(Objects :: nonNull).map(feedback ->{
-			FeedbackResponse feedbackResponse = new FeedbackResponse();
-			try {
-				feedbackResponse= mapper.readValue(feedback.getFeedbackData(), FeedbackResponse.class);
-			}catch(Exception e) {
-				
-			}
-			return feedbackResponse;
-		}).collect(Collectors.toList());
-		response.setData(listResp);
-		response.setStatus(CommonConstant.SUCCESS);
-		}else {
+		List<FeedbackResponse> listResp = new ArrayList<>();
+		if (userCode != null) {
+			List<FeedbackEntity> feedbackList = feedbackRepository.findByCustomerNoAndDeletedFlagN(customerNo,
+					CommonConstant.N);
+			listResp = feedbackList.stream().filter(Objects::nonNull).map(feedback -> {
+				FeedbackResponse feedbackResponse = new FeedbackResponse();
+				try {
+					feedbackResponse = mapper.readValue(feedback.getFeedbackData(), FeedbackResponse.class);
+				} catch (Exception e) {
+
+				}
+				return feedbackResponse;
+			}).collect(Collectors.toList());
+			response.setData(listResp);
+			response.setStatus(CommonConstant.SUCCESS);
+		} else {
 			response.setErrorMessage("userCode Not found");
 		}
-		
+
 		return response;
 	}
 
@@ -138,7 +186,7 @@ public class CustomerService {
 			customer.setUpdatedTime(LocalDateTime.now());
 			customerRepository.save(customer);
 			response.setStatus(CommonConstant.SUCCESS);
-		}else {
+		} else {
 			response.setStatus(CommonConstant.FAILURE);
 			response.setErrorMessage("No customer Details Found for this userCode " + userCode);
 		}
@@ -146,9 +194,69 @@ public class CustomerService {
 	}
 
 	public ResponseEntity<List<String>> getRolesDomain(String userCode) {
-		ResponseEntity<List<String>> response= new ResponseEntity<List<String>>();
-		List<String> rolesList= List.of("Admin,Complaints-Admin");
+		ResponseEntity<List<String>> response = new ResponseEntity<List<String>>();
+		List<String> rolesList = List.of("Admin,Complaints-Admin");
 		response.setData(rolesList);
+		return response;
+	}
+
+	public ResponseEntity<CustomerDTO> getAllSerchUsingInput(String number, String type, String allSearch,
+			String userCode) {
+		ResponseEntity<CustomerDTO> response = new ResponseEntity<>();
+		Customer customer = new Customer();
+		List<Payments> payments = new ArrayList<>();
+		List<BankAccount> bankAccountList = new ArrayList<>();
+		List<Complaint> complaints = new ArrayList<>();
+		List<Workitem> workitems = new ArrayList<>();
+		List<Policy> policy = new ArrayList<>();
+		CustomerDTO customerDTO = new CustomerDTO();
+		if (number == null || type == null) {
+			response.setErrorMessage("Blank Serch not allowed");
+			return response;
+		}
+		switch (type) {
+		case CommonConstant.CUSTOMER -> {
+			if (allSearch.equalsIgnoreCase(CommonConstant.N)) {
+				customer = customerRepository.findByCustomerNoNew(number, CommonConstant.N);
+			} else {
+				customer = customerRepository.findByCustomerNoNew(number, CommonConstant.N);
+				policy = policyRepository.findByCustomerNoNew(number, "N");
+				workitems = workItemRepository.findByCustomerNo(number);
+				complaints = complaintRepository.findByCustomerNo(number);
+				bankAccountList = bankRepository.findByCustomerNo(number);
+				payments = paymentRepository.findByCustomerNo(number);
+			}
+			customerDTO = customerMapper.mapCustomerDetails(customer, policy, workitems, complaints,bankAccountList, payments,userCode);	
+		}
+		case CommonConstant.POLICY -> {
+			List<Policy> policies = policyRepository.findByPolicyNumber(number, CommonConstant.N);
+			List<PolicyDTO> mapPolicyToPolicyList = policyService.mapPolicyListDetails(policies, userCode);
+			customerDTO.setPolicy(mapPolicyToPolicyList);
+
+		}
+		case CommonConstant.COMPLAINT -> {
+			Complaint complaint = complaintRepository.findByComplaintNo(number, CommonConstant.N);
+			ComplaintDTO mapComplaint = complaintService.mapComplaint(complaint);
+			customerDTO.setComplaint(Arrays.asList(mapComplaint));
+
+		}
+		case CommonConstant.WORKITEM -> {
+			List<Workitem> workitem = workItemRepository.findByWorkItemReferenceNo(number);
+			List<WorkItemDTO> allWorkitems = workItemService.getAllWorkitems(workitem);
+			customerDTO.setWorkitems(allWorkitems);
+		}
+		case CommonConstant.BANK -> {
+			BankAccount bankAccount = bankRepository.findByAccountNo(number, CommonConstant.N);
+			BankDetailsDTO  banlAccountDTO=bankDetailsService.convertToDTO( bankAccount);
+			customerDTO.setBank(Arrays.asList(banlAccountDTO));
+		}
+		case CommonConstant.PAYMENT -> {
+			Payments payment = paymentRepository.findByPaymentId(number);
+			//will add
+		}
+		}
+		response.setData(customerDTO);
+		response.setStatus(CommonConstant.SUCCESS);
 		return response;
 	}
 

@@ -30,12 +30,12 @@ public class LoginHistory {
 
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO )
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	@Column(name = "loginTime")
 	private Timestamp loginTime;
-	
+
 	@Column(name = "userCode")
 	private String userCode;
 
@@ -224,7 +224,5 @@ public class LoginHistory {
 	public void setMfaUsed(boolean mfaUsed) {
 		this.mfaUsed = mfaUsed;
 	}
-
-	
 
 }

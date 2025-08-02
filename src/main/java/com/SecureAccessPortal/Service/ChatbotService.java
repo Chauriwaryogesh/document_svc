@@ -20,64 +20,64 @@ import com.SecureAccessPortal.Repo.IPolicyRepo;
 public class ChatbotService {
 
 	@Autowired
-    private  CustomerRepo customerRepository;
-	
+	private CustomerRepo customerRepository;
+
 	@Autowired
-    private  IPolicyRepo policyRepository;
-	
+	private IPolicyRepo policyRepository;
+
 	@Autowired
-    private  BankAccountRepo bankAccountRepository;
+	private BankAccountRepo bankAccountRepository;
 
-    @Autowired
-    public ChatbotService(CustomerRepo customerRepository) {
-        this.customerRepository = customerRepository;
-    }
+	@Autowired
+	public ChatbotService(CustomerRepo customerRepository) {
+		this.customerRepository = customerRepository;
+	}
 
-    public ChatbotResponse processMessage(ChatbotRequest request) {
-        String userId = request.getUserId();
-        String message = request.getMessage() != null ? request.getMessage().trim().toUpperCase() : "";
-        String location =  "Nagpur";
+	public ChatbotResponse processMessage(ChatbotRequest request) {
+		String userId = request.getUserId();
+		String message = request.getMessage() != null ? request.getMessage().trim().toUpperCase() : "";
+		String location = "Nagpur";
 
-        // Fetch customer by userId (customerNo)
-        Optional<Customer> customerOpt = customerRepository.findByUserCode(userId);
-        String customerName = customerOpt.map(Customer::getName).orElse("User");
+		// Fetch customer by userId (customerNo)
+		Optional<Customer> customerOpt = customerRepository.findByUserCode(userId);
+		String customerName = customerOpt.map(Customer::getName).orElse("User");
 
-        // Initialize response
-        String greeting;
-        List<String> data = new ArrayList<>();
+		// Initialize response
+		String greeting;
+		List<String> data = new ArrayList<>();
 
-        // Process message
-        if ("HI".equals(message)) {
-            greeting = "Hi, " + customerName + "!";
-        } else if ("POLICY".equals(message)) {
-            greeting = "Here are your policy numbers, " + customerName + "!";
-            data = policyRepository.findByPoliciesByUserCode(userId);
-        } else if ("BANK ACCOUNT".equals(message)) {
-            greeting = "Here are your bank account numbers, " + customerName + "!";
-            data = bankAccountRepository.findBankAccountByUserCode(userId);
-        } else if ("WEATHER".equals(message)) {
-            greeting = "Today's weather in " + location + ", " + customerName + "!";
-            // Mock weather data for July 13, 2025
-            data.add("Date: July 13, 2025");
-            data.add("Location: " + location);
-            data.add("Temperature: 25°C / 77°F");
-            data.add("Condition: Partly cloudy");
-            data.add("Humidity: 60%");
-        } else {
-            greeting = "Hello, " + customerName + "! How can I assist you?";
-        }
+		// Process message
+		if ("HI".equals(message)) {
+			greeting = "Hi, " + customerName + "!";
+		} else if ("POLICY".equals(message)) {
+			greeting = "Here are your policy numbers, " + customerName + "!";
+			data = policyRepository.findByPoliciesByUserCode(userId);
+		} else if ("BANK ACCOUNT".equals(message)) {
+			greeting = "Here are your bank account numbers, " + customerName + "!";
+			data = bankAccountRepository.findBankAccountByUserCode(userId);
+		} else if ("WEATHER".equals(message)) {
+			greeting = "Today's weather in " + location + ", " + customerName + "!";
+			// Mock weather data for July 13, 2025
+			data.add("Date: July 13, 2025");
+			data.add("Location: " + location);
+			data.add("Temperature: 25°C / 77°F");
+			data.add("Condition: Partly cloudy");
+			data.add("Humidity: 60%");
+		} else {
+			greeting = "Hello, " + customerName + "! How can I assist you?";
+		}
 
-        // Generate links to application pages
-        Map<String, String> links = new HashMap<>();
-        links.put("Bank Account", "/bank-account");
-        links.put("Workitem", "/workitem");
-        links.put("Payments", "/payments");
-        links.put("Policy", "/policy");
-        links.put("Create Customer", "/create-customer");
+		// Generate links to application pages
+		Map<String, String> links = new HashMap<>();
+		links.put("Bank Account", "/bank-account");
+		links.put("Workitem", "/workitem");
+		links.put("Payments", "/payments");
+		links.put("Policy", "/policy");
+		links.put("Create Customer", "/create-customer");
 
-        // Build response
-        ChatbotResponse response = new ChatbotResponse(greeting, links);
-       // response.setData(data); // Add data field to ChatbotResponse
-        return response;
-    }
+		// Build response
+		ChatbotResponse response = new ChatbotResponse(greeting, links);
+		// response.setData(data); // Add data field to ChatbotResponse
+		return response;
+	}
 }

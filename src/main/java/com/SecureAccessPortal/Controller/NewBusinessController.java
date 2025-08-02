@@ -27,8 +27,8 @@ public class NewBusinessController {
 	private NewBusinessService businessService;
 
 	@PostMapping("/createDocument")
-	public com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> createDocument(@RequestHeader("userCode") String userCode,
-			@RequestBody DocumentRequest request) {
+	public com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> createDocument(
+			@RequestHeader("userCode") String userCode, @RequestBody DocumentRequest request) {
 		com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> documentResponse = new ResponseEntity<DocumentResponse>();
 		if (request.getName().isEmpty() || !isValidType(request.getType()) || request.getContent() == null) {
 			documentResponse.setErrorMessage("Invalid name, type, or content");
@@ -57,8 +57,8 @@ public class NewBusinessController {
 	}
 
 	@GetMapping("/getDocument")
-	public com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> getDocument(@RequestParam("id") Long id,
-			@RequestHeader("userCode") String userCode) {
+	public com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> getDocument(
+			@RequestParam("id") Long id, @RequestHeader("userCode") String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<DocumentResponse>> documentResponse = new ResponseEntity<>();
 
 		try {
@@ -71,10 +71,12 @@ public class NewBusinessController {
 		return documentResponse;
 
 	}
+
 	@DeleteMapping("documents/delete/{id}")
-	public org.springframework.http.ResponseEntity<Void> deleteNote(@PathVariable(value="id",required=true) Long id,
-			@RequestHeader("userCode") String userCode) {
+	public org.springframework.http.ResponseEntity<Void> deleteNote(
+			@PathVariable(value = "id", required = true) Long id, @RequestHeader("userCode") String userCode) {
 		boolean deleted = businessService.deleteNoteById(id);
-		return deleted ? org.springframework.http.ResponseEntity.noContent().build() : org.springframework.http.ResponseEntity.notFound().build();
+		return deleted ? org.springframework.http.ResponseEntity.noContent().build()
+				: org.springframework.http.ResponseEntity.notFound().build();
 	}
 }

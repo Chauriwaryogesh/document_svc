@@ -60,13 +60,15 @@ public class SecurityController {
 	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> serchUser(@RequestBody SecurityDTO searchRequest,
 			@RequestHeader(value = "userCode", required = false) String userCode) {
 
-		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> security = securityService.searchUserFromList(searchRequest, userCode);
+		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> security = securityService
+				.searchUserFromList(searchRequest, userCode);
 
 		return security;
 	}
 
 	@GetMapping("/user-list")
-	public com.SecureAccessPortal.Service.ResponseEntity<Page<SecurityDTO>> fetchSecurityRole(@RequestParam(value = "id", required = false) String id,
+	public com.SecureAccessPortal.Service.ResponseEntity<Page<SecurityDTO>> fetchSecurityRole(
+			@RequestParam(value = "id", required = false) String id,
 			@RequestParam(value = "search", required = false) String search,
 			@RequestParam(value = "email", required = false) String email,
 			@RequestParam(value = "userCode", required = false) String userCodeFilter, // Renamed to avoid conflict
@@ -78,7 +80,7 @@ public class SecurityController {
 			@RequestParam(value = "expireTimeTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expireTimeTo,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
 			@RequestHeader(required = false) String userCode) { // This `userCode` is for the authenticating user
-		com.SecureAccessPortal.Service.ResponseEntity<Page<SecurityDTO>> serviceResponse= new com.SecureAccessPortal.Service.ResponseEntity<>();
+		com.SecureAccessPortal.Service.ResponseEntity<Page<SecurityDTO>> serviceResponse = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		Page<SecurityDTO> response = null;
 		try {
 			response = securityService.fetchListOfUsers(id, search, email, userCodeFilter, isEmailVerified,
@@ -97,8 +99,8 @@ public class SecurityController {
 	}
 
 	@PostMapping(value = "/add-user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> accessSecurity(@RequestBody SecurityDTO securityDTO,
-			@RequestHeader(value = "userCode") String userCode) {
+	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> accessSecurity(
+			@RequestBody SecurityDTO securityDTO, @RequestHeader(value = "userCode") String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> securityResponce = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		securityResponce = securityService.createUser(securityDTO, userCode);
@@ -110,8 +112,9 @@ public class SecurityController {
 	public com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> registerUser(@RequestBody SecurityDTO securityDTO,
 			@RequestHeader(value = "userCode") String userCode) {
 
-		 com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> data = securityService.registerUser(securityDTO, userCode);
-		
+		com.SecureAccessPortal.Service.ResponseEntity<SecurityDTO> data = securityService.registerUser(securityDTO,
+				userCode);
+
 		return data;
 	}
 
@@ -163,8 +166,8 @@ public class SecurityController {
 
 	@DeleteMapping("user-list/delete/{id}")
 	public org.springframework.http.ResponseEntity<Void> deleteNote(@PathVariable Long id,
-			@RequestHeader(value="userCode",required=true)String userCode) {
-		boolean deleted = securityService.deleteNoteById(id,userCode);
+			@RequestHeader(value = "userCode", required = true) String userCode) {
+		boolean deleted = securityService.deleteNoteById(id, userCode);
 		return deleted ? org.springframework.http.ResponseEntity.noContent().build()
 				: org.springframework.http.ResponseEntity.notFound().build();
 	}
@@ -187,11 +190,12 @@ public class SecurityController {
 	}
 
 	@PostMapping("/verify-otp")
-	public com.SecureAccessPortal.Service.ResponseEntity<String> verifyOtp(@RequestParam(value = "Email id") String email,
-			@RequestParam(value = "Otp") String otp, @RequestHeader(value = "user-id", required = true) String userCode) {
+	public com.SecureAccessPortal.Service.ResponseEntity<String> verifyOtp(
+			@RequestParam(value = "Email id") String email, @RequestParam(value = "Otp") String otp,
+			@RequestHeader(value = "user-id", required = true) String userCode) {
 		boolean isValid = otpService.verifyOtp(email, otp, userCode);
 		com.SecureAccessPortal.Service.ResponseEntity<String> data = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		//isValid =true;
+		// isValid =true;
 		if (isValid) {
 			data.setData("Otp Verified Successfully");
 		} else {
@@ -227,11 +231,11 @@ public class SecurityController {
 			@RequestParam(value = "userCodeVerified", required = false) String userCodeVerified,
 			@RequestParam(value = "adminAccess", required = false) String adminAccess,
 			@RequestParam(value = "inActive", required = false) String inActive,
-			@RequestHeader  (required=false) String userCode) {
+			@RequestHeader(required = false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<EmailDTO>> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
-		List<EmailDTO> email = otpService.fetchListOfEmailIds(id, allEmails,emailVerified,userCodeVerified,adminAccess,
-				inActive, userCode);
+		List<EmailDTO> email = otpService.fetchListOfEmailIds(id, allEmails, emailVerified, userCodeVerified,
+				adminAccess, inActive, userCode);
 
 		if (email != null && !email.isEmpty()) {
 			emailResp.setData(email);
@@ -304,7 +308,8 @@ public class SecurityController {
 	@GetMapping("/customer-details")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<CustomerDTO>> getCustomerlDetails(
 			@RequestParam(value = "email", required = false) String email,
-			@RequestParam(value = "customerNo", required = false) String customerNo, @RequestHeader (required=false) String userCode) {
+			@RequestParam(value = "customerNo", required = false) String customerNo,
+			@RequestHeader(required = false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<CustomerDTO>> emailResp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
 		List<CustomerDTO> customerDTO = otpService.getCustomerDetails(email, customerNo, userCode);
@@ -318,8 +323,8 @@ public class SecurityController {
 	}
 
 	@PostMapping("/customer-details/update")
-	public com.SecureAccessPortal.Service.ResponseEntity<String> getCustomerlDetails(@RequestBody CustomerDTO customerDTO,
-			@RequestHeader String userCode) {
+	public com.SecureAccessPortal.Service.ResponseEntity<String> getCustomerlDetails(
+			@RequestBody CustomerDTO customerDTO, @RequestHeader String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 
 		String message = otpService.updateCustomerDetails(customerDTO, userCode);
@@ -357,21 +362,18 @@ public class SecurityController {
 			return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
 		}
 	}
-	
-	
-	
-	@PostMapping( value ="/set-password", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public com.SecureAccessPortal.Service.ResponseEntity<String> registerWebAuthn(@RequestBody SetPasswordRequest request,
-			@RequestHeader (required =false) String userCode) {
+
+	@PostMapping(value = "/set-password", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public com.SecureAccessPortal.Service.ResponseEntity<String> registerWebAuthn(
+			@RequestBody SetPasswordRequest request, @RequestHeader(required = false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> resp = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		try {
-			resp = securityService.setPassword(request,userCode);
+			resp = securityService.setPassword(request, userCode);
 		} catch (Exception e) {
 			e.getMessage();
 		}
 		return resp;
 	}
-	
 
 	public static class SuccessResponse {
 		private String message;
@@ -396,16 +398,15 @@ public class SecurityController {
 			return errorMessage;
 		}
 	}
-	
+
 	@GetMapping("/login-password")
 	public com.SecureAccessPortal.Service.ResponseEntity<String> loginPassword(
 			@RequestParam(value = "email", required = false) String email,
 			@RequestParam(value = "userCode", required = false) String userCode,
 			@RequestParam(value = "password", required = false) String password) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		response = securityService.loginUsingPassword(email, userCode,password);
+		response = securityService.loginUsingPassword(email, userCode, password);
 		return response;
 	}
-	
 
 }

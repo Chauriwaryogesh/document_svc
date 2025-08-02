@@ -8,9 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="PinCode_Branch")
+@Table(name = "PinCode_Branch")
 public class PinCodeOrBranch {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
@@ -45,8 +45,5 @@ public class PinCodeOrBranch {
 	public void setBranchName(String branchName) {
 		this.branchName = branchName;
 	}
-	
-	
-
 
 }

@@ -1,37 +1,36 @@
 package com.SecureAccessPortal.Modal;
 
 public class PaymentRequest {
-	 public String paymentId;
-	    public String policyNumber;
-	    public String customerNumber;
-	    public String paymentMethod;
-	    public PaymentDetails paymentDetails;
-	    public String userCode;
+	public String paymentId;
+	public String policyNumber;
+	public String customerNumber;
+	public String paymentMethod;
+	public PaymentDetails paymentDetails;
+	public String userCode;
 
-	
 	public String getPolicyNumber() {
-			return policyNumber;
-		}
+		return policyNumber;
+	}
 
-		public void setPolicyNumber(String policyNumber) {
-			this.policyNumber = policyNumber;
-		}
+	public void setPolicyNumber(String policyNumber) {
+		this.policyNumber = policyNumber;
+	}
 
-		public String getCustomerNumber() {
-			return customerNumber;
-		}
+	public String getCustomerNumber() {
+		return customerNumber;
+	}
 
-		public void setCustomerNumber(String customerNumber) {
-			this.customerNumber = customerNumber;
-		}
+	public void setCustomerNumber(String customerNumber) {
+		this.customerNumber = customerNumber;
+	}
 
-		public PaymentDetails getPaymentDetails() {
-			return paymentDetails;
-		}
+	public PaymentDetails getPaymentDetails() {
+		return paymentDetails;
+	}
 
-		public void setPaymentDetails(PaymentDetails paymentDetails) {
-			this.paymentDetails = paymentDetails;
-		}
+	public void setPaymentDetails(PaymentDetails paymentDetails) {
+		this.paymentDetails = paymentDetails;
+	}
 
 	public String getPaymentId() {
 		return paymentId;

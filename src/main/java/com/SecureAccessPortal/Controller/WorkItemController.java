@@ -49,43 +49,42 @@ public class WorkItemController {
 			@RequestParam(value = "createdBy", required = false) String createdBy,
 			@RequestParam(value = "status", required = false) String status,
 			@RequestParam(value = "startDate", required = false) String startDate,
-			@RequestParam(value = "endDate", required = false) String endDate, 
+			@RequestParam(value = "endDate", required = false) String endDate,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
-			@RequestHeader(value = "userCode", required = false) String userCode) { 
+			@RequestHeader(value = "userCode", required = false) String userCode) {
 
 		ResponseEntity<Page<WorkItemDTO>> response = new ResponseEntity<>();
-		Page<WorkItemDTO> workItem = workItemService.fetchWorkItems(workItemRefNum, queue,customerNo,policyNo, filterUserCode, createdBy,
-				status, startDate, endDate, page, size, userCode);
+		Page<WorkItemDTO> workItem = workItemService.fetchWorkItems(workItemRefNum, queue, customerNo, policyNo,
+				filterUserCode, createdBy, status, startDate, endDate, page, size, userCode);
 		if (workItem != null) {
 			response.setData(workItem);
-			response.setStatus(CommonConstant.SUCCESS);	
-			} else {
-			response.setErrorMessage("error in fetch WorkItem");
-			response.setStatus(CommonConstant.FAILURE);	
-		}
-		return response;
-	}
-
-	//@Cacheable("WorkItem")
-	@RequestMapping(value = "workItem-count", method = RequestMethod.GET)
-	public ResponseEntity<WorkItemCount> workItemCount(
-			@RequestParam(value= "customerNo", required = false) String customerNo,
-			@RequestHeader(value = "userCode", required = false) String userCode) {
-		ResponseEntity<WorkItemCount> response = new ResponseEntity<>();
-		WorkItemCount workItem = workItemService.workItemCount(customerNo,userCode);
-		if (workItem != null) {
-			response.setData(workItem);
-			response.setStatus(CommonConstant.SUCCESS);	
+			response.setStatus(CommonConstant.SUCCESS);
 		} else {
 			response.setErrorMessage("error in fetch WorkItem");
 			response.setStatus(CommonConstant.FAILURE);
 		}
 		return response;
 	}
-	
-	@RequestMapping(value = "workType", method = RequestMethod.GET)
-	public ResponseEntity<List<String>> workType(
+
+	// @Cacheable("WorkItem")
+	@RequestMapping(value = "workItem-count", method = RequestMethod.GET)
+	public ResponseEntity<WorkItemCount> workItemCount(
+			@RequestParam(value = "customerNo", required = false) String customerNo,
 			@RequestHeader(value = "userCode", required = false) String userCode) {
+		ResponseEntity<WorkItemCount> response = new ResponseEntity<>();
+		WorkItemCount workItem = workItemService.workItemCount(customerNo, userCode);
+		if (workItem != null) {
+			response.setData(workItem);
+			response.setStatus(CommonConstant.SUCCESS);
+		} else {
+			response.setErrorMessage("error in fetch WorkItem");
+			response.setStatus(CommonConstant.FAILURE);
+		}
+		return response;
+	}
+
+	@RequestMapping(value = "workType", method = RequestMethod.GET)
+	public ResponseEntity<List<String>> workType(@RequestHeader(value = "userCode", required = false) String userCode) {
 		ResponseEntity<List<String>> response = new ResponseEntity<>();
 		List<String> workItem = workItemService.fetchWorkType(userCode);
 		if (workItem != null) {
@@ -95,7 +94,7 @@ public class WorkItemController {
 		}
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/related-workitems", method = RequestMethod.GET)
 	public ResponseEntity<Page<WorkItemDTO>> relatedWorktems(
 			@RequestParam(value = "workItemRefNum", required = false) String workitemRefNo,
@@ -103,8 +102,9 @@ public class WorkItemController {
 			@RequestParam(value = "policyRelated", required = false) String policyRelated,
 			@RequestParam(value = "customerRelated", required = false) String customerRelated,
 			@RequestHeader(value = "userCode", required = false) String userCode) {
-		ResponseEntity<Page<WorkItemDTO>>response = new ResponseEntity<>();
-		Page<WorkItemDTO> workItem = workItemService.fetchRelatedWorkitems(workitemRefNo,page,size,policyRelated,customerRelated,userCode);
+		ResponseEntity<Page<WorkItemDTO>> response = new ResponseEntity<>();
+		Page<WorkItemDTO> workItem = workItemService.fetchRelatedWorkitems(workitemRefNo, page, size, policyRelated,
+				customerRelated, userCode);
 		if (workItem != null) {
 			response.setData(workItem);
 		} else {
@@ -112,6 +112,7 @@ public class WorkItemController {
 		}
 		return response;
 	}
+
 	@RequestMapping(value = "update-WorkItem", method = RequestMethod.POST, consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<WorkItemDTO> updateWorkItem(@RequestBody WorkItemDTO workItemRequest,
 			@RequestHeader(value = "userCode", required = true) String userCode) {

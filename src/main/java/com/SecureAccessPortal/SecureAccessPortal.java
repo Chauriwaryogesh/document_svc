@@ -13,17 +13,16 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableCaching
 @ComponentScan("com.SecureAccessPortal")
-@EntityScan(value="com.SecureAccessPortal.Entity")
-@EnableJpaRepositories(basePackages ="com.SecureAccessPortal.Repo")
+@EntityScan(value = "com.SecureAccessPortal.Entity")
+@EnableJpaRepositories(basePackages = "com.SecureAccessPortal.Repo")
 @EnableAutoConfiguration
-public class SecureAccessPortal  extends SpringBootServletInitializer{
-	
+public class SecureAccessPortal extends SpringBootServletInitializer {
+
 	public SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return  application.sources(SecureAccessPortal.class);
+		return application.sources(SecureAccessPortal.class);
 	}
-	
-	
-    public static void main(String[] args) {
-        SpringApplication.run(SecureAccessPortal.class, args);
-    }
+
+	public static void main(String[] args) {
+		SpringApplication.run(SecureAccessPortal.class, args);
+	}
 }

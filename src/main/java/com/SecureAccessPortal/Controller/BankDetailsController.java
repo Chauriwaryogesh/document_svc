@@ -228,7 +228,7 @@ public class BankDetailsController {
 		if (document != null) {
 			docslist.setData(document);
 			docslist.setStatus(CommonConstant.SUCCESS);
-			
+
 		} else {
 			docslist.setErrorMessage("document List isEmpty");
 			docslist.setStatus(CommonConstant.FAILURE);
@@ -251,7 +251,7 @@ public class BankDetailsController {
 		}
 		return response;
 	}
-	
+
 	@PostMapping(value = "/verify/BankAccount", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public com.SecureAccessPortal.Service.ResponseEntity<String> verifyBankAccount(
 			@RequestBody BankDetailsDTO bankDetailsDTO,

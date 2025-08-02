@@ -48,8 +48,7 @@ public class Policy {
 
 	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Complaint> complaint = new ArrayList<>();
-	
-	
+
 	public List<Complaint> getComplaint() {
 		return complaint;
 	}
@@ -66,13 +65,13 @@ public class Policy {
 
 	@Column(name = "created_by")
 	private String createdBy;
-	
+
 	@Column(name = "created_Time")
 	private LocalDateTime createdTime;
 
 	@Column(name = "updated_by")
 	private String updatedBy;
-	
+
 	@Column(name = "updated_Time")
 	private LocalDateTime updatedTime;
 
@@ -139,11 +138,10 @@ public class Policy {
 	private String beneficiaryIdentityNumber;
 	@Column(name = "beneficiary_contactNumber")
 	private String beneficiaryContactNumber;
-	
-	
+
 	@Column(name = "reson")
 	private String reson;
-	
+
 	public String getReson() {
 		return reson;
 	}
@@ -296,7 +294,6 @@ public class Policy {
 	public void setWorkitems(List<Workitem> workitems) {
 		this.workitems = workitems;
 	}
-
 
 	public String getProductCode() {
 		return productCode;

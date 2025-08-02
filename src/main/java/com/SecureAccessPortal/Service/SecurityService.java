@@ -1,4 +1,5 @@
 package com.SecureAccessPortal.Service;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -94,12 +95,11 @@ public class SecurityService implements ISecrityService {
 
 	@Autowired
 	private PasswordHistoryRepo passwordHistoryRepository;
-	
+
 	@Autowired
 	private LoginHistoryRepo loginHistoryRepository;
-	
-    Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public List<EmployeeDTO> fetchEmpList(String id, String userCode) {
@@ -295,83 +295,79 @@ public class SecurityService implements ISecrityService {
 		return Files.readAllBytes(Paths.get(filePath));
 	}
 
-	 @Override
-		public Page<SecurityDTO> fetchListOfUsers(String id, String search, String email, String userCodeFilter,
-				String isEmailVerified, String isUserCodeVerified, LocalDate createdTimeFrom, LocalDate createdTimeTo,
-				LocalDate expireTimeFrom, LocalDate expireTimeTo, int page, int size, String authUserCode) {
-			Pageable pageable = PageRequest.of(page, size);
-			try {
-				Optional<Security> securityOptional = securityRepository.findByUserCodeAndDeletedFlag(authUserCode,"N");
-				Customer customer = customerRepo.findByUserCodeAndDeletedFlagN(authUserCode, "N");
-				if (securityOptional.isPresent() && customer != null && "Y".equalsIgnoreCase(customer.getAdminAccess())
-						&& "Y".equalsIgnoreCase(securityOptional.get().getIsEmailVerified())
-						&& "Y".equalsIgnoreCase(securityOptional.get().getIsUserCodeVerified())) {
-					Specification<Security> spec = (root, query, criteriaBuilder) -> {
-						List<Predicate> predicates = new ArrayList<>();
-						predicates.add(criteriaBuilder.equal(root.get("deletedFlag"), "N"));
-						if (id != null && !id.isEmpty()) {
-							predicates.add(criteriaBuilder.equal(root.get("id"), id));
-						} else {							
-							if (search != null && !search.isEmpty()) {
-								String lowerCaseSearch = "%" + search.toLowerCase() + "%";
-								Predicate searchPredicate = criteriaBuilder.or(
-										criteriaBuilder.like(criteriaBuilder.lower(root.get("id").as(String.class)),
-												lowerCaseSearch),
-										criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), lowerCaseSearch),
-										criteriaBuilder.like(criteriaBuilder.lower(root.get("userCode")),
-												lowerCaseSearch));
-								predicates.add(searchPredicate);
-							}
-							if (email != null && !email.isEmpty()) {
-								predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("email")),
-										email.toLowerCase()));
-							}
-							if (userCodeFilter != null && !userCodeFilter.isEmpty()) {
-								predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("userCode")),
-										userCodeFilter.toLowerCase()));
-							}
-							if (isEmailVerified != null && !isEmailVerified.isEmpty()) {
-								predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("isEmailVerified")),
-										isEmailVerified.toLowerCase()));
-							}
-							if (isUserCodeVerified != null && !isUserCodeVerified.isEmpty()) {
-								predicates.add(
-										criteriaBuilder.equal(criteriaBuilder.lower(root.get("isUserCodeVerified")),
-												isUserCodeVerified.toLowerCase()));
-							}
-							if (createdTimeFrom != null) {
-								LocalDateTime startOfDay = createdTimeFrom.atStartOfDay();
-								predicates
-										.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdTime"), startOfDay));
-							}
-							if (createdTimeTo != null) {
-								LocalDateTime endOfDay = createdTimeTo.atTime(LocalTime.MAX); // End of the day
-								predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdTime"), endOfDay));
-							}
-							if (expireTimeFrom != null) {
-								LocalDateTime startOfDay = expireTimeFrom.atStartOfDay();
-								predicates.add(
-										criteriaBuilder.greaterThanOrEqualTo(root.get("remainingTime"), startOfDay));
-							}
-							if (expireTimeTo != null) {
-								LocalDateTime endOfDay = expireTimeTo.atTime(LocalTime.MAX); // End of the day
-								predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("remainingTime"), endOfDay));
-							}
+	@Override
+	public Page<SecurityDTO> fetchListOfUsers(String id, String search, String email, String userCodeFilter,
+			String isEmailVerified, String isUserCodeVerified, LocalDate createdTimeFrom, LocalDate createdTimeTo,
+			LocalDate expireTimeFrom, LocalDate expireTimeTo, int page, int size, String authUserCode) {
+		Pageable pageable = PageRequest.of(page, size);
+		try {
+			Optional<Security> securityOptional = securityRepository.findByUserCodeAndDeletedFlag(authUserCode, "N");
+			Customer customer = customerRepo.findByUserCodeAndDeletedFlagN(authUserCode, "N");
+			if (securityOptional.isPresent() && customer != null && "Y".equalsIgnoreCase(customer.getAdminAccess())
+					&& "Y".equalsIgnoreCase(securityOptional.get().getIsEmailVerified())
+					&& "Y".equalsIgnoreCase(securityOptional.get().getIsUserCodeVerified())) {
+				Specification<Security> spec = (root, query, criteriaBuilder) -> {
+					List<Predicate> predicates = new ArrayList<>();
+					predicates.add(criteriaBuilder.equal(root.get("deletedFlag"), "N"));
+					if (id != null && !id.isEmpty()) {
+						predicates.add(criteriaBuilder.equal(root.get("id"), id));
+					} else {
+						if (search != null && !search.isEmpty()) {
+							String lowerCaseSearch = "%" + search.toLowerCase() + "%";
+							Predicate searchPredicate = criteriaBuilder.or(
+									criteriaBuilder.like(criteriaBuilder.lower(root.get("id").as(String.class)),
+											lowerCaseSearch),
+									criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), lowerCaseSearch),
+									criteriaBuilder.like(criteriaBuilder.lower(root.get("userCode")), lowerCaseSearch));
+							predicates.add(searchPredicate);
 						}
-						return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-					};
-					Page<Security> securityList = securityRepository.findAll(spec, pageable);
-					return securityMapper.mapSecurity(securityList, authUserCode);
+						if (email != null && !email.isEmpty()) {
+							predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("email")),
+									email.toLowerCase()));
+						}
+						if (userCodeFilter != null && !userCodeFilter.isEmpty()) {
+							predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("userCode")),
+									userCodeFilter.toLowerCase()));
+						}
+						if (isEmailVerified != null && !isEmailVerified.isEmpty()) {
+							predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("isEmailVerified")),
+									isEmailVerified.toLowerCase()));
+						}
+						if (isUserCodeVerified != null && !isUserCodeVerified.isEmpty()) {
+							predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("isUserCodeVerified")),
+									isUserCodeVerified.toLowerCase()));
+						}
+						if (createdTimeFrom != null) {
+							LocalDateTime startOfDay = createdTimeFrom.atStartOfDay();
+							predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdTime"), startOfDay));
+						}
+						if (createdTimeTo != null) {
+							LocalDateTime endOfDay = createdTimeTo.atTime(LocalTime.MAX); // End of the day
+							predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdTime"), endOfDay));
+						}
+						if (expireTimeFrom != null) {
+							LocalDateTime startOfDay = expireTimeFrom.atStartOfDay();
+							predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("remainingTime"), startOfDay));
+						}
+						if (expireTimeTo != null) {
+							LocalDateTime endOfDay = expireTimeTo.atTime(LocalTime.MAX); // End of the day
+							predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("remainingTime"), endOfDay));
+						}
+					}
+					return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+				};
+				Page<Security> securityList = securityRepository.findAll(spec, pageable);
+				return securityMapper.mapSecurity(securityList, authUserCode);
 
-				} else {
-					logger.info("No admin access for User '{}' or verification failed.", authUserCode);
-					return new PageImpl<>(Collections.emptyList(), pageable, 0);
-				}
-			} catch (Exception e) {
-				logger.error("Error fetching users for user '{}': {}", authUserCode, e.getMessage(), e);
+			} else {
+				logger.info("No admin access for User '{}' or verification failed.", authUserCode);
 				return new PageImpl<>(Collections.emptyList(), pageable, 0);
 			}
+		} catch (Exception e) {
+			logger.error("Error fetching users for user '{}': {}", authUserCode, e.getMessage(), e);
+			return new PageImpl<>(Collections.emptyList(), pageable, 0);
 		}
+	}
 
 	@Override
 	@Transactional
@@ -394,7 +390,7 @@ public class SecurityService implements ISecrityService {
 		// Check for existing Security and Customer records
 		Optional<Security> existingSecurityByEmail = securityRepository
 				.findByEmailAndDeletedFlag(securityDTO.getEmail(), "N");
-		Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail(),"N");
+		Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail(), "N");
 		Optional<Security> existingSecurityByUserCode = securityRepository
 				.findByUserCodeAndDeletedFlag(securityDTO.getUserCode(), "N");
 		Optional<Customer> existingCustomerByUserCode = customerRepo.findByUserCode(securityDTO.getUserCode());
@@ -529,7 +525,7 @@ public class SecurityService implements ISecrityService {
 		// Check for existing Security and Customer records
 		Optional<Security> existingSecurityByEmail = securityRepository
 				.findByEmailAndDeletedFlag(securityDTO.getEmail(), "N");
-		Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail(),"N");
+		Optional<Customer> existingCustomerByEmail = customerRepo.findByEmail(securityDTO.getEmail(), "N");
 		Optional<Security> existingSecurityByUserCode = securityRepository
 				.findByUserCodeAndDeletedFlag(securityDTO.getUserCode(), "N");
 		Optional<Customer> existingCustomerByUserCode = customerRepo.findByUserCode(securityDTO.getUserCode());
@@ -594,13 +590,13 @@ public class SecurityService implements ISecrityService {
 	}
 
 	@Override
-	public boolean deleteNoteById(Long id,String userCode) {
+	public boolean deleteNoteById(Long id, String userCode) {
 		if (id != null) {
 			Optional<Security> byId = securityRepository.findById(id);
-			 Security security = byId.get();
-			 security.setDeletedFlag("Y");
-			 security.setUpdateBy(userCode);
-			 security.setUpdateTime(LocalDate.now());
+			Security security = byId.get();
+			security.setDeletedFlag("Y");
+			security.setUpdateBy(userCode);
+			security.setUpdateTime(LocalDate.now());
 			securityRepository.save(security);
 			return true;
 		}
@@ -795,43 +791,43 @@ public class SecurityService implements ISecrityService {
 				response.setStatus("Error");
 				response.setErrorMessage(lookupField.equals("email") ? "Email not found." : "UserCode not found.");
 				logLoginAttempt(email, userCode, false,
-						lookupField.equals("email") ? "Email not found" : "UserCode not found","Password");
+						lookupField.equals("email") ? "Email not found" : "UserCode not found", "Password");
 				logger.warn("Login attempt failed for {}: {}. Not found.", lookupField, lookupValue);
 				return response;
 			}
 			if (!"Y".equals(security.getIsEmailVerified()) || !"Y".equals(security.getIsUserCodeVerified())) {
 				response.setStatus("Error");
 				response.setErrorMessage("Account not verified. Please contact admin.");
-				logLoginAttempt(email, userCode, false, "Account not verified","Password");
+				logLoginAttempt(email, userCode, false, "Account not verified", "Password");
 				logger.warn("Login attempt failed for {}: {}. Account not verified.", lookupField, lookupValue);
 				return response;
 			}
 
-			PasswordHistory passwordHistory = passwordHistoryRepository.findByEmailAndIsCurrentTrueAndDeletedFlag(security.getEmail(), "N").orElse(null);
-	        if (passwordHistory == null) {
-	            response.setStatus("Error");
-	            response.setErrorMessage("No current password found for user.");
-	            logLoginAttempt(email, userCode, false, "No current password found","Password");
-	            logger.warn("Login attempt failed for {}: {}. No current password found.", lookupField, lookupValue);
-	            return response;
-	        }
+			PasswordHistory passwordHistory = passwordHistoryRepository
+					.findByEmailAndIsCurrentTrueAndDeletedFlag(security.getEmail(), "N").orElse(null);
+			if (passwordHistory == null) {
+				response.setStatus("Error");
+				response.setErrorMessage("No current password found for user.");
+				logLoginAttempt(email, userCode, false, "No current password found", "Password");
+				logger.warn("Login attempt failed for {}: {}. No current password found.", lookupField, lookupValue);
+				return response;
+			}
 
-	        // Verify password using BCrypt.checkpw
-	        if (!BCrypt.checkpw(password, passwordHistory.getHashedPassword())) {
-	            response.setStatus("passwordnotmatch");
-	            response.setErrorMessage("Invalid password.");
-	            logLoginAttempt(email, userCode, false, "Password does not match","Password");
-	            logger.warn("Login attempt failed for {}: {}. Invalid password.", lookupField, lookupValue);
-	            return response;
-	        }
-			else {
-				response.setStatus("Password Match Successfully for "+ passwordHistory.getUserCode());
-				logLoginAttempt(email, userCode, true, "Password Match","Password");
+			// Verify password using BCrypt.checkpw
+			if (!BCrypt.checkpw(password, passwordHistory.getHashedPassword())) {
+				response.setStatus("passwordnotmatch");
+				response.setErrorMessage("Invalid password.");
+				logLoginAttempt(email, userCode, false, "Password does not match", "Password");
+				logger.warn("Login attempt failed for {}: {}. Invalid password.", lookupField, lookupValue);
+				return response;
+			} else {
+				response.setStatus("Password Match Successfully for " + passwordHistory.getUserCode());
+				logLoginAttempt(email, userCode, true, "Password Match", "Password");
 			}
 		} catch (Exception e) {
 			response.setStatus("Error");
 			response.setErrorMessage("Login failed: " + e.getMessage());
-			logLoginAttempt(email, userCode, false, "Exception: " + e.getMessage(),"Password");
+			logLoginAttempt(email, userCode, false, "Exception: " + e.getMessage(), "Password");
 			logger.error("Exception during password login for email: {}, userCode: {}. Error: {}", email, userCode,
 					e.getMessage(), e);
 		}
@@ -840,16 +836,17 @@ public class SecurityService implements ISecrityService {
 	}
 
 	@Override
-	public void logLoginAttempt(String email, String userCode, boolean success, String reason,String loginMethod) {
+	public void logLoginAttempt(String email, String userCode, boolean success, String reason, String loginMethod) {
 		try {
 			LoginHistory loginHistory = new LoginHistory();
-			//loginHistory.setId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
+			// loginHistory.setId(UUID.randomUUID().getMostSignificantBits() &
+			// Long.MAX_VALUE);
 			Optional<Security> existingSecurityByEmail = securityRepository.findByEmailAndDeletedFlag(email, "N");
 			Security security = existingSecurityByEmail.get();
 			loginHistory.setSecurity(security);
 			loginHistory.setUserCode(security.getUserCode());
 			loginHistory.setLoginTime(Timestamp.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-			
+
 			Timestamp loginTimestamp = Timestamp.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
 			if (loginTimestamp != null) {
 				LocalDateTime loginTime = loginTimestamp.toLocalDateTime();

@@ -33,5 +33,11 @@ public interface PaymentsRepo extends JpaRepository<Payments, String> {
 
 	@Query("SELECT p FROM Payments  p WHERE p.status= :status ORDER BY p.createdTime DESC")
 	List<Payments> findByStatus(String status);
+	
+	@Query("SELECT p FROM Payments  p WHERE p.paymentId= :paymentId")
+	Payments findByPaymentId(String pymentId);
+
+	@Query("SELECT p FROM Payments  p WHERE p.customer.customerNo= :number")
+	List<Payments> findByCustomerNo(String number);
 
 }

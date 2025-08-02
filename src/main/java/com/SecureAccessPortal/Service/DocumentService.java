@@ -30,13 +30,13 @@ public class DocumentService implements IDocumentService {
 
 	@Autowired
 	private DocumentMapper documentMapper;
-	
+
 	@Autowired
 	private NotesRepo noteRepo;
-	
-	 @Autowired
-	 private IPhoto photoRepository;
-	 
+
+	@Autowired
+	private IPhoto photoRepository;
+
 	@Override
 	public CapturePhoto getDocumentdtls(String id, String docName, String userCode) {
 		// List<DocumentDTO> documentDto = new ArrayList<>();
@@ -61,7 +61,7 @@ public class DocumentService implements IDocumentService {
 		return str;
 	}
 
-	public CapturePhoto uploadDocument(MultipartFile file,String docName, String userCode) throws IOException {
+	public CapturePhoto uploadDocument(MultipartFile file, String docName, String userCode) throws IOException {
 		CapturePhoto document = new CapturePhoto();
 		document.setDocId(String.valueOf(UUID.randomUUID()));
 		document.setDocName(docName);
@@ -76,27 +76,27 @@ public class DocumentService implements IDocumentService {
 	@Override
 	public List<PhotoDTO> getAllDocuments(String userCode) {
 		List<CapturePhoto> documents = docRepo.findAll();
-		return  documents.stream().map(file ->{
-			PhotoDTO document= new PhotoDTO();
+		return documents.stream().map(file -> {
+			PhotoDTO document = new PhotoDTO();
 			document.setId(String.valueOf(file.getId()));
 			document.setDocName(file.getDocName());
 			document.setDocType(file.getDocType());
 			document.setCreatedBy(file.getCreatedBy());
 			document.setUpdatedBy(file.getUpdatedBy());
 			document.setData(file.getData());
-			return document;	
+			return document;
 		}).collect(Collectors.toList());
 	}
 
 	@Override
 	public String save(NotesDTO note) {
-		Note notes= new Note();
-		String message="";
+		Note notes = new Note();
+		String message = "";
 		notes.setText(note.getText());
 		notes.setCreatedAt(LocalDateTime.now());
 		notes.setUpdatedAt(LocalDateTime.now());
 		noteRepo.save(notes);
-		message="Notes saved Successfully";
+		message = "Notes saved Successfully";
 		return message;
 	}
 
@@ -114,50 +114,51 @@ public class DocumentService implements IDocumentService {
 	}
 
 	@Override
-	 public boolean deleteNoteById(Long id) {
-        if (noteRepo.existsById(id)) {
-            noteRepo.deleteById(id);
-            return true;
-        }
-        return false;
-    }
-	@Override   
-	public void savePhoto(String name, MultipartFile file) throws IOException {
-	        Photo photo = new Photo();
-	        photo.setName(name);
-	        photo.setContentType(file.getContentType());
-	        photo.setData(file.getBytes());
+	public boolean deleteNoteById(Long id) {
+		if (noteRepo.existsById(id)) {
+			noteRepo.deleteById(id);
+			return true;
+		}
+		return false;
+	}
 
-	        photoRepository.save(photo);
-	    }
+	@Override
+	public void savePhoto(String name, MultipartFile file) throws IOException {
+		Photo photo = new Photo();
+		photo.setName(name);
+		photo.setContentType(file.getContentType());
+		photo.setData(file.getBytes());
+
+		photoRepository.save(photo);
+	}
 
 	@Override
 	public List<PhotoDTO> getCaptureAllDocuments(String userCode) {
 		List<Photo> documents = photoRepository.findAll();
-		return  documents.stream().map(file ->{
-			PhotoDTO document= new PhotoDTO();
+		return documents.stream().map(file -> {
+			PhotoDTO document = new PhotoDTO();
 			document.setId(String.valueOf(file.getId()));
 			document.setDocName(file.getName());
 			document.setDocType(file.getContentType());
 			document.setCreatedBy(userCode);
 			document.setUpdatedBy(userCode);
 			document.setData(file.getData());
-			return document;	
+			return document;
 		}).collect(Collectors.toList());
 	}
 
 	@Override
 	public PhotoDTO getCaptureDocumentdtls(String id, String docName, String userCode) {
 		Optional<Photo> documents = photoRepository.findById(Long.valueOf(id));
-		PhotoDTO document= new PhotoDTO();
+		PhotoDTO document = new PhotoDTO();
 		if (documents.isPresent()) {
 			Photo file = documents.get();
-				document.setId(String.valueOf(file.getId()));
-				document.setDocName(file.getName());
-				document.setDocType(file.getContentType());
-				document.setCreatedBy("SYSTEM");
-				document.setUpdatedBy("SYSTEM");
-				document.setData(file.getData());	
+			document.setId(String.valueOf(file.getId()));
+			document.setDocName(file.getName());
+			document.setDocType(file.getContentType());
+			document.setCreatedBy("SYSTEM");
+			document.setUpdatedBy("SYSTEM");
+			document.setData(file.getData());
 		}
 		return document;
 	}

@@ -6,9 +6,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.management.RuntimeErrorException;
 
@@ -50,10 +52,10 @@ public class WorkItemService implements IWorkItemService {
 
 	@Autowired
 	private WorkItemMapper workItemMapper;
-	
+
 	@Autowired
 	private IPolicyRepo policyRepository;
-	
+
 	@Autowired
 	private CustomerRepo customerRepository;
 
@@ -112,8 +114,9 @@ public class WorkItemService implements IWorkItemService {
 		return "WI" + year + randomNumber;
 	}
 
-	public Page<WorkItemDTO> fetchWorkItems(String wiRefNum, String queue,String customerNo,String policyNo, String filterUserCode, String createdBy,
-			String status, String startDate, String endDate, int page, int size, String userCodeHeader) {
+	public Page<WorkItemDTO> fetchWorkItems(String wiRefNum, String queue, String customerNo, String policyNo,
+			String filterUserCode, String createdBy, String status, String startDate, String endDate, int page,
+			int size, String userCodeHeader) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("createdTime").descending());
 
 		Specification<Workitem> spec = (root, query, cb) -> {
@@ -122,17 +125,13 @@ public class WorkItemService implements IWorkItemService {
 				predicates.add(cb.equal(root.get("workItemRefNumber"), wiRefNum));
 			}
 			if (policyNo != null && !policyNo.isEmpty()) {
-                predicates.add(cb.like(
-                		cb.lower(root.get("policy").get("policyNumber")),
-                    "%" + policyNo.toLowerCase() + "%"
-                ));
-            }
-            if (customerNo != null && !customerNo.isEmpty()) {
-                predicates.add(cb.like(
-                		cb.lower(root.get("customer").get("customerNo")), 
-                    "%" + customerNo.toLowerCase() + "%"
-                ));
-            }
+				predicates.add(
+						cb.like(cb.lower(root.get("policy").get("policyNumber")), "%" + policyNo.toLowerCase() + "%"));
+			}
+			if (customerNo != null && !customerNo.isEmpty()) {
+				predicates.add(cb.like(cb.lower(root.get("customer").get("customerNo")),
+						"%" + customerNo.toLowerCase() + "%"));
+			}
 			if (queue != null && !queue.isEmpty()) {
 				predicates.add(cb.equal(root.get("queue"), queue));
 			}
@@ -180,10 +179,10 @@ public class WorkItemService implements IWorkItemService {
 				workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
 				workItem.setStatus(workItems.getStatus());
 				workItem.setQueue(workItems.getQueue());
-				if(workItems.getPolicy() !=null) {
-				    workItem.setPolicyNumber(Optional.of(workItems.getPolicy().getPolicyNumber()).orElse(null));			
-				} 
-				if(workItems.getCustomer() != null) {
+				if (workItems.getPolicy() != null) {
+					workItem.setPolicyNumber(Optional.of(workItems.getPolicy().getPolicyNumber()).orElse(null));
+				}
+				if (workItems.getCustomer() != null) {
 					workItem.setCustomerNo(Optional.ofNullable(workItems.getCustomer().getCustomerNo()).orElse(null));
 				}
 				return workItem;
@@ -195,14 +194,14 @@ public class WorkItemService implements IWorkItemService {
 	}
 
 	@Override
-	public WorkItemCount workItemCount(String customerNo,String userCode) {
+	public WorkItemCount workItemCount(String customerNo, String userCode) {
 		WorkItemCount workItemCount = new WorkItemCount();
-		List<Workitem> workItemsList= new ArrayList<>();
+		List<Workitem> workItemsList = new ArrayList<>();
 		Queue queue = new Queue();
-		if(customerNo != null && !customerNo.isEmpty()) {
+		if (customerNo != null && !customerNo.isEmpty()) {
 			workItemsList = workItemRepo.findByCustomerNo(customerNo);
-		}else {
-			 workItemsList = workItemRepo.findAll();
+		} else {
+			workItemsList = workItemRepo.findAll();
 		}
 		long pendExternal = workItemsList.stream().filter(sttus -> sttus.getStatus().equalsIgnoreCase("PEND_EXTERNAL"))
 				.count();
@@ -248,7 +247,7 @@ public class WorkItemService implements IWorkItemService {
 	@Override
 	public Workitem mapRequetforWorkItem(String userCode, Policy policy, Customer customer, String workType,
 			String workItemName, String comment, BankAccount bankAccount, VerificationRecord verificationRecord,
-			Payments payments) {
+			Payments payments, String status) {
 		com.SecureAccessPortal.Entity.Workitem workItem = new com.SecureAccessPortal.Entity.Workitem();
 		workItem.setWorkItemId(String.valueOf(UUID.randomUUID()));
 		workItem.setComment(comment);
@@ -261,7 +260,7 @@ public class WorkItemService implements IWorkItemService {
 		String refNo = generateRandomWorkItemRefNumber();
 		workItem.setWorkItemRefNumber(refNo);
 		workItem.setQueue(CommonConstant.TEAM_MEMBER);
-		workItem.setStatus(CommonConstant.OPEN);
+		workItem.setStatus(status);
 		if (customer != null) {
 			workItem.setCustomer(customer);
 		}
@@ -324,13 +323,13 @@ public class WorkItemService implements IWorkItemService {
 	public Page<WorkItemDTO> fetchRelatedWorkitems(String workitemRefNo, int page, int size, String policyRelated,
 			String customerRelated, String userCode) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("createdTime").descending());
-		Page<Workitem> workItemsPage= null;
-		if(CommonConstant.Y.equalsIgnoreCase(customerRelated)) {
-			 workItemsPage = workItemRepo.findWorkItemsByRefNumberCustomerNo(workitemRefNo, pageable);
-		}else {
-			 workItemsPage = workItemRepo.findWorkItemsByRefNumberPolicy(workitemRefNo, pageable);
+		Page<Workitem> workItemsPage = null;
+		if (CommonConstant.Y.equalsIgnoreCase(customerRelated)) {
+			workItemsPage = workItemRepo.findWorkItemsByRefNumberCustomerNo(workitemRefNo, pageable);
+		} else {
+			workItemsPage = workItemRepo.findWorkItemsByRefNumberPolicy(workitemRefNo, pageable);
 		}
-		
+
 		return workItemsPage.map(workItems -> {
 			WorkItemDTO workItem = new WorkItemDTO();
 			workItem.setWorkItemId(workItems.getWorkItemId());
@@ -412,5 +411,27 @@ public class WorkItemService implements IWorkItemService {
 //
 //        return workItemCount;
 //    }
+	
+	@Override
+	public List<WorkItemDTO> getAllWorkitems(List<Workitem> workitems) {
+	//	List<WorkItemDTO> response= new ArrayList<>();
+		return workitems.stream().filter(Objects ::nonNull).map(workItems -> {
+			WorkItemDTO workItem = new WorkItemDTO();
+			workItem.setWorkItemId(workItems.getWorkItemId());
+			workItem.setComment(workItems.getComment());
+			workItem.setCreatedBy(workItems.getCreatedBy());
+			workItem.setCreatedTime(String.valueOf(workItems.getCreatedTime()));
+			workItem.setUserCode(workItems.getUserCode());
+			workItem.setWorkItemName(workItems.getWorkItemName());
+			workItem.setWorkType(workItems.getWorkType());
+			workItem.setWorkItemReferenceNumber(workItems.getWorkItemRefNumber());
+			workItem.setStatus(workItems.getStatus());
+			workItem.setQueue(workItems.getQueue());
+			return workItem;
+		}).collect(Collectors.toList());
+		
+		
+	//	return response;
+	}
 
 }

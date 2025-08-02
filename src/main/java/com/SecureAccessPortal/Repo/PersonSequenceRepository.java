@@ -9,4 +9,3 @@ import com.SecureAccessPortal.Entity.PersonSequence;
 public interface PersonSequenceRepository extends JpaRepository<PersonSequence, Long> {
 
 }
-

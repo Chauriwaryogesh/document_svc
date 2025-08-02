@@ -24,7 +24,8 @@ public class NewBusinessService {
 	@Autowired
 	private DocumentRepo documentRepo;
 
-	public com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> createDocument(DocumentRequest request, String userCode) {
+	public com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> createDocument(DocumentRequest request,
+			String userCode) {
 
 		com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse> response = new com.SecureAccessPortal.Service.ResponseEntity<DocumentResponse>();
 		BusinessDocument doc = new BusinessDocument();
@@ -128,15 +129,14 @@ public class NewBusinessService {
 			documentResponse.setName(doc.getName());
 			documentResponse.setType(doc.getType());
 			documentResponse.setSize(doc.getSize());
-			if(doc.getCreatedDate() != null) {
+			if (doc.getCreatedDate() != null) {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
-		        String formattedDate = doc.getCreatedDate().format(formatter).toUpperCase();
-			
-			
-			documentResponse.setCreatedDate(formattedDate );
+				String formattedDate = doc.getCreatedDate().format(formatter).toUpperCase();
+
+				documentResponse.setCreatedDate(formattedDate);
 			}
 			documentResponse.setMessage("Document retrieved");
-			
+
 			return documentResponse;
 		}).collect(Collectors.toList());
 
@@ -171,15 +171,15 @@ public class NewBusinessService {
 		document.setName(doc.getName());
 		document.setType(doc.getType());
 		document.setSize(doc.getSize());
-		if(doc.getCreatedDate() != null) {
+		if (doc.getCreatedDate() != null) {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
-	        String formattedDate = doc.getCreatedDate().format(formatter).toUpperCase();
-		document.setCreatedDate(formattedDate );
+			String formattedDate = doc.getCreatedDate().format(formatter).toUpperCase();
+			document.setCreatedDate(formattedDate);
 		}
 		try {
-			String contentNode = doc.getContent() ;
+			String contentNode = doc.getContent();
 			document.setContent(contentNode);
-		} catch (Exception  e) {
+		} catch (Exception e) {
 			documentResponse.setErrorMessage("Failed to parse document content");
 		}
 		document.setMessage("Document retrieved");
@@ -187,12 +187,11 @@ public class NewBusinessService {
 		return documentResponse;
 	}
 
-
-	 public boolean deleteNoteById(Long id) {
-       if (documentRepo.existsById(id)) {
-    	   documentRepo.deleteById(id);
-           return true;
-       }
-       return false;
-   }
+	public boolean deleteNoteById(Long id) {
+		if (documentRepo.existsById(id)) {
+			documentRepo.deleteById(id);
+			return true;
+		}
+		return false;
+	}
 }

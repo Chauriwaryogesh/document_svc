@@ -6,37 +6,54 @@ import jakarta.persistence.*;
 @Table(name = "employee_photos")
 public class Photo {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String name;
+	private String name;
 
-    private String contentType;
+	private String contentType;
 
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] data;
+	@Lob
+	@Column(columnDefinition = "LONGBLOB")
+	private byte[] data;
 
-    // Constructors
-    public Photo() {}
+	// Constructors
+	public Photo() {
+	}
 
-    public Photo(String name, String contentType, byte[] data) {
-        this.name = name;
-        this.contentType = contentType;
-        this.data = data;
-    }
+	public Photo(String name, String contentType, byte[] data) {
+		this.name = name;
+		this.contentType = contentType;
+		this.data = data;
+	}
 
-    // Getters and Setters
-    public Long getId() { return id; }
+	// Getters and Setters
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+	public String getName() {
+		return name;
+	}
 
-    public String getContentType() { return contentType; }
-    public void setContentType(String contentType) { this.contentType = contentType; }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public byte[] getData() { return data; }
-    public void setData(byte[] data) { this.data = data; }
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
+	public byte[] getData() {
+		return data;
+	}
+
+	public void setData(byte[] data) {
+		this.data = data;
+	}
 }
-

@@ -20,61 +20,61 @@ import jakarta.persistence.Table;
 @Table(name = "PAYMENTS")
 public class Payments {
 	@Id
-    @Column(name = "payment_id")
-    private String paymentId;
+	@Column(name = "payment_id")
+	private String paymentId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "policyNumber", referencedColumnName = "policyNumber")
-    private Policy policy;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "policyNumber", referencedColumnName = "policyNumber")
+	private Policy policy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
-    private Customer customer;
-    
-    @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Workitem> workItem= new ArrayList<>();
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
+	private Customer customer;
 
-    @Column(name = "product_code")
-    private String productCode;
+	@OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Workitem> workItem = new ArrayList<>();
 
-    @Column(name = "policy_name")
-    private String policyName;
+	@Column(name = "product_code")
+	private String productCode;
 
-    @Column(name = "installment_amount")
-    private BigDecimal installmentAmount;
-    
-    @Column(name = "installment_count")
-    private int installmentCount;
+	@Column(name = "policy_name")
+	private String policyName;
 
-    @Column(name = "due_date")
-    private LocalDate dueDate;
+	@Column(name = "installment_amount")
+	private BigDecimal installmentAmount;
 
-    @Column(name = "payment_date")
-    private LocalDate paymentDate;
+	@Column(name = "installment_count")
+	private int installmentCount;
 
-    @Column(name = "status")
-    private String status;
+	@Column(name = "due_date")
+	private LocalDate dueDate;
 
-    @Column(name = "transaction_id")
-    private String transactionId;
+	@Column(name = "payment_date")
+	private LocalDate paymentDate;
 
-    @Column(name = "payment_method")
-    private String paymentMethod;
+	@Column(name = "status")
+	private String status;
 
-    @Column(name = "email_status")
-    private String emailStatus;
+	@Column(name = "transaction_id")
+	private String transactionId;
 
-    @Column(name = "created_by")
-    private String createdBy;
+	@Column(name = "payment_method")
+	private String paymentMethod;
 
-    @Column(name = "updated_by")
-    private String updatedBy;
+	@Column(name = "email_status")
+	private String emailStatus;
 
-    @Column(name = "created_time")
-    private LocalDateTime createdTime;
+	@Column(name = "created_by")
+	private String createdBy;
 
-    @Column(name = "updated_time")
-    private LocalDateTime updatedTime;
+	@Column(name = "updated_by")
+	private String updatedBy;
+
+	@Column(name = "created_time")
+	private LocalDateTime createdTime;
+
+	@Column(name = "updated_time")
+	private LocalDateTime updatedTime;
 
 	public List<Workitem> getWorkItem() {
 		return workItem;
@@ -84,11 +84,9 @@ public class Payments {
 		return installmentCount;
 	}
 
-
 	public void setInstallmentCount(int installmentCount) {
 		this.installmentCount = installmentCount;
 	}
-
 
 	public void setWorkItem(List<Workitem> workItem) {
 		this.workItem = workItem;
@@ -101,7 +99,6 @@ public class Payments {
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
-
 
 	public String getPaymentId() {
 		return paymentId;

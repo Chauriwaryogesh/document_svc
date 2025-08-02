@@ -16,10 +16,10 @@ import com.SecureAccessPortal.Service.ResponseEntity;
 
 @RestController
 public class ActivityMonitorController {
-	
+
 	@Autowired
 	private ActivityMonitorService activityMonitorService;
-	
+
 	@GetMapping("/get-ActivityDtls")
 	public ResponseEntity<List<ActivityDetailsDTO>> getActivitydtls(@RequestHeader String userCode) {
 
@@ -28,25 +28,23 @@ public class ActivityMonitorController {
 
 		return listOfActiity;
 	}
-	
-	@GetMapping(value="/login-history", produces = MediaType.APPLICATION_JSON_VALUE)
+
+	@GetMapping(value = "/login-history", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LoginHistroryResponse>> getActivitydtls(
-			@RequestParam(value="email",required= true ) String email,
-			@RequestHeader String userCode) {
+			@RequestParam(value = "email", required = true) String email, @RequestHeader String userCode) {
 
 		ResponseEntity<List<LoginHistroryResponse>> listOfActiity = new ResponseEntity<>();
-		listOfActiity = activityMonitorService.getLoginHistory(email,userCode);
+		listOfActiity = activityMonitorService.getLoginHistory(email, userCode);
 
 		return listOfActiity;
 	}
-	
-	@GetMapping(value="/activity-tracing",produces = MediaType.APPLICATION_JSON_VALUE)
+
+	@GetMapping(value = "/activity-tracing", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoginHistroryResponse> getActivityTrac(
-			@RequestParam(value="email",required= true ) String email,
-			@RequestHeader String userCode) {
+			@RequestParam(value = "email", required = true) String email, @RequestHeader String userCode) {
 
 		ResponseEntity<LoginHistroryResponse> listOfActiity = new ResponseEntity<>();
-		listOfActiity = activityMonitorService.getLoginActTrac(email,userCode);
+		listOfActiity = activityMonitorService.getLoginActTrac(email, userCode);
 
 		return listOfActiity;
 	}

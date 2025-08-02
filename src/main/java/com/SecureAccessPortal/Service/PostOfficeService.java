@@ -74,8 +74,10 @@ public class PostOfficeService {
 		List<PinCodeCount> pinCodeDTO = new ArrayList<>();
 		PinCodeCount pinCodeCount = new PinCodeCount();
 
-		long branch = pinArray.stream().filter(code -> code.getBranchName() != null && !code.getBranchName().isEmpty()).map(code -> code.getBranchName()).count();
-		long pinc = pinArray.stream().filter(code -> code.getPinCode() != null && !code.getPinCode().isEmpty()).map(code -> code.getPinCode()).count();
+		long branch = pinArray.stream().filter(code -> code.getBranchName() != null && !code.getBranchName().isEmpty())
+				.map(code -> code.getBranchName()).count();
+		long pinc = pinArray.stream().filter(code -> code.getPinCode() != null && !code.getPinCode().isEmpty())
+				.map(code -> code.getPinCode()).count();
 		pinCodeCount.setPinCount(String.valueOf(pinc));
 		pinCodeCount.setBranchCount(String.valueOf(branch));
 

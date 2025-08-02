@@ -17,28 +17,28 @@ public class WorkFlowService {
 	@Lob
 	@Column
 	private String journeyDetails;
-	
+
 	@Column
 	private String customerNo;
-	
+
 	@Column
 	private String workItemNo;
-	
+
 	@Column
 	private String createdBy;
-	
+
 	@Column
 	private String createdTime;
-	
+
 	@Column
 	private String isVerified;
-	
+
 	@Column
 	private String emailId;
-	
+
 	@Column
 	private String email;
-	
+
 	@Column
 	private String phoneNumber;
 
@@ -121,7 +121,5 @@ public class WorkFlowService {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	
-	
 
 }

@@ -16,7 +16,7 @@ public class VerificationRecordDTO {
 	private String userCode;
 	private String createdBy;
 	private LocalDateTime createdTime;
-	private  String updatedBy;
+	private String updatedBy;
 	private LocalDateTime updatedTime;
 	private String deathCertNo;
 	private String deathStatus;
@@ -27,7 +27,6 @@ public class VerificationRecordDTO {
 	private String sanctionsCertNo;
 	private String sancStatus;
 	private byte[] sanctionsCertificate;
-	
 
 	public String getDeathCertNo() {
 		return deathCertNo;
@@ -128,6 +127,7 @@ public class VerificationRecordDTO {
 	public String getCustomerNo() {
 		return customerNo;
 	}
+
 	public String getCreatedBy() {
 		return createdBy;
 	}

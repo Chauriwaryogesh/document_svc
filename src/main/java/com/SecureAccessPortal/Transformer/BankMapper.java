@@ -12,7 +12,7 @@ import com.SecureAccessPortal.Modal.VerificationRecordDTO;
 @Component
 public class BankMapper {
 	public List<VerificationRecordDTO> mapVerificationRecordList(List<VerificationRecord> verRecords) {
-		List<VerificationRecordDTO> listOfDocument= new ArrayList<>();
+		List<VerificationRecordDTO> listOfDocument = new ArrayList<>();
 		listOfDocument = verRecords.parallelStream().map(record -> {
 			VerificationRecordDTO dto = new VerificationRecordDTO();
 			dto.setId(record.getVerId());
@@ -33,9 +33,9 @@ public class BankMapper {
 			dto.setUpdatedBy(record.getUpdatedBy());
 			dto.setUpdatedTime(record.getUpdatedTime());
 			dto.setCreatedTime(record.getCreatedTime());
-			return dto;	
+			return dto;
 		}).collect(Collectors.toList());
-		
-	return listOfDocument;	
+
+		return listOfDocument;
 	}
 }

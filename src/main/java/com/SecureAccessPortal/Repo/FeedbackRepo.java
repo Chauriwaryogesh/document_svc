@@ -10,6 +10,6 @@ import com.SecureAccessPortal.Entity.FeedbackEntity;
 public interface FeedbackRepo extends JpaRepository<FeedbackEntity, Long> {
 
 	@Query("SELECT f FROM FeedbackEntity f WHERE f.customer.customerNo= :customerNo AND f.deletedFlag= :deletedFlag ORDER BY f.id DESC")
-	List<FeedbackEntity> findByCustomerNoAndDeletedFlagN( String customerNo, String deletedFlag);
+	List<FeedbackEntity> findByCustomerNoAndDeletedFlagN(String customerNo, String deletedFlag);
 
 }

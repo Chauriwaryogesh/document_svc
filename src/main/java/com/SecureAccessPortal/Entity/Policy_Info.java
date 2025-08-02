@@ -29,10 +29,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @Table(name = "POLICY_INFO")
 public class Policy_Info {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "policy_id")
-    private Long policy_id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "policy_id")
+	private Long policy_id;
 	@Column
 	private String policy_name;
 	@Column
@@ -78,8 +78,6 @@ public class Policy_Info {
 	protected void onUpdate() {
 		updated_at = Timestamp.valueOf(LocalDateTime.now());
 	}
-
-	
 
 	public Long getPolicy_id() {
 		return policy_id;

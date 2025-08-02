@@ -27,9 +27,9 @@ public class Security {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo", insertable = false, updatable = false)
 	private Customer customer;
-	
-	@OneToMany( mappedBy = "security" ,fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-	//@JoinColumn(name = "email", referencedColumnName = "email")
+
+	@OneToMany(mappedBy = "security", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	// @JoinColumn(name = "email", referencedColumnName = "email")
 	private List<PasswordHistory> passwordHistory;
 
 	@Column(name = "email")
@@ -80,7 +80,6 @@ public class Security {
 	@Column(name = "signatureCounter")
 	private Long signatureCounter; // Signature counter for anti-replay
 
-	
 	public List<PasswordHistory> getPasswordHistory() {
 		return passwordHistory;
 	}

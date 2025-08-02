@@ -15,37 +15,39 @@ import com.SecureAccessPortal.Service.DashboardService;
 @RequestMapping("/api/dashboard")
 public class DashboardStatsController {
 
-    @Autowired
-    private DashboardService dashboardService;
+	@Autowired
+	private DashboardService dashboardService;
 
-    @GetMapping("/stats")
-    public ResponseEntity<DashboardStats> getDashboardStats(@RequestHeader(value="userCode",required=false) String userCode) {
-        try {
-            DashboardStats stats = dashboardService.getDashboardStats(userCode);
-            return ResponseEntity.ok(stats);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Handle errors here
-        }
-    }
-    
-    @GetMapping("/email-counts")
-    public ResponseEntity<DashboardStats> getEmailCountStats(@RequestHeader(value="userCode",required=false) String userCode) {
-        try {
-            DashboardStats stats = dashboardService.getEmailCountStats(userCode);
-            return ResponseEntity.ok(stats);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Handle errors here
-        }
-    }
-    @GetMapping("/user-counts")
-    public ResponseEntity<DashboardStats> getUsersCountStats(@RequestHeader("userCode") String userCode) {
-        try {
-            DashboardStats stats = dashboardService.getUsersCountStats(userCode);
-            return ResponseEntity.ok(stats);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Handle errors here
-        }
-    }
-    
-    
+	@GetMapping("/stats")
+	public ResponseEntity<DashboardStats> getDashboardStats(
+			@RequestHeader(value = "userCode", required = false) String userCode) {
+		try {
+			DashboardStats stats = dashboardService.getDashboardStats(userCode);
+			return ResponseEntity.ok(stats);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Handle errors here
+		}
+	}
+
+	@GetMapping("/email-counts")
+	public ResponseEntity<DashboardStats> getEmailCountStats(
+			@RequestHeader(value = "userCode", required = false) String userCode) {
+		try {
+			DashboardStats stats = dashboardService.getEmailCountStats(userCode);
+			return ResponseEntity.ok(stats);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Handle errors here
+		}
+	}
+
+	@GetMapping("/user-counts")
+	public ResponseEntity<DashboardStats> getUsersCountStats(@RequestHeader("userCode") String userCode) {
+		try {
+			DashboardStats stats = dashboardService.getUsersCountStats(userCode);
+			return ResponseEntity.ok(stats);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Handle errors here
+		}
+	}
+
 }

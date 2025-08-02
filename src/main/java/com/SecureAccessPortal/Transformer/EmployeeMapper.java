@@ -17,7 +17,7 @@ public class EmployeeMapper implements IEmployeeMapper {
 		Employees emp = new Employees();
 		if (employeeRequest.getId() != null) {
 			emp.setId(employeeRequest.getId());
-		}else {
+		} else {
 			emp.setId(id);
 		}
 		emp.setFirstName(employeeRequest.getFirstName());

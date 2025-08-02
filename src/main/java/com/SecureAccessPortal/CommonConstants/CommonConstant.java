@@ -4,10 +4,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CommonConstant {
-	public static final String WORK_ITEM="create-workItem";
+	public static final String WORK_ITEM = "create-workItem";
 	public static final String ADD_NEW_EMPLOYEE = "add_New_Employee";
 	public static final String Email_added = "Email id added successfully";
-	
+
 	public static final String TEAM_MEMBER = "TEAM_MEMBER";
 	public static final String ADD_POL = "POLICY_ADDED";
 	public static final String POLICY_CREATED = "Policy Created";
@@ -34,17 +34,23 @@ public class CommonConstant {
 	public static final String COMPLAINT_UPDATE = "Complaint Update";
 	public static final String COMPLAINT_CREATE_UPDATE = "Updating the Complaint";
 
-	//complaints status
-	public static final String ALL="All";
+	// complaints status
+	public static final String ALL = "All";
 	public static final String OPEN = "Open";
-	public static final String REOPEN="Reopen";
-	public static final String CLOSED="Closed";
-	public static final String RESOLVED="Resolved";
-	public static final String REJECTED="Rejected";
-	public static final String CANCELED="Canceled";
-	public static final String PENDING="Pending";
+	public static final String REOPEN = "Reopen";
+	public static final String CLOSED = "Closed";
+	public static final String RESOLVED = "Resolved";
+	public static final String REJECTED = "Rejected";
+	public static final String CANCELED = "Canceled";
+	public static final String PENDING = "Pending";
 	public static final String Y = "Y";
-	public static final String PENE="PENDING";
+	public static final String PENE = "PENDING";
+	public static final String POLICY = "POLICY";
+	public static final String COMPLAINT = "COMPLAINT";
+	public static final String WORKITEM = "WORKITEM";
+	public static final String CUSTOMER = "CUSTOMER";
+	public static final String BANK = "BANK";
+	public static final String PAYMENT = "PAYMENT";
 	
 
 }

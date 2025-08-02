@@ -7,27 +7,25 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmailDTO {
 	private String email;
-	
+
 	private String phoneNumber;
-	
+
 	private String ownerName;
-	
+
 	private String country;
-	
+
 	private String createdBy;
-	
+
 	private String createdTime;
-	
+
 	private String updatedBy;
-	
+
 	private String updatedTime;
-	
+
 	private String isVerified;
 	private String comment;
 	private String userCode;
 	private long count;
-	
-	
 
 	public long getCount() {
 		return count;
@@ -124,7 +122,5 @@ public class EmailDTO {
 	public void setIsVerified(String isVerified) {
 		this.isVerified = isVerified;
 	}
-	
-	
 
 }

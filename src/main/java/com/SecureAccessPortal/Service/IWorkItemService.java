@@ -18,14 +18,14 @@ public interface IWorkItemService {
 
 	WorkItemDTO createWorkItem(WorkItemDTO workItemRequest, String userCode);
 
-	Page<WorkItemDTO> fetchWorkItems(String id, String queue,String customerNo,String policyNo, String filterUserCode, String createdBy, String status,
-			String startDate, String endDate, int page, int size, String userCode);
+	Page<WorkItemDTO> fetchWorkItems(String id, String queue, String customerNo, String policyNo, String filterUserCode,
+			String createdBy, String status, String startDate, String endDate, int page, int size, String userCode);
 
-	WorkItemCount workItemCount(String customerNo,String userCode);
+	WorkItemCount workItemCount(String customerNo, String userCode);
 
 	Workitem mapRequetforWorkItem(String userCode, Policy policy, Customer customer, String workType,
 			String workItemName, String comment, BankAccount bankAccount, VerificationRecord verificationRecord,
-			Payments payments);
+			Payments payments, String status);
 
 	Workitem mapRequetforWorkItemOtpService(String userCode, Customer customer, String workType, String workItemName,
 			String comment, OtpStore otpStore2);
@@ -36,5 +36,7 @@ public interface IWorkItemService {
 			String customerRelated, String userCode);
 
 	WorkItemDTO updateWorkItem(WorkItemDTO workItemRequest, String userCode);
+
+	List<WorkItemDTO> getAllWorkitems(List<Workitem> workitems);
 
 }

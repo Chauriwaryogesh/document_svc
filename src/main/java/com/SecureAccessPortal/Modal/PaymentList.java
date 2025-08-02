@@ -15,7 +15,6 @@ public class PaymentList {
 	private String responseStatus;
 	private String message;
 	private String paymentMethod;
-	
 
 	public String getPaymentMethod() {
 		return paymentMethod;

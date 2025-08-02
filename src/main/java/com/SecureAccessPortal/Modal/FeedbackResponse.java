@@ -6,7 +6,6 @@ public class FeedbackResponse {
 	private String customerNo;
 	private List<Question> questions;
 	private Ratings ratings;
-	
 
 	public String getCustomerNo() {
 		return customerNo;

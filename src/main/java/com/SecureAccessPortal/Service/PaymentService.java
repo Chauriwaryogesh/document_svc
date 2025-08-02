@@ -33,44 +33,44 @@ public class PaymentService {
 
 	@Autowired
 	private Environment env;
-	
+
 	@Autowired
-    private ObjectMapper objectMapper;
+	private ObjectMapper objectMapper;
 
-	 @Transactional
-	    public Payments processPayment(String paymentId, String paymentMethod, String userCode) {
-	        Payments payment = paymentsRepository.findById(paymentId)
-	                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
-	        if ("Paid".equals(payment.getStatus())) {
-	            throw new IllegalStateException("Payment is already done: " + paymentId);
-	        }
-	        String mockResponse = simulatePaymentGateway();
-	        boolean paymentSuccess;
-	        try {
-	            // Parse JSON response
-	            Map<String, String> responseMap = objectMapper.readValue(mockResponse, Map.class);
-	            paymentSuccess = "success".equalsIgnoreCase(responseMap.get("status"));
-	        } catch (Exception e) {
-	            throw new RuntimeException("Failed to parse payment gateway response: " + mockResponse, e);
-	        }
+	@Transactional
+	public Payments processPayment(String paymentId, String paymentMethod, String userCode) {
+		Payments payment = paymentsRepository.findById(paymentId)
+				.orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
+		if ("Paid".equals(payment.getStatus())) {
+			throw new IllegalStateException("Payment is already done: " + paymentId);
+		}
+		String mockResponse = simulatePaymentGateway();
+		boolean paymentSuccess;
+		try {
+			// Parse JSON response
+			Map<String, String> responseMap = objectMapper.readValue(mockResponse, Map.class);
+			paymentSuccess = "success".equalsIgnoreCase(responseMap.get("status"));
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to parse payment gateway response: " + mockResponse, e);
+		}
 
-	        if (paymentSuccess) {
-	            payment.setStatus("Paid");
-	            payment.setTransactionId(generateTransactionId());
-	            payment.setPaymentDate(LocalDate.now());
-	            payment.setPaymentMethod(paymentMethod);
-	            payment.setEmailStatus("Service Not Available Now");
-	            sendPaymentConfirmationEmail(payment);
-	        } else {
-	            payment.setStatus("Failed");
-	            payment.setPaymentDate(LocalDate.now());
-	            payment.setEmailStatus("NotSent");
-	        }
+		if (paymentSuccess) {
+			payment.setStatus("Paid");
+			payment.setTransactionId(generateTransactionId());
+			payment.setPaymentDate(LocalDate.now());
+			payment.setPaymentMethod(paymentMethod);
+			payment.setEmailStatus("Service Not Available Now");
+			sendPaymentConfirmationEmail(payment);
+		} else {
+			payment.setStatus("Failed");
+			payment.setPaymentDate(LocalDate.now());
+			payment.setEmailStatus("NotSent");
+		}
 
-	        payment.setUpdatedBy(userCode);
-	        payment.setUpdatedTime(LocalDateTime.now());
-	        return paymentsRepository.save(payment);
-	    }
+		payment.setUpdatedBy(userCode);
+		payment.setUpdatedTime(LocalDateTime.now());
+		return paymentsRepository.save(payment);
+	}
 
 	private String simulatePaymentGateway() {
 		boolean mockSuccess = Boolean.parseBoolean(env.getProperty("payment.gateway.mock.success", "true"));
@@ -106,21 +106,21 @@ public class PaymentService {
 			Optional<Payments> payment = paymentsRepository.findByTransactionId(transactionId);
 			return payment.map(p -> new PageImpl<>(List.of(p), pageable, 1))
 					.orElseGet(() -> new PageImpl<>(List.of(), pageable, 0));
-		}  else if (status != null && !status.isEmpty()) {
-		    List<Payments> payments = paymentsRepository.findByStatus(status);
-		    System.out.println("Found " + payments.size() + " payments with status: " + status);
-		    return new PageImpl<>(payments, pageable, payments.size());
-		}else {
+		} else if (status != null && !status.isEmpty()) {
+			List<Payments> payments = paymentsRepository.findByStatus(status);
+			System.out.println("Found " + payments.size() + " payments with status: " + status);
+			return new PageImpl<>(payments, pageable, payments.size());
+		} else {
 			return paymentsRepository.findAll(pageable);
 		}
 	}
 
 	public ResponseEntity<DashboardStats> fetchAllcounts(String userCode) {
-		ResponseEntity<DashboardStats> response= new ResponseEntity<>();
+		ResponseEntity<DashboardStats> response = new ResponseEntity<>();
 		List<Payments> paymentList = paymentsRepository.findAll();
-		
-		//all.stream().filter(null)
-		DashboardStats stats= new DashboardStats();
+
+		// all.stream().filter(null)
+		DashboardStats stats = new DashboardStats();
 		stats.setTotalPolicies(20);
 		stats.setTotalCustomers(10);
 		stats.setTotalPayments(10);

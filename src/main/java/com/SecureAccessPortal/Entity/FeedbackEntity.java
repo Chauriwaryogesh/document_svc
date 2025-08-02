@@ -16,43 +16,40 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-@Table(name="Feedback")
+@Table(name = "Feedback")
 public class FeedbackEntity {
-	
+
 	@Id
 	@Column
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	
+
 	@Column(columnDefinition = "MEDIUMTEXT")
 	@Lob
 	@Basic(fetch = FetchType.LAZY)
 	private String feedbackData;
-	
+
 	@Column
 	@NotNull
 	private String createdBy;
-	
+
 	@Column
 	@NotNull
 	private LocalDateTime createdTime;
-	
+
 	@Column
 	private String updatedBy;
-	
+
 	@Column
 	private LocalDateTime updatedTime;
-	
+
 	@Column
 	@NotNull
 	private String deletedFlag;
-	
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn( name ="customerNo",referencedColumnName = "customerNo")
+	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
 	private Customer customer;
-	
-	
 
 	public Customer getCustomer() {
 		return customer;
@@ -61,7 +58,6 @@ public class FeedbackEntity {
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
-
 
 	public long getId() {
 		return id;
@@ -118,9 +114,5 @@ public class FeedbackEntity {
 	public void setDeletedFlag(String deletedFlag) {
 		this.deletedFlag = deletedFlag;
 	}
-	
-	
-	
-	
 
 }

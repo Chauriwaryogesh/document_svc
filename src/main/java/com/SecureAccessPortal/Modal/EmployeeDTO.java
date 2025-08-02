@@ -3,7 +3,7 @@ package com.SecureAccessPortal.Modal;
 import java.io.Serializable;
 
 public class EmployeeDTO implements Serializable {
-	    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	private long count;
 	private String id;
 	private String firstName;
@@ -17,7 +17,6 @@ public class EmployeeDTO implements Serializable {
 	private String state;
 	private String zipCode;
 
-	
 	public long getCount() {
 		return count;
 	}

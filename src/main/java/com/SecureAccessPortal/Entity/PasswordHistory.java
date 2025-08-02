@@ -11,60 +11,59 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Table(name = "PASSWORD_HISTORY")
-public class PasswordHistory{
+public class PasswordHistory {
 
-    @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EMAIL", referencedColumnName = "email")
-    private Security security;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "EMAIL", referencedColumnName = "email")
+	private Security security;
 
-    @Column(name = "USER_CODE")
-    private String userCode;
+	@Column(name = "USER_CODE")
+	private String userCode;
 
-    @Column(name = "HASHED_PASSWORD")
-    private String hashedPassword;
+	@Column(name = "HASHED_PASSWORD")
+	private String hashedPassword;
 
-    @Column(name = "IS_CURRENT")
-    private boolean isCurrent;
+	@Column(name = "IS_CURRENT")
+	private boolean isCurrent;
 
-    @Column(name = "EXPIRY_TIME")
-    private Timestamp expireTime;
+	@Column(name = "EXPIRY_TIME")
+	private Timestamp expireTime;
 
-    @Column(name = "CREATED_TIME")
-    private Timestamp createdTime;
+	@Column(name = "CREATED_TIME")
+	private Timestamp createdTime;
 
-    @Column(name = "CREATED_BY")
-    private String createdBy;
+	@Column(name = "CREATED_BY")
+	private String createdBy;
 
-    @Column(name = "UPDATED_BY")
-    private String updatedBy;
+	@Column(name = "UPDATED_BY")
+	private String updatedBy;
 
-    @Column(name = "DELETED_FLAG")
-    private String deletedFlag;
+	@Column(name = "DELETED_FLAG")
+	private String deletedFlag;
 
-    @Column(name = "UPDATE_TIME")
-    private Timestamp updatedTime;
+	@Column(name = "UPDATE_TIME")
+	private Timestamp updatedTime;
 
-    @Column(name = "PASSWORD_CHANGE_REASON")
-    private String passwordChangeReason;
+	@Column(name = "PASSWORD_CHANGE_REASON")
+	private String passwordChangeReason;
 
-    @Column(name = "FAILED_LOGIN_COUNT")
-    private int failedLoginCount;
+	@Column(name = "FAILED_LOGIN_COUNT")
+	private int failedLoginCount;
 
-    @Column(name = "MFA_ENABLED")
-    private boolean mfaEnabled;
+	@Column(name = "MFA_ENABLED")
+	private boolean mfaEnabled;
 
-    @Column(name = "LAST_USED_TIME")
-    private Timestamp lastUsedTime;
+	@Column(name = "LAST_USED_TIME")
+	private Timestamp lastUsedTime;
 
-    @Column(name = "BREACH_STATUS")
-    private boolean breachStatus;
+	@Column(name = "BREACH_STATUS")
+	private boolean breachStatus;
 
-	
 	public String getDeletedFlag() {
 		return deletedFlag;
 	}

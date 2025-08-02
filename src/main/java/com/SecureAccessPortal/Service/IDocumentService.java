@@ -15,7 +15,7 @@ public interface IDocumentService {
 
 	public String uploadDocService(List<AddDocument> document, String userCode);
 
-	public CapturePhoto uploadDocument(MultipartFile file, String docName , String userCode) throws IOException;
+	public CapturePhoto uploadDocument(MultipartFile file, String docName, String userCode) throws IOException;
 
 	public List<PhotoDTO> getAllDocuments(String userCode);
 

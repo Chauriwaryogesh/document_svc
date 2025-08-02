@@ -1,6 +1,5 @@
 package com.SecureAccessPortal.Service;
 
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,165 +41,166 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class BankDetailsService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(PolicyService.class);
 
-    private final BankAccountRepo bankAccountRepository;
-    
-    @Autowired
-    private CustomerRepo customerRepo;
-    
-    @Autowired
-    private BankMapper bankMapper;
-    
-    @Autowired
-    private IPolicyRepo policyRepo;
-    
-    @Autowired
-	private IWorkItemService workItemService;
-    
-    @Autowired
-	private WorkItemRepo workItemRepo;
-     
-    @Autowired
-    private VerificationRecordRepo verificationRecordRepository;
-    
-    @Autowired
-    private Environment environment;
+	private final BankAccountRepo bankAccountRepository;
 
-    public BankDetailsService(BankAccountRepo bankAccountRepository) {
-        this.bankAccountRepository = bankAccountRepository;
-    }
+	@Autowired
+	private CustomerRepo customerRepo;
+
+	@Autowired
+	private BankMapper bankMapper;
+
+	@Autowired
+	private IPolicyRepo policyRepo;
+
+	@Autowired
+	private IWorkItemService workItemService;
+
+	@Autowired
+	private WorkItemRepo workItemRepo;
+
+	@Autowired
+	private VerificationRecordRepo verificationRecordRepository;
+
+	@Autowired
+	private Environment environment;
+
+	public BankDetailsService(BankAccountRepo bankAccountRepository) {
+		this.bankAccountRepository = bankAccountRepository;
+	}
 
 	public Page<BankDetailsDTO> getBankDetails(String bankAccNo, String policyNo, String customerNo, String holderName,
 			String bankName, String accountType, String status, LocalDate createdDateFrom, LocalDate createdDateTo,
 			String globalSearch, String userCode, Pageable pageable) {
-		Specification<BankAccount> spec =withFilters(bankAccNo, policyNo, customerNo,
-				holderName, bankName, accountType, status, createdDateFrom, createdDateTo, globalSearch);
+		Specification<BankAccount> spec = withFilters(bankAccNo, policyNo, customerNo, holderName, bankName,
+				accountType, status, createdDateFrom, createdDateTo, globalSearch);
 		Page<BankAccount> bankAccountsPage = bankAccountRepository.findAll(spec, pageable);
 		return bankAccountsPage.map(this::convertToDTO);
 	}
-	 public static Specification<BankAccount> withFilters(
-	            String bankAccNo, String policyNo, String customerNo, String holderName,
-	            String bankName, String accountType, String status,
-	            LocalDate createdDateFrom, LocalDate createdDateTo, String globalSearch) {
 
-	        return (root, query, criteriaBuilder) -> {
-	            List<Predicate> predicates = new ArrayList<>();
-	            if (bankAccNo != null && !bankAccNo.isEmpty()) {
-	                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("accountNo")), "%" + bankAccNo.toLowerCase() + "%"));
-	            }
-	            if (policyNo != null && !policyNo.isEmpty()) {
-	                predicates.add(criteriaBuilder.like(
-	                    criteriaBuilder.lower(root.get("policy").get("policyNumber")),
-	                    "%" + policyNo.toLowerCase() + "%"
-	                ));
-	            }
-	            if (customerNo != null && !customerNo.isEmpty()) {
-	                predicates.add(criteriaBuilder.like(
-	                    criteriaBuilder.lower(root.get("customer").get("customerNo")), 
-	                    "%" + customerNo.toLowerCase() + "%"
-	                ));
-	            }
-	            if (holderName != null && !holderName.isEmpty()) {
-	                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("holderName")), "%" + holderName.toLowerCase() + "%"));
-	            }
-	            if (bankName != null && !bankName.isEmpty()) {
-	                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("bankName")), "%" + bankName.toLowerCase() + "%"));
-	            }
-	            if (accountType != null && !accountType.isEmpty()) {
-	                predicates.add(criteriaBuilder.equal(root.get("accountType"), accountType));
-	            }            
-	                predicates.add(criteriaBuilder.equal(root.get("deletedFlag"), "N"));            
-	            if (status != null && !status.isEmpty()) {
-	                String[] statuses = status.split(",");
-	                if (statuses.length > 1) {
-	                    List<Predicate> statusPredicates = new ArrayList<>();
-	                    for (String s : statuses) {
-	                        statusPredicates.add(criteriaBuilder.equal(root.get("status"), s.trim()));
-	                    }
-	                    predicates.add(criteriaBuilder.or(statusPredicates.toArray(new Predicate[0])));
-	                } else {
-	                    predicates.add(criteriaBuilder.equal(root.get("status"), status));
-	                }
-	            }
+	public static Specification<BankAccount> withFilters(String bankAccNo, String policyNo, String customerNo,
+			String holderName, String bankName, String accountType, String status, LocalDate createdDateFrom,
+			LocalDate createdDateTo, String globalSearch) {
 
-	            // Date range filters (assuming 'createdDate' in entity is LocalDateTime)
-	            if (createdDateFrom != null) {
-	                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), createdDateFrom.atStartOfDay()));
-	            }
-	            if (createdDateTo != null) {
-	                // To include the entire end day, compare with the start of the next day
-	                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), createdDateTo.plusDays(1).atStartOfDay().minusNanos(1)));
-	            }
-	            if (globalSearch != null && !globalSearch.isEmpty()) {
-	                String searchLike = "%" + globalSearch.toLowerCase() + "%";
-	                Predicate globalSearchPredicate = criteriaBuilder.or(
-	                    criteriaBuilder.like(criteriaBuilder.lower(root.get("bankAccNo")), searchLike),
-	                    criteriaBuilder.like(criteriaBuilder.lower(root.get("policyNumber")), searchLike),
-	                    criteriaBuilder.like(criteriaBuilder.lower(root.get("customerNo")), searchLike),
-	                    criteriaBuilder.like(criteriaBuilder.lower(root.get("holderName")), searchLike),
-	                    criteriaBuilder.like(criteriaBuilder.lower(root.get("bankName")), searchLike)
-	                );
-	                predicates.add(globalSearchPredicate);
-	            }
+		return (root, query, criteriaBuilder) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			if (bankAccNo != null && !bankAccNo.isEmpty()) {
+				predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("accountNo")),
+						"%" + bankAccNo.toLowerCase() + "%"));
+			}
+			if (policyNo != null && !policyNo.isEmpty()) {
+				predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("policy").get("policyNumber")),
+						"%" + policyNo.toLowerCase() + "%"));
+			}
+			if (customerNo != null && !customerNo.isEmpty()) {
+				predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("customer").get("customerNo")),
+						"%" + customerNo.toLowerCase() + "%"));
+			}
+			if (holderName != null && !holderName.isEmpty()) {
+				predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("holderName")),
+						"%" + holderName.toLowerCase() + "%"));
+			}
+			if (bankName != null && !bankName.isEmpty()) {
+				predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("bankName")),
+						"%" + bankName.toLowerCase() + "%"));
+			}
+			if (accountType != null && !accountType.isEmpty()) {
+				predicates.add(criteriaBuilder.equal(root.get("accountType"), accountType));
+			}
+			predicates.add(criteriaBuilder.equal(root.get("deletedFlag"), "N"));
+			if (status != null && !status.isEmpty()) {
+				String[] statuses = status.split(",");
+				if (statuses.length > 1) {
+					List<Predicate> statusPredicates = new ArrayList<>();
+					for (String s : statuses) {
+						statusPredicates.add(criteriaBuilder.equal(root.get("status"), s.trim()));
+					}
+					predicates.add(criteriaBuilder.or(statusPredicates.toArray(new Predicate[0])));
+				} else {
+					predicates.add(criteriaBuilder.equal(root.get("status"), status));
+				}
+			}
 
-	            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-	        };
-	    }
+			// Date range filters (assuming 'createdDate' in entity is LocalDateTime)
+			if (createdDateFrom != null) {
+				predicates.add(
+						criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), createdDateFrom.atStartOfDay()));
+			}
+			if (createdDateTo != null) {
+				// To include the entire end day, compare with the start of the next day
+				predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"),
+						createdDateTo.plusDays(1).atStartOfDay().minusNanos(1)));
+			}
+			if (globalSearch != null && !globalSearch.isEmpty()) {
+				String searchLike = "%" + globalSearch.toLowerCase() + "%";
+				Predicate globalSearchPredicate = criteriaBuilder.or(
+						criteriaBuilder.like(criteriaBuilder.lower(root.get("bankAccNo")), searchLike),
+						criteriaBuilder.like(criteriaBuilder.lower(root.get("policyNumber")), searchLike),
+						criteriaBuilder.like(criteriaBuilder.lower(root.get("customerNo")), searchLike),
+						criteriaBuilder.like(criteriaBuilder.lower(root.get("holderName")), searchLike),
+						criteriaBuilder.like(criteriaBuilder.lower(root.get("bankName")), searchLike));
+				predicates.add(globalSearchPredicate);
+			}
 
-    public List<BankDetailsDTO> getAllBankDetails() {
-        List<BankAccount> bankDetails = bankAccountRepository.findAll();
-        return bankDetails.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
+			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+		};
+	}
 
-    private BankDetailsDTO convertToDTO(BankAccount bankAccount) {
-    	BankDetailsDTO dto = new BankDetailsDTO();
-        dto.setId(bankAccount.getId());
-        dto.setAccountNumber(bankAccount.getAccountNo());
-        dto.setIfscCode(bankAccount.getIfscCode());
-        dto.setBankName(bankAccount.getBankName());
-        dto.setAccountType(bankAccount.getAccountType());
-        dto.setStatus(bankAccount.getStatus());
-        // Map Customer
-        if (bankAccount.getCustomer() != null) {
-            dto.setCustomerNumber(bankAccount.getCustomer().getCustomerNo());
-            dto.setHolderName(bankAccount.getCustomer().getName()); // Assuming Customer has a name field
-            dto.setCustomerName(bankAccount.getCustomer().getName()+" "+ bankAccount.getCustomer().getMiddleName() +" "+ bankAccount.getCustomer().getSurname());
-        }
-        // Map Policy
-        if (bankAccount.getPolicy() != null) {
-            dto.setPolicyNumber(bankAccount.getPolicy().getPolicyNumber());
-            dto.setPolicyStatus(bankAccount.getPolicy().getPolicyStatus()); // Assuming Policy has a status field
-        }
-        dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
-        dto.setCreatedBy(bankAccount.getCreatedBy());
-        dto.setCreatedDate(bankAccount.getCreatedDate());
-        dto.setNotes(bankAccount.getNotes());
-        dto.setAccountHolderType(bankAccount.getAccountHolderType());
-        dto.setBranchCode(bankAccount.getBranchCode());
-        dto.setSwiftCode(bankAccount.getSwiftCode());
-        dto.setPaymentMethodStatus(bankAccount.getPaymentMethodStatus());
-        dto.setLastPaymentDate(bankAccount.getLastPaymentDate());
-        dto.setAmlStatus("Active");
-        dto.setAccountBalance(bankAccount.getAccountBalance());
-        dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
-        dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
-        dto.setComment(bankAccount.getComment());
-        return dto;
-    }
+	public List<BankDetailsDTO> getAllBankDetails() {
+		List<BankAccount> bankDetails = bankAccountRepository.findAll();
+		return bankDetails.stream().map(this::convertToDTO).collect(Collectors.toList());
+	}
+
+	public BankDetailsDTO convertToDTO(BankAccount bankAccount) {
+		BankDetailsDTO dto = new BankDetailsDTO();
+		dto.setId(bankAccount.getId());
+		dto.setAccountNumber(bankAccount.getAccountNo());
+		dto.setIfscCode(bankAccount.getIfscCode());
+		dto.setBankName(bankAccount.getBankName());
+		dto.setAccountType(bankAccount.getAccountType());
+		dto.setStatus(bankAccount.getStatus());
+		// Map Customer
+		if (bankAccount.getCustomer() != null) {
+			dto.setCustomerNumber(bankAccount.getCustomer().getCustomerNo());
+			dto.setHolderName(bankAccount.getCustomer().getName()); // Assuming Customer has a name field
+			dto.setCustomerName(bankAccount.getCustomer().getName() + " " + bankAccount.getCustomer().getMiddleName()
+					+ " " + bankAccount.getCustomer().getSurname());
+		}
+		// Map Policy
+		if (bankAccount.getPolicy() != null) {
+			dto.setPolicyNumber(bankAccount.getPolicy().getPolicyNumber());
+			dto.setPolicyStatus(bankAccount.getPolicy().getPolicyStatus()); // Assuming Policy has a status field
+		}
+		dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
+		dto.setCreatedBy(bankAccount.getCreatedBy());
+		dto.setCreatedDate(bankAccount.getCreatedDate());
+		dto.setNotes(bankAccount.getNotes());
+		dto.setAccountHolderType(bankAccount.getAccountHolderType());
+		dto.setBranchCode(bankAccount.getBranchCode());
+		dto.setSwiftCode(bankAccount.getSwiftCode());
+		dto.setPaymentMethodStatus(bankAccount.getPaymentMethodStatus());
+		dto.setLastPaymentDate(bankAccount.getLastPaymentDate());
+		dto.setAmlStatus("Active");
+		dto.setAccountBalance(bankAccount.getAccountBalance());
+		dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
+		dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
+		dto.setComment(bankAccount.getComment());
+		return dto;
+	}
 
 	public String addBankDetails(BankDetailsDTO bankAccount, String userCode) {
 		String message = "";
-		Customer customer= null;
-		Policy policy=null;
+		Customer customer = null;
+		Policy policy = null;
 		try {
-			if(bankAccount.getAccountNumber() != null) {
-				BankAccount byAccountNo = bankAccountRepository.findByAccountNo(bankAccount.getAccountNumber(),"N");
-				if(byAccountNo != null) {
-					message="Bank Account already exist in System";
+			if (bankAccount.getAccountNumber() != null) {
+				BankAccount byAccountNo = bankAccountRepository.findByAccountNo(bankAccount.getAccountNumber(), "N");
+				if (byAccountNo != null) {
+					message = "Bank Account already exist in System";
 					return message;
-				}else {
+				} else {
 					BankAccount dto = new BankAccount();
 					dto.setAccountNo(bankAccount.getAccountNumber());
 					dto.setIfscCode(bankAccount.getIfscCode());
@@ -209,11 +209,11 @@ public class BankDetailsService {
 					dto.setStatus(CommonConstant.PENE);
 					dto.setDeletedFlag("N");
 					if (bankAccount.getCustomerNumber() != null) {
-						 customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber(),"N");
+						customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber(), "N");
 						dto.setCustomer(customer);
 					}
-					if(bankAccount.getPolicyNumber() != null) {
-						policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber(),"N");
+					if (bankAccount.getPolicyNumber() != null) {
+						policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber(), "N");
 						dto.setPolicy(policy);
 					}
 					dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
@@ -228,20 +228,23 @@ public class BankDetailsService {
 					dto.setAmlStatus(bankAccount.getAmlStatus());
 					dto.setAccountBalance(bankAccount.getAccountBalance());
 					dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
-					dto.setVerificationAttempts(bankAccount.getVerificationAttempts());			
+					dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
 					BankAccount save = bankAccountRepository.save(dto);
 
 					// call workitem Service to generate WIrefNo.
 					String workType = CommonConstant.BANK_ACC_CREATED;
 					String workItemName = CommonConstant.BANK_ACC_WORKITEM;
-					String comment = "Bank Account is created " + save.getAccountNo()+" and customer Number is" +bankAccount.getCustomerNumber() ;
-					workItemService.mapRequetforWorkItem(userCode, policy, customer, workType, workItemName, comment,save,null,null);
+					String status = CommonConstant.OPEN;
+					String comment = "Bank Account is created " + save.getAccountNo() + " and customer Number is"
+							+ bankAccount.getCustomerNumber();
+					workItemService.mapRequetforWorkItem(userCode, policy, customer, workType, workItemName, comment,
+							save, null, null, status);
 
 					message = "Successfully Bank details saved for customer " + save.getCustomer().getName() + " "
 							+ save.getCustomer().getSurname() + " " + save.getPolicy().getCustomer().getCustomerNo();
-				}	
+				}
 			}
-			
+
 		} catch (Exception e) {
 			e.getMessage();
 			message = "Customer Not identified";
@@ -269,27 +272,30 @@ public class BankDetailsService {
 			details.forEach(detail -> result.add("  " + detail));
 		});
 		return result;
-	}	
+	}
+
 	public List<String> getBranchCodes(String userCode) {
-		 List<String> bankNames=List.of("HDFC00001234","HDFC700989","HDFC700989","HDFC700979","HDFC700990");
+		List<String> bankNames = List.of("HDFC00001234", "HDFC700989", "HDFC700989", "HDFC700979", "HDFC700990");
 		return bankNames;
 	}
 
 	public PolicyRequest getCustomerDetails(String policyNo, String customerNo, String userCode) {
 		PolicyRequest customer = new PolicyRequest();
 		if (policyNo != null) {
-			Policy policyNum = policyRepo.findByPolicyNum(policyNo,"N");
-			if(policyNum != null) {
-				Customer byCustomerNoNew = customerRepo.findByCustomerNoNew(policyNum.getCustomer().getCustomerNo(),"N");
+			Policy policyNum = policyRepo.findByPolicyNum(policyNo, "N");
+			if (policyNum != null) {
+				Customer byCustomerNoNew = customerRepo.findByCustomerNoNew(policyNum.getCustomer().getCustomerNo(),
+						"N");
 				customer.setCustName(byCustomerNoNew.getName() + " " + byCustomerNoNew.getSurname());
 				customer.setCustomerNo(byCustomerNoNew.getCustomerNo());
 				customer.setDateOfBirth(byCustomerNoNew.getDateOfBirth());
 				customer.setEmail(byCustomerNoNew.getEmail());
-				customer.setUserCode(byCustomerNoNew.getUserCode());	
+				customer.setUserCode(byCustomerNoNew.getUserCode());
 			}
 		}
 		return customer;
 	}
+
 	public VerificationRecordDTO createVerificationRecord(String action, String accountNo, MultipartFile document,
 			String status, String userCode, String details, String customerNo, String policyNumber) {
 		if (!isValidAction(action)) {
@@ -304,7 +310,7 @@ public class BankDetailsService {
 		if (!isValidStatus(status)) {
 			throw new IllegalArgumentException("Invalid status. Must be PENDING, PASS, FAIL, or IN_REVIEW");
 		}
-		BankAccount bankAccount = bankAccountRepository.findByAccountNo(accountNo,"N");
+		BankAccount bankAccount = bankAccountRepository.findByAccountNo(accountNo, "N");
 		if (bankAccount == null) {
 			throw new ResourceNotFoundException("Bank account not found for accountNo: " + accountNo);
 		}
@@ -346,15 +352,16 @@ public class BankDetailsService {
 		default:
 			throw new IllegalArgumentException("Invalid action type");
 		}
-		 verificationRecord.setVerId(generateVerId()); // Set ver
-		 VerificationRecord verificationRecordNew = verificationRecordRepository.save(verificationRecord);
+		verificationRecord.setVerId(generateVerId()); // Set ver
+		VerificationRecord verificationRecordNew = verificationRecordRepository.save(verificationRecord);
 		// call workitem Service to generate WIrefNo.
 		String workType = CommonConstant.VERIFICATION_RECORD;
 		String workItemName = CommonConstant.VER_REC_WORKITEM;
 		String comment = "Verification Record  is created " + verificationRecordNew.getId() + " and customer Number is"
 				+ bankAccount.getCustomer().getCustomerNo();
+		String status1 = CommonConstant.OPEN;
 		workItemService.mapRequetforWorkItem(userCode, bankAccount.getPolicy(), bankAccount.getCustomer(), workType,
-				workItemName, comment,verificationRecordNew.getBankAccount(),verificationRecordNew ,null);
+				workItemName, comment, verificationRecordNew.getBankAccount(), verificationRecordNew, null, status1);
 
 		return mapToDTO(verificationRecordNew, action);
 	}
@@ -371,8 +378,8 @@ public class BankDetailsService {
 		if (status != null && !isValidStatus(status)) {
 			throw new IllegalArgumentException("Invalid status. Must be PENDING, PASS, FAIL, or IN_REVIEW");
 		}
-		BankAccount byAccountNo = bankAccountRepository.findByAccountNo(accountNo,"N");
-		if(byAccountNo == null) {
+		BankAccount byAccountNo = bankAccountRepository.findByAccountNo(accountNo, "N");
+		if (byAccountNo == null) {
 			throw new ResourceNotFoundException("Bank account not found for accountNo: " + accountNo);
 		}
 
@@ -397,10 +404,10 @@ public class BankDetailsService {
 			throw new IllegalArgumentException("Invalid action type. Must be SANCTIONS, ID, or DEATH");
 		}
 		Optional<VerificationRecord> verRec = verificationRecordRepository.findByVerId(id);
-		if(verRec.isEmpty()) {
+		if (verRec.isEmpty()) {
 			throw new ResourceNotFoundException("Verification record not found for id: " + id);
 		}
-		VerificationRecord verificationRecord= verRec.get();			
+		VerificationRecord verificationRecord = verRec.get();
 		switch (action.toUpperCase()) {
 		case "SANCTIONS":
 			if (verificationRecord.getSanctionsDocs() == null) {
@@ -421,6 +428,7 @@ public class BankDetailsService {
 			throw new IllegalArgumentException("Invalid action type");
 		}
 	}
+
 	private boolean isValidAction(String action) {
 		return action != null && (action.equalsIgnoreCase("SANCTIONS") || action.equalsIgnoreCase("ID")
 				|| action.equalsIgnoreCase("DEATH"));
@@ -436,6 +444,7 @@ public class BankDetailsService {
 		return contentType != null && (contentType.equals("application/pdf") || contentType.equals("image/png")
 				|| contentType.equals("image/jpeg"));
 	}
+
 	private VerificationRecordDTO mapToDTO(VerificationRecord record, String action) {
 		VerificationRecordDTO dto = new VerificationRecordDTO();
 		dto.setId(record.getVerId());
@@ -443,7 +452,7 @@ public class BankDetailsService {
 		dto.setCustomerNo(record.getCustomer().getCustomerNo());
 		dto.setPolicyNumber(record.getPolicy().getPolicyNumber());
 		dto.setAction(action.toUpperCase());
-        dto.setUserCode(record.getUserCode());
+		dto.setUserCode(record.getUserCode());
 		switch (action.toUpperCase()) {
 		case "SANCTIONS":
 			dto.setDetails(record.getSanctions());
@@ -476,7 +485,7 @@ public class BankDetailsService {
 		return "UNKNOWN";
 	}
 
-	public String updateStatus(String id, VerificationRecordDTO verificationRecordDTO,String userCode) {
+	public String updateStatus(String id, VerificationRecordDTO verificationRecordDTO, String userCode) {
 		String message = "";
 		try {
 			Optional<VerificationRecord> record = verificationRecordRepository.findByVerId(id);
@@ -491,10 +500,13 @@ public class BankDetailsService {
 			verificationRecordRepository.save(verificationRecord);
 			String workType = CommonConstant.VERIFICATION_RECORD;
 			String workItemName = CommonConstant.VER_REC_WORKITEM;
-			 message = "Verification Record is created " + verificationRecord.getId() + " and customer Number is"
-					+ verificationRecord.getCustomer().getCustomerNo()+ "action is"+ verificationRecordDTO.getAction() +"Status is"+verificationRecordDTO.getStatus();
-			workItemService.mapRequetforWorkItem(userCode, verificationRecord.getPolicy(), verificationRecord.getCustomer(), workType,
-					workItemName, message,verificationRecord.getBankAccount(),verificationRecord,null);
+			String status = CommonConstant.CLOSED;
+			message = "Verification Record is created " + verificationRecord.getId() + " and customer Number is"
+					+ verificationRecord.getCustomer().getCustomerNo() + "action is" + verificationRecordDTO.getAction()
+					+ "Status is" + verificationRecordDTO.getStatus();
+			workItemService.mapRequetforWorkItem(userCode, verificationRecord.getPolicy(),
+					verificationRecord.getCustomer(), workType, workItemName, message,
+					verificationRecord.getBankAccount(), verificationRecord, null, status);
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
@@ -502,45 +514,46 @@ public class BankDetailsService {
 	}
 
 	public List<VerificationRecordDTO> getAllDocuments(String accountNo, String userCode) {
-		 List<VerificationRecordDTO> listOfDocument= new ArrayList<>();
-		if(accountNo != null) {
+		List<VerificationRecordDTO> listOfDocument = new ArrayList<>();
+		if (accountNo != null) {
 			List<VerificationRecord> verRecords = verificationRecordRepository.findByAccountNo(accountNo);
-			if(verRecords != null) {
-				listOfDocument= bankMapper.mapVerificationRecordList(verRecords);	
-			}else {
+			if (verRecords != null) {
+				listOfDocument = bankMapper.mapVerificationRecordList(verRecords);
+			} else {
 				throw new RuntimeException("No record Found");
 			}
-		}else {
+		} else {
 			List<VerificationRecord> verRecords = verificationRecordRepository.findAll();
-			if(verRecords != null) {
-				listOfDocument= bankMapper.mapVerificationRecordList(verRecords);	
-			}else {
+			if (verRecords != null) {
+				listOfDocument = bankMapper.mapVerificationRecordList(verRecords);
+			} else {
 				throw new RuntimeException("No record Found");
 			}
 		}
-		 return listOfDocument;
+		return listOfDocument;
 	}
-	
+
 	@Transactional
-    public synchronized String generateVerId() {
-        String lastVerId = verificationRecordRepository.findTopVerId();
-        int nextSequenceNumber = 1;
-        if (lastVerId != null && lastVerId.startsWith("REC_")) {
-            try {
-                String numberPart = lastVerId.substring(4); // Extract number after "REC_"
-                nextSequenceNumber = Integer.parseInt(numberPart) + 1;
-            } catch (NumberFormatException e) {
-                logger.warn("Could not parse sequence number from last ver_Id: {}. Starting sequence from 1.", lastVerId, e);
-                nextSequenceNumber = 1;
-            }
-        }
-        String newVerId = String.format("REC_%d", nextSequenceNumber);
-        logger.info("Generated new ver_Id: {}", newVerId);
-        return newVerId;
-    }
+	public synchronized String generateVerId() {
+		String lastVerId = verificationRecordRepository.findTopVerId();
+		int nextSequenceNumber = 1;
+		if (lastVerId != null && lastVerId.startsWith("REC_")) {
+			try {
+				String numberPart = lastVerId.substring(4); // Extract number after "REC_"
+				nextSequenceNumber = Integer.parseInt(numberPart) + 1;
+			} catch (NumberFormatException e) {
+				logger.warn("Could not parse sequence number from last ver_Id: {}. Starting sequence from 1.",
+						lastVerId, e);
+				nextSequenceNumber = 1;
+			}
+		}
+		String newVerId = String.format("REC_%d", nextSequenceNumber);
+		logger.info("Generated new ver_Id: {}", newVerId);
+		return newVerId;
+	}
 
 	public DashboardStats getCount(String userCode) {
-		DashboardStats dashboardStats=new DashboardStats();
+		DashboardStats dashboardStats = new DashboardStats();
 		dashboardStats.setTotalAccounts(12);
 		dashboardStats.setVerifiedAccounts(12);
 		dashboardStats.setPendingVerifications(22);
@@ -578,12 +591,11 @@ public class BankDetailsService {
 				return message;
 			}
 		}
-		if(bankDetailsDTO.getAction().equalsIgnoreCase("verify")) {
-			String verify= environment.getProperty("VERIFICATION");
-			return  verify;
+		if (bankDetailsDTO.getAction().equalsIgnoreCase("verify")) {
+			String verify = environment.getProperty("VERIFICATION");
+			return verify;
 		}
 
 		return message;
 	}
 }
-

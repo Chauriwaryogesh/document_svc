@@ -9,7 +9,6 @@ public class DocumentResponse {
 	private String message;
 	private String createdDate;
 
-
 	/**
 	 * @return the createdDate
 	 */
