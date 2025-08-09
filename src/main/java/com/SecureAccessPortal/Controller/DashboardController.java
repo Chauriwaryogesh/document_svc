@@ -128,4 +128,9 @@ public class DashboardController {
 			String userCode) {
 		return "PaymentForCustomer";
 	}
+	@GetMapping("/SurrenderPolicyForCustomer")
+	public String SurrenderPolicyForCustomer(@RequestParam(required = false) String customerNo,
+			@RequestParam(required = false) String policyNo,String userCode) {
+		return "SurrenderPolicyForCustomer";
+	}
 }

@@ -19,8 +19,7 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
-   /* === Modernized Sidebar === */
-.sidebar {
+   .sidebar {
     --sidebar-width-collapsed: 80px;
     --sidebar-width-expanded: 280px;
     width: var(--sidebar-width-collapsed);
@@ -463,10 +462,9 @@ body.dark-mode #welcome-message {
         overflow-y: auto;
     }
 
-    /* Specific styles for the profile modal to make it larger */
     #profile-modal .modal-content {
-        max-width: 48rem; /* Increased max-width for a larger modal */
-        width: 90%; /* Ensure it's responsive */
+        max-width: 48rem;
+        width: 90%;
     }
 
     .sla-container {
@@ -807,7 +805,6 @@ body.dark-mode #welcome-message {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    /* === Modal Styles === */
     .modal-overlay {
         position: fixed;
         top: 0;
@@ -873,7 +870,6 @@ body.dark-mode #welcome-message {
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
     }
 
-    /* === Modal Styles === */
     .modal-overlay {
         position: fixed;
         top: 0;
@@ -908,7 +904,6 @@ body.dark-mode #welcome-message {
         to { opacity: 1; transform: scale(1); }
     }
 
-    /* === Modern Button Styles === */
     .modern-button {
       display: inline-flex;
       align-items: center;
@@ -950,7 +945,6 @@ body.dark-mode #welcome-message {
       height: 0;
     }
 
-    /* === Collapsible Results Styles === */
     .collapsible-section {
         margin-top: 1rem;
         border-radius: 0.5rem;
@@ -988,7 +982,6 @@ body.dark-mode #welcome-message {
         border-radius: 0 0 0.5rem 0.5rem;
     }
 
-    /* === Tab Styles === */
     .tab-item {
       padding: 0.75rem 1.25rem;
       font-weight: 500;
@@ -1004,7 +997,6 @@ body.dark-mode #welcome-message {
       box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
     }
     
-    /* === Card Hover Effect === */
     .result-card {
       transition: all 0.2s ease-in-out;
     }
@@ -1013,7 +1005,6 @@ body.dark-mode #welcome-message {
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
-    /* === Loading Spinner === */
     .spinner {
         border: 4px solid rgba(255, 255, 255, 0.3);
         border-top: 4px solid #fff;
@@ -1027,7 +1018,6 @@ body.dark-mode #welcome-message {
         100% { transform: rotate(360deg); }
     }
 
-    /* === View Toggler buttons === */
     .view-toggle-btn {
         @apply p-2 rounded-lg text-gray-500 transition-colors duration-200;
     }
@@ -1069,6 +1059,9 @@ body.dark-mode #welcome-message {
         .chatbot-container { width: 90%; right: 5%; bottom: 8rem; }
         .chatbot-button { right: 0.8rem; bottom: 4.5rem; width: 2.8rem; height: 2.8rem; font-size: 1.3em; }
         .main-footer { padding: 0.6rem; font-size: 0.7rem; }
+        .flex-col-mobile { flex-direction: column; }
+        .full-width-mobile { width: 100%; }
+        .search-modal-flex-wrap { flex-wrap: wrap; }
     }
 
     .main-content-area {
@@ -1132,7 +1125,6 @@ body.dark-mode #welcome-message {
         <a href="#" class="sidebar-link w-full" onclick="openModal('contact', 'Contact Us Opened')" aria-label="Contact Us">
             <i class="fa-solid fa-envelope"></i><span class="sidebar-link-text">Contact Us</span>
         </a>
-        <!-- Notifications link removed -->
 
         <div class="menu-section">
             <button id="services-submenu-toggle" class="sidebar-link w-full" aria-expanded="false" aria-controls="services-submenu" aria-label="Toggle Services Submenu">
@@ -1198,7 +1190,6 @@ body.dark-mode #welcome-message {
         </button>
     </div>
 </header>
- <!-- Search Module Modal -->
   <div id="search-module-modal" class="modal-overlay hidden">
     <div class="modal-box w-11/12 max-w-7xl text-left p-8 rounded-xl relative">
       <button class="modal-close-btn absolute" onclick="closeModal('search-module-modal')">
@@ -1206,7 +1197,6 @@ body.dark-mode #welcome-message {
       </button>
       <h3 class="text-3xl font-bold mb-4 text-blue-600">Universal Search</h3>
 
-      <!-- Tabs for Search Type -->
       <div id="search-tabs" class="flex flex-wrap border-b border-gray-200 mb-4">
         <button data-type="CUSTOMER" class="tab-item active text-gray-700">Customer</button>
         <button data-type="POLICY" class="tab-item text-gray-700">Policy</button>
@@ -1217,26 +1207,22 @@ body.dark-mode #welcome-message {
       </div>
 
       <div class="flex flex-col md:flex-row items-center gap-4 my-4">
-        <!-- Search Input -->
         <div class="relative flex-grow w-full">
           <input type="text" id="search-input" placeholder="Enter a search number..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Search">
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
             <i class="fas fa-search"></i>
           </div>
         </div>
-        <!-- All Search Checkbox -->
         <div class="flex items-center">
           <input type="checkbox" id="all-search-checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
           <label for="all-search-checkbox" class="ml-2 block text-sm font-medium text-gray-700">Search All</label>
         </div>
-        <!-- Search Button -->
         <button id="search-button" class="modern-button primary">
             <span id="search-button-text">Search</span>
             <div id="search-spinner" class="spinner hidden ml-2"></div>
         </button>
       </div>
 
-      <!-- View Toggler and Results Container -->
       <div id="results-controls" class="flex justify-end items-center gap-2 mb-2 hidden">
           <span class="text-sm text-gray-600">View as:</span>
           <button id="view-card" class="view-toggle-btn active" title="Card View">
@@ -1256,7 +1242,6 @@ body.dark-mode #welcome-message {
     </div>
   </div>
 
-  <!-- Details Popup Modal -->
   <div id="details-modal" class="modal-overlay hidden">
       <div class="modal-box w-11/12 max-w-4xl text-left p-6 rounded-lg relative">
           <button class="modal-close-btn absolute" onclick="closeModal('details-modal')">
@@ -1264,7 +1249,6 @@ body.dark-mode #welcome-message {
           </button>
           <h3 id="details-modal-title" class="text-2xl font-bold mb-4 text-blue-600">Details</h3>
           <div id="details-modal-content" class="overflow-y-auto max-h-[70vh] custom-scrollbar">
-              <!-- Content will be injected here -->
           </div>
       </div>
   </div>
@@ -1366,6 +1350,7 @@ body.dark-mode #welcome-message {
                   </div>
 
                   <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                       <button onclick="openModal('search-module-modal')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"><i class="fa-solid fa-magnifying-glass text-3xl text-orange-600 mb-4"></i><h3 class="text-lg font-bold text-gray-800">Search</h3></button>                                
                       <button onclick="navigateTo('dashboard')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-border-all text-3xl text-blue-500 mb-4"></i><h3 class="text-lg font-bold">Dashboard</h3></button>
                       <button onclick="navigateTo('workitems')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-briefcase text-3xl text-teal-500 mb-4"></i><h3 class="text-lg font-bold">Workitems</h3></button>
                       <button onclick="navigateTo('policy')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-contract text-3xl text-purple-500 mb-4"></i><h3 class="text-lg font-bold">Policy</h3></button>
@@ -1376,12 +1361,9 @@ body.dark-mode #welcome-message {
                       <button onclick="navigateTo('complaints')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-bullhorn text-3xl text-red-500 mb-4"></i><h3 class="text-lg font-bold">Complaints</h3></button>
                       <button onclick="navigateTo('feedback')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-comments text-3xl text-yellow-500 mb-4"></i><h3 class="text-lg font-bold">Feedback</h3></button>
                       <button onclick="navigateTo('customerService')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-headset text-3xl text-lime-500 mb-4"></i><h3 class="text-lg font-bold">Customer Service</h3></button>
-                      <button onclick="openModal('search-module-modal')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"><i class="fa-solid fa-magnifying-glass text-3xl text-orange-600 mb-4"></i><h3 class="text-lg font-bold text-gray-800">Universal Search Module</h3>
-                      </button>                     
                       <button onclick="navigateTo('policyClaimAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-invoice-dollar text-3xl text-cyan-500 mb-4"></i><h3 class="text-lg font-bold">Policy Claim Admin</h3></button>
                       <button onclick="navigateTo('policySurrenderAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-hand-holding-usd text-3xl text-fuchsia-500 mb-4"></i><h3 class="text-lg font-bold">Policy Surrender Admin</h3></button>
                       <button onclick="navigateTo('addNotes')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-note-sticky text-3xl text-blue-400 mb-4"></i><h3 class="text-lg font-bold">Add Notes</h3></button>
-                      <!-- New Modules -->
                       <button onclick="navigateTo('newBusinessDocCreate')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-circle-plus text-3xl text-indigo-600 mb-4"></i><h3 class="text-lg font-bold">New Business Doc Create</h3></button>
                       <button onclick="navigateTo('docVerificationManagement')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-circle-check text-3xl text-green-600 mb-4"></i><h3 class="text-lg font-bold">Document Verification</h3></button>
                       <button onclick="navigateTo('mailServices')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-envelope-open-text text-3xl text-red-500 mb-4"></i><h3 class="text-lg font-bold">Mail Services</h3></button>
@@ -1494,7 +1476,7 @@ body.dark-mode #welcome-message {
         </div>
     </div>
     <div id="profile-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-2xl transform"> <!-- Changed max-w-md to max-w-2xl -->
+        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-2xl transform">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
                 <button onclick="closeModal('profile')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
@@ -1596,33 +1578,6 @@ body.dark-mode #welcome-message {
             <p class="text-gray-600 my-4" id="error-message-text">An unexpected error occurred. Please try again.</p>
         </div>
     </div>
-
-    <div id="search-module-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="modal-content bg-white p-8 rounded-xl w-full max-w-2xl transform">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-semibold text-gray-800">Universal Search</h3>
-                <button onclick="closeModal('search-module-modal')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
-            </div>
-
-            <div class="flex border-b border-gray-200 mb-4 overflow-x-auto">
-                <button class="tab-button active" data-tab="policy">Policy</button>
-                <button class="tab-button" data-tab="complaint">Complaint</button>
-                <button class="tab-button" data-tab="workitem">Workitem</button>
-                <button class="tab-button" data-tab="customer">Customer</button>
-                <button class="tab-button" data-tab="bank">Bank</button>
-                <button class="tab-button" data-tab="payment">Payment</button>
-            </div>
-
-            <div class="relative mb-4">
-                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input type="text" id="module-search-input" placeholder="Enter search query..." class="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <div id="module-search-results" class="bg-gray-50 p-4 rounded-lg h-48 overflow-y-auto custom-scrollbar">
-                <p class="text-gray-500 text-center py-4">Enter a query and select a type to search.</p>
-            </div>
-        </div>
-    </div>
   </div>
 
 <footer class="main-footer">© 2025 Secure Access Limited. All rights reserved ❤️ Company.</footer>
@@ -1651,6 +1606,7 @@ body.dark-mode #welcome-message {
       'search-message-modal': document.getElementById('search-message-modal'),
       'error-message-modal': document.getElementById('error-message-modal'),
       'search-module-modal': document.getElementById('search-module-modal'),
+      'details-modal': document.getElementById('details-modal'), 
     };
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
@@ -1670,7 +1626,6 @@ body.dark-mode #welcome-message {
     window.openModal = (modalId, activityText = `Opened ${modalId} modal`) => {
         modals[modalId]?.classList.remove('hidden');
         logActivity(activityText);
-        // If opening the profile modal, populate it with data
         if (modalId === 'profile' && customerData) {
             populateProfileModal(customerData);
         }
@@ -1710,9 +1665,9 @@ body.dark-mode #welcome-message {
             policySurrenderAdmin: 'PolicySurrenderAdmin',
             activityLog: 'activity',
             addNotes: 'AddNotes',
-            newBusinessDocCreate: 'NewBusinessDocumentCreate', // New module
-            docVerificationManagement: 'DocumentVerificationManagement', // New module
-            mailServices: 'MailServices', // New module
+            newBusinessDocCreate: 'NewBusinessDocumentCreate',
+            docVerificationManagement: 'DocumentVerificationManagement',
+            mailServices: 'MailServices',
             Policy: 'policy', Workitem: 'workitems', 'Create Customer': 'customerService',
             'Bank Account': 'bankAccount', Payments: 'payment'
         };
@@ -1741,9 +1696,7 @@ body.dark-mode #welcome-message {
         }
         
         let url = targetFileName;
-        // Pages that require customerNo in params
         const pagesWithCustomerNo = ['feedback', 'activityLog', 'addNotes'];
-        // Pages that are admin modules and should NOT have customerNo
         const adminPages = ['newBusinessDocCreate', 'docVerificationManagement', 'mailServices'];
 
         if (pagesWithCustomerNo.includes(page)) {
@@ -1757,7 +1710,6 @@ body.dark-mode #welcome-message {
                 return;
             }
         } else if (adminPages.includes(page)) {
-            // No customerNo for admin pages
             url = targetFileName;
         }
 
@@ -1768,7 +1720,6 @@ body.dark-mode #welcome-message {
     function logout() { navigateTo('logout'); }
     function redirectToAdminPanel() { navigateTo('admin'); }
 
-    // Function to populate the profile modal with data
     function populateProfileModal(customer) {
         document.getElementById('profile-name').textContent = `${customer.name || ''} ${customer.middleName || ''} ${customer.surname || ''}`.trim() || 'N/A';
         document.getElementById('profile-role').textContent = customer.roles?.join(', ') || 'Customer';
@@ -1803,7 +1754,6 @@ body.dark-mode #welcome-message {
         document.getElementById('modal-profile-icon').src = "https://i.pravatar.cc/80?u=" + customer.userCode;
     }
 
-    // Function to fetch and store profile data on page load
     async function fetchAndStoreProfileData() {
         const userCode = sessionStorage.getItem('userCode');
         if (!userCode) {
@@ -1821,18 +1771,16 @@ body.dark-mode #welcome-message {
                 throw new Error(apiResponse.errorMessage || 'Failed to fetch customer details.');
             }
             
-            customerData = apiResponse.data; // Store fetched data globally
+            customerData = apiResponse.data;
             if (customerData.customerNo) {
                 sessionStorage.setItem('customerNo', customerData.customerNo);
                 config.customerNo = customerData.customerNo;
             }
-            // Update welcome message and profile icon immediately after fetching
             document.getElementById('welcome-message').textContent = `Welcome, ${customerData.name || 'User'}!`;
             document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?u=" + customerData.userCode;
 
         } catch (error) {
             console.error("Error fetching customer details on load:", error);
-            // Optionally show a less intrusive error, as this is on page load
         }
     }
 
@@ -2057,17 +2005,13 @@ body.dark-mode #welcome-message {
               resultsControls.classList.add('hidden');
             }
           });
-        // Add event listeners for view toggling
         viewToggleButtons.forEach(button => {
           button.addEventListener('click', () => {
-              // Update active state for buttons
               viewToggleButtons.forEach(btn => btn.classList.remove('active'));
               button.classList.add('active');
               
-              // Update the display mode
               currentDisplayMode = button.id.replace('view-', '');
               
-              // Re-render the results with the new mode
               if (lastFetchedData) {
                   renderResults(lastFetchedData, allSearchCheckbox.checked ? 'Y' : 'N', currentSearchType);
               }
@@ -2075,7 +2019,7 @@ body.dark-mode #welcome-message {
         });
         searchButton.addEventListener('click', async () => {
             const number = searchInput.value.trim();
-            const type = currentSearchType; // Use the value from the active tab
+            const type = currentSearchType;
             const allSearch = allSearchCheckbox.checked ? 'Y' : 'N';
 
             if (!number) {
@@ -2083,7 +2027,6 @@ body.dark-mode #welcome-message {
                 return;
             }
 
-            // Show loading state
             searchButtonText.textContent = 'Searching...';
             searchSpinner.classList.remove('hidden');
             searchButton.disabled = true;
@@ -2098,7 +2041,7 @@ body.dark-mode #welcome-message {
                 }
                 const result = await response.json();
                 if (result.status === 'Success' && result.data) {
-                  lastFetchedData = result.data; // Store fetched data
+                  lastFetchedData = result.data;
                   renderResults(result.data, allSearch, type);
                 } else {
                   lastFetchedData = null;
@@ -2109,13 +2052,11 @@ body.dark-mode #welcome-message {
                 resultsContainer.innerHTML = `<p class="text-red-500">Error fetching data. Please check the API and try again. Details: ${error.message}</p>`;
                 console.error('Error:', error);
             } finally {
-                // Reset loading state
                 searchButtonText.textContent = 'Search';
                 searchSpinner.classList.add('hidden');
                 searchButton.disabled = false;
             }
         });
-     // Main function to display results based on the current view mode
         function renderResults(data, allSearch, searchType) {
           if (!data || Object.keys(data).length === 0) {
               resultsContainer.innerHTML = '<p class="text-gray-500">No results found for this search.</p>';
@@ -2123,12 +2064,11 @@ body.dark-mode #welcome-message {
               return;
           }
           resultsControls.classList.remove('hidden');
-          resultsContainer.innerHTML = ''; // Clear previous results
+          resultsContainer.innerHTML = '';
           if (data.customerNo) {
               resultsContainer.appendChild(createSection('Customer', [data]));
           }
 
-          // Handle 'allSearch' flag with collapsible sections for other data types
           if (allSearch === 'Y') {
               if (data.policy && data.policy.length > 0) {
                   const policyList = data.policy.flatMap(p => p.policyList);
@@ -2152,7 +2092,6 @@ body.dark-mode #welcome-message {
                   }
               }
           } else {
-              // Display only the specific object based on the searchType
               switch(searchType) {
                   case 'POLICY':
                       if (data.policy && data.policy.length > 0) {
@@ -2193,14 +2132,13 @@ body.dark-mode #welcome-message {
             section.className = 'mt-6 first:mt-0';
             section.innerHTML = `<h3 class="text-lg font-semibold text-blue-600 mb-2">${title}</h3>`;
             const dataItems = Array.isArray(items) ? items : [items];
-            const content = createView(title, dataItems); // Pass title to createView
+            const content = createView(title, dataItems);
             if (content) {
                 section.appendChild(content);
             }
             return section;
         }
 
-        // Helper function to create a collapsible results section
         function createCollapsibleSection(title, items) {
             const details = document.createElement('details');
             details.className = 'collapsible-section';
@@ -2209,7 +2147,7 @@ body.dark-mode #welcome-message {
             const contentDiv = document.createElement('div');
             contentDiv.className = 'collapsible-content';
             
-            const content = createView(title, items); // Pass title to createView
+            const content = createView(title, items);
             if (content) {
                 contentDiv.appendChild(content);
             }
@@ -2218,7 +2156,6 @@ body.dark-mode #welcome-message {
             return details;
         }
         
-        // Main function to create the view based on the current display mode
         function createView(title, items) {
             if (!items || items.length === 0) return null;
             
@@ -2233,7 +2170,6 @@ body.dark-mode #welcome-message {
                     return createCardView(title, items);
             }
         }
-     // View Rendering Functions
         function createCardView(title, items) {
             const container = document.createElement('div');
             container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
@@ -2254,7 +2190,7 @@ body.dark-mode #welcome-message {
                     card.appendChild(p);
                 });
                 
-                card.addEventListener('click', () => openDetailsModal(item, title)); // Pass the correct title here
+                card.addEventListener('click', () => openDetailsModal(item, title));
                 container.appendChild(card);
             });
             return container;
@@ -2265,9 +2201,8 @@ body.dark-mode #welcome-message {
             items.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'p-4 cursor-pointer hover:bg-gray-50 transition-colors duration-200';
-                li.addEventListener('click', () => openDetailsModal(item, title)); // Pass the correct title here
+                li.addEventListener('click', () => openDetailsModal(item, title));
                 
-                // Determine a suitable primary key for the list title
                 let primaryKey = 'Id';
                 if (item.policyNumber) primaryKey = 'policyNumber';
                 else if (item.complaintNumber) primaryKey = 'complaintNumber';
@@ -2307,7 +2242,6 @@ body.dark-mode #welcome-message {
             const table = document.createElement('table');
             table.className = 'min-w-full divide-y divide-gray-300 bg-white shadow-md rounded-lg';
             
-            // Create Table Header
             const thead = document.createElement('thead');
             thead.className = 'bg-gray-50';
             const headerRow = document.createElement('tr');
@@ -2322,13 +2256,12 @@ body.dark-mode #welcome-message {
             thead.appendChild(headerRow);
             table.appendChild(thead);
             
-            // Create Table Body
             const tbody = document.createElement('tbody');
             tbody.className = 'bg-white divide-y divide-gray-200';
             items.forEach(item => {
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-gray-50 cursor-pointer';
-                row.addEventListener('click', () => openDetailsModal(item, title)); // Pass the correct title here
+                row.addEventListener('click', () => openDetailsModal(item, title));
                 
                 headerKeys.forEach(key => {
                     const td = document.createElement('td');
@@ -2344,7 +2277,6 @@ body.dark-mode #welcome-message {
             return tableContainer;
         }
 
-        // Main function to open the details modal
         function openDetailsModal(item, title) {
             const modal = document.getElementById('details-modal');
             const modalTitle = document.getElementById('details-modal-title');
@@ -2357,7 +2289,6 @@ body.dark-mode #welcome-message {
             openModal('details-modal');
         }
 
-        // Recursive function to create a details list from an object or array
         function createDetailsList(data) {
             const ul = document.createElement('ul');
             ul.className = 'space-y-4';
@@ -2367,7 +2298,6 @@ body.dark-mode #welcome-message {
             itemsToProcess.forEach(item => {
                 for (const key in item) {
                     if (Object.prototype.hasOwnProperty.call(item, key)) {
-                        // Skip rendering these keys as they are already displayed in separate sections
                         if (keysToExclude.includes(key.toLowerCase())) {
                             continue;
                         }
@@ -2379,7 +2309,6 @@ body.dark-mode #welcome-message {
                         li.className = 'py-2 border-b border-gray-200 last:border-b-0';
 
                         if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                            // Handle nested objects by creating a new collapsible section
                             const details = document.createElement('details');
                             details.className = 'bg-gray-50 p-4 rounded-lg shadow-inner';
                             const summary = document.createElement('summary');
@@ -2395,12 +2324,9 @@ body.dark-mode #welcome-message {
                                 li.innerHTML = `<span class="font-medium text-gray-700">${formattedKey}:</span> <span class="text-gray-900">No data available.</span>`;
                             }
                         } else if (Array.isArray(value)) {
-                            // Correctly handle arrays of objects or strings
                             if (value.every(element => typeof element !== 'object' || element === null)) {
-                                // Array of primitives (strings, numbers, etc.)
                                 li.innerHTML = `<span class="font-medium text-gray-700">${formattedKey}:</span> <span class="text-gray-900">${value.join(', ') || 'N/A'}</span>`;
                             } else {
-                                // Array of objects - create a nested list with collapsible sections
                                 const details = document.createElement('details');
                                 details.className = 'modal-nested-details';
                                 const summary = document.createElement('summary');
@@ -2415,10 +2341,8 @@ body.dark-mode #welcome-message {
                                     const nestedDetails = document.createElement('details');
                                     const nestedSummary = document.createElement('summary');
                                     
-                                    // Find the best identifier for the title, fallback if none exists
                                     let objId = complexKeyTitles[key] ? obj[complexKeyTitles[key]] : null;
                                     if (!objId) {
-                                        // Fallback to the first non-object key
                                         const fallbackKey = Object.keys(obj).find(k => typeof obj[k] !== 'object' && obj[k] !== null);
                                         objId = fallbackKey ? obj[fallbackKey] : `Entry ${index + 1}`;
                                     }
@@ -2435,7 +2359,6 @@ body.dark-mode #welcome-message {
                                 li.appendChild(details);
                             }
                         } else {
-                            // Handle primitive values
                             li.innerHTML = `<span class="font-medium text-gray-700">${formattedKey}:</span> <span class="text-gray-900">${value || 'N/A'}</span>`;
                         }
                         ul.appendChild(li);
@@ -2444,7 +2367,6 @@ body.dark-mode #welcome-message {
             });
             return ul;
         }
-        //end serch function use
         document.getElementById('sidebar-toggle').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('active');
         });
