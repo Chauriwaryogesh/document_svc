@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Policy Admin - Dashboard Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.autotable.min.js"></script>
+    <style>
+        /* Base styling */
+        body, html {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            height: 100vh;
+            overflow-x: hidden;
+            color: #1f2937; /* Default text color */
+        }
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        /* Modernized Sidebar */
+        .sidebar {
+            --sidebar-width-collapsed: 80px;
+            --sidebar-width-expanded: 280px;
+            width: var(--sidebar-width-collapsed);
+            background: #ffffff;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e2e8f0;
+            position: relative;
+            height: 100vh;
+            flex-shrink: 0;
+        }
+        .sidebar:hover,
+        .sidebar.expanded {
+            width: var(--sidebar-width-expanded);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+        }
+        .sidebar-collapse-btn {
+            position: absolute;
+            top: 20px;
+            right: -16px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 101;
+        }
+        .sidebar-collapse-btn:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
+        }
+        .sidebar.expanded .sidebar-collapse-btn {
+            transform: rotate(180deg);
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 20px;
+            color: #4b5563;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: color 0.2s, background-color 0.2s, transform 0.2s ease;
+            border-radius: 8px;
+            margin: 4px 12px;
+            text-decoration: none;
+        }
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            color: #2563eb;
+            background-color: #eff6ff;
+            transform: translateX(4px);
+        }
+        .sidebar-link i {
+            font-size: 1.15rem;
+            min-width: 24px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            transition: opacity 0.3s ease-in-out 0.1s, width 0.3s ease-in-out 0.1s;
+        }
+        .sidebar:hover .sidebar-link-text,
+        .sidebar.expanded .sidebar-link-text,
+        .sidebar.active .sidebar-link-text {
+            opacity: 1;
+            width: auto;
+        }
+        .sidebar-header {
+            padding: 0 20px;
+            justify-content: flex-start;
+            flex-shrink: 0;
+        }
+        .sidebar-header .logo-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            transition: opacity 0.3s ease-in-out 0.1s, width 0.3s ease-in-out 0.1s;
+        }
+        .sidebar:hover .logo-text,
+        .sidebar.expanded .logo-text,
+        .sidebar.active .logo-text {
+            opacity: 1;
+            width: auto;
+        }
+        .sidebar-header .sidebar-icon-collapsed {
+            display: block;
+        }
+        .sidebar:hover .sidebar-icon-collapsed,
+        .sidebar.expanded .sidebar-icon-collapsed,
+        .sidebar.active .sidebar-icon-collapsed {
+            display: none;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                transform: translateX(-100%);
+                width: var(--sidebar-width-expanded);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                z-index: 1000;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .sidebar-collapse-btn {
+                display: none;
+            }
+        }
+        /* Dark mode styles removed */
+
+        header {
+            background-color: #ffffff;
+            padding: 1rem;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            height: 5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            z-index: 50;
+        }
+        header .flex.items-center.gap-4 { display: flex; align-items: center; gap: 1rem; margin-left: 1rem; min-width: 0; flex-shrink: 1; }
+        #welcome-message { font-size: 0.875rem; font-weight: 500; color: #4b5563; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 24rem; flex-shrink: 1; }
+        @media (min-width: 768px) { #welcome-message { display: block; max-width: 28rem; } }
+        @media (min-width: 1024px) { #welcome-message { max-width: 32rem; } }
+        /* Dark mode styles removed */
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+            backdrop-filter: blur(5px);
+        }
+        .modal-box {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+            animation: fadeInScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-close-btn {
+            top: 16px;
+            right: 16px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+        .modal-close-btn:hover {
+            color: #1f2937;
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-content {
+            max-height: 85vh; /* Max height for modal content */
+            overflow-y: auto; /* Enable scrolling */
+            padding-right: 0.5rem; /* Space for scrollbar */
+        }
+        .modern-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .modern-button.primary {
+            background-color: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+        }
+        .modern-button.primary:hover {
+            background-color: #2563eb;
+            box-shadow: 0 6px 8px rgba(59, 130, 246, 0.3);
+            transform: translateY(-1px);
+        }
+        .modern-button.primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.75s;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+        .modern-button.primary:hover::before {
+            width: 0;
+            height: 0;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+        .status-badge.pending, .status-badge.pending-verification { background-color: #fef3c7; color: #d97706; }
+        .status-badge.pending-approval { background-color: #bfdbfe; color: #1e40af; }
+        .status-badge.approved { background-color: #d1fae5; color: #065f46; }
+        .status-badge.rejected { background-color: #fee2e2; color: #991b1b; }
+        .status-badge.verified { background-color: #dbeafe; color: #1e40af; }
+        .status-badge.bank-verified { background-color: #dbeafe; color: #1e40af; }
+        .status-badge.payment-processed { background-color: #d1fae5; color: #065f46; }
+
+        .document-item.verified .fa-check-circle { color: #22c55e; }
+        .document-item.pending .fa-hourglass-half { color: #f59e0b; }
+        .document-item.rejected .fa-times-circle { color: #ef4444; }
+
+        .main-footer {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background-color: #e0f2fe;
+            color: #1e40af;
+            text-align: center;
+            font-size: 0.75rem;
+            position: fixed;
+            bottom: 0;
+            border-top: 1px solid #93c5fd;
+            z-index: 999;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+            border-radius: 1.25rem 1.25rem 0 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-footer { padding: 0.6rem; font-size: 0.7rem; }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+        /* Request List Specific Styles */
+        .request-list-item {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+        .request-list-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        .request-info {
+            flex-grow: 1;
+        }
+        .request-info p {
+            font-size: 0.95rem;
+            color: #4b5563;
+            margin-bottom: 0.25rem;
+        }
+        .request-info p:last-child {
+            margin-bottom: 0;
+        }
+        .request-info .policy-number {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1.05rem;
+        }
+        .status-col {
+            flex-shrink: 0;
+            margin-left: 1rem;
+            text-align: right;
+        }
+        .tab-button {
+            border-radius: 0.75rem 0.75rem 0 0;
+            background-color: transparent;
+            color: #6b7280;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            border-bottom: 3px solid transparent;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .tab-button.active {
+            background-color: #ffffff;
+            color: #1d4ed8;
+            border-bottom-color: #2563eb;
+        }
+        .tab-button:hover:not(.active) {
+            background-color: #eff6ff;
+            color: #2563eb;
+        }
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1.5rem;
+            gap: 1rem;
+        }
+        .pagination-btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .pagination-btn:disabled {
+            background-color: #93c5fd;
+            cursor: not-allowed;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            background-color: #2563eb;
+        }
+        .document-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background-color: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 0.5rem;
+        }
+        .document-item .doc-name {
+            font-weight: 500;
+            flex-grow: 1;
+        }
+        .document-item .doc-status-col {
+            min-width: 80px; /* Adjust as needed */
+            text-align: center;
+            margin-right: 1rem;
+        }
+        .document-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .document-actions button {
+            padding: 0.4rem 0.6rem;
+            border-radius: 0.3rem;
+            font-size: 0.8rem;
+            transition: background-color 0.2s ease;
+        }
+        .document-actions button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .total-requests-indicator {
+            background-color: #fee2e2; /* Light red background */
+            color: #dc2626; /* Darker red text */
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px; /* Pill shape */
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .total-requests-indicator.no-pending {
+             background-color: #d1fae5; /* Light green for no pending */
+             color: #065f46; /* Darker green */
+        }
+        /* Search input specific styles for expansion */
+        .search-container {
+            position: relative;
+            /* width: 40px;  collapsed width */
+            transition: width 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            overflow: hidden; /* Hide overflow when collapsed */
+        }
+        /* .search-container.expanded {
+            width: 100%; 
+        } */
+        .search-container input {
+            width: 0; /* Initially hidden */
+            opacity: 0;
+            padding-left: 40px; /* space for icon */
+            transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            border-color: transparent; /* Hide border when collapsed */
+        }
+        .search-container.expanded input {
+            width: 100%;
+            opacity: 1;
+            border-color: #d1d5db; /* Show border when expanded */
+        }
+        .search-container .search-icon {
+            position: absolute;
+            left: 10px;
+            color: #6b7280;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 1.25rem; /* Larger icon */
+            transition: color 0.2s ease;
+        }
+        .search-container .search-icon:hover {
+            color: #1f2937;
+        }
+        .search-container.expanded .search-icon {
+            left: 10px; /* Keep icon visible when expanded */
+        }
+        .search-button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            margin-left: 0.5rem;
+            display: none; /* Hidden by default */
+            flex-shrink: 0; /* Prevent button from shrinking */
+            transition: opacity 0.3s ease;
+        }
+        .search-container.expanded .search-button {
+            display: block; /* Show when expanded */
+            opacity: 1;
+        }
+        /* Specific override for header search to be always expanded */
+        #header-search-container {
+            width: 32rem; /* Adjusted for header, can be relative if needed */
+            max-width: 50%; /* Adjust as per header layout needs */
+        }
+        #header-search-container input {
+            width: 100%;
+            opacity: 1;
+            border-color: #d1d5db;
+        }
+        #header-search-container .search-button {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Advanced Filter Styling */
+        .collapsible-section summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background-color: #f3f4f6; /* Light gray background for summary */
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            border-radius: 0.75rem 0.75rem 0 0;
+            font-weight: 600;
+            color: #374151;
+            transition: background-color 0.2s ease;
+        }
+        .collapsible-section summary:hover {
+            background-color: #e5e7eb;
+        }
+        .collapsible-section[open] summary {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .collapsible-section summary i {
+            transition: transform 0.2s ease;
+        }
+        .collapsible-section[open] summary i {
+            transform: rotate(180deg);
+        }
+        .collapsible-content {
+            border-top: none;
+            border-radius: 0 0 0.75rem 0.75rem;
+        }
+        /* Adjust for positioning in the new layout */
+        .collapsible-section.horizontal-flow .collapsible-content {
+            position: absolute; /* Changed to absolute to float */
+            right: 0;
+            top: 100%; /* Position below the summary */
+            margin-top: 0.5rem; /* Small gap */
+            width: 320px; /* Fixed width to prevent overstretching */
+            z-index: 20; /* Ensure it appears above other content */
+            border-radius: 0.75rem; /* Rounded corners for the dropdown */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        /* General styling for search & filter container in the tab row */
+        .tab-row-controls {
+            flex-grow: 1; /* Allow it to take available space */
+            display: flex;
+            justify-content: flex-end; /* Align to the right */
+            align-items: center;
+            padding-right: 1rem; /* Padding to match the tab buttons */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar flex flex-col h-full flex-shrink-0" aria-label="Main navigation">
+            <button id="sidebar-collapse-btn" class="sidebar-collapse-btn hidden lg:flex" aria-label="Toggle sidebar" aria-expanded="false">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="sidebar-header flex items-center justify-center h-20 flex-shrink-0 border-b border-gray-200">
+                <i id="sidebar-header-collapsed-icon" class="fa-solid fa-cloud text-3xl text-blue-600 sidebar-icon-collapsed"></i>
+                <h2 id="sidebar-header-logo-text" class="text-2xl font-bold ml-3 text-gray-800 logo-text">Dashboard Hub</h2>
+            </div>
+            <nav class="flex-1 space-y-1 mt-4 custom-scrollbar overflow-y-auto" role="navigation">
+                <a href="#" class="sidebar-link w-full" onclick="navigateTo('dashboard')" aria-label="Go to Dashboard">
+                    <i class="fa-solid fa-border-all"></i><span class="sidebar-link-text">Dashboard</span>
+                </a>
+                <a href="#" class="sidebar-link w-full" onclick="navigateTo('policySurrenderAdmin')" aria-label="Go to Policy Surrender Admin">
+                    <i class="fa-solid fa-hand-holding-usd"></i><span class="sidebar-link-text">Surrender Requests</span>
+                </a>
+                <a href="#" class="sidebar-link w-full active" onclick="navigateTo('policyClaimAdmin')" aria-label="Go to Policy Claim Admin">
+                    <i class="fa-solid fa-file-invoice-dollar"></i><span class="sidebar-link-text">Claim Requests</span>
+                </a>
+                <a href="#" class="sidebar-link w-full" onclick="navigateTo('bankAccount')" aria-label="Go to Bank Accounts">
+                    <i class="fa-solid fa-bank"></i><span class="sidebar-link-text">Bank Accounts</span>
+                </a>
+                <a href="#" class="sidebar-link w-full" onclick="navigateTo('payment')" aria-label="Go to Payments">
+                    <i class="fa-solid fa-credit-card"></i><span class="sidebar-link-text">Payments</span>
+                </a>
+                <a href="#" class="sidebar-link w-full" onclick="navigateTo('complaints')" aria-label="Go to Complaints">
+                    <i class="fa-solid fa-comments"></i><span class="sidebar-link-text">Complaints</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-200">
+                <a href="#" class="sidebar-link w-full text-red-500 hover:bg-red-50 hover:text-red-600" onclick="logout()" aria-label="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i><span class="sidebar-link-text">Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col h-screen">
+            <!-- Header -->
+            <header class="bg-white p-4 flex-shrink-0 flex justify-between items-center border-b h-20">
+                <button id="sidebar-toggle" class="lg:hidden text-gray-600"><i class="fa-solid fa-bars text-xl"></i></button>
+                <h1 class="text-3xl font-bold text-gray-800 ml-4">Claim Policy Admin</h1>
+                <div class="search-container relative ml-auto mr-4 expanded" id="header-search-container">
+                    <i class="fa-solid fa-search search-icon"></i>
+                    <input type="text" id="header-search-bar" placeholder="Search requests..." class="py-2 px-3 border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search requests">
+                    <button id="header-search-button" class="search-button">Search</button>
+                </div>
+                <div class="flex items-center gap-4 ml-4">
+                    <div id="welcome-message" class="text-md font-medium text-gray-600 truncate hidden md:block"></div>
+                    <button id="btn-profile" title="Profile" class="h-12 w-12 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors flex items-center justify-center flex-shrink-0">
+                        <img id="profile-icon" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User" class="h-10 w-10 rounded-full object-cover">
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar main-content-area">
+                <!-- Tabs, Search and Filters in a single row -->
+                <div class="flex items-center justify-between border-b border-gray-200 mb-6 bg-white rounded-lg shadow-sm">
+                    <!-- Tabs on the left -->
+                    <div class="flex flex-wrap flex-shrink-0">
+                        <button id="all-requests-tab-btn" onclick="showRequestsTab('all')" class="tab-button active">
+                            All Claims <span id="all-requests-count" class="total-requests-indicator ml-2"><i class="fa-solid fa-triangle-exclamation"></i> 0</span>
+                        </button>
+                        <button id="open-requests-tab-btn" onclick="showRequestsTab('open')" class="tab-button">
+                            Open Claims <span id="open-requests-count" class="total-requests-indicator no-pending ml-2">0</span>
+                        </button>
+                        <button id="closed-requests-tab-btn" onclick="showRequestsTab('closed')" class="tab-button">
+                            Closed Claims <span id="closed-requests-count" class="total-requests-indicator no-pending ml-2">0</span>
+                        </button>
+                        <button id="rejected-requests-tab-btn" onclick="showRequestsTab('rejected')" class="tab-button">
+                            Rejected Claims <span id="rejected-requests-count" class="total-requests-indicator no-pending ml-2">0</span>
+                        </button>
+                    </div>
+
+                    <!-- Search and Filters on the right -->
+                    <div class="tab-row-controls relative flex-grow justify-end pr-4 py-2">
+                        <div class="search-container relative mr-4" id="content-search-container">
+                            <i class="fa-solid fa-search search-icon"></i>
+                            <input type="text" id="content-search-bar" placeholder="Search by Policy No or Customer Name..." class="py-2 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Search current requests">
+                            <button id="content-search-button" class="search-button">Search</button>
+                        </div>
+
+                        <details class="collapsible-section horizontal-flow relative">
+                            <summary class="collapsible-summary flex items-center gap-2 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 cursor-pointer">
+                                <i class="fa-solid fa-filter text-blue-600"></i>
+                                <span>Filters</span>
+                                <i class="fa-solid fa-chevron-down text-sm ml-auto"></i>
+                            </summary>
+                            <div class="collapsible-content p-4 bg-gray-50 border border-gray-200 rounded-b-lg grid grid-cols-1 gap-4">
+                                <div>
+                                    <label for="filter-policy-number" class="block text-sm font-medium text-gray-700">Policy Number</label>
+                                    <input type="text" id="filter-policy-number" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="filter-customer-name" class="block text-sm font-medium text-gray-700">Customer Name</label>
+                                    <input type="text" id="filter-customer-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="filter-request-date-start" class="block text-sm font-medium text-gray-700">Request Date From</label>
+                                    <input type="date" id="filter-request-date-start" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="filter-request-date-end" class="block text-sm font-medium text-gray-700">Request Date To</label>
+                                    <input type="date" id="filter-request-date-end" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="filter-min-value" class="block text-sm font-medium text-gray-700">Min Claim Value</label>
+                                    <input type="number" id="filter-min-value" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="e.g. 1000">
+                                </div>
+                                <div>
+                                    <label for="filter-max-value" class="block text-sm font-medium text-gray-700">Max Claim Value</label>
+                                    <input type="number" id="filter-max-value" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="e.g. 500000">
+                                </div>
+                                <div class="col-span-full">
+                                    <label for="filter-status" class="block text-sm font-medium text-gray-700">Status</label>
+                                    <select id="filter-status" multiple class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm h-24 custom-scrollbar">
+                                        <option value="All">All</option>
+                                        <option value="Pending Verification">Pending Verification</option>
+                                        <option value="Pending Approval">Pending Approval</option>
+                                        <option value="Approved">Approved</option>
+                                        <option value="Rejected">Rejected</option>
+                                        <option value="Payment Processed">Payment Processed</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-full flex justify-end gap-2">
+                                    <button id="apply-filters-btn" class="modern-button primary"><i class="fa-solid fa-filter mr-2"></i> Apply Filters</button>
+                                    <button id="clear-filters-btn" class="modern-button primary bg-gray-500 hover:bg-gray-600"><i class="fa-solid fa-xmark mr-2"></i> Clear Filters</button>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <div id="requests-list-container" class="space-y-4">
+                    <!-- Request list items will be rendered here -->
+                </div>
+                <p id="no-requests-message" class="text-gray-500 text-center py-8 hidden">No requests found for this category.</p>
+
+                <div id="pagination-controls" class="pagination-controls">
+                    <button id="prev-page-btn" class="pagination-btn" disabled><i class="fa-solid fa-chevron-left mr-2"></i> Previous</button>
+                    <span id="page-info" class="text-gray-700 font-medium">Page 1 of 1</span>
+                    <button id="next-page-btn" class="pagination-btn" disabled>Next <i class="fa-solid fa-chevron-right ml-2"></i></button>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Request Details Modal -->
+    <div id="request-details-modal" class="modal-overlay hidden">
+        <div class="modal-box w-11/12 max-w-4xl text-left p-6 rounded-lg relative">
+            <button class="modal-close-btn absolute" onclick="closeModal('request-details-modal')">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <div class="modal-content custom-scrollbar pr-4"> <!-- Added custom-scrollbar and pr-4 for scrollable content -->
+                <h2 class="text-2xl font-bold text-blue-600 mb-4">Claim Request Details (ID: <span id="modal-claim-id"></span>)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 mb-6">
+                    <div><p class="font-semibold">Policy Number:</p><p id="modal-policy-number"></p></div>
+                    <div><p class="font-semibold">Customer Name:</p><p id="modal-customer-name"></p></div>
+                    <div><p class="font-semibold">Customer No:</p><p id="modal-customer-no"></p></div>
+                    <div><p class="font-semibold">Request Date:</p><p id="modal-request-date"></p></div>
+                    <div><p class="font-semibold">Reason for Claim:</p><p id="modal-reason-for-claim"></p></div>
+                    <div><p class="font-semibold">Claim Value:</p><p id="modal-claim-value"></p></div>
+                    <div>
+                        <p class="font-semibold">Current Status:</p>
+                        <span id="modal-claim-status" class="status-badge"></span>
+                    </div>
+                    <div>
+                        <label for="modal-status-dropdown" class="font-semibold block mb-1">Update Status:</label>
+                        <select id="modal-status-dropdown" class="block w-full border border-gray-300 rounded-md py-2 px-3 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="Pending Verification">Pending Verification</option>
+                            <option value="Pending Approval">Pending Approval</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Payment Processed">Payment Processed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-xl shadow-inner mb-6">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Document Verification</h3>
+                    <div class="flex items-center text-sm text-gray-600 font-semibold mb-2 px-3">
+                        <span class="w-1/2">Document Name</span>
+                        <span class="w-1/4 text-center">Status</span>
+                        <span class="w-1/4 text-right">Actions</span>
+                    </div>
+                    <div id="modal-documents-list" class="space-y-2">
+                        <!-- Documents will be loaded here -->
+                    </div>
+                    <div class="mt-6">
+                        <label for="modal-verification-notes" class="font-semibold block mb-2">Verification Notes:</label>
+                        <textarea id="modal-verification-notes" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" rows="4" placeholder="Add notes about document verification..."></textarea>
+                        <button id="modal-save-notes-btn" class="modern-button primary mt-4"><i class="fa-solid fa-save mr-2"></i> Save Notes</button>
+                    </div>
+                </div>
+
+                <!-- Payment Process Section -->
+                <div class="bg-blue-50 p-6 rounded-xl shadow-inner mb-6">
+                    <h3 class="text-xl font-bold text-blue-700 mb-4">Payment Process</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 mb-4">
+                        <div>
+                            <p class="font-semibold">Bank Name:</p><p id="modal-bank-name"></p>
+                        </div>
+                        <div>
+                            <p class="font-semibold">Account Number:</p><p id="modal-account-number"></p>
+                        </div>
+                        <div>
+                            <p class="font-semibold">IFSC Code:</p><p id="modal-ifsc-code"></p>
+                        </div>
+                        <div>
+                            <p class="font-semibold">Bank Verification Status:</p>
+                            <span id="modal-bank-verification-status" class="status-badge"></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2 mt-4 justify-end">
+                        <button id="verify-bank-btn" class="modern-button primary"><i class="fa-solid fa-bank mr-2"></i> Verify Bank Account</button>
+                        <button id="process-payment-btn" class="modern-button primary bg-green-600 hover:bg-green-700" disabled><i class="fa-solid fa-money-bill-wave mr-2"></i> Process Payment</button>
+                        <button id="send-email-btn" class="modern-button primary bg-purple-600 hover:bg-purple-700" disabled><i class="fa-solid fa-envelope mr-2"></i> Send Email</button>
+                        <button id="generate-pdf-btn" class="modern-button primary bg-gray-600 hover:bg-gray-700" disabled><i class="fa-solid fa-file-pdf mr-2"></i> Generate PDF</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-end">
+                    <button id="modal-approve-request-btn" class="modern-button primary w-full sm:w-auto"><i class="fa-solid fa-check-circle mr-2"></i> Approve Request</button>
+                    <button id="modal-reject-request-btn" class="modern-button primary bg-red-500 hover:bg-red-600 w-full sm:w-auto"><i class="fa-solid fa-times-circle mr-2"></i> Reject Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modals (reused from ServicePage.html) -->
+    <div id="loader" class="loader hidden">
+        <svg class="colorful-spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30" stroke="#3b82f6"></circle>
+        </svg>
+    </div>
+    <div class="modal-container">
+        <div id="profile-modal" class="modal-overlay hidden">
+            <div class="modal-box w-11/12 max-w-2xl text-left p-8 rounded-xl transform">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
+                    <button onclick="closeModal('profile')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <div class="flex items-center gap-6 mb-6">
+                    <img id="modal-profile-icon" src="https://placehold.co/80x80/E2E8F0/4A5568?text=U" alt="User" class="h-20 w-20 rounded-full object-cover">
+                    <div>
+                        <p class="text-xl font-bold text-gray-800" id="profile-name">&nbsp;</p>
+                        <p class="text-gray-500" id="profile-role">&nbsp;</p>
+                    </div>
+                </div>
+                <div class="text-gray-600 mb-6 space-y-3 bg-gray-50 p-4 rounded-lg">
+                    <p><i class="fa-solid fa-id-card w-5 mr-2 text-gray-400"></i><span class="font-medium">User ID:</span> <span id="profile-userCode">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-envelope w-5 mr-2 text-gray-400"></i><span class="font-medium">Email:</span> <span id="profile-email">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-phone w-5 mr-2 text-gray-400"></i><span class="font-medium">Phone:</span> <span id="profile-phoneNumber">&nbsp;</span></p>
+                </div>
+                <button id="toggle-more-details" class="w-full text-blue-600 hover:text-blue-800 font-medium py-2 flex items-center justify-center gap-2">
+                    <span id="toggle-text">Show More Details</span>
+                    <i id="toggle-icon" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+                </button>
+                <div id="profile-extended-details" class="hidden mt-4 text-gray-600 bg-gray-50 p-4 rounded-lg">
+                    <p><i class="fa-solid fa-user-tag w-5 mr-2 text-gray-400"></i><span class="font-medium">Customer No:</span> <span id="profile-customerNo">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-cake-candles w-5 mr-2 text-gray-400"></i><span class="font-medium">Date of Birth:</span> <span id="profile-dateOfBirth">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-venus-mars w-5 mr-2 text-gray-400"></i><span class="font-medium">Gender:</span> <span id="profile-gender">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-smoking w-5 mr-2 text-gray-400"></i><span class="font-medium">Smoker Status:</span> <span id="profile-smokerStatus">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-user-lock w-5 mr-2 text-gray-400"></i><span class="font-medium">Admin Access:</span> <span id="profile-adminAccess">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-briefcase w-5 mr-2 text-gray-400"></i><span class="font-medium">Roles:</span> <span id="profile-roles">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-map-marker-alt w-5 mr-2 text-gray-400"></i><span class="font-medium">Address:</span> <span id="profile-address">&nbsp;</span></p>
+                    <h4 class="font-semibold text-gray-700 mt-4 mb-2">Contact Details:</h4>
+                    <p><i class="fa-solid fa-at w-5 mr-2 text-gray-400"></i><span class="font-medium">Alternate Email:</span> <span id="profile-alternateEmail">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-mobile-alt w-5 mr-2 text-gray-400"></i><span class="font-medium">Phone Country Code:</span> <span id="profile-phoneCountryCode">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-user-friends w-5 mr-2 text-gray-400"></i><span class="font-medium">Emergency Contact Name:</span> <span id="profile-emergencyContactName">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-phone-volume w-5 mr-2 text-gray-400"></i><span class="font-medium">Emergency Contact Phone:</span> <span id="profile-emergencyContactPhone">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-clock w-5 mr-2 text-gray-400"></i><span class="font-medium">Last Login:</span> <span id="profile-loginTime">&nbsp;</span></p>
+                </div>
+            </div>
+        </div>
+        <div id="search-message-modal" class="modal-overlay hidden">
+            <div class="modal-box w-11/12 max-w-md text-center p-8 rounded-xl transform">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Message</h3>
+                    <button onclick="closeModal('search-message-modal')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <p class="text-gray-600 my-4" id="search-query-display"></p>
+            </div>
+        </div>
+        <div id="error-message-modal" class="modal-overlay hidden">
+            <div class="modal-box w-11/11 max-w-md text-center p-8 rounded-xl transform">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-red-600 mb-4">Error!</h3>
+                    <button onclick="closeModal('error-message-modal')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <p class="text-gray-600 my-4" id="error-message-text">An unexpected error occurred. Please try again.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">© 2025 Secure Access Limited. All rights reserved ❤️ Company.</footer>
+
+    <script>
+        const config = { loginUrl: 'login', userCode: null, email: null, customerNo: null };
+        let customerData = null; // To store profile data
+        let currentSelectedRequest = null; // To store the request being viewed in the modal
+        let currentPage = 1;
+        const requestsPerPage = 5; // Number of requests to display per page
+        let currentFilter = 'all'; // Default filter for tabs
+        let currentSearchTerm = '';
+        let currentAdvancedFilters = {};
+
+        // Mock data for claim requests (Admin View)
+        let adminMockClaimRequests = [
+            {
+                id: 'CLAIM-001',
+                policyNumber: 'POL987654321',
+                customerName: 'Alice Johnson',
+                customerNo: 'CUST-002',
+                requestDate: '2024-07-20',
+                status: 'Pending Verification',
+                reasonForClaim: 'Medical Emergency',
+                claimValue: 'INR 50,000.00',
+                documents: [
+                    { name: 'Hospital Bills', status: 'Pending', type: 'Medical', url: 'https://placehold.co/600x400/FF5733/FFFFFF?text=Hospital+Bill' },
+                    { name: 'Medical Reports', status: 'Pending', type: 'Medical', url: 'https://placehold.co/600x400/DAF7A6/FFFFFF?text=Medical+Report' },
+                    { name: 'ID Proof (Passport)', status: 'Pending', type: 'ID', url: 'https://placehold.co/600x400/64B5F6/FFFFFF?text=ID+Proof' }
+                ],
+                bankDetails: {
+                    bankName: 'Axis Bank',
+                    accountNumber: '**********1234',
+                    ifscCode: 'AXIS0001234'
+                },
+                bankVerified: false,
+                paymentProcessed: false,
+                verificationNotes: 'Initial review for hospital bills.'
+            },
+            {
+                id: 'CLAIM-002',
+                policyNumber: 'POL123456789',
+                customerName: 'Bob Williams',
+                customerNo: 'CUST-003',
+                requestDate: '2024-07-18',
+                status: 'Approved',
+                reasonForClaim: 'Accidental Damage',
+                claimValue: 'INR 120,000.00',
+                documents: [
+                    { name: 'Accident Report', status: 'Verified', type: 'Report', url: 'https://placehold.co/600x400/FFC300/FFFFFF?text=Accident+Report' },
+                    { name: 'Vehicle Repair Estimate', status: 'Verified', type: 'Estimate', url: 'https://placehold.co/600x400/C70039/FFFFFF?text=Repair+Estimate' },
+                ],
+                bankDetails: {
+                    bankName: 'HDFC Bank',
+                    accountNumber: '**********5678',
+                    ifscCode: 'HDFC0005678'
+                },
+                bankVerified: true,
+                paymentProcessed: false,
+                verificationNotes: 'All documents verified. Ready for payment processing.'
+            },
+            {
+                id: 'CLAIM-003',
+                policyNumber: 'POL555444333',
+                customerName: 'Charlie Green',
+                customerNo: 'CUST-004',
+                requestDate: '2024-07-10',
+                status: 'Rejected',
+                reasonForClaim: 'Pre-existing condition',
+                claimValue: 'INR 80,000.00',
+                documents: [
+                    { name: 'Medical History', status: 'Rejected', type: 'Medical', url: 'https://placehold.co/600x400/900C3F/FFFFFF?text=Medical+History' },
+                    { name: 'Doctor\'s Note', status: 'Verified', type: 'Medical', url: 'https://placehold.co/600x400/581845/FFFFFF?text=Doctors+Note' },
+                ],
+                bankDetails: {
+                    bankName: 'ICICI Bank',
+                    accountNumber: '**********9012',
+                    ifscCode: 'ICIC0009012'
+                },
+                bankVerified: true,
+                paymentProcessed: false,
+                verificationNotes: 'Claim rejected due to pre-existing condition not covered.'
+            },
+            {
+                id: 'CLAIM-004',
+                policyNumber: 'POL777888999',
+                customerName: 'Diana Miller',
+                customerNo: 'CUST-005',
+                requestDate: '2024-07-05',
+                status: 'Pending Approval',
+                reasonForClaim: 'Property Damage',
+                claimValue: 'INR 75,000.00',
+                documents: [
+                    { name: 'Property Damage Photos', status: 'Verified', type: 'Photos', url: 'https://placehold.co/600x400/FFC300/FFFFFF?text=Property+Damage' },
+                    { name: 'Police Report', status: 'Verified', type: 'Report', url: 'https://placehold.co/600x400/DAF7A6/FFFFFF?text=Police+Report' },
+                ],
+                bankDetails: {
+                    bankName: 'Canara Bank',
+                    accountNumber: '**********3456',
+                    ifscCode: 'CNRB0003456'
+                },
+                bankVerified: true,
+                paymentProcessed: false,
+                verificationNotes: 'Documents verified. Awaiting approval for payment.'
+            },
+            {
+                id: 'CLAIM-005',
+                policyNumber: 'POL001122334',
+                customerName: 'Eve Davis',
+                customerNo: 'CUST-006',
+                requestDate: '2024-07-25',
+                status: 'Pending Verification',
+                reasonForClaim: 'Theft',
+                claimValue: 'INR 30,000.00',
+                documents: [
+                    { name: 'FIR Copy', status: 'Pending', type: 'Report', url: 'https://placehold.co/600x400/900C3F/FFFFFF?text=FIR+Copy' },
+                    { name: 'Purchase Proof', status: 'Pending', type: 'Proof', url: 'https://placehold.co/600x400/581845/FFFFFF?text=Purchase+Proof' }
+                ],
+                bankDetails: {
+                    bankName: 'State Bank of India',
+                    accountNumber: '**********7890',
+                    ifscCode: 'SBIN0007890'
+                },
+                bankVerified: false,
+                paymentProcessed: false,
+                verificationNotes: ''
+            },
+            {
+                id: 'CLAIM-006',
+                policyNumber: 'POL998877665',
+                customerName: 'Frank White',
+                customerNo: 'CUST-007',
+                requestDate: '2024-07-15',
+                status: 'Payment Processed',
+                reasonForClaim: 'Critical Illness',
+                claimValue: 'INR 300,000.00',
+                documents: [
+                    { name: 'Diagnosis Report', status: 'Verified', type: 'Medical', url: 'https://placehold.co/600x400/DAF7A6/FFFFFF?text=Diagnosis+Report' },
+                    { name: 'Treatment Summary', status: 'Verified', type: 'Medical', url: 'https://placehold.co/600x400/FF5733/FFFFFF?text=Treatment+Summary' }
+                ],
+                bankDetails: {
+                    bankName: 'Bank of Baroda',
+                    accountNumber: '**********1122',
+                    ifscCode: 'BARB0001122'
+                },
+                bankVerified: true,
+                paymentProcessed: true,
+                verificationNotes: 'Claim approved and payment processed on 2024-07-20.'
+            },
+        ];
+
+        const modals = {
+            profile: document.getElementById('profile-modal'),
+            'search-message-modal': document.getElementById('search-message-modal'),
+            'error-message-modal': document.getElementById('error-message-modal'),
+            'request-details-modal': document.getElementById('request-details-modal'),
+        };
+
+        // Utility functions
+        window.showLoader = () => document.getElementById('loader').classList.remove('hidden');
+        window.hideLoader = () => document.getElementById('loader').classList.add('hidden');
+        
+        window.openModal = (modalId, activityText = `Opened ${modalId} modal`) => {
+            modals[modalId]?.classList.remove('hidden');
+            logActivity(activityText);
+            if (modalId === 'profile' && customerData) {
+                populateProfileModal(customerData);
+            }
+        };
+
+        window.closeModal = (modalId) => {
+            modals[modalId]?.classList.add('hidden');
+            if (modalId === 'profile') {
+                const extendedDetails = document.getElementById('profile-extended-details');
+                extendedDetails.classList.add('hidden');
+                document.getElementById('toggle-text').textContent = 'Show More Details';
+                document.getElementById('toggle-icon').classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
+        };
+        
+        window.initializeUser = () => {
+            config.userCode = sessionStorage.getItem('userCode');
+            config.email = sessionStorage.getItem('email');
+            config.customerNo = sessionStorage.getItem('customerNo');
+            if (!config.userCode) {
+                sessionStorage.setItem('userCode', 'adminUser');
+                sessionStorage.setItem('email', 'admin@example.com');
+                sessionStorage.setItem('customerNo', 'ADMIN-001');
+                config.userCode = 'adminUser';
+                config.email = 'admin@example.com';
+                config.customerNo = 'ADMIN-001';
+            }
+            document.getElementById('welcome-message').textContent = `Welcome, ${config.email || 'User'}!`;
+        };
+
+        window.navigateTo = (page) => {
+            const pageUrls = {
+                dashboard: 'dashboard', 
+                policyClaimAdmin: 'PolicyClaimAdmin', // Current page
+                policySurrenderAdmin: 'SurrenderPolicyAdmin',
+                bankAccount:'bankAccount',
+                payment: 'payment',
+                complaints:'Complaints',
+                logout: 'login'
+            };
+
+            const targetFileName = pageUrls[page];
+            if (!targetFileName) {
+                console.error(`No URL defined for page: ${page}`);
+                showErrorAlert(`Navigation to "${page}" is not configured.`);
+                return;
+            }
+
+            showLoader();
+            setTimeout(() => hideLoader(), 1000);
+
+            if (page === 'logout') {
+                sessionStorage.clear();
+                window.location.href = config.loginUrl;
+                logActivity('Logged out');
+                return;
+            }
+
+            if (!config.userCode) {
+                sessionStorage.clear();
+                window.location.href = config.loginUrl;
+                return;
+            }
+            
+            let url = targetFileName;
+            window.location.href = url;
+            logActivity(`Navigated to ${targetFileName} page`);
+        };
+
+        function logout() { navigateTo('logout'); }
+
+        function populateProfileModal(customer) {
+            document.getElementById('profile-name').textContent = `${customer.name || ''} ${customer.middleName || ''} ${customer.surname || ''}`.trim() || 'N/A';
+            document.getElementById('profile-role').textContent = customer.roles?.join(', ') || 'Customer';
+            document.getElementById('profile-userCode').textContent = customer.userCode || 'N/A';
+            document.getElementById('profile-email').textContent = customer.email || 'N/A';
+            document.getElementById('profile-phoneNumber').textContent = customer.phoneNumber || 'N/A';
+
+            document.getElementById('profile-customerNo').textContent = customer.customerNo || 'N/A';
+            document.getElementById('profile-dateOfBirth').textContent = customer.dateOfBirth || 'N/A';
+            document.getElementById('profile-gender').textContent = customer.gender || 'N/A';
+            document.getElementById('profile-smokerStatus').textContent = customer.smokerStatus || 'N/A';
+            document.getElementById('profile-adminAccess').textContent = customer.adminAccess === 'Y' ? 'Yes' : 'No';
+            document.getElementById('profile-roles').textContent = customer.roles?.join(', ') || 'N/A';
+            document.getElementById('profile-address').textContent = customer.address ? `${customer.address.street || ''}, ${customer.address.city || ''}, ${customer.address.state || ''} - ${customer.address.zipCode || ''}`.replace(/, \s*-|, ,/g,', ').trim() : 'N/A';
+            document.getElementById('profile-loginTime').textContent = new Date().toLocaleString();
+            
+            const contact = customer.contactDetails || {};
+            document.getElementById('profile-alternateEmail').textContent = contact.alternateEmail || 'N/A';
+            document.getElementById('profile-phoneCountryCode').textContent = contact.phoneCountryCode || 'N/A';
+            
+            const emergencyContactNameElement = document.getElementById('profile-emergencyContactName');
+            if (emergencyContactNameElement) {
+                emergencyContactNameElement.textContent = contact.emergencyContactName || 'N/A';
+            }
+            const emergencyContactPhoneElement = document.getElementById('profile-emergencyContactPhone');
+            if (emergencyContactPhoneElement) {
+                emergencyContactPhoneElement.textContent = contact.emergencyContactPhone || 'N/A';
+            }
+
+            document.getElementById('welcome-message').textContent = `Welcome, ${customer.name || 'User'}!`;
+            document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?u=" + customer.userCode;
+            document.getElementById('modal-profile-icon').src = "https://i.pravatar.cc/80?u=" + customer.userCode;
+        }
+
+        async function fetchAndStoreProfileData() {
+            const userCode = sessionStorage.getItem('userCode');
+            if (!userCode) {
+                console.warn('User code not found. Profile data will not be fetched.');
+                return;
+            }
+
+            try {
+                // Mock API call for profile data for Admin user
+                const apiResponse = {
+                    status: 'Success',
+                    data: {
+                        name: 'Admin',
+                        middleName: '',
+                        surname: 'User',
+                        userCode: userCode,
+                        email: 'admin@example.com',
+                        phoneNumber: '123-456-7890',
+                        customerNo: 'ADMIN-001',
+                        dateOfBirth: '1980-01-01',
+                        gender: 'Male',
+                        smokerStatus: 'No',
+                        adminAccess: 'Y',
+                        roles: ['Administrator'],
+                        address: { street: 'Admin St', city: 'Admin City', state: 'AP', zipCode: '12345' },
+                        contactDetails: { alternateEmail: 'alt.admin@example.com', phoneCountryCode: '+91', emergencyContactName: 'Admin Friend', emergencyContactPhone: '987-654-3210' }
+                    }
+                };
+                
+                customerData = apiResponse.data;
+                if (customerData.customerNo) {
+                    sessionStorage.setItem('customerNo', customerData.customerNo);
+                    config.customerNo = customerData.customerNo;
+                }
+                document.getElementById('welcome-message').textContent = `Welcome, ${customerData.name || 'User'}!`;
+                document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?u=" + customerData.userCode;
+
+            } catch (error) {
+                console.error("Error fetching customer details on load:", error);
+            }
+        }
+
+        function logActivity(activityText) {
+            console.log(`Activity Log: ${new Date().toLocaleTimeString()} - ${activityText}`);
+        }
+
+        function showErrorAlert(message) {
+            const overlay = document.getElementById('error-message-modal');
+            document.getElementById('error-message-text').textContent = message;
+            overlay.classList.remove('hidden');
+            logActivity(`Error displayed: ${message}`);
+        }
+
+        // Claim Policy Admin Specific Functions
+        function renderClaimRequestsList() {
+            const container = document.getElementById('requests-list-container');
+            const noRequestsMessage = document.getElementById('no-requests-message');
+            container.innerHTML = ''; // Clear previous requests
+
+            let filteredRequests = adminMockClaimRequests.filter(request => {
+                const lowerCaseSearchTerm = currentSearchTerm.toLowerCase();
+                const matchesSearch = request.policyNumber.toLowerCase().includes(lowerCaseSearchTerm) ||
+                                      request.customerName.toLowerCase().includes(lowerCaseSearchTerm) ||
+                                      request.customerNo.toLowerCase().includes(lowerCaseSearchTerm) ||
+                                      request.id.toLowerCase().includes(lowerCaseSearchTerm);
+
+                if (!matchesSearch) return false;
+
+                // Tab filtering
+                if (currentFilter === 'open' && (request.status === 'Approved' || request.status === 'Rejected' || request.status === 'Payment Processed')) {
+                    return false;
+                }
+                if (currentFilter === 'closed' && !(request.status === 'Approved' || request.status === 'Rejected' || request.status === 'Payment Processed')) {
+                    return false;
+                }
+                 if (currentFilter === 'rejected' && request.status !== 'Rejected') {
+                    return false;
+                }
+
+                // Advanced filters
+                if (currentAdvancedFilters.policyNumber && !request.policyNumber.toLowerCase().includes(currentAdvancedFilters.policyNumber.toLowerCase())) {
+                    return false;
+                }
+                if (currentAdvancedFilters.customerName && !request.customerName.toLowerCase().includes(currentAdvancedFilters.customerName.toLowerCase())) {
+                    return false;
+                }
+                if (currentAdvancedFilters.requestDateStart && new Date(request.requestDate) < new Date(currentAdvancedFilters.requestDateStart)) {
+                    return false;
+                }
+                if (currentAdvancedFilters.requestDateEnd && new Date(request.requestDate) > new Date(currentAdvancedFilters.requestDateEnd)) {
+                    return false;
+                }
+                // For claimValue, need to parse to number for comparison
+                const requestValue = parseFloat(request.claimValue.replace(/[INR, ]/g, ''));
+                if (currentAdvancedFilters.minValue && requestValue < parseFloat(currentAdvancedFilters.minValue)) {
+                    return false;
+                }
+                if (currentAdvancedFilters.maxValue && requestValue > parseFloat(currentAdvancedFilters.maxValue)) {
+                    return false;
+                }
+                
+                if (currentAdvancedFilters.status && currentAdvancedFilters.status.length > 0 && !currentAdvancedFilters.status.includes('All')) {
+                    if (!currentAdvancedFilters.status.includes(request.status)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            // Update tab counts
+            updateTabCounts(filteredRequests);
+
+            if (filteredRequests.length === 0) {
+                noRequestsMessage.classList.remove('hidden');
+                document.getElementById('pagination-controls').classList.add('hidden');
+                return;
+            } else {
+                noRequestsMessage.classList.add('hidden');
+                document.getElementById('pagination-controls').classList.remove('hidden');
+            }
+
+            const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
+            const startIndex = (currentPage - 1) * requestsPerPage;
+            const endIndex = Math.min(startIndex + requestsPerPage, filteredRequests.length);
+            const paginatedRequests = filteredRequests.slice(startIndex, endIndex);
+
+            paginatedRequests.forEach(request => {
+                const listItem = document.createElement('div');
+                listItem.className = 'request-list-item';
+                listItem.onclick = () => openRequestDetailsModal(request.id);
+                listItem.innerHTML = `
+                    <div class="request-info">
+                        <p class="policy-number">Policy: ${request.policyNumber} (ID: ${request.id})</p>
+                        <p><strong>Customer:</strong> ${request.customerName} (${request.customerNo})</p>
+                        <p><strong>Reason:</strong> ${request.reasonForClaim}</p>
+                        <p><strong>Requested:</strong> ${request.requestDate}</p>
+                        <p><strong>Payment Status:</strong> <span class="${request.paymentProcessed ? 'text-green-600' : 'text-orange-500'} font-semibold">${request.paymentProcessed ? 'Processed' : 'Pending'}</span></p>
+                    </div>
+                    <div class="status-col">
+                        <span class="status-badge ${request.status.toLowerCase().replace(' ', '-')}">${request.status}</span>
+                    </div>
+                `;
+                container.appendChild(listItem);
+            });
+
+            updatePaginationControls(filteredRequests.length, totalPages);
+        }
+
+        function updateTabCounts(filteredRequests) {
+            const allCount = adminMockClaimRequests.length;
+            const openCount = adminMockClaimRequests.filter(req => req.status !== 'Approved' && req.status !== 'Rejected' && req.status !== 'Payment Processed').length;
+            const closedCount = adminMockClaimRequests.filter(req => req.status === 'Approved' || req.status === 'Rejected' || req.status === 'Payment Processed').length;
+            const rejectedCount = adminMockClaimRequests.filter(req => req.status === 'Rejected').length;
+
+            const allTabCountElement = document.getElementById('all-requests-count');
+            allTabCountElement.innerHTML = `<i class="fa-solid ${openCount > 0 ? 'fa-triangle-exclamation' : 'fa-check-circle'}"></i> ${allCount}`;
+            allTabCountElement.classList.toggle('total-requests-indicator', true);
+            allTabCountElement.classList.toggle('no-pending', openCount === 0);
+
+            document.getElementById('open-requests-count').textContent = openCount;
+            document.getElementById('closed-requests-count').textContent = closedCount;
+            document.getElementById('rejected-requests-count').textContent = rejectedCount;
+        }
+
+
+        function updatePaginationControls(totalRequests, totalPages) {
+            document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('prev-page-btn').disabled = currentPage === 1;
+            document.getElementById('next-page-btn').disabled = currentPage === totalPages;
+        }
+
+        window.goToPage = (page) => {
+            currentPage = page;
+            renderClaimRequestsList();
+        }
+
+        window.nextPage = () => {
+            currentPage++;
+            renderClaimRequestsList();
+        }
+
+        window.prevPage = () => {
+            currentPage--;
+            renderClaimRequestsList();
+        }
+
+        window.showRequestsTab = (tab) => {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`${tab}-requests-tab-btn`).classList.add('active');
+            currentFilter = tab;
+            currentPage = 1; // Reset to first page when changing tabs
+            renderClaimRequestsList();
+        }
+
+        function openRequestDetailsModal(requestId) {
+            const request = adminMockClaimRequests.find(req => req.id === requestId);
+            if (!request) {
+                showErrorAlert('Request details not found.');
+                return;
+            }
+            currentSelectedRequest = request; // Set the current request for modal operations
+
+            // Populate modal fields
+            document.getElementById('modal-claim-id').textContent = request.id;
+            document.getElementById('modal-policy-number').textContent = request.policyNumber;
+            document.getElementById('modal-customer-name').textContent = request.customerName;
+            document.getElementById('modal-customer-no').textContent = request.customerNo;
+            document.getElementById('modal-request-date').textContent = request.requestDate;
+            document.getElementById('modal-reason-for-claim').textContent = request.reasonForClaim;
+            document.getElementById('modal-claim-value').textContent = request.claimValue;
+            document.getElementById('modal-verification-notes').value = request.verificationNotes;
+
+            // Populate bank details
+            document.getElementById('modal-bank-name').textContent = request.bankDetails?.bankName || 'N/A';
+            document.getElementById('modal-account-number').textContent = request.bankDetails?.accountNumber || 'N/A';
+            document.getElementById('modal-ifsc-code').textContent = request.bankDetails?.ifscCode || 'N/A';
+            
+            updateModalStatusDisplay();
+            renderModalDocuments();
+            updatePaymentSectionState();
+
+            openModal('request-details-modal');
+        }
+
+        function updateModalStatusDisplay() {
+            const statusElement = document.getElementById('modal-claim-status');
+            statusElement.textContent = currentSelectedRequest.status;
+            statusElement.className = `status-badge ${currentSelectedRequest.status.toLowerCase().replace(' ', '-')}`;
+            document.getElementById('modal-status-dropdown').value = currentSelectedRequest.status;
+
+            const approveBtn = document.getElementById('modal-approve-request-btn');
+            const rejectBtn = document.getElementById('modal-reject-request-btn');
+            const statusDropdown = document.getElementById('modal-status-dropdown');
+
+            // Buttons and dropdown are always enabled to allow modification regardless of current status
+            approveBtn.disabled = false;
+            rejectBtn.disabled = false;
+            statusDropdown.disabled = false;
+            approveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            rejectBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        function renderModalDocuments() {
+            const documentsList = document.getElementById('modal-documents-list');
+            documentsList.innerHTML = '';
+            currentSelectedRequest.documents.forEach((doc, index) => {
+                const docItem = document.createElement('div');
+                docItem.className = `document-item flex items-center bg-white rounded-lg shadow-sm ${doc.status.toLowerCase()}`;
+                
+                let iconClass = 'fa-hourglass-half text-yellow-500';
+                if (doc.status === 'Verified') iconClass = 'fa-check-circle text-green-500';
+                else if (doc.status === 'Rejected') iconClass = 'fa-times-circle text-red-500';
+
+                docItem.innerHTML = `
+                    <div class="flex items-center w-1/2">
+                        <i class="fas ${iconClass} mr-3 text-lg"></i>
+                        <span class="doc-name">${doc.name}</span>
+                    </div>
+                    <div class="doc-status-col w-1/4">
+                        <span class="font-medium">${doc.status}</span>
+                    </div>
+                    <div class="document-actions w-1/4 text-right">
+                        <button class="text-blue-600 hover:text-blue-800" onclick="viewDocument('${doc.url}', '${doc.name}')" title="View Document">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button class="text-green-600 hover:text-green-800" 
+                                onclick="verifyDocument(${index})" title="Verify Document">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                        <button class="text-red-600 hover:text-red-800" 
+                                onclick="rejectDocument(${index})" title="Reject Document">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                documentsList.appendChild(docItem);
+            });
+        }
+
+        window.viewDocument = (url, name) => {
+            if (url) {
+                window.open(url, '_blank');
+                logActivity(`Viewed document: ${name} for request ${currentSelectedRequest.id}`);
+            } else {
+                showErrorAlert('Document URL not available.');
+            }
+        }
+
+        window.verifyDocument = (index) => {
+            currentSelectedRequest.documents[index].status = 'Verified';
+            logActivity(`Verified document: ${currentSelectedRequest.documents[index].name} for request ${currentSelectedRequest.id}`);
+            renderModalDocuments();
+            showMessage('Document Verified', `${currentSelectedRequest.documents[index].name} has been marked as verified.`);
+            checkAndPromoteStatus();
+        }
+
+        window.rejectDocument = (index) => {
+            currentSelectedRequest.documents[index].status = 'Rejected';
+            logActivity(`Rejected document: ${currentSelectedRequest.documents[index].name} for request ${currentSelectedRequest.id}`);
+            renderModalDocuments();
+            showMessage('Document Rejected', `${currentSelectedRequest.documents[index].name} has been marked as rejected.`);
+            updateOverallRequestStatus('Rejected'); // If any document is rejected, the request is generally rejected
+        }
+
+        function checkAndPromoteStatus() {
+            const allDocumentsVerified = currentSelectedRequest.documents.every(doc => doc.status === 'Verified');
+            const hasRejectedDocs = currentSelectedRequest.documents.some(doc => doc.status === 'Rejected');
+
+            if (hasRejectedDocs) {
+                 updateOverallRequestStatus('Rejected');
+            } else if (allDocumentsVerified && currentSelectedRequest.status === 'Pending Verification') {
+                updateOverallRequestStatus('Pending Approval');
+                showMessage('Documents Verified', 'All documents verified. Request status moved to Pending Approval.');
+            }
+            renderClaimRequestsList(); // Refresh list after status change
+        }
+
+        function updateOverallRequestStatus(newStatus) {
+            currentSelectedRequest.status = newStatus;
+            updateModalStatusDisplay();
+            updatePaymentSectionState(); // Update payment section state as well
+            logActivity(`Request ${currentSelectedRequest.id} status updated to: ${newStatus}`);
+            renderClaimRequestsList(); // Refresh list
+        }
+
+        document.getElementById('modal-status-dropdown').addEventListener('change', (e) => {
+            if (currentSelectedRequest) {
+                const newStatus = e.target.value;
+                updateOverallRequestStatus(newStatus);
+                showMessage('Status Updated', `Request status changed to ${newStatus}.`);
+            }
+        });
+
+        document.getElementById('modal-approve-request-btn').addEventListener('click', () => {
+            if (!currentSelectedRequest) return;
+
+            // Check if any documents are pending before approving
+            const anyDocumentsPending = currentSelectedRequest.documents.some(doc => doc.status === 'Pending');
+            if (anyDocumentsPending) {
+                showErrorAlert('Cannot approve claim: Some documents are still pending verification.');
+                return;
+            }
+
+            // Proceed with approval if no documents are pending
+            updateOverallRequestStatus('Approved');
+            showMessage('Request Approved', `Claim request ${currentSelectedRequest.id} has been approved.`);
+        });
+
+        document.getElementById('modal-reject-request-btn').addEventListener('click', () => {
+            if (currentSelectedRequest) {
+                updateOverallRequestStatus('Rejected');
+                showMessage('Request Rejected', `Claim request ${currentSelectedRequest.id} has been rejected.`);
+            }
+        });
+
+        document.getElementById('modal-save-notes-btn').addEventListener('click', () => {
+            if (currentSelectedRequest) {
+                currentSelectedRequest.verificationNotes = document.getElementById('modal-verification-notes').value;
+                logActivity(`Verification notes saved for request ${currentSelectedRequest.id}.`);
+                showMessage('Notes Saved', 'Verification notes have been updated.');
+            }
+        });
+
+        // New Payment Process Functions
+        function updatePaymentSectionState() {
+            const bankStatusElement = document.getElementById('modal-bank-verification-status');
+            const verifyBankBtn = document.getElementById('verify-bank-btn');
+            const processPaymentBtn = document.getElementById('process-payment-btn');
+            const sendEmailBtn = document.getElementById('send-email-btn');
+            const generatePdfBtn = document.getElementById('generate-pdf-btn');
+
+            const allDocumentsVerified = currentSelectedRequest.documents.every(doc => doc.status === 'Verified');
+
+            if (currentSelectedRequest.bankDetails) {
+                bankStatusElement.textContent = currentSelectedRequest.bankVerified ? 'Verified' : 'Pending';
+                bankStatusElement.className = `status-badge ${currentSelectedRequest.bankVerified ? 'bank-verified' : 'pending'}`;
+                
+                // Disable verify bank if already verified, payment processed or rejected
+                if (currentSelectedRequest.bankVerified || currentSelectedRequest.status === 'Payment Processed' || currentSelectedRequest.status === 'Rejected') {
+                    verifyBankBtn.disabled = true;
+                    verifyBankBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    verifyBankBtn.disabled = false;
+                    verifyBankBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+
+                // Enable process payment only if approved, bank verified, ALL documents verified, and not yet processed
+                if (currentSelectedRequest.status === 'Approved' && currentSelectedRequest.bankVerified && !currentSelectedRequest.paymentProcessed && allDocumentsVerified) {
+                    processPaymentBtn.disabled = false;
+                    processPaymentBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    processPaymentBtn.textContent = 'Process Payment';
+                    processPaymentBtn.classList.remove('bg-green-500', 'hover:bg-green-500'); // Ensure it's not stuck on "Processed" style
+                } else if (currentSelectedRequest.status === 'Payment Processed') {
+                    processPaymentBtn.disabled = true;
+                    processPaymentBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    processPaymentBtn.textContent = 'Payment Processed';
+                    processPaymentBtn.classList.add('bg-green-500', 'hover:bg-green-500'); // Set green for processed
+                }
+                else {
+                    processPaymentBtn.disabled = true;
+                    processPaymentBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    processPaymentBtn.textContent = 'Process Payment'; // Reset text
+                    processPaymentBtn.classList.remove('bg-green-500', 'hover:bg-green-500');
+                }
+
+                // Enable Send Email and Generate PDF if paymentProcessed
+                if (currentSelectedRequest.paymentProcessed) {
+                    sendEmailBtn.disabled = false;
+                    generatePdfBtn.disabled = false;
+                    sendEmailBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    generatePdfBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    sendEmailBtn.disabled = true;
+                    generatePdfBtn.disabled = true;
+                    sendEmailBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    generatePdfBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+
+            } else {
+                bankStatusElement.textContent = 'N/A';
+                bankStatusElement.className = 'status-badge';
+                verifyBankBtn.disabled = true;
+                processPaymentBtn.disabled = true;
+                sendEmailBtn.disabled = true;
+                generatePdfBtn.disabled = true;
+
+                verifyBankBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                processPaymentBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                sendEmailBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                generatePdfBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        document.getElementById('verify-bank-btn').addEventListener('click', () => {
+            if (currentSelectedRequest && !currentSelectedRequest.bankVerified && currentSelectedRequest.bankDetails) {
+                currentSelectedRequest.bankVerified = true;
+                logActivity(`Bank account verified for claim ${currentSelectedRequest.id}.`);
+                showMessage('Bank Account Verified', `Bank account for claim ${currentSelectedRequest.id} has been verified.`);
+                updatePaymentSectionState();
+            } else {
+                showErrorAlert('Bank account already verified or no details available.');
+            }
+        });
+
+        document.getElementById('process-payment-btn').addEventListener('click', () => {
+            if (!currentSelectedRequest) return;
+
+            // Re-check conditions before processing payment
+            const allDocumentsVerified = currentSelectedRequest.documents.every(doc => doc.status === 'Verified');
+
+            if (currentSelectedRequest.status === 'Approved' && currentSelectedRequest.bankVerified && !currentSelectedRequest.paymentProcessed && allDocumentsVerified) {
+                currentSelectedRequest.paymentProcessed = true;
+                currentSelectedRequest.status = 'Payment Processed'; // Update overall status
+                logActivity(`Payment processed for claim ${currentSelectedRequest.id}.`);
+                showMessage('Payment Processed', `Payment for claim ${currentSelectedRequest.id} has been successfully processed.`);
+                updateModalStatusDisplay(); // Re-render status dropdown
+                updatePaymentSectionState(); // Update payment section state
+                renderClaimRequestsList(); // Refresh main list
+            } else {
+                showErrorAlert('Cannot process payment. Ensure claim is approved, bank is verified, and all documents are verified.');
+            }
+        });
+
+        document.getElementById('send-email-btn').addEventListener('click', () => {
+            if (currentSelectedRequest && currentSelectedRequest.paymentProcessed) {
+                logActivity(`Sending email for claim ${currentSelectedRequest.id}.`);
+                showMessage('Email Sent', `Confirmation email sent for claim ${currentSelectedRequest.id}.`);
+            } else {
+                showErrorAlert('Cannot send email. Payment not processed for this claim.');
+            }
+        });
+
+        document.getElementById('generate-pdf-btn').addEventListener('click', () => {
+            if (currentSelectedRequest && currentSelectedRequest.paymentProcessed) {
+                logActivity(`Generating PDF for claim ${currentSelectedRequest.id}.`);
+                generateClaimPDF(currentSelectedRequest);
+            } else {
+                showErrorAlert('Cannot generate PDF. Payment not processed for this claim.');
+            }
+        });
+
+        function generateClaimPDF(request) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.text(`Claim Payment Confirmation - ${request.id}`, 14, 22);
+
+            doc.setFontSize(12);
+            doc.text(`Policy Number: ${request.policyNumber}`, 14, 30);
+            doc.text(`Customer Name: ${request.customerName}`, 14, 37);
+            doc.text(`Claim Value: ${request.claimValue}`, 14, 44);
+            doc.text(`Reason for Claim: ${request.reasonForClaim}`, 14, 51);
+            doc.text(`Status: ${request.status}`, 14, 58);
+            doc.text(`Payment Date: ${new Date().toLocaleDateString()}`, 14, 65);
+
+            doc.setFontSize(14);
+            doc.text('Bank Details:', 14, 75);
+            doc.setFontSize(12);
+            doc.text(`Bank Name: ${request.bankDetails?.bankName || 'N/A'}`, 14, 82);
+            doc.text(`Account Number: ${request.bankDetails?.accountNumber || 'N/A'}`, 14, 89);
+            doc.text(`IFSC Code: ${request.bankDetails?.ifscCode || 'N/A'}`, 14, 96);
+            doc.text(`Bank Verification Status: ${request.bankVerified ? 'Verified' : 'Not Verified'}`, 14, 103);
+
+            doc.save(`Claim_${request.id}_Payment_Confirmation.pdf`);
+            showMessage('PDF Generated', `PDF for claim ${request.id} has been generated.`);
+        }
+
+
+        function showMessage(title, message) {
+            const modalId = 'search-message-modal';
+            const modalTitleElement = modals[modalId].querySelector('h3');
+            const messageTextElement = document.getElementById('search-query-display');
+            
+            if (modalTitleElement) {
+                modalTitleElement.textContent = title;
+                modalTitleElement.classList.toggle('text-gray-800', title !== 'Error!');
+                modalTitleElement.classList.toggle('text-red-600', title === 'Error!');
+            }
+            if (messageTextElement) {
+                messageTextElement.textContent = message;
+            }
+            openModal(modalId);
+        }
+
+        // Search bar expansion logic
+        function setupSearchBar(containerId, inputId, buttonId, initialExpand = false) {
+            const container = document.getElementById(containerId);
+            const input = document.getElementById(inputId);
+            const icon = container.querySelector('.search-icon');
+            const button = document.getElementById(buttonId);
+
+            const expandSearchBar = () => {
+                container.classList.add('expanded');
+                input.focus();
+            };
+
+            const collapseSearchBar = () => {
+                if (!input.value) { // Only collapse if input is empty
+                    container.classList.remove('expanded');
+                }
+            };
+
+            if (initialExpand) {
+                container.classList.add('expanded'); // Always expanded
+                input.style.width = '100%';
+                input.style.opacity = '1';
+                input.style.borderColor = '#d1d5db';
+                button.style.display = 'block';
+                button.style.opacity = '1';
+                // Remove blur listener for always expanded search bar
+                input.removeEventListener('blur', collapseSearchBar);
+            } else {
+                icon.addEventListener('click', expandSearchBar);
+                input.addEventListener('focus', expandSearchBar);
+                input.addEventListener('blur', collapseSearchBar);
+                // Initial state for non-header search bars
+                collapseSearchBar();
+            }
+            
+            button.addEventListener('click', () => {
+                currentSearchTerm = input.value.trim();
+                // If this is the header search bar, sync its value to the content search bar
+                if (inputId === 'header-search-bar') {
+                    document.getElementById('content-search-bar').value = currentSearchTerm;
+                } else if (inputId === 'content-search-bar') { // If this is the content search bar, sync to header
+                    document.getElementById('header-search-bar').value = currentSearchTerm;
+                }
+                currentPage = 1;
+                renderClaimRequestsList();
+            });
+
+            input.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    button.click();
+                }
+            });
+        }
+
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeUser();
+            hideLoader();
+            fetchAndStoreProfileData(); // Fetch mock profile data
+
+            // Initial render of all requests
+            renderClaimRequestsList(); 
+
+            // Sidebar toggle for mobile view
+            document.getElementById('sidebar-toggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('active');
+            });
+
+            // Profile button listener
+            document.getElementById('btn-profile').addEventListener('click', () => {
+                openModal('profile', 'Profile Viewed');
+            });
+
+            // Close modal buttons listeners for all modals
+            document.querySelectorAll('.modal-overlay .modal-close-btn').forEach(btn => {
+                btn.addEventListener('click', (event) => {
+                    const modalOverlay = event.target.closest('.modal-overlay');
+                    if (modalOverlay) {
+                        closeModal(modalOverlay.id);
+                    }
+                });
+            });
+
+            // Setup search bars
+            setupSearchBar('header-search-container', 'header-search-bar', 'header-search-button', true); // Header search always expanded
+            setupSearchBar('content-search-container', 'content-search-bar', 'content-search-button', false); // Content search expandable
+
+
+            // Advanced Filters apply and clear
+            document.getElementById('apply-filters-btn').addEventListener('click', () => {
+                currentAdvancedFilters = {
+                    policyNumber: document.getElementById('filter-policy-number').value.trim(),
+                    customerName: document.getElementById('filter-customer-name').value.trim(),
+                    requestDateStart: document.getElementById('filter-request-date-start').value,
+                    requestDateEnd: document.getElementById('filter-request-date-end').value,
+                    minValue: document.getElementById('filter-min-value').value.trim(),
+                    maxValue: document.getElementById('filter-max-value').value.trim(),
+                    status: Array.from(document.getElementById('filter-status').selectedOptions).map(option => option.value)
+                };
+                currentPage = 1;
+                renderClaimRequestsList();
+            });
+
+            document.getElementById('clear-filters-btn').addEventListener('click', () => {
+                document.getElementById('filter-policy-number').value = '';
+                document.getElementById('filter-customer-name').value = '';
+                document.getElementById('filter-request-date-start').value = '';
+                document.getElementById('filter-request-date-end').value = '';
+                document.getElementById('filter-min-value').value = '';
+                document.getElementById('filter-max-value').value = '';
+                Array.from(document.getElementById('filter-status').options).forEach(option => option.selected = false);
+                const allOption = document.querySelector('#filter-status option[value="All"]');
+                if (allOption) {
+                    allOption.selected = true;
+                }
+
+                currentAdvancedFilters = {};
+                currentPage = 1;
+                renderClaimRequestsList();
+            });
+
+
+            // Pagination event listeners
+            document.getElementById('prev-page-btn').addEventListener('click', prevPage);
+            document.getElementById('next-page-btn').addEventListener('click', nextPage);
+        });
+    </script>
+</body>
+</html>

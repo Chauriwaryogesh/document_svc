@@ -100,6 +100,18 @@ public class DashboardController {
 	public String PolicyAdmin(String userCode) {
 		return "PolicyAdmin";
 	}
+	
+	@GetMapping("/PolicySurrenderAdmin")
+	public String SurrenderPolicy(@RequestParam(required = false) String customerNo,
+			@RequestParam(required = false) String policyNo,String userCode) {
+		return "PolicySurrenderAdmin";
+	}
+	
+	@GetMapping("/PolicyClaimAdmin")
+	public String policyClaimAdmin(@RequestParam(required = false) String customerNo,
+			@RequestParam(required = false) String policyNo,String userCode) {
+		return "PolicyClaimAdmin";
+	}
 
 	@GetMapping("/Complaints")
 	public String Complaints(String userCode) {
