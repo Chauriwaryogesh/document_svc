@@ -1,9 +1,9 @@
 package com.SecureAccessPortal.Controller;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,17 +20,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.SecureAccessPortal.Entity.BusinessDocument;
+import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.CapturePhoto;
-import com.SecureAccessPortal.Modal.DocumentRequest;
-import com.SecureAccessPortal.Modal.DocumentResponse;
 import com.SecureAccessPortal.Modal.NotesDTO;
 import com.SecureAccessPortal.Modal.PhotoDTO;
 import com.SecureAccessPortal.Service.IDocumentService;
 
 @RestController
 @RequestMapping("/DocumentService")
-public class PhotoCaptureController {
+public class DocumentServiceController {
 
 	@Autowired
 	private IDocumentService docmentSrvice;
@@ -125,27 +123,60 @@ public class PhotoCaptureController {
 		}
 	}
 
-	@PostMapping("/notes")
-	public com.SecureAccessPortal.Service.ResponseEntity<String> createNote(@RequestBody NotesDTO note) {
+	@PostMapping(value = "/notes", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public com.SecureAccessPortal.Service.ResponseEntity<String> createNote(@RequestBody NotesDTO note,
+			@RequestHeader(required = false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<String> responce = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		String saved = docmentSrvice.save(note);
-		responce.setData(saved);
+		String saved = docmentSrvice.addNotes(note, userCode);
+		if (saved.contains(CommonConstant.FAILURE)) {
+			responce.setStatus(CommonConstant.FAILURE);
+			responce.setErrorMessage("failed to create");
+		} else {
+			responce.setData(saved);
+			responce.setStatus(CommonConstant.SUCCESS);
+		}
+
 		return responce;
 	}
 
 	@GetMapping("/notes/List")
-	public com.SecureAccessPortal.Service.ResponseEntity<List<NotesDTO>> fetchNotes(
-			@RequestHeader(value = "userCode", required = false) String userCode) {
-		com.SecureAccessPortal.Service.ResponseEntity<List<NotesDTO>> responce = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<NotesDTO> saved = docmentSrvice.getList(userCode);
-		responce.setData(saved);
+	public com.SecureAccessPortal.Service.ResponseEntity<Page<NotesDTO>> fetchNotes(
+			@RequestHeader(value = "customerNo", required = false) String customerNo,
+			@RequestHeader(value = "priority", required = false) String priority,
+			@RequestHeader(value = "userCode", required = false) String userCode,
+			@RequestHeader(value = "startDate", required = false) String startDate,
+			@RequestHeader(value = "endDate", required = false) String endDate,
+			@RequestHeader(value = "deleted", required = false) boolean deleted,
+			@RequestHeader(value = "id", required = false) String id, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "20") int size) {
+		com.SecureAccessPortal.Service.ResponseEntity<Page<NotesDTO>> responce = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		Page<NotesDTO> saved = docmentSrvice.getList(customerNo, priority, userCode, startDate, endDate, deleted, id,
+				page, size);
+		if (saved != null) {
+			responce.setStatus(CommonConstant.SUCCESS);
+			responce.setData(saved);
+		} else {
+			responce.setStatus(CommonConstant.FAILURE);
+			responce.setErrorMessage("No Notes found");
+		}
+
 		return responce;
 	}
 
-	@DeleteMapping("notes/delete/{id}")
-	public ResponseEntity<Void> deleteNote(@PathVariable Long id) {
-		boolean deleted = docmentSrvice.deleteNoteById(id);
-		return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+	@PostMapping(value = "/recycleBin")
+	public com.SecureAccessPortal.Service.ResponseEntity<String> deleteNote(@RequestBody NotesDTO note,
+			@RequestHeader(required = false) String userCode) {
+		com.SecureAccessPortal.Service.ResponseEntity<String> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		String statusUpdate = docmentSrvice.updateStatus(note, userCode);
+		if(statusUpdate.contains("Invalid")) {
+			response.setStatus(CommonConstant.FAILURE);
+			response.setData(statusUpdate);
+		}else {
+			response.setData(statusUpdate);
+			response.setStatus(CommonConstant.SUCCESS);
+		}
+		
+		return response;
 	}
 
 }

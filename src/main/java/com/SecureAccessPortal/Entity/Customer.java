@@ -140,6 +140,9 @@ public class Customer {
 
 	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<FeedbackEntity> feedback;
+	
+//	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//	private List<Note> notes = new ArrayList<>();
 
 	public List<FeedbackEntity> getFeedback() {
 		return feedback;

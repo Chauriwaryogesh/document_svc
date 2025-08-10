@@ -51,6 +51,8 @@ public class CommonConstant {
 	public static final String CUSTOMER = "CUSTOMER";
 	public static final String BANK = "BANK";
 	public static final String PAYMENT = "PAYMENT";
+	public static final String CREATE = "CREATE";
+	public static final String UPDATE = "UPDATE";
 	
 
 }

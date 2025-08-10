@@ -25,7 +25,6 @@ import com.SecureAccessPortal.Modal.ContactDetails;
 import com.SecureAccessPortal.Modal.CustomerDTO;
 import com.SecureAccessPortal.Modal.FeedbackResponse;
 import com.SecureAccessPortal.Modal.PolicyDTO;
-import com.SecureAccessPortal.Modal.PolicyList;
 import com.SecureAccessPortal.Modal.WorkItemDTO;
 import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Repo.ComplaintRepo;

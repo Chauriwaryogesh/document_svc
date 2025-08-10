@@ -112,6 +112,11 @@ public class DashboardController {
 			@RequestParam(required = false) String policyNo,String userCode) {
 		return "PolicyClaimAdmin";
 	}
+	@GetMapping("/AddNotes")
+	public String AddNotes(@RequestParam(required = false) String customerNo,
+			@RequestParam(required = false) String policyNo,String userCode) {
+		return "AddNotes";
+	}
 
 	@GetMapping("/Complaints")
 	public String Complaints(String userCode) {
