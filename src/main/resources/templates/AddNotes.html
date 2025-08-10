@@ -119,6 +119,7 @@
         .sidebar:hover .logo-text,
         .sidebar.expanded .logo-text,
         .sidebar.active .logo-text {
+            display: block;
             opacity: 1;
             width: auto;
         }
@@ -278,7 +279,7 @@
         }
         .note-card {
             background-color: #ffffff;
-            border: 2px solid #e2e8f0; /* Changed to 2px for more prominent border */
+            border: 2px solid #e2e8f0;
             border-radius: 0.75rem;
             padding: 1rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.06);
@@ -434,7 +435,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.5rem 1rem; /* Reduced padding */
+            padding: 0.5rem 1rem;
             background-color: #f3f4f6;
             border-bottom: 1px solid #e2e8f0;
             cursor: pointer;
@@ -476,11 +477,11 @@
             justify-content: flex-end;
             align-items: center;
             padding-right: 1rem;
-            padding-top: 0.25rem; /* Reduced padding */
-            padding-bottom: 0.25rem; /* Reduced padding */
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
         }
-        .tab-row-controls > div { /* Target direct children of tab-row-controls to reduce their margin */
-            margin-right: 0.5rem; /* Reduced margin */
+        .tab-row-controls > div {
+            margin-right: 0.5rem;
         }
 
 
@@ -579,8 +580,8 @@
 
         .floating-add-btn {
             position: fixed;
-            bottom: 80px; /* Adjusted to prevent overlap with footer */
-            right: 20px;
+            bottom: 80px;
+            right: 24px; /* Adjusted right position */
             z-index: 1000;
             width: 60px;
             height: 60px;
@@ -602,17 +603,17 @@
             font-size: 1.8rem;
         }
 
-        /* Styles for List View */
+        /* Styles for List View - these will no longer be used but kept for reference if needed again */
         #notes-list-container.list-view {
-            display: block; /* Override grid display */
-            gap: 0; /* Remove gap */
+            display: block;
+            gap: 0;
         }
         .note-list-item {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 0.5rem;
             padding: 0.75rem 1rem;
-            margin-bottom: 0.75rem; /* Space between list items */
+            margin-bottom: 0.75rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             transition: all 0.2s ease-in-out;
             display: flex;
@@ -702,23 +703,27 @@
                 <h1 class="text-3xl font-bold text-gray-800 ml-4">Admin Notes</h1>
                 <div class="search-container relative ml-auto mr-4 expanded" id="header-search-container">
                     <i class="fa-solid fa-search search-icon"></i>
-                    <input type="text" id="header-search-bar" placeholder="Search notes..." class="py-2 px-3 border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search notes">
+                    <input type="text" id="header-search-bar" placeholder="Search notes (e.g., NOTE/ID/YEAR)" class="py-2 px-3 border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search notes">
                     <button id="header-search-button" class="search-button">Search</button>
                 </div>
+                <!-- Profile Icon and minimal display -->
                 <div class="flex items-center gap-4 ml-4">
-                    <div id="welcome-message" class="text-md font-medium text-gray-600 truncate hidden md:block"></div>
-                    <button id="btn-profile" title="Profile" class="h-12 w-12 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors flex items-center justify-center flex-shrink-0">
+                    <div id="profile-info" class="text-md font-medium text-gray-600 truncate hidden md:block">
+                        <span id="display-user-code"></span><br>
+                        <span id="display-customer-no"></span>
+                    </div>
+                    <button id="btn-profile" title="User Info" class="h-12 w-12 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors flex items-center justify-center flex-shrink-0">
                         <img id="profile-icon" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User" class="h-10 w-10 rounded-full object-cover">
                     </button>
                 </div>
             </header>
 
-            <main class="flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar main-content-area pb-24"> <!-- Added pb-24 for floating button -->
-                <div class="flex items-center justify-between border-b border-gray-200 mb-4 bg-white rounded-lg shadow-sm p-2"> <!-- Reduced mb-6 to mb-4 and p-4 to p-2 -->
-                    <div class="tab-row-controls relative flex-grow justify-end pr-4 py-0.5"> <!-- Reduced py-2 to py-0.5 -->
-                        <div class="search-container relative mr-2" id="content-search-container"> <!-- Reduced mr-4 to mr-2 -->
+            <main class="flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar main-content-area pb-24">
+                <div class="flex items-center justify-between border-b border-gray-200 mb-4 bg-white rounded-lg shadow-sm p-2">
+                    <div class="tab-row-controls relative flex-grow justify-end pr-4 py-0.5">
+                        <div class="search-container relative mr-2" id="content-search-container">
                             <i class="fa-solid fa-search search-icon"></i>
-                            <input type="text" id="content-search-bar" placeholder="Search by Title or Content..." class="py-2 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Search current requests">
+                            <input type="text" id="content-search-bar" placeholder="Search by Title, Content, or ID (e.g., NOTE/ID/YEAR)" class="py-2 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Search current requests">
                             <button id="content-search-button" class="search-button">Search</button>
                         </div>
 
@@ -762,15 +767,7 @@
                                 </div>
                             </div>
                         </details>
-
-                        <div class="flex items-center gap-2 ml-4">
-                            <button id="grid-view-btn" class="modern-button primary px-3 py-1.5" title="Grid View">
-                                <i class="fa-solid fa-th-large"></i>
-                            </button>
-                            <button id="list-view-btn" class="modern-button primary px-3 py-1.5 bg-gray-300 text-gray-800 hover:bg-gray-400" title="List View">
-                                <i class="fa-solid fa-list"></i>
-                            </button>
-                        </div>
+                        <!-- Removed Grid/List View buttons -->
                     </div>
                 </div>
 
@@ -887,42 +884,16 @@
         </svg>
     </div>
     <div class="modal-container">
+        <!-- Profile modal -->
         <div id="profile-modal" class="modal-overlay hidden">
-            <div class="modal-box w-11/12 max-w-2xl text-left p-8 rounded-xl transform">
+            <div class="modal-box w-11/12 max-w-sm text-center p-8 rounded-xl transform">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-semibold text-gray-800">User Profile</h3>
-                    <button onclick="closeModal('profile')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
+                    <h3 class="text-2xl font-semibold text-gray-800">User Info</h3>
+                    <button onclick="closeModal('profile-modal')" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-times"></i></button>
                 </div>
-                <div class="flex items-center gap-6 mb-6">
-                    <img id="modal-profile-icon" src="https://placehold.co/80x80/E2E8F0/4A5568?text=U" alt="User" class="h-20 w-20 rounded-full object-cover">
-                    <div>
-                        <p class="text-xl font-bold text-gray-800" id="profile-name">&nbsp;</p>
-                        <p class="text-gray-500" id="profile-role">&nbsp;</p>
-                    </div>
-                </div>
-                <div class="text-gray-600 mb-6 space-y-3 bg-gray-50 p-4 rounded-lg">
-                    <p><i class="fa-solid fa-id-card w-5 mr-2 text-gray-400"></i><span class="font-medium">User ID:</span> <span id="profile-userCode">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-envelope w-5 mr-2 text-gray-400"></i><span class="font-medium">Email:</span> <span id="profile-email">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-phone w-5 mr-2 text-gray-400"></i><span class="font-medium">Phone:</span> <span id="profile-phoneNumber">&nbsp;</span></p>
-                </div>
-                <button id="toggle-more-details" class="w-full text-blue-600 hover:text-blue-800 font-medium py-2 flex items-center justify-center gap-2">
-                    <span id="toggle-text">Show More Details</span>
-                    <i id="toggle-icon" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
-                </button>
-                <div id="profile-extended-details" class="hidden mt-4 text-gray-600 bg-gray-50 p-4 rounded-lg">
-                    <p><i class="fa-solid fa-user-tag w-5 mr-2 text-gray-400"></i><span class="font-medium">Customer No:</span> <span id="profile-customerNo">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-cake-candles w-5 mr-2 text-gray-400"></i><span class="font-medium">Date of Birth:</span> <span id="profile-dateOfBirth">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-venus-mars w-5 mr-2 text-gray-400"></i><span class="font-medium">Gender:</span> <span id="profile-gender">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-smoking w-5 mr-2 text-gray-400"></i><span class="font-medium">Smoker Status:</span> <span id="profile-smokerStatus">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-user-lock w-5 mr-2 text-gray-400"></i><span class="font-medium">Admin Access:</span> <span id="profile-adminAccess">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-briefcase w-5 mr-2 text-gray-400"></i><span class="font-link">Roles:</span> <span id="profile-roles">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-map-marker-alt w-5 mr-2 text-gray-400"></i><span class="font-link">Address:</span> <span id="profile-address">&nbsp;</span></p>
-                    <h4 class="font-semibold text-gray-700 mt-4 mb-2">Contact Details:</h4>
-                    <p><i class="fa-solid fa-at w-5 mr-2 text-gray-400"></i><span class="font-link">Alternate Email:</span> <span id="profile-alternateEmail">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-mobile-alt w-5 mr-2 text-gray-400"></i><span class="font-link">Phone Country Code:</span> <span id="profile-phoneCountryCode">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-user-friends w-5 mr-2 text-gray-400"></i><span class="font-link">Emergency Contact Name:</span> <span id="profile-emergencyContactName">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-phone-volume w-5 mr-2 text-gray-400"></i><span class="font-link">Emergency Contact Phone:</span> <span id="profile-emergencyContactPhone">&nbsp;</span></p>
-                    <p><i class="fa-solid fa-clock w-5 mr-2 text-gray-400"></i><span class="font-link">Last Login:</span> <span id="profile-loginTime">&nbsp;</span></p>
+                <div class="text-gray-600 mb-6 space-y-3 bg-gray-50 p-4 rounded-lg text-left">
+                    <p><i class="fa-solid fa-id-card w-5 mr-2 text-gray-400"></i><span class="font-medium">User Code:</span> <span id="profile-userCode-display">&nbsp;</span></p>
+                    <p><i class="fa-solid fa-user-tag w-5 mr-2 text-gray-400"></i><span class="font-medium">Customer No:</span> <span id="profile-customerNo-display">&nbsp;</span></p>
                 </div>
             </div>
         </div>
@@ -975,11 +946,10 @@
     <footer class="main-footer">© 2025 Secure Access Limited. All rights reserved ❤️ Company.</footer>
 
     <script>
-        const config = { loginUrl: 'login', userCode: null, email: null, customerNo: null };
-        let customerData = null;
+        const config = { loginUrl: 'login', userCode: null, customerNo: null };
         let currentSelectedNote = null;
         let currentPage = 0;
-        const notesPerPage = 20; // Changed from 6 to 20
+        const notesPerPage = 20;
         let currentSearchTerm = '';
         let currentAdvancedFilters = {};
         let totalPagesCount = 1;
@@ -987,10 +957,10 @@
         let notesOnCurrentPage = [];
         let tempRecycleBinNotes = [];
         let tempCurrentAttachmentFile = null;
-        let isListView = false; // New state for view mode
+        // isListView is removed as per request to remove list view functionality
 
         const modals = {
-            profile: document.getElementById('profile-modal'),
+            'profile-modal': document.getElementById('profile-modal'), // Re-added profile modal
             'search-message-modal': document.getElementById('search-message-modal'),
             'error-message-modal': document.getElementById('error-message-modal'),
             'note-details-modal': document.getElementById('note-details-modal'),
@@ -1015,12 +985,6 @@
 
         window.closeModal = (modalId) => {
             modals[modalId]?.classList.add('hidden');
-            if (modalId === 'profile') {
-                const extendedDetails = document.getElementById('profile-extended-details');
-                extendedDetails.classList.add('hidden');
-                document.getElementById('toggle-text').textContent = 'Show More Details';
-                document.getElementById('toggle-icon').classList.replace('fa-chevron-up', 'fa-chevron-down');
-            }
             if (modalId === 'search-message-modal') {
                 const messageTextElement = document.getElementById('search-query-display');
                 if (messageTextElement) {
@@ -1034,7 +998,6 @@
         
         window.initializeUser = () => {
             config.userCode = sessionStorage.getItem('userCode');
-            config.email = sessionStorage.getItem('email');
             
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('customerNo')) {
@@ -1045,12 +1008,13 @@
             }
 
             if (!config.userCode) {
-                sessionStorage.setItem('userCode', 'adminUser');
-                sessionStorage.setItem('email', 'admin@example.com');
-                config.userCode = 'adminUser';
-                config.email = 'admin@example.com';
+                sessionStorage.clear();
+                window.location.href = config.loginUrl;
+                return;
             }
-            document.getElementById('welcome-message').textContent = `Welcome, ${config.email || 'User'}!`;
+            // Populate userCode and customerNo in the header display
+            document.getElementById('display-user-code').textContent = `User Code: ${config.userCode}`;
+            document.getElementById('display-customer-no').textContent = `Customer No: ${config.customerNo || 'N/A'}`;
         };
 
         window.navigateTo = (page) => {
@@ -1097,71 +1061,15 @@
 
         function logout() { navigateTo('logout'); }
 
-        function populateProfileModal(customer) {
-            document.getElementById('profile-name').textContent = `${customer.name || ''} ${customer.middleName || ''} ${customer.surname || ''}`.trim() || 'N/A';
-            document.getElementById('profile-role').textContent = customer.roles?.join(', ') || 'Customer';
-            document.getElementById('profile-userCode').textContent = customer.userCode || 'N/A';
-            document.getElementById('profile-email').textContent = customer.email || 'N/A';
-            document.getElementById('profile-phoneNumber').textContent = customer.phoneNumber || 'N/A';
-            document.getElementById('profile-customerNo').textContent = customer.customerNo || 'N/A';
-            document.getElementById('profile-dateOfBirth').textContent = customer.dateOfBirth || 'N/A';
-            document.getElementById('profile-gender').textContent = customer.gender || 'N/A';
-            document.getElementById('profile-smokerStatus').textContent = customer.smokerStatus || 'N/A';
-            document.getElementById('profile-adminAccess').textContent = customer.adminAccess === 'Y' ? 'Yes' : 'No';
-            document.getElementById('profile-roles').textContent = customer.roles?.join(', ') || 'N/A';
-            document.getElementById('profile-address').textContent = customer.address ? `${customer.address.street || ''}, ${customer.address.city || ''}, ${customer.address.state || ''} - ${customer.address.zipCode || ''}`.replace(/, \s*-|, ,/g,', ').trim() : 'N/A';
-            document.getElementById('profile-loginTime').textContent = new Date().toLocaleString();
-            const contact = customer.contactDetails || {};
-            document.getElementById('profile-alternateEmail').textContent = contact.alternateEmail || 'N/A';
-            document.getElementById('profile-phoneCountryCode').textContent = contact.phoneCountryCode || 'N/A';
-            const emergencyContactNameElement = document.getElementById('profile-emergencyContactName');
-            if (emergencyContactNameElement) {
-                emergencyContactNameElement.textContent = contact.emergencyContactName || 'N/A';
-            }
-            const emergencyContactPhoneElement = document.getElementById('profile-emergencyContactPhone');
-            if (emergencyContactPhoneElement) {
-                emergencyContactPhoneElement.textContent = contact.emergencyContactPhone || 'N/A';
-            }
-            document.getElementById('welcome-message').textContent = `Welcome, ${customer.name || 'User'}!`;
-            document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?u=" + customer.userCode;
-            document.getElementById('modal-profile-icon').src = "https://i.pravatar.cc/80?u=" + customer.userCode;
-        }
-
         async function fetchAndStoreProfileData() {
+            // This function is minimal as per user request, just ensures config has userCode and customerNo
             const userCode = sessionStorage.getItem('userCode');
             if (!userCode) {
-                return;
+                return; 
             }
-            try {
-                const apiResponse = {
-                    status: 'Success',
-                    data: {
-                        name: 'Admin',
-                        middleName: '',
-                        surname: 'User',
-                        userCode: userCode,
-                        email: 'admin@example.com',
-                        phoneNumber: '123-456-7890',
-                        customerNo: 'ADMIN-001',
-                        dateOfBirth: '1980-01-01',
-                        gender: 'Male',
-                        smokerStatus: 'No',
-                        adminAccess: 'Y',
-                        roles: ['Administrator'],
-                        address: { street: 'Admin St', city: 'Admin City', state: 'AP', zipCode: '12345' },
-                        contactDetails: { alternateEmail: 'alt.admin@example.com', phoneCountryCode: '+91', emergencyContactName: 'Admin Friend', emergencyContactPhone: '987-654-3210' }
-                    }
-                };
-                customerData = apiResponse.data;
-                if (!config.customerNo && customerData.customerNo) {
-                    config.customerNo = customerData.customerNo;
-                    sessionStorage.setItem('customerNo', config.customerNo);
-                }
-                document.getElementById('welcome-message').textContent = `Welcome, ${customerData.name || 'User'}!`;
-                document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?u=" + customerData.userCode;
-            } catch (error) {
-                console.error("Error fetching customer details on load:", error);
-            }
+            config.userCode = userCode;
+            config.customerNo = sessionStorage.getItem('customerNo');
+            document.getElementById('profile-icon').src = "https://i.pravatar.cc/40?u=" + config.userCode;
         }
 
         function logActivity(activityText) {
@@ -1194,37 +1102,39 @@
         async function fetchNotes(isRecycleBin = false) {
             showLoader();
             const apiUrl = new URL('http://localhost:8081/DocumentService/notes/List');
+
+            // Set Query Parameters as per backend API
             apiUrl.searchParams.append('page', isRecycleBin ? 0 : currentPage);
             apiUrl.searchParams.append('size', isRecycleBin ? 1000 : notesPerPage);
+            apiUrl.searchParams.append('deleted', isRecycleBin);
 
+            if (config.customerNo) {
+                apiUrl.searchParams.append('customerNo', config.customerNo);
+            }
+            if (!isRecycleBin) {
+                if (currentAdvancedFilters.category && currentAdvancedFilters.category !== 'All') {
+                    apiUrl.searchParams.append('category', currentAdvancedFilters.category);
+                }
+                if (currentAdvancedFilters.priority && currentAdvancedFilters.priority !== 'All') {
+                    apiUrl.searchParams.append('priority', currentAdvancedFilters.priority);
+                }
+                if (currentAdvancedFilters.dateStart) {
+                    apiUrl.searchParams.append('startDate', currentAdvancedFilters.dateStart);
+                }
+                if (currentAdvancedFilters.dateEnd) {
+                    apiUrl.searchParams.append('endDate', currentAdvancedFilters.dateEnd);
+                }
+                if (currentSearchTerm) {
+                    // Mapping searchTerm to 'id' query parameter as per user's request "NOTE/ID/YEAR LIKE this for serch both"
+                    apiUrl.searchParams.append('id', currentSearchTerm);
+                }
+            }
+
+            // Set Headers, only userCode is expected in headers
             const headers = {
                 'Content-Type': 'application/json',
                 'userCode': config.userCode || 'anonymous',
             };
-
-            if (config.customerNo) {
-                headers['customerNo'] = config.customerNo;
-            }
-            
-            headers['deleted'] = isRecycleBin;
-
-            if (!isRecycleBin) {
-                if (currentAdvancedFilters.category && currentAdvancedFilters.category !== 'All') {
-                    headers['category'] = currentAdvancedFilters.category;
-                }
-                if (currentAdvancedFilters.priority && currentAdvancedFilters.priority !== 'All') {
-                    headers['priority'] = currentAdvancedFilters.priority;
-                }
-                if (currentAdvancedFilters.dateStart) {
-                    headers['startDate'] = currentAdvancedFilters.dateStart;
-                }
-                if (currentAdvancedFilters.dateEnd) {
-                    headers['endDate'] = currentAdvancedFilters.dateEnd;
-                }
-                if (currentSearchTerm) {
-                    headers['searchTerm'] = currentSearchTerm;
-                }
-            }
             
             try {
                 const response = await fetch(apiUrl, {
@@ -1290,88 +1200,53 @@
                 document.getElementById('pagination-controls').classList.remove('hidden');
             }
 
-            if (isListView) {
-                container.classList.add('list-view');
-                container.classList.remove('grid'); // Remove grid display for list view
-            } else {
-                container.classList.remove('list-view');
-                container.style.display = 'grid'; // Ensure grid display for grid view
-            }
-
+            // Always render in grid view as list view is removed
+            container.classList.remove('list-view');
+            container.style.display = 'grid';
 
             notesOnCurrentPage.forEach(note => {
-                let element;
-                if (isListView) {
-                    element = document.createElement('div');
-                    element.className = 'note-list-item';
-                    element.innerHTML = `
-                        <div class="note-list-item-content">
-                            <h3 class="note-list-item-title">ID: ${note.id} - ${note.title}</h3>
-                            <p class="note-list-item-meta">Category: ${note.category} | Priority: ${note.priority} | Related To: ${note.relatedTo || 'N/A'}</p>
-                            ${note.docName ? `<p class="text-xs text-blue-600 mt-1"><i class="fa-solid fa-paperclip mr-1"></i>${note.docName}</p>` : ''}
-                        </div>
-                        <div class="note-list-item-actions">
-                            <button class="modern-button primary text-sm bg-white text-blue-600 border border-blue-600 hover:bg-blue-50" onclick="event.stopPropagation(); openNoteDetailsModal('${note.id}')" title="View/Edit Note">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                            <button class="modern-button primary text-sm bg-blue-500 hover:bg-blue-600" onclick="event.stopPropagation(); generateNotePdf('${note.id}')" title="Generate PDF">
-                                <i class="fa-solid fa-file-pdf"></i>
-                            </button>
-                            <button class="modern-button primary text-sm bg-green-500 hover:bg-green-600" onclick="event.stopPropagation(); sendNoteEmail('${note.id}')" title="Send Email">
-                                <i class="fa-solid fa-envelope"></i>
-                            </button>
-                            <button class="modern-button primary text-sm bg-yellow-500 hover:bg-yellow-600" onclick="event.stopPropagation(); shareNote('${note.id}')" title="Share Note">
-                                <i class="fa-solid fa-share-alt"></i>
-                            </button>
-                            <button class="modern-button primary text-sm bg-red-500 hover:bg-red-600" onclick="event.stopPropagation(); deleteNote('${note.id}')" title="Delete Note">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    element = document.createElement('div');
-                    element.className = 'note-card';
+                const noteCard = document.createElement('div');
+                noteCard.className = 'note-card';
 
-                    let priorityClass = '';
-                    if (note.priority === 'High') priorityClass = 'high';
-                    else if (note.priority === 'Medium') priorityClass = 'medium';
-                    else if (note.priority === 'Low') priorityClass = 'low';
+                let priorityClass = '';
+                if (note.priority === 'High') priorityClass = 'high';
+                else if (note.priority === 'Medium') priorityClass = 'medium';
+                else if (note.priority === 'Low') priorityClass = 'low';
 
-                    element.innerHTML = `
-                        <div class="note-card-header">
-                            <h3 class="note-card-title">ID: ${note.id} - ${note.title}</h3>
-                            <span class="priority-badge ${priorityClass}">${note.priority}</span>
-                        </div>
-                        <p class="note-card-meta">Category: ${note.category} | Related To: ${note.relatedTo || 'N/A'}</p>
-                        <p class="note-card-content">${note.content ? note.content.substring(0, 150) : ''}${note.content && note.content.length > 150 ? '...' : ''}</p>
-                        <div class="note-card-meta mt-auto">
-                            <p class="text-xs text-gray-500">Created: ${note.createdDate ? note.createdDate.split('T')[0] : 'N/A'} | Modified: ${note.updatedDate ? note.updatedDate.split('T')[0] : 'N/A'}</p>
-                            ${note.docName ?
-                                `<p class="text-xs text-blue-600 mt-1"><i class="fa-solid fa-paperclip mr-1"></i>${note.docName}</p>` : ''}
-                        </div>
-                        <div class="note-card-actions">
-                            <button class="modern-button primary text-sm bg-white text-blue-600 border border-blue-600 hover:bg-blue-50" onclick="event.stopPropagation(); openNoteDetailsModal('${note.id}')" title="View/Edit Note">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                            <button class="modern-button primary text-sm bg-blue-500 hover:bg-blue-600" onclick="event.stopPropagation(); generateNotePdf('${note.id}')" title="Generate PDF">
-                                <i class="fa-solid fa-file-pdf"></i>
-                            </button>
-                            <button class="modern-button primary text-sm bg-green-500 hover:bg-green-600" onclick="event.stopPropagation(); sendNoteEmail('${note.id}')" title="Send Email">
-                                <i class="fa-solid fa-envelope"></i>
-                            </button>
-                            <button class="modern-button primary text-sm bg-yellow-500 hover:bg-yellow-600" onclick="event.stopPropagation(); shareNote('${note.id}')" title="Share Note">
-                                <i class="fa-solid fa-share-alt"></i>
-                            </button>
-                            <button class="modern-button primary text-sm bg-red-500 hover:bg-red-600" onclick="event.stopPropagation(); deleteNote('${note.id}')" title="Delete Note">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
-                }
-                container.appendChild(element);
+                noteCard.innerHTML = `
+                    <div class="note-card-header">
+                        <h3 class="note-card-title">ID: ${note.id} - ${note.title}</h3>
+                        <span class="priority-badge ${priorityClass}">${note.priority}</span>
+                    </div>
+                    <p class="note-card-meta">Category: ${note.category} | Related To: ${note.relatedTo || 'N/A'}</p>
+                    <p class="note-card-content">${note.content ? note.content.substring(0, 150) : ''}${note.content && note.content.length > 150 ? '...' : ''}</p>
+                    <div class="note-card-meta mt-auto">
+                        <p class="text-xs text-gray-500">Created: ${note.createdDate ? note.createdDate.split('T')[0] : 'N/A'} | Modified: ${note.updatedDate ? note.updatedDate.split('T')[0] : 'N/A'}</p>
+                        ${note.docName ?
+                            `<p class="text-xs text-blue-600 mt-1"><i class="fa-solid fa-paperclip mr-1"></i>${note.docName}</p>` : ''}
+                    </div>
+                    <div class="note-card-actions">
+                        <button class="modern-button primary text-sm bg-white text-blue-600 border border-blue-600 hover:bg-blue-50" onclick="event.stopPropagation(); openNoteDetailsModal('${note.id}')" title="View/Edit Note">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button class="modern-button primary text-sm bg-blue-500 hover:bg-blue-600" onclick="event.stopPropagation(); generateNotePdf('${note.id}')" title="Generate PDF">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </button>
+                        <button class="modern-button primary text-sm bg-green-500 hover:bg-green-600" onclick="event.stopPropagation(); sendNoteEmail('${note.id}')" title="Send Email">
+                            <i class="fa-solid fa-envelope"></i>
+                        </button>
+                        <button class="modern-button primary text-sm bg-yellow-500 hover:bg-yellow-600" onclick="event.stopPropagation(); shareNote('${note.id}')" title="Share Note">
+                            <i class="fa-solid fa-share-alt"></i>
+                        </button>
+                        <button class="modern-button primary text-sm bg-red-500 hover:bg-red-600" onclick="event.stopPropagation(); deleteNote('${note.id}')" title="Delete Note">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(noteCard);
             });
             updatePaginationControls();
-            updateViewButtons();
+            // Removed updateViewButtons call as there are no view buttons now
         }
 
         function updatePaginationControls() {
@@ -1425,7 +1300,7 @@
 
         window.sendNoteEmail = (noteId) => {
             showMessage('Email Sent', `A mock email regarding note ${noteId} has been sent.`);
-            logActivity(`Sent email for note: ${noteId}`);
+            logActivity(`Sent email for note: ${note.id}`);
         };
 
         window.shareNote = (noteId) => {
@@ -1488,15 +1363,21 @@
             if (noteId) {
                 showLoader();
                 const apiUrl = new URL('http://localhost:8081/DocumentService/notes/List');
+                
+                // Set Query Parameters for single note fetch as per backend API
+                apiUrl.searchParams.append('id', noteId);
+                apiUrl.searchParams.append('deleted', fromRecycleBin);
+
+                if (config.customerNo) {
+                    apiUrl.searchParams.append('customerNo', config.customerNo);
+                }
+
+                // Set Headers, only userCode is expected in headers
                 const headers = {
                     'Content-Type': 'application/json',
                     'userCode': config.userCode || 'anonymous',
-                    'id': noteId
                 };
-                if (config.customerNo) {
-                    headers['customerNo'] = config.customerNo;
-                }
-
+                
                 try {
                     const response = await fetch(apiUrl, { method: 'GET', headers: headers });
                     if (!response.ok) {
@@ -1641,7 +1522,7 @@
             const isNewNote = !noteId;
             const apiUrl = 'http://localhost:8081/DocumentService/notes';
             const currentTime = new Date().toISOString();
-            const userCode = sessionStorage.getItem('userCode') || 'anonymous';
+            const userCode = config.userCode || 'anonymous';
             const customerNo = config.customerNo || '';
 
             let docName = null;
@@ -1908,6 +1789,7 @@
             
             button.addEventListener('click', () => {
                 currentSearchTerm = input.value.trim();
+                // If the search input is for the header bar, propagate to the content search bar as well
                 if (inputId === 'header-search-bar') {
                     document.getElementById('content-search-bar').value = currentSearchTerm;
                 } else if (inputId === 'content-search-bar') {
@@ -1924,30 +1806,6 @@
             });
         }
 
-        function toggleListView(enableList) {
-            isListView = enableList;
-            renderNotesList(); // Re-render notes with the new view mode
-            updateViewButtons();
-        }
-
-        function updateViewButtons() {
-            const gridBtn = document.getElementById('grid-view-btn');
-            const listBtn = document.getElementById('list-view-btn');
-
-            if (isListView) {
-                listBtn.classList.remove('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
-                listBtn.classList.add('primary');
-                gridBtn.classList.add('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
-                gridBtn.classList.remove('primary');
-            } else {
-                gridBtn.classList.remove('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
-                gridBtn.classList.add('primary');
-                listBtn.classList.add('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
-                listBtn.classList.remove('primary');
-            }
-        }
-
-
         document.addEventListener('DOMContentLoaded', () => {
             initializeUser();
             hideLoader();
@@ -1959,7 +1817,10 @@
             });
 
             document.getElementById('btn-profile').addEventListener('click', () => {
-                openModal('profile', 'Profile Viewed');
+                // Populate the display fields in the modal before opening
+                document.getElementById('profile-userCode-display').textContent = config.userCode;
+                document.getElementById('profile-customerNo-display').textContent = config.customerNo || 'N/A';
+                openModal('profile-modal', 'Profile Viewed');
             });
 
             document.querySelectorAll('.modal-overlay .modal-close-btn').forEach(btn => {
@@ -2000,9 +1861,8 @@
 
             document.getElementById('prev-page-btn').addEventListener('click', prevPage);
             document.getElementById('next-page-btn').addEventListener('click', nextPage);
-
-            document.getElementById('grid-view-btn').addEventListener('click', () => toggleListView(false));
-            document.getElementById('list-view-btn').addEventListener('click', () => toggleListView(true));
+            
+            // Removed event listeners for grid-view-btn and list-view-btn
         });
     </script>
 </body>

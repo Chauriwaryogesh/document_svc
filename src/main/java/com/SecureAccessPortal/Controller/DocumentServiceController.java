@@ -8,9 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -141,14 +139,15 @@ public class DocumentServiceController {
 
 	@GetMapping("/notes/List")
 	public com.SecureAccessPortal.Service.ResponseEntity<Page<NotesDTO>> fetchNotes(
-			@RequestHeader(value = "customerNo", required = false) String customerNo,
-			@RequestHeader(value = "priority", required = false) String priority,
-			@RequestHeader(value = "userCode", required = false) String userCode,
-			@RequestHeader(value = "startDate", required = false) String startDate,
-			@RequestHeader(value = "endDate", required = false) String endDate,
-			@RequestHeader(value = "deleted", required = false) boolean deleted,
-			@RequestHeader(value = "id", required = false) String id, @RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "20") int size) {
+			@RequestParam(value = "customerNo", required = false) String customerNo,
+			@RequestParam(value = "priority", required = false) String priority,
+			@RequestParam(value = "startDate", required = false) String startDate,
+			@RequestParam(value = "endDate", required = false) String endDate,
+			@RequestParam(value = "deleted", required = false) boolean deleted,
+			@RequestParam(value = "id", required = false) String id,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "20") int size,
+			@RequestHeader(value = "userCode", required = false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<Page<NotesDTO>> responce = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		Page<NotesDTO> saved = docmentSrvice.getList(customerNo, priority, userCode, startDate, endDate, deleted, id,
 				page, size);

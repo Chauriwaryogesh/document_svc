@@ -149,8 +149,8 @@ public class DocumentService implements IDocumentService {
 					if (note.getCategory() != null) {
 						notesDb.setCategory(note.getCategory());
 					}
-					if (note.getCategory() != null) {
-						notesDb.setPriority(message);
+					if (note.getPriority() != null) {
+						notesDb.setPriority(note.getPriority());
 					}
 					if (note.getContent() != null) {
 						notesDb.setContent(note.getContent());
