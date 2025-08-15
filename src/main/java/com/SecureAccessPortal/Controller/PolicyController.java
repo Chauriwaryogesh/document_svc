@@ -3,6 +3,7 @@ package com.SecureAccessPortal.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +23,7 @@ import com.SecureAccessPortal.Modal.GroupedPolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyRequest;
 import com.SecureAccessPortal.Modal.ResponseDTO;
+import com.SecureAccessPortal.Modal.SurrenderClaimDTO;
 import com.SecureAccessPortal.Service.EmailService;
 import com.SecureAccessPortal.Service.PolicyService;
 import com.SecureAccessPortal.Service.ResponseEntity;
@@ -88,12 +91,7 @@ public class PolicyController {
 			@RequestParam(value = "productCode", required = false) String productCode,
 			@RequestParam(value = "policyTAmount", required = false) String policyTAmount,
 			@RequestParam(value = "policyFrequency", required = false) String policyFrequency,
-			@RequestParam(value = "policyInstallment", required = false) String policyInstallment,
-			/*
-			 * @RequestParam(value = "policyNo", required = false) String policyNo
-			 * 
-			 * @RequestParam(value = "policyNo", required = false) String policyNo
-			 */
+			@RequestParam(value = "policyInstallment", required = false) String policyInstallmentm,
 			@RequestHeader(value = "useCode", required = false) String userCode) {
 		com.SecureAccessPortal.Service.ResponseEntity<List<GroupedPolicyDTO>> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		List<GroupedPolicyDTO> policyDTO = policyService.getDomainData(productCode, userCode);
@@ -187,5 +185,37 @@ public class PolicyController {
 		ResponseEntity<String> response = policyService.applyForPolicy(policyDTO, userCode);
 		return response;
 	}
+	
+	@RequestMapping(value="getSurrenderDtls" ,method= RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Page<SurrenderClaimDTO>> getSurrenderDtls(
+			@RequestParam(required = false) String action,
+			@RequestParam(required = false) String surrenderRefNo,
+			@RequestParam(required = false) String policyNo, @RequestParam(required = false) String customerNo,
+			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+			@RequestParam(required = false) String type,
+			@RequestParam(defaultValue="0") int page,
+			@RequestParam(defaultValue = "20") int size, @RequestHeader(required = false) String userCode) {
+		ResponseEntity<Page<SurrenderClaimDTO>> response = new ResponseEntity<>();
+		response = policyService.getSurrender(action,surrenderRefNo, policyNo, customerNo, startDate, endDate, type,
+				page, size, userCode);
+
+		return response;
+	}
+//	@RequestMapping(value="getSurrender-Claim" ,method= RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+//	public ResponseEntity<Page<SurrenderClaimDTO>> getSurrenderClaimDetails(
+//			@RequestParam(required = false) String action, @RequestParam(required = false) String claimRefNo,
+//			@RequestParam(required = false) String policyNo, @RequestParam(required = false) String customerNo,
+//			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+//			@RequestParam(required = false) String type,
+//			@RequestParam(defaultValue="0") int page,
+//			@RequestParam(defaultValue = "20") int size, @RequestHeader(required = false) String userCode) {
+//		ResponseEntity<Page<SurrenderClaimDTO>> response = new ResponseEntity<>();
+//
+//		response = policyService.getClaim(action, claimRefNo, policyNo, customerNo, startDate, endDate, type,
+//				page, size, userCode);
+//
+//		return response;
+//	}
+	
 
 }

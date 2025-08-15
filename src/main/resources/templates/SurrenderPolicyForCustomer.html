@@ -10,6 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.autotable.min.js"></script>
 <style>
+/* Base styling */
 body {
     font-family: 'Inter', sans-serif;
     background-color: #f7f8fc;
@@ -19,11 +20,13 @@ body {
     color: #1f2937;
 }
 
+/* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
+/* Sidebar styling */
 #sidebar {
     transition: width 0.3s ease-in-out;
     width: 5rem;
@@ -96,7 +99,7 @@ body {
 .sidebar-link-text {
     margin-left: 0.75rem;
     opacity: 0;
-    width: 0;
+    width: auto;
     transition: opacity 0.3s ease-in-out 0.1s, width 0.3s ease-in-out 0.1s;
 }
 #sidebar.expanded .sidebar-link-text {
@@ -118,6 +121,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    padding: 10; /* Increased padding */
 }
 #sidebar.expanded + #main-content {
     margin-left: 16rem;
@@ -184,6 +188,7 @@ section {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     margin-bottom: 1.5rem;
+    width: 100%; /* Ensure sections take full width of their parent */
 }
 section h2 { color: #1f2937; margin-bottom: 1.5rem; }
 
@@ -261,10 +266,13 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     max-height: 90vh;
     overflow-y: auto;
 }
+/* Specific modal sizes */
 .modal-content.max-w-xl { max-width: 640px; }
 .modal-content.max-w-2xl { max-width: 768px; }
 .modal-content.max-w-4xl { max-width: 900px; }
-.modal-content.h-3 { height: auto; max-height: 75vh; }
+.modal-content.max-w-5xl { max-width: 1024px; } /* New: for policy details */
+.modal-content.h-auto { height: auto; max-height: 90vh; } /* New: for dynamic content */
+
 
 .close-modal-btn {
     position: absolute;
@@ -307,6 +315,20 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     border-color: #2563eb;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
+/* Style for displaying non-editable form values */
+.form-input-display {
+    border: 1px solid #e2e8f0;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+    padding: 10px 14px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #4b5563;
+    cursor: default;
+}
+
 .form-label {
     font-weight: 600;
     color: #1a2c50;
@@ -327,19 +349,19 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     font-weight: 500;
 }
 
-.policy-details-tabs .tab-button, .history-tabs .tab-button {
+.policy-details-tabs .tab-button, .workflow-tabs .tab-button {
     background-color: transparent;
     border-bottom: 2px solid transparent;
     padding: 0.75rem 1.25rem;
     font-size: 0.95rem;
     color: #6b7280;
 }
-.policy-details-tabs .tab-button.active, .history-tabs .tab-button.active {
+.policy-details-tabs .tab-button.active, .workflow-tabs .tab-button.active {
     border-bottom-color: #2563eb;
     color: #1f2937;
     font-weight: 700;
 }
-.policy-details-tabs .tab-button:hover:not(.active), .history-tabs .tab-button:hover:not(.active) {
+.policy-details-tabs .tab-button:hover:not(.active), .workflow-tabs .tab-button:hover:not(.active) {
     color: #2563eb;
 }
 
@@ -407,6 +429,28 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     to { transform: translateY(100%); opacity: 0; }
 }
 
+/* New styles for policy details fields */
+.policy-detail-field {
+    @apply p-3 border border-gray-200 rounded-lg bg-gray-50;
+}
+.policy-detail-field strong {
+    @apply text-gray-700 font-semibold;
+}
+.policy-detail-field span {
+    @apply text-gray-800;
+}
+
+/* Highlighted money fields */
+.policy-detail-field.money-field {
+    @apply bg-blue-100 border-blue-300 text-blue-800 font-bold;
+}
+.policy-detail-field.money-field strong {
+    @apply text-blue-800;
+}
+.policy-detail-field.money-field span {
+    @apply text-blue-800;
+}
+
 </style>
 </head>
 <body class="flex">
@@ -418,13 +462,12 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
         </button>
     </div>
     <nav class="mt-4 flex-1">
-        <a href="#" class="sidebar-link" onclick="handleNavigation('CustomerService.html')"><i class="fas fa-headset"></i><span class="sidebar-link-text">Customer Services</span></a>
-        <a href="#" class="sidebar-link" onclick="handleNavigation('BankAccount.html')"><i class="fas fa-university"></i><span class="sidebar-link-text">Bank Account</span></a>
-        <a href="#" class="sidebar-link" onclick="handleNavigation('PaymentForCustomer.html')"><i class="fas fa-credit-card"></i><span class="sidebar-link-text">Payments</span></a>
+        <a href="#" class="sidebar-link" onclick="window.handleNavigation('CustomerService.html')"><i class="fas fa-headset"></i><span class="sidebar-link-text">Customer Services</span></a>
+        <a href="#" class="sidebar-link" onclick="window.handleNavigation('BankAccount.html')"><i class="fas fa-university"></i><span class="sidebar-link-text">Bank Account</span></a>
+        <a href="#" class="sidebar-link" onclick="window.handleNavigation('PaymentForCustomer.html')"><i class="fas fa-credit-card"></i><span class="sidebar-link-text">Payments</span></a>
         <a href="#" class="sidebar-link active"><i class="fas fa-file-invoice-dollar"></i><span class="sidebar-link-text">Policy Management</span></a>
-        <a href="#" class="sidebar-link" onclick="handleNavigation('ComplaintsForCustomer.html')"><i class="fas fa-exclamation-circle"></i><span class="sidebar-link-text">Complaints</span></a>
-        <a href="#" class="sidebar-link" onclick="handleNavigation('ManageWorkitemsForCustomer.html')"><i class="fas fa-tasks"></i><span class="sidebar-link-text">Manage Workitems</span></a>
-        <a href="#" class="sidebar-link" onclick="showTab('history')"><i class="fas fa-history"></i><span class="sidebar-link-text">History</span></a>
+        <a href="#" class="sidebar-link" onclick="window.handleNavigation('ComplaintsForCustomer.html')"><i class="fas fa-exclamation-circle"></i><span class="sidebar-link-text">Complaints</span></a>
+        <a href="#" class="sidebar-link" onclick="window.handleNavigation('ManageWorkitemsForCustomer.html')"><i class="fas fa-tasks"></i><span class="sidebar-link-text">Manage Workitems</span></a>
     </nav>
     <div class="mt-auto p-4 border-t border-gray-200">
         <button id="btn-logout-sidebar" class="sidebar-link text-red-600 hover:bg-red-50 hover:text-red-700">
@@ -432,147 +475,176 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
         </button>
     </div>
 </aside>
-<div id="main-content" class="p-8 custom-scrollbar">
+<div id="main-content" class="p-10 custom-scrollbar"> <!-- Increased padding -->
     <header class="flex justify-between items-center mb-6 flex-wrap pb-4 border-b border-gray-200">
-        <h1 id="main-title" class="text-3xl font-bold mb-4 sm:mb-0">Policy Surrender</h1>
+        <h1 id="main-title" class="text-3xl font-bold mb-4 sm:mb-0">Policy Management</h1>
         <div class="flex items-center space-x-4">
             <div class="relative w-48">
-                <input type="text" id="policy-search" placeholder="Search..." class="w-full pl-10 pr-4 py-2 text-sm border rounded-full focus:outline-none focus:ring-2">
+                <!-- Header search bar for Policy Number filtering (customer view) -->
+                <input type="text" id="policy-search" placeholder="Search Policy No..." class="w-full pl-10 pr-4 py-2 text-sm border rounded-full focus:outline-none focus:ring-2">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
             </div>
-            <button onclick="openFilterModal()" class="px-4 py-2 text-sm rounded-full shadow bg-gray-200 text-gray-700 hover:bg-gray-300">
+            <button onclick="window.openFilterModal()" class="px-4 py-2 text-sm rounded-full shadow bg-gray-200 text-gray-700 hover:bg-gray-300">
                 <i class="fas fa-filter mr-2"></i>Filter
             </button>
-            <img onclick="openUserProfileModal()" class="w-10 h-10 rounded-full border-2 border-blue-300 cursor-pointer" src="https://placehold.co/40x40/4f46e5/ffffff?text=JD" alt="User Profile">
+            <!-- Profile display area - only showing User Code and Customer No -->
+            <div onclick="window.openUserProfileModal()" class="flex items-center space-x-2 p-2 rounded-full bg-blue-100 text-blue-800 font-semibold text-sm cursor-pointer">
+                <span id="profile-user-code-display">User: N/A</span>
+                <span>|</span>
+                <span id="profile-customer-no-display">Cust: N/A</span>
+            </div>
             <button id="btn-logout-header" class="px-4 py-2 text-sm rounded-full text-white bg-red-600 hover:bg-red-700 transition-colors shadow"><i class="fas fa-sign-out-alt"></i></button>
         </div>
     </header>
 
-    <div class="flex border-b border-gray-200 mb-6">
-        <button id="surrender-tab-btn" onclick="showTab('surrender')" class="tab-button px-6 py-3 font-medium text-sm active">
-            Policy Surrender
+    <!-- Consolidated Primary Tabs -->
+    <div class="flex border-b border-gray-200 mb-6" id="primary-tabs">
+        <button id="policies-tab-btn" onclick="window.showPrimaryTab('policies')" class="tab-button px-6 py-3 font-medium text-sm active">
+            Your Policies
         </button>
-        <button id="claim-tab-btn" onclick="showTab('claim')" class="tab-button px-6 py-3 font-medium text-sm">
-            Policy Claim
+        <button id="workflow-tab-btn" onclick="window.showPrimaryTab('workflow')" class="tab-button px-6 py-3 font-medium text-sm">
+            Workflow & History
         </button>
     </div>
 
-    <div id="surrender-content" class="fade-in" style="display: block;">
-        <section>
+    <!-- Policy Content Section -->
+    <div id="policies-content" class="fade-in" style="display: block;">
+        <section class="w-full"> <!-- Ensure section takes full width -->
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Your Active Policies</h2>
-                <button id="total-surrender-policies-btn" class="px-4 py-2 text-sm rounded-full bg-blue-100 text-blue-800 font-semibold">
-                    Total Policies: <span id="surrender-policy-count"></span>
+                <h2 class="text-xl font-semibold">All Your Policies</h2>
+                <button id="total-policies-btn" class="px-4 py-2 text-sm rounded-full bg-blue-100 text-blue-800 font-semibold">
+                    Total Policies: <span id="policy-count"></span>
                 </button>
             </div>
-            <div id="surrender-policy-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            <div id="surrender-policy-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
-        </section>
-        <section>
-            <h2 class="text-xl font-semibold">Track My Surrender Requests</h2>
-            <div class="flex border-b border-gray-200 mb-4">
-                <button id="all-requests-tab-btn" onclick="filterSurrenderRequests('all')" class="tab-button px-4 py-2 text-sm font-medium active">All Requests</button>
-                <button id="ongoing-requests-tab-btn" onclick="filterSurrenderRequests('ongoing')" class="tab-button px-4 py-2 text-sm font-medium">Ongoing</button>
-                <button id="completed-requests-tab-btn" onclick="filterSurrenderRequests('approved')" class="tab-button px-4 py-2 text-sm font-medium">Completed</button>
-                <button id="canceled-requests-tab-btn" onclick="filterSurrenderRequests('canceled')" class="tab-button px-4 py-2 text-sm font-medium">Canceled</button>
-                <button id="rejected-requests-tab-btn" onclick="filterSurrenderRequests('rejected')" class="tab-button px-4 py-2 text-sm font-medium">Rejected</button>
-            </div>
-            <div id="request-list" class="space-y-4"></div>
-            <div id="request-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
+            <div id="policy-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+            <div id="policy-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
         </section>
     </div>
 
-    <div id="claim-content" class="fade-in" style="display: none;">
-        <section>
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Your Active Policies</h2>
-                <button id="total-claim-policies-btn" class="px-4 py-2 text-sm rounded-full bg-blue-100 text-blue-800 font-semibold">
-                    Total Policies: <span id="claim-policy-count"></span>
-                </button>
+    <!-- Workflow Content Section (Combines Surrender and Claim Tracking, also acts as history) -->
+    <div id="workflow-content" class="fade-in" style="display: none;">
+        <section class="w-full"> <!-- Ensure section takes full width -->
+            <h2 class="text-xl font-semibold mb-4">Surrender & Claim Workflow History</h2>
+            <div class="flex items-center space-x-4 mb-4">
+                <div class="relative w-72">
+                    <!-- Workflow specific search bar -->
+                    <input type="text" id="workflow-search-input" placeholder="Search workflow items..." class="w-full pl-10 pr-4 py-2 text-sm border rounded-full focus:outline-none focus:ring-2">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <div>
+                    <label for="workflow-search-by" class="sr-only">Search By:</label>
+                    <select id="workflow-search-by" class="form-input text-sm rounded-full px-4 py-2">
+                        <option value="policyNo">Policy Number</option>
+                        <option value="customerNo">Customer Number</option>
+                        <option value="workItemRefNo">Work Item Ref No</option>
+                    </select>
+                </div>
             </div>
-            <div id="claim-policy-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            <div id="claim-policy-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
-        </section>
-        <section>
-            <h2 class="text-xl font-semibold">Track My Claims</h2>
-            <div id="claim-list" class="space-y-4"></div>
-            <div id="claim-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
-        </section>
-    </div>
 
-    <div id="history-main-content" class="fade-in" style="display: none;">
-        <section>
-            <h2 class="text-xl font-semibold">Policy History Categories</h2>
-            <div class="flex border-b border-gray-200 mb-4 history-tabs">
-                <button id="history-all-tab-btn" onclick="showHistoryTab('all')" class="tab-button px-4 py-2 text-sm font-medium active">All Policies</button>
-                <button id="history-active-tab-btn" onclick="showHistoryTab('active')" class="tab-button px-4 py-2 text-sm font-medium">Active</button>
-                <button id="history-closed-tab-btn" onclick="showHistoryTab('closed')" class="tab-button px-4 py-2 text-sm font-medium">Closed</button>
-                <button id="history-surrendered-tab-btn" onclick="showHistoryTab('surrendered')" class="tab-button px-4 py-2 text-sm font-medium">Surrendered</button>
-                <button id="history-canceled_surrender-tab-btn" onclick="showHistoryTab('canceled_surrender')" class="tab-button px-4 py-2 text-sm font-medium">Surrender Cancel</button>
-                <button id="history-claimed-tab-btn" onclick="showHistoryTab('claimed')" class="tab-button px-4 py-2 text-sm font-medium">Claimed</button>
-                <button id="history-claim_canceled-tab-btn" onclick="showHistoryTab('claim_canceled')" class="tab-button px-4 py-2 text-sm font-medium">Claim Cancel</button>
+            <div class="flex border-b border-gray-200 mb-4 workflow-tabs">
+                <button id="workflow-ongoing-tab-btn" onclick="window.filterWorkflowRequests('ongoing')" class="tab-button px-4 py-2 text-sm font-medium">Ongoing</button>
+                <button id="workflow-surrender-requests-tab-btn" onclick="window.filterWorkflowRequests('surrender')" class="tab-button px-4 py-2 text-sm font-medium">Surrender Requests</button>
+                <button id="workflow-claims-tab-btn" onclick="window.filterWorkflowRequests('claim')" class="tab-button px-4 py-2 text-sm font-medium">Claims</button>
+                <button id="workflow-completed-tab-btn" onclick="window.filterWorkflowRequests('completed')" class="tab-button px-4 py-2 text-sm font-medium">Completed</button>
+                <button id="workflow-canceled-tab-btn" onclick="window.filterWorkflowRequests('canceled')" class="tab-button px-4 py-2 text-sm font-medium">Canceled</button>
+                <button id="workflow-rejected-tab-btn" onclick="window.filterWorkflowRequests('rejected')" class="tab-button px-4 py-2 text-sm font-medium">Rejected</button>
             </div>
-            <div id="history-content-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div id="combined-workflow-list" class="space-y-4">
+                <!-- Content will be rendered here based on selected filter, initially empty -->
+                <p class="text-gray-500 text-center py-8">Select a filter above to view workflow items.</p>
             </div>
-            <div id="history-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
+            <div id="workflow-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
         </section>
     </div>
 
 </div>
 <div id="user-profile-modal" class="modal">
     <div class="modal-content">
-        <span class="close-modal-btn" onclick="closeUserProfileModal()">&times;</span>
-        <h3 class="text-xl font-bold mb-4">User Profile</h3>
+        <span class="close-modal-btn" onclick="window.closeUserProfileModal()">&times;</span>
+        <h3 class="text-xl font-bold mb-4">User Details</h3>
         <div class="space-y-2 text-gray-700">
-            <p><strong>Name:</strong> Yogesh Gangadhar chouriwar</p>
-            <p><strong>Role:</strong> Customer</p>
-            <p><strong>Email:</strong> <span id="profile-email">Not Provided</span></p>
             <p><strong>User Code:</strong> <span id="profile-user-code">Not Provided</span></p>
-        </div>
-        <p id="profile-email-success" class="success-text hidden mt-4"></p>
-        <div class="flex justify-end space-x-2 mt-4">
-            <button onclick="sendProfileEmail()" class="px-6 py-2 rounded-full text-white bg-blue-600 hover:bg-blue-700">Send Email</button>
+            <p><strong>Customer No:</strong> <span id="profile-customer-no">Not Provided</span></p>
         </div>
     </div>
 </div>
 <div id="policy-details-modal" class="modal">
-    <div class="modal-content max-w-4xl h-3/4 flex flex-col">
-        <span class="close-modal-btn" onclick="closePolicyDetailsModal()">&times;</span>
+    <!-- Adjusted max-width and height for more content -->
+    <div class="modal-content max-w-5xl h-auto flex flex-col"> 
+        <span class="close-modal-btn" onclick="window.closePolicyDetailsModal()">&times;</span>
         <h3 class="text-xl font-bold mb-4">Policy Details</h3>
         
         <div class="flex border-b border-gray-200 mb-4 policy-details-tabs">
-            <button id="policy-details-tab-btn" onclick="showDetailsTab('policy')" class="tab-button px-4 py-2 text-sm font-medium active">
+            <button id="policy-details-tab-btn" onclick="window.showDetailsTab('policy')" class="tab-button px-4 py-2 text-sm font-medium active">
                 Policy
             </button>
-            <button id="bank-details-tab-btn" onclick="showDetailsTab('bank')" class="tab-button px-4 py-2 text-sm font-medium">
+            <button id="bank-details-tab-btn" onclick="window.showDetailsTab('bank')" class="tab-button px-4 py-2 text-sm font-medium">
                 Bank
             </button>
-            <button id="payments-tab-btn" onclick="showDetailsTab('payments')" class="tab-button px-4 py-2 text-sm font-medium">
+            <button id="payments-tab-btn" onclick="window.showDetailsTab('payments')" class="tab-button px-4 py-2 text-sm font-medium">
                 Payments
             </button>
         </div>
 
         <div id="policy-details-tab-content" class="flex-1 overflow-y-auto custom-scrollbar">
-            <div id="policy-details-tab" class="space-y-4 text-gray-700 p-2" style="display: block;">
+            <div id="policy-details-tab" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 p-2" style="display: block;">
+                <!-- Policy details will be rendered here dynamically -->
             </div>
             <div id="bank-details-tab" class="space-y-4 text-gray-700 p-2" style="display: none;">
+                <!-- Bank account details will be rendered here dynamically -->
             </div>
             <div id="payments-tab" class="space-y-4 text-gray-700 p-2" style="display: none;">
+                <!-- Payment history details will be rendered here dynamically -->
             </div>
         </div>
 
-        <div class="flex justify-end mt-6">
-            <button id="details-surrender-btn" onclick="openSurrenderModal(this.dataset.policyId)" class="px-6 py-2 rounded-full text-white bg-blue-600">Request Surrender</button>
+        <div class="flex justify-end space-x-4 mt-6">
+            <button id="details-surrender-btn" onclick="window.openSurrenderModal(this.dataset.policyNumber)" class="px-6 py-2 rounded-full text-white bg-blue-600">Request Surrender</button>
+            <button id="details-claim-btn" onclick="window.openSubmitClaimModal(this.dataset.policyNumber)" class="px-6 py-2 rounded-full text-white bg-green-600">Submit Claim</button>
         </div>
     </div>
 </div>
 <div id="surrender-modal" class="modal">
-    <div class="modal-content max-w-2xl h-3/4 flex flex-col">
-        <span class="close-modal-btn" onclick="closeSurrenderModal()">&times;</span>
+    <div class="modal-content max-w-2xl h-auto flex flex-col"> <!-- Adjusted height for dynamic content -->
+        <span class="close-modal-btn" onclick="window.closeSurrenderModal()">&times;</span>
         <h3 class="text-xl font-bold mb-4">Request Policy Surrender</h3>
         <div class="flex-1 overflow-y-auto custom-scrollbar p-2">
-            <p class="text-gray-600 mb-2">Policy ID: <span id="surrender-policy-id" class="font-semibold"></span></p>
+            <p class="text-gray-600 mb-2">Policy Number: <span id="surrender-policy-id" class="font-semibold"></span></p>
             <p class="text-gray-600 mb-4">Policy Name: <span id="surrender-policy-name" class="font-semibold"></span></p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="form-label block text-sm">Policy Coverage Amount:</label>
+                    <p id="surrender-policy-coverage-amount" class="form-input-display"></p>
+                </div>
+                <div>
+                    <label class="form-label block text-sm">Total Surrender Claimable Amount:</label>
+                    <p id="surrender-total-claimable-amount" class="form-input-display"></p>
+                </div>
+                <div>
+                    <label class="form-label block text-sm">Total Policy Value:</label>
+                    <p id="surrender-total-amount" class="form-input-display"></p>
+                </div>
+                <div>
+                    <label class="form-label block text-sm">Monthly Installment:</label>
+                    <p id="surrender-monthly-installment" class="form-input-display"></p>
+                </div>
+                <div>
+                    <label class="form-label block text-sm">Total Installments Paid:</label>
+                    <p id="surrender-total-installments-paid" class="form-input-display"></p>
+                </div>
+                <div>
+                    <label class="form-label block text-sm">Total Installments Unpaid:</label>
+                    <p id="surrender-total-installments-unpaid" class="form-input-display"></p>
+                </div>
+            </div>
+
+            <label for="surrender-bank-account-dropdown" class="form-label block text-sm required mb-1">Select Bank Account:</label>
+            <select id="surrender-bank-account-dropdown" class="form-input mb-4" required>
+                <option value="">Select a bank account</option>
+                <!-- Options will be dynamically loaded here -->
+            </select>
+
             <label for="surrender-reason-dropdown" class="form-label block text-sm required mb-1">Reason for Surrender:</label>
             <select id="surrender-reason-dropdown" class="form-input mb-4" required>
                 <option value="">Select a reason</option>
@@ -607,50 +679,69 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
             </div>
         </div>
         <div class="flex justify-end space-x-4 mt-6">
-            <button onclick="closeSurrenderModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
-            <button id="submit-surrender-btn" onclick="confirmSurrenderRequest()" class="px-6 py-2 rounded-full text-white bg-blue-600">Submit Request</button>
+            <button onclick="window.closeSurrenderModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
+            <button id="submit-surrender-btn" onclick="window.confirmSurrenderRequest()" class="px-6 py-2 rounded-full text-white bg-blue-600">Submit Request</button>
         </div>
     </div>
 </div>
 <div id="confirm-surrender-modal" class="modal">
     <div class="modal-content">
-        <span class="close-modal-btn" onclick="closeConfirmSurrenderModal()">&times;</span>
+        <span class="close-modal-btn" onclick="window.closeConfirmSurrenderModal()">&times;</span>
         <div class="text-center">
             <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
             <h3 class="text-xl font-bold mb-2">Are you sure?</h3>
             <p class="text-gray-600 mb-6">Do you really want to submit a request to surrender this policy? This action cannot be undone.</p>
             <div class="flex justify-center space-x-4">
-                <button onclick="closeConfirmSurrenderModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
-                <button onclick="submitSurrenderRequest()" class="px-6 py-2 rounded-full text-white bg-red-600">Submit</button>
+                <button onclick="window.closeConfirmSurrenderModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
+                <button onclick="window.submitSurrenderRequest()" class="px-6 py-2 rounded-full text-white bg-red-600">Submit</button>
             </div>
         </div>
     </div>
 </div>
 <div id="cancellation-modal" class="modal">
     <div class="modal-content">
-        <span class="close-modal-btn" onclick="closeCancellationModal()">&times;</span>
+        <span class="close-modal-btn" onclick="window.closeCancellationModal()">&times;</span>
         <h3 class="text-xl font-bold mb-4">Cancel Surrender Request</h3>
         <p class="text-gray-600 mb-4">Please provide a brief reason for canceling your policy surrender request.</p>
         <textarea id="cancellation-reason" class="form-input" rows="4" placeholder="Enter your reason here..." required></textarea>
         <div class="flex justify-end space-x-4 mt-6">
-            <button onclick="closeCancellationModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
-            <button onclick="submitCancellation()" class="px-6 py-2 rounded-full text-white bg-red-600">Submit</button>
+            <button onclick="window.closeCancellationModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
+            <button onclick="window.submitCancellation()" class="px-6 py-2 rounded-full text-white bg-red-600">Submit</button>
         </div>
     </div>
 </div>
-<div id="surrender-workflow-modal" class="modal">
-    <div class="modal-content max-w-2xl h-3/4 flex flex-col">
-        <span class="close-modal-btn" onclick="closeWorkflowModal()">&times;</span>
-        <h3 class="text-xl font-bold mb-4">Request Workflow</h3>
-        <div id="surrender-workflow-steps" class="space-y-4 relative pl-6 flex-1 overflow-y-auto custom-scrollbar"></div>
-    </div>
-</div>
 <div id="submit-claim-modal" class="modal">
-    <div class="modal-content max-w-xl h-3/4 overflow-y-auto custom-scrollbar">
-        <span class="close-modal-btn" onclick="closeSubmitClaimModal()">&times;</span>
+    <div class="modal-content max-w-xl h-auto overflow-y-auto custom-scrollbar"> <!-- Adjusted height -->
+        <span class="close-modal-btn" onclick="window.closeSubmitClaimModal()">&times;</span>
         <h3 class="text-xl font-bold mb-4">Submit a Claim</h3>
-        <p class="text-gray-600 mb-2">Policy ID: <span id="claim-policy-id" class="font-semibold"></span></p>
+        <p class="text-gray-600 mb-2">Policy Number: <span id="claim-policy-id" class="font-semibold"></span></p>
         <p class="text-gray-600 mb-4">Policy Name: <span id="claim-policy-name" class="font-semibold"></span></p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="form-label block text-sm">Policy Coverage Amount:</label>
+                <p id="claim-policy-coverage-amount" class="form-input-display"></p>
+            </div>
+            <div>
+                <label class="form-label block text-sm">Total Claimable Amount:</label>
+                <p id="claim-total-claimable-amount" class="form-input-display"></p>
+            </div>
+            <div>
+                <label class="form-label block text-sm">Total Policy Value:</label>
+                <p id="claim-total-amount" class="form-input-display"></p>
+            </div>
+            <div>
+                <label class="form-label block text-sm">Monthly Installment:</label>
+                <p id="claim-monthly-installment" class="form-input-display"></p>
+            </div>
+        </div>
+
+        <label for="claim-bank-account-dropdown" class="form-label block text-sm required mb-1">Select Bank Account:</label>
+        <select id="claim-bank-account-dropdown" class="form-input mb-4" required>
+            <option value="">Select a bank account</option>
+            <!-- Options will be dynamically loaded here -->
+        </select>
+
         <label for="claim-type-dropdown" class="form-label block text-sm required mb-1">Claim Type:</label>
         <select id="claim-type-dropdown" class="form-input" required>
             <option value="">Select a claim type</option>
@@ -682,55 +773,48 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
             </div>
         </div>
         <div class="flex justify-end space-x-4 mt-6">
-            <button onclick="closeSubmitClaimModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
-            <button onclick="confirmClaimSubmission()" class="px-6 py-2 rounded-full text-white bg-blue-600">Submit Claim</button>
+            <button onclick="window.closeSubmitClaimModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
+            <button onclick="window.confirmClaimSubmission()" class="px-6 py-2 rounded-full text-white bg-blue-600">Submit Claim</button>
         </div>
     </div>
 </div>
 <div id="confirm-claim-modal" class="modal">
     <div class="modal-content">
-        <span class="close-modal-btn" onclick="closeConfirmClaimModal()">&times;</span>
+        <span class="close-modal-btn" onclick="window.closeConfirmClaimModal()">&times;</span>
         <div class="text-center">
             <i class="fas fa-question-circle text-blue-500 text-5xl mb-4"></i>
             <h3 class="text-xl font-bold mb-2">Confirm Claim Submission</h3>
             <p class="text-gray-600 mb-6">Are you sure you want to submit this claim? Please double-check all the information and documents before proceeding.</p>
             <div class="flex justify-center space-x-4">
-                <button onclick="closeConfirmClaimModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
-                <button onclick="submitClaimRequest()" class="px-6 py-2 rounded-full text-white bg-blue-600">Submit</button>
+                <button onclick="window.closeConfirmClaimModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
+                <button onclick="window.submitClaimRequest()" class="px-6 py-2 rounded-full text-white bg-blue-600">Submit</button>
             </div>
         </div>
     </div>
 </div>
 <div id="fraud-warning-modal" class="modal">
     <div class="modal-content">
-        <span class="close-modal-btn" onclick="closeFraudWarningModal()">&times;</span>
+        <span class="close-modal-btn" onclick="window.closeFraudWarningModal()">&times;</span>
         <div class="text-center p-4 bg-red-100 border-4 border-red-500 rounded-lg">
             <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
             <h3 class="text-xl font-bold mb-2 text-red-800">Fraud Alert</h3>
             <p class="text-red-700 mb-6">Be aware. Are you sure you want to submit this claim? A potential red flag was found in your claim details. Submitting a fraudulent claim can lead to legal consequences.</p>
             <div class="flex justify-center space-x-4">
-                <button onclick="closeFraudWarningModal()" class="px-6 py-2 rounded-full bg-red-200">Cancel</button>
-                <button onclick="submitClaimRequest(true)" class="px-6 py-2 rounded-full text-white bg-red-600">Submit Anyway</button>
+                <button onclick="window.closeFraudWarningModal()" class="px-6 py-2 rounded-full bg-red-200">Cancel</button>
+                <button onclick="window.submitClaimRequest(true)" class="px-6 py-2 rounded-full text-white bg-red-600">Submit Anyway</button>
             </div>
         </div>
     </div>
 </div>
-<div id="claim-workflow-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal-btn" onclick="closeClaimWorkflowModal()">&times;</span>
-        <h3 class="text-xl font-bold mb-4">Claim Workflow</h3>
-        <div id="claim-workflow-steps" class="space-y-4 relative pl-6"></div>
-    </div>
-</div>
 <div id="cancel-claim-modal" class="modal">
     <div class="modal-content">
-        <span class="close-modal-btn" onclick="closeCancelClaimModal()">&times;</span>
+        <span class="close-modal-btn" onclick="window.closeCancelClaimModal()">&times;</span>
         <h3 class="text-xl font-bold mb-4">Cancel Policy Claim</h3>
         <p class="text-gray-600 mb-4">Please provide a brief reason for canceling this policy claim.</p>
         <textarea id="cancel-claim-reason" class="form-input" rows="4" placeholder="Enter your reason here..." required></textarea>
         <div class="flex justify-end space-x-4 mt-6">
-            <button onclick="closeCancelClaimModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
-            <button onclick="submitClaimCancellation()" class="px-6 py-2 rounded-full text-white bg-red-600">Submit</button>
+            <button onclick="window.closeCancelClaimModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
+            <button onclick="window.submitClaimCancellation()" class="px-6 py-2 rounded-full text-white bg-red-600">Submit</button>
         </div>
     </div>
 </div>
@@ -739,13 +823,13 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
         <h3 id="message-title" class="text-xl font-bold mb-2"></h3>
         <p id="message-text" class="text-gray-600 mb-4"></p>
         <div class="flex justify-end">
-            <button onclick="closeMessageModal()" class="px-6 py-2 rounded-full text-white bg-blue-600">OK</button>
+            <button onclick="window.closeMessageModal()" class="px-6 py-2 rounded-full text-white bg-blue-600">OK</button>
         </div>
     </div>
 </div>
 <div id="filter-modal" class="modal">
     <div class="modal-content">
-        <span class="close-modal-btn" onclick="closeFilterModal()">&times;</span>
+        <span class="close-modal-btn" onclick="window.closeFilterModal()">&times;</span>
         <h3 class="text-xl font-bold mb-4">Filter Policies</h3>
         <div class="space-y-4">
             <div>
@@ -771,14 +855,16 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
                 <label for="sort-date-type" class="form-label block text-sm">Sort By Date</label>
                 <select id="sort-date-type" class="form-input mt-1">
                     <option value="none">None</option>
-                    <option value="submissionDateAsc">Submission Date (Ascending)</option>
-                    <option value="submissionDateDesc">Submission Date (Descending)</option>
+                    <option value="issueDateAsc">Issue Date (Ascending)</option>
+                    <option value="issueDateDesc">Issue Date (Descending)</option>
+                    <option value="maturityDateAsc">Maturity Date (Ascending)</option>
+                    <option value="maturityDateDesc">Maturity Date (Descending)</option>
                 </select>
             </div>
         </div>
         <div class="flex justify-end space-x-4 mt-6">
-            <button onclick="closeFilterModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
-            <button onclick="applyFilters()" class="px-6 py-2 rounded-full text-white bg-blue-600">Apply Filters</button>
+            <button onclick="window.closeFilterModal()" class="px-6 py-2 rounded-full bg-gray-200">Cancel</button>
+            <button onclick="window.applyFilters()" class="px-6 py-2 rounded-full text-white bg-blue-600">Apply Filters</button>
         </div>
     </div>
 </div>
@@ -788,214 +874,65 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
 <script>
 const config = {
     userCode: null,
-    email: null,
+    email: null, // Not used for display, but kept for consistency with session storage
     loginUrl: 'Login.html',
-    customerNo: null
+    customerNo: null,
+    policyNoFromUrl: null, 
 };
 
-const mockAllPolicies = [
-    {
-        id: 'POLC0000225', policyNumber: 'POLC0000225', policyName: 'SafeGuard Plus', policyType: 'Health',
-        policyPremium: 170000, coverageAmount: 500000, policyStatus: 'Active', status: 'Active',
-        premiumDueDate: '2025-07-01', renewalDate: '2026-06-30', beneficiaryName: 'Jane Doe', beneficiaryRelationship: 'Spouse',
-        policyDate: '2025-07-01', paymentFrequency: 'Yearly', customerName: 'Yogesh Gangadhar chouriwar', customerNo: 'CUST001', email: 'yogesh@example.com',
-        bankAccounts: [{ accountNumber: '71100100008086', ifscCode: 'HDFC00001234', bankName: 'HDFC Bank', accountType: 'Savings', status: 'ACTIVE', holderName: 'Yogesh' }],
-        paymentListDTO: [{ totalInstallemtPad: '6', totalUnpiadInstallemts: '3' }],
-        productCode: 'SGP-013-Y', polCompanyName: 'SafeGuard Insurance', createdBy: 'ychouri', updatedBy: 'ychouri', userCode: 'ychouri', deletedFlag: 'N', name: 'SafeGuard Plus', fcuFlag: '', type: 'Health', premium: 170000, value: '500000', policyTerm: 'Single', complianceFlag: 'NO', smokerStatus: 'Smoker', policyAmount: '170000.00', installmentCount: 'Yearly', dueDate: '2025-07-01', term: 'Single', frequency: 'Yearly', totalAmount: 170000, monthlyInstallment: 170000, totalClaimableAmount: 500000, startDate: '2025-07-01', endDate: '2026-06-30', beneficiaryAadharNumber: '5443344555433444', nomineeContactNumber: '08874536647',
-    },
-    {
-        id: 'POLC0000226', policyNumber: 'POLC0000226', policyName: 'Life Secure 20', policyType: 'Life Insurance',
-        policyPremium: 50000, coverageAmount: 1000000, policyStatus: 'Closed', status: 'Closed',
-        premiumDueDate: '2024-01-01', renewalDate: '2024-01-01', beneficiaryName: 'John Doe', beneficiaryRelationship: 'Child',
-        policyDate: '2004-01-01', paymentFrequency: 'Monthly', customerName: 'Yogesh Gangadhar chouriwar', customerNo: 'CUST001', email: 'yogesh@example.com',
-        bankAccounts: [{ accountNumber: '71100100008087', ifscCode: 'ICIC00005678', bankName: 'ICICI Bank', accountType: 'Current', status: 'ACTIVE', holderName: 'Yogesh' }],
-        paymentListDTO: [{ totalInstallemtPad: '240', totalUnpiadInstallemts: '0' }],
-        productCode: 'LSC-001-A', polCompanyName: 'Secure Life Inc.', createdBy: 'ychouri', updatedBy: 'ychouri', userCode: 'ychouri', deletedFlag: 'N', name: 'Life Secure 20', fcuFlag: '', type: 'Life Insurance', premium: 50000, value: '1000000', policyTerm: '20 Years', complianceFlag: 'NO', smokerStatus: 'Non-Smoker', policyAmount: '50000.00', installmentCount: 'Monthly', dueDate: '2024-01-01', term: '20 Years', frequency: 'Monthly', totalAmount: 1200000, monthlyInstallment: 5000, totalClaimableAmount: 1000000, startDate: '2004-01-01', endDate: '2024-01-01', beneficiaryAadharNumber: '1111222233334444', nomineeContactNumber: '9876543210',
-    },
-    {
-        id: 'POLC0000227', policyNumber: 'POLC0000227', policyName: 'Term Protect', policyType: 'Term Plan',
-        policyPremium: 12000, coverageAmount: 2000000, policyStatus: 'surrendered', status: 'surrendered',
-        premiumDueDate: '2025-08-15', renewalDate: '2026-08-14', beneficiaryName: 'Alice Smith', beneficiaryRelationship: 'Parent',
-        policyDate: '2020-08-15', paymentFrequency: 'Quarterly', customerName: 'Yogesh Gangadhar chouriwar', customerNo: 'CUST001', email: 'yogesh@example.com',
-        bankAccounts: [{ accountNumber: '71100100008088', ifscCode: 'SBI00001122', bankName: 'SBI', accountType: 'Savings', status: 'ACTIVE', holderName: 'Yogesh' }],
-        paymentListDTO: [{ totalInstallemtPad: '10', totalUnpiadInstallemts: '2' }],
-        productCode: 'TRM-002-B', polCompanyName: 'Global Shield', createdBy: 'ychouri', updatedBy: 'ychouri', userCode: 'ychouri', deletedFlag: 'N', name: 'Term Protect', fcuFlag: '', type: 'Term Plan', premium: 12000, value: '2000000', policyTerm: '10 Years', complianceFlag: 'YES', smokerStatus: 'Non-Smoker', policyAmount: '12000.00', installmentCount: 'Quarterly', dueDate: '2025-08-15', term: '10 Years', frequency: 'Quarterly', totalAmount: 480000, monthlyInstallment: 4000, totalClaimableAmount: 2000000, startDate: '2020-08-15', endDate: '2030-08-14', beneficiaryAadharNumber: '5555666677778888', nomineeContactNumber: '9988776655',
-    },
-    {
-        id: 'POLC0000228', policyNumber: 'POLC0000228', policyName: 'Health First', policyType: 'Health Insurance',
-        policyPremium: 25000, coverageAmount: 750000, policyStatus: 'canceled_surrender', status: 'canceled_surrender',
-        premiumDueDate: '2025-06-01', renewalDate: '2026-05-31', beneficiaryName: 'Bob Johnson', beneficiaryRelationship: 'Spouse',
-        policyDate: '2023-06-01', paymentFrequency: 'Yearly', customerName: 'Yogesh Gangadhar chouriwar', customerNo: 'CUST001', email: 'yogesh@example.com',
-        bankAccounts: [{ accountNumber: '71100100008089', ifscCode: 'AXIS00003344', bankName: 'Axis Bank', accountType: 'Savings', status: 'ACTIVE', holderName: 'Yogesh' }],
-        paymentListDTO: [{ totalInstallemtPad: '1', totalUnpiadInstallemts: '0' }],
-        productCode: 'HLT-003-C', polCompanyName: 'Care Health', createdBy: 'ychouri', updatedBy: 'ychouri', userCode: 'ychouri', deletedFlag: 'N', name: 'Health First', fcuFlag: '', type: 'Health Insurance', premium: 25000, value: '750000', policyTerm: '1 Year', complianceFlag: 'NO', smokerStatus: 'Non-Smoker', policyAmount: '25000.00', installmentCount: 'Yearly', dueDate: '2025-06-01', term: '1 Year', frequency: 'Yearly', totalAmount: 25000, monthlyInstallment: 2083, totalClaimableAmount: 750000, startDate: '2023-06-01', endDate: '2024-05-31', beneficiaryAadharNumber: '9999888877776666', nomineeContactNumber: '7766554433',
-    },
-    {
-        id: 'POLC0000229', policyNumber: 'POLC0000229', policyName: 'Wealth Builder', policyType: 'Pension Plan',
-        policyPremium: 30000, coverageAmount: 1500000, policyStatus: 'claimed', status: 'claimed',
-        premiumDueDate: '2025-03-01', renewalDate: '2030-02-28', beneficiaryName: 'Charlie Brown', beneficiaryRelationship: 'Self',
-        policyDate: '2010-03-01', paymentFrequency: 'Monthly', customerName: 'Yogesh Gangadhar chouriwar', customerNo: 'CUST001', email: 'yogesh@example.com',
-        bankAccounts: [{ accountNumber: '71100100008090', ifscCode: 'PNB00005566', bankName: 'PNB Bank', accountType: 'Savings', status: 'ACTIVE', holderName: 'Yogesh' }],
-        paymentListDTO: [{ totalInstallemtPad: '180', totalUnpiadInstallemts: '0' }],
-        productCode: 'PEN-004-D', polCompanyName: 'Retire Secure', createdBy: 'ychouri', updatedBy: 'ychouri', userCode: 'ychouri', deletedFlag: 'N', name: 'Wealth Builder', fcuFlag: '', type: 'Pension Plan', premium: 30000, value: '1500000', policyTerm: '20 Years', complianceFlag: 'NO', smokerStatus: 'Non-Smoker', policyAmount: '30000.00', installmentCount: 'Monthly', dueDate: '2025-03-01', term: '20 Years', frequency: 'Monthly', totalAmount: 7200000, monthlyInstallment: 30000, totalClaimableAmount: 1500000, startDate: '2010-03-01', endDate: '2030-02-28', beneficiaryAadharNumber: '1234567890123456', nomineeContactNumber: '8877665544',
-    },
-    {
-        id: 'POLC0000230', policyNumber: 'POLC0000230', policyName: 'Travel Safe', policyType: 'Travel Insurance',
-        policyPremium: 5000, coverageAmount: 100000, policyStatus: 'claim_canceled', status: 'claim_canceled',
-        premiumDueDate: '2025-09-01', renewalDate: '2025-09-30', beneficiaryName: 'Diana Prince', beneficiaryRelationship: 'None',
-        policyDate: '2025-09-01', paymentFrequency: 'Single', customerName: 'Yogesh Gangadhar chouriwar', customerNo: 'CUST001', email: 'yogesh@example.com',
-        bankAccounts: [{ accountNumber: '71100100008091', ifscCode: 'YESB00007788', bankName: 'Yes Bank', accountType: 'Savings', status: 'ACTIVE', holderName: 'Yogesh' }],
-        paymentListDTO: [{ totalInstallemtPad: '1', totalUnpiadInstallemts: '0' }],
-        productCode: 'TRV-005-E', polCompanyName: 'Voyage Protect', createdBy: 'ychouri', updatedBy: 'ychouri', userCode: 'ychouri', deletedFlag: 'N', name: 'Travel Safe', fcuFlag: '', type: 'Travel Insurance', premium: 5000, value: '100000', policyTerm: '1 Month', complianceFlag: 'NO', smokerStatus: 'Non-Smoker', policyAmount: '5000.00', installmentCount: 'Single', dueDate: '2025-09-01', term: '1 Month', frequency: 'Single', totalAmount: 5000, monthlyInstallment: 5000, totalClaimableAmount: 100000, startDate: '2025-09-01', endDate: '2025-09-30', beneficiaryAadharNumber: '2345678901234567', nomineeContactNumber: '9900887766',
-    },
-    {
-        id: 'POLC0000231', policyNumber: 'POLC0000231', policyName: 'Home Secure', policyType: 'Property Insurance',
-        policyPremium: 30000, coverageAmount: 5000000, policyStatus: 'Lapsed', status: 'Lapsed',
-        premiumDueDate: '2025-01-01', renewalDate: '2026-01-01', beneficiaryName: 'Peter Parker', beneficiaryRelationship: 'Self',
-        policyDate: '2022-01-01', paymentFrequency: 'Yearly', customerName: 'Yogesh Gangadhar chouriwar', customerNo: 'CUST001', email: 'yogesh@example.com',
-        bankAccounts: [{ accountNumber: '71100100008092', ifscCode: 'KOTK00009900', bankName: 'Kotak Bank', accountType: 'Savings', status: 'ACTIVE', holderName: 'Yogesh' }],
-        paymentListDTO: [{ totalInstallemtPad: '2', totalUnpiadInstallemts: '1' }],
-        productCode: 'PRP-006-F', polCompanyName: 'Dwelling Safe', createdBy: 'ychouri', updatedBy: 'ychouri', userCode: 'ychouri', deletedFlag: 'N', name: 'Home Secure', fcuFlag: '', type: 'Property Insurance', premium: 30000, value: '5000000', policyTerm: '5 Years', complianceFlag: 'NO', smokerStatus: 'Non-Smoker', policyAmount: '30000.00', installmentCount: 'Yearly', dueDate: '2025-01-01', term: '5 Years', frequency: 'Yearly', totalAmount: 150000, monthlyInstallment: 12500, totalClaimableAmount: 5000000, startDate: '2022-01-01', endDate: '2027-01-01', beneficiaryAadharNumber: '3456789012345678', nomineeContactNumber: '8765432109',
-    }
-];
+// Global variables for policies, requests, and claims fetched from API
+let currentPoliciesData = []; // Policies displayed on the current page
+let currentTotalPolicyElements = 0; // Total count from API for pagination
 
-let mockRequests = [
-    {
-        id: 'REQ-001', policyId: 'POLC0000227', policyName: 'Term Protect',
-        requestDate: '2024-05-28', status: 'pending', reason: 'Financial Hardship', description: 'Need funds urgently due to unexpected expenses.',
-        workflow: [
-            { step: 'Request Submitted', date: '2024-05-28', status: 'completed', stage: 'Initiation', pendingWithTeam: 'Customer Service', comment: 'Initial request received.', expectedResolutionDate: 'N/A', verificationStatus: 'Pending', commentByVerifier: 'None' },
-            { step: 'Documents Verification', date: '2024-05-29', status: 'completed', stage: 'Processing', pendingWithTeam: 'Verification Team', comment: 'All documents verified.', expectedResolutionDate: '2024-05-31', verificationStatus: 'Verified', commentByVerifier: 'Documents clear' },
-            { step: 'Underwriting Review', date: '2024-05-30', status: 'in-progress', stage: 'Review', pendingWithTeam: 'Underwriting Department', comment: 'Policy details under review for eligibility.', expectedResolutionDate: '2024-06-05', verificationStatus: 'N/A', commentByVerifier: 'N/A' },
-            { step: 'Approval Pending', date: 'N/A', status: 'pending', stage: 'Decision', pendingWithTeam: 'Management', comment: 'Awaiting final management approval.', expectedResolutionDate: '2024-06-07', verificationStatus: 'N/A', commentByVerifier: 'N/A' }
-        ]
-    },
-    {
-        id: 'REQ-002', policyId: 'POLC0000226', policyName: 'Life Secure 20',
-        requestDate: '2024-05-20', status: 'approved', reason: 'Policy No Longer Needed', description: 'Relocating to a different country, policy not applicable.',
-        workflow: [
-            { step: 'Request Submitted', date: '2024-05-20', status: 'completed', stage: 'Initiation', pendingWithTeam: 'Customer Service', comment: 'Initial request received.', expectedResolutionDate: 'N/A', verificationStatus: 'Pending', commentByVerifier: 'None' },
-            { step: 'Documents Verification', date: '2024-05-21', status: 'completed', stage: 'Processing', pendingWithTeam: 'Verification Team', comment: 'All documents verified and found complete.', expectedResolutionDate: '2024-05-22', verificationStatus: 'Verified', commentByVerifier: 'All docs okay' },
-            { step: 'Underwriting Review', date: '2024-05-22', status: 'completed', stage: 'Review', pendingWithTeam: 'Underwriting Department', comment: 'Review completed, recommended for approval.', expectedResolutionDate: '2024-05-23', verificationStatus: 'N/A', commentByVerifier: 'N/A' },
-            { step: 'Approved & Processed', date: '2024-05-25', status: 'completed', stage: 'Completion', pendingWithTeam: 'N/A', comment: 'Surrender approved and funds disbursed.', expectedResolutionDate: 'N/A', verificationStatus: 'N/A', commentByVerifier: 'N/A' }
-        ]
-    },
-    {
-        id: 'REQ-003', policyId: 'POLC0000228', policyName: 'Health First',
-        requestDate: '2024-06-01', status: 'canceled', reason: 'Change of mind', description: 'Decided not to surrender the policy.',
-        workflow: [
-            { step: 'Request Submitted', date: '2024-06-01', status: 'completed', stage: 'Initiation', pendingWithTeam: 'Customer Service', comment: 'Initial request received.', expectedResolutionDate: 'N/A', verificationStatus: 'Pending', commentByVerifier: 'None' },
-            { step: 'Request Canceled', date: '2024-06-02', status: 'canceled', stage: 'Cancellation', pendingWithTeam: 'N/A', comment: 'Customer requested cancellation.', expectedResolutionDate: 'N/A', verificationStatus: 'N/A', commentByVerifier: 'N/A' }
-        ]
-    },
-    {
-        id: 'REQ-004', policyId: 'POLC0000231', policyName: 'Home Secure',
-        requestDate: '2024-07-01', status: 'rejected', reason: 'Incomplete Documentation', description: 'Missing required documents.',
-        workflow: [
-            { step: 'Request Submitted', date: '2024-07-01', status: 'completed', stage: 'Initiation', pendingWithTeam: 'Customer Service', comment: 'Initial request received.', expectedResolutionDate: 'N/A', verificationStatus: 'Pending', commentByVerifier: 'None' },
-            { step: 'Documents Verification', date: '2024-07-02', status: 'rejected', stage: 'Processing', pendingWithTeam: 'Verification Team', comment: 'Missing income proof. Request rejected.', expectedResolutionDate: 'N/A', verificationStatus: 'Rejected', commentByVerifier: 'N/A' }
-        ]
-    }
-];
-let mockClaims = [
-    {
-        id: 'CLM-001', policyId: 'POLC0000225', policyName: 'SafeGuard Plus',
-        requestDate: '2024-05-15', status: 'pending', claimType: 'Health', description: 'Claim for recent hospitalization.',
-        workflow: [
-            { step: 'Claim Submitted', date: '2024-05-15', status: 'completed', stage: 'Submission', pendingWithTeam: 'Customer Service', comment: 'Claim form received.', expectedResolutionDate: 'N/A' },
-            { step: 'Initial Assessment', date: '2024-05-16', status: 'in-progress', stage: 'Evaluation', pendingWithTeam: 'Claims Department', comment: 'Reviewing claim details and supporting documents.', expectedResolutionDate: '2024-05-22' }
-        ]
-    },
-    {
-        id: 'CLM-002', policyId: 'POLC0000229', policyName: 'Wealth Builder',
-        requestDate: '2024-06-10', status: 'approved', claimType: 'Death', description: 'Claim for policy payout after policyholder demise.',
-        workflow: [
-            { step: 'Claim Submitted', date: '2024-06-10', status: 'completed', stage: 'Submission', pendingWithTeam: 'Customer Service', comment: 'Claim form received.', expectedResolutionDate: 'N/A' },
-            { step: 'Initial Assessment', date: '2024-06-11', status: 'completed', stage: 'Evaluation', pendingWithTeam: 'Claims Department', comment: 'All documents verified and claim approved.', expectedResolutionDate: '2024-06-15' },
-            { step: 'Payout Processed', date: '2024-06-16', status: 'completed', stage: 'Completion', pendingWithTeam: 'Finance', comment: 'Funds disbursed to beneficiary.', expectedResolutionDate: 'N/A' }
-        ]
-    },
-    {
-        id: 'CLM-003', policyId: 'POLC0000230', policyName: 'Travel Safe',
-        requestDate: '2024-07-05', status: 'canceled', claimType: 'Travel', description: 'Accident during travel, but resolved personally.',
-        workflow: [
-            { step: 'Claim Submitted', date: '2024-07-05', status: 'completed', stage: 'Submission', pendingWithTeam: 'Customer Service', comment: 'Claim form received.', expectedResolutionDate: 'N/A' },
-            { step: 'Claim Canceled by Customer', date: '2024-07-06', status: 'canceled', stage: 'Cancellation', pendingWithTeam: 'N/A', comment: 'Customer withdrew the claim.', expectedResolutionDate: 'N/A' }
-        ]
-    }
-];
-
-const mainTitleEl = document.getElementById('main-title');
-const surrenderTabBtn = document.getElementById('surrender-tab-btn');
-const claimTabBtn = document.getElementById('claim-tab-btn');
-const surrenderContentEl = document.getElementById('surrender-content');
-const claimContentEl = document.getElementById('claim-content');
-const historyMainContentEl = document.getElementById('history-main-content');
-const policySearchInput = document.getElementById('policy-search');
-const filterStatusSelect = document.getElementById('filter-status');
-const sortDateTypeSelect = document.getElementById('sort-date-type');
-
-const surrenderPolicyListEl = document.getElementById('surrender-policy-list');
-const surrenderPolicyCountEl = document.getElementById('surrender-policy-count');
-const surrenderPolicyPaginationEl = document.getElementById('surrender-policy-pagination');
-
-const requestListEl = document.getElementById('request-list');
-const requestPaginationEl = document.getElementById('request-pagination');
-const allRequestsTabBtn = document.getElementById('all-requests-tab-btn');
-const ongoingRequestsTabBtn = document.getElementById('ongoing-requests-tab-btn');
-const completedRequestsTabBtn = document.getElementById('completed-requests-tab-btn');
-const canceledRequestsTabBtn = document.getElementById('canceled-requests-tab-btn');
-const rejectedRequestsTabBtn = document.getElementById('rejected-requests-tab-btn');
-
-const claimPolicyListEl = document.getElementById('claim-policy-list');
-const claimPolicyCountEl = document.getElementById('claim-policy-count');
-const claimPolicyPaginationEl = document.getElementById('claim-policy-pagination');
-
-const claimListEl = document.getElementById('claim-list');
-const claimPaginationEl = document.getElementById('claim-pagination');
-
-const policyDetailsModal = document.getElementById('policy-details-modal');
-const surrenderModal = document.getElementById('surrender-modal');
-const confirmSurrenderModal = document.getElementById('confirm-surrender-modal');
-const cancellationModal = document.getElementById('cancellation-modal');
-const surrenderWorkflowModal = document.getElementById('surrender-workflow-modal');
-const submitClaimModal = document.getElementById('submit-claim-modal');
-const confirmClaimModal = document.getElementById('confirm-claim-modal');
-const fraudWarningModal = document.getElementById('fraud-warning-modal');
-const claimWorkflowModal = document.getElementById('claim-workflow-modal');
-const cancelClaimModal = document.getElementById('cancel-claim-modal');
-const messageModal = document.getElementById('message-modal');
-const filterModal = document.getElementById('filter-modal');
-const userProfileModal = document.getElementById('user-profile-modal');
-
-const loaderEl = document.getElementById('loader');
+let mockRequests = []; // Derived from policy data, updated on each policy fetch
+let mockClaims = [];   // Derived from policy data, updated on each policy fetch
+let combinedWorkflow = []; // To hold both requests and claims for the workflow tab
 
 let currentCancellationRequestId = null;
-let currentSurrenderPolicyId = null;
-let currentClaimPolicyId = null;
 let currentCancellationClaimId = null;
-let activeTab = 'surrender';
-let activeSurrenderRequestFilter = 'all';
-let activeHistoryFilter = 'all';
+let activePrimaryTab = 'policies'; // Tracks which primary tab is active
+let activeWorkflowFilter = null; // Changed to null: Initially no filter active for workflow tab
 
-let currentPageSurrenderPolicies = 1;
-let currentPageRequests = 1;
-let currentPageClaimPolicies = 1;
-let currentPageClaims = 1;
-let currentPageHistory = 1;
+// API page indices start from 0
+let currentPagePolicies = 0; 
+let currentPageWorkflow = 0; // Pagination for combined workflow
 
-const itemsPerPage = 6;
+const itemsPerPage = 16; // Display 16 cards per page
 
-let tempSurrenderData = { reason: '', description: '', docs: {} };
-let tempClaimData = {};
+let tempSurrenderData = { reason: '', description: '', docs: {}, selectedAccountNo: null }; 
+let tempClaimData = { claimType: '', description: '', docs: {}, selectedAccountNo: null }; 
 
 let modals = {};
 
-const show = el => el && el.classList.remove('hidden');
-const hide = el => el && el.classList.add('hidden');
+// Declaring DOM element variables here, they will be assigned inside DOMContentLoaded
+let mainTitleEl, policiesTabBtn, workflowTabBtn, policiesContentEl, workflowContentEl; 
+let policySearchInput, filterStatusSelect, sortDateTypeSelect, filterTypeSelect; 
+let policyListEl, policyCountEl, policyPaginationEl; 
+let combinedWorkflowListEl, workflowPaginationEl;
+let workflowOngoingTabBtn, workflowSurrenderRequestsTabBtn, workflowClaimsTabBtn, workflowCompletedTabBtn, workflowCanceledTabBtn, workflowRejectedTabBtn;
 
-function showLoader() { show(loaderEl); }
-function hideLoader() { hide(loaderEl); }
+let workflowSearchInput, workflowSearchBySelect; // New workflow search elements
+
+let policyDetailsModal, surrenderModal, confirmSurrenderModal, cancellationModal; 
+let submitClaimModal, confirmClaimModal, fraudWarningModal, cancelClaimModal; 
+let messageModal, filterModal, userProfileModal;
+let loaderEl;
+
+// Elements for profile display in header
+let profileUserCodeDisplayEl, profileCustomerNoDisplayEl;
+
+// New elements for surrender/claim modals
+let surrenderPolicyCoverageAmountEl, surrenderTotalClaimableAmountEl, surrenderTotalAmountEl, surrenderMonthlyInstallmentEl, surrenderTotalInstallmentsPaidEl, surrenderTotalInstallmentsUnpaidEl;
+let surrenderBankAccountDropdown;
+
+let claimPolicyCoverageAmountEl, claimTotalClaimableAmountEl, claimTotalAmountEl, claimMonthlyInstallmentEl;
+let claimBankAccountDropdown;
+
+const show = el => el && (el.style.display = 'flex'); // Ensure display flex for modals
+const hide = el => el && (el.style.display = 'none');
+
+function showLoader() { if(loaderEl) show(loaderEl); }
+function hideLoader() { if(loaderEl) hide(loaderEl); }
 
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
@@ -1005,43 +942,52 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.remove(), 3000);
 }
 
-function showCustomAlert(message) {
-    document.getElementById('message-title').textContent = 'Success';
-    document.getElementById('message-title').classList.remove('text-red-600');
-    document.getElementById('message-title').classList.add('text-green-600');
-    document.getElementById('message-text').textContent = message;
-    messageModal.style.display = 'flex';
+window.showCustomAlert = function(title, message) {
+    if (document.getElementById('message-title')) {
+        document.getElementById('message-title').textContent = title;
+        document.getElementById('message-title').classList.remove('text-red-600');
+        document.getElementById('message-title').classList.add('text-green-600');
+    }
+    if (document.getElementById('message-text')) {
+        document.getElementById('message-text').textContent = message;
+    }
+    if (messageModal) messageModal.style.display = 'flex';
 }
 
-function showCustomError(message) {
-    document.getElementById('message-title').textContent = 'Error';
-    document.getElementById('message-title').classList.remove('text-green-600');
-    document.getElementById('message-title').classList.add('text-red-600');
-    document.getElementById('message-text').textContent = message;
-    messageModal.style.display = 'flex';
+window.showCustomError = function(title, message) {
+    if (document.getElementById('message-title')) {
+        document.getElementById('message-title').textContent = title;
+        document.getElementById('message-title').classList.remove('text-green-600');
+        document.getElementById('message-title').classList.add('text-red-600');
+    }
+    if (document.getElementById('message-text')) {
+        document.getElementById('message-text').textContent = message;
+    }
+    if (messageModal) messageModal.style.display = 'flex';
 }
 
-function getuserCode() {
-    const userCode = sessionStorage.getItem('userCode');
-    config.email = sessionStorage.getItem('email');
+// Global function to close message modal
+window.closeMessageModal = function() {
+    if (messageModal) messageModal.style.display = 'none';
+};
+
+function getuserCodeAndCustomerNo() {
+    config.userCode = sessionStorage.getItem('userCode');
     config.customerNo = sessionStorage.getItem('customerNo');
     
-    if (!userCode) {
-        sessionStorage.setItem('userCode', 'demoUser');
-        sessionStorage.setItem('email', 'demo@example.com');
-        sessionStorage.setItem('customerNo', 'CUST001');
-        config.userCode = 'demoUser';
-        config.email = 'demo@example.com';
-        config.customerNo = 'CUST001';
-    }
-    document.getElementById('profile-email').textContent = config.email;
-    document.getElementById('profile-user-code').textContent = config.userCode;
-    return config.userCode;
+    // Update profile modal text and header display
+    if (document.getElementById('profile-user-code')) document.getElementById('profile-user-code').textContent = config.userCode || 'Not Provided';
+    if (document.getElementById('profile-customer-no')) document.getElementById('profile-customer-no').textContent = config.customerNo || 'Not Provided';
+
+    if (profileUserCodeDisplayEl) profileUserCodeDisplayEl.textContent = `User: ${config.userCode || 'N/A'}`;
+    if (profileCustomerNoDisplayEl) profileCustomerNoDisplayEl.textContent = `Cust: ${config.customerNo || 'N/A'}`;
+
+    console.log('User Code from session storage:', config.userCode, 'Customer No from session storage:', config.customerNo);
 }
 
 function logout() {
     sessionStorage.clear();
-    showCustomAlert('Logged out successfully!');
+    window.showCustomAlert('Logout', 'Logged out successfully!');
     setTimeout(() => window.location.href = config.loginUrl, 1000);
 }
 
@@ -1052,27 +998,47 @@ function initializeModals() {
         'surrender-modal': document.getElementById('surrender-modal'),
         'confirm-surrender-modal': document.getElementById('confirm-surrender-modal'),
         'cancellation-modal': document.getElementById('cancellation-modal'),
-        'surrender-workflow-modal': document.getElementById('surrender-workflow-modal'),
         'submit-claim-modal': document.getElementById('submit-claim-modal'),
         'confirm-claim-modal': document.getElementById('confirm-claim-modal'),
         'fraud-warning-modal': document.getElementById('fraud-warning-modal'),
-        'claim-workflow-modal': document.getElementById('claim-workflow-modal'),
         'cancel-claim-modal': document.getElementById('cancel-claim-modal'),
         'message-modal': document.getElementById('message-modal'),
         'filter-modal': document.getElementById('filter-modal')
     };
 
+    // Assign directly to global variables for easier access
+    policyDetailsModal = modals['policy-details-modal'];
+    surrenderModal = modals['surrender-modal'];
+    confirmSurrenderModal = modals['confirm-surrender-modal'];
+    cancellationModal = modals['cancellation-modal'];
+    submitClaimModal = modals['submit-claim-modal'];
+    confirmClaimModal = modals['confirm-claim-modal'];
+    fraudWarningModal = modals['fraud-warning-modal'];
+    cancelClaimModal = modals['cancel-claim-modal'];
+    messageModal = modals['message-modal'];
+    filterModal = modals['filter-modal'];
+    userProfileModal = modals['user-profile-modal'];
+
+
     Object.keys(modals).forEach(modalId => {
-        const closeBtn = modals[modalId].querySelector('.close-modal-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => modals[modalId].style.display = 'none');
+        const modalElement = modals[modalId];
+        if (modalElement) {
+            const closeBtn = modalElement.querySelector('.close-modal-btn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => modalElement.style.display = 'none');
+            }
         }
     });
-    document.querySelector('#message-modal button').addEventListener('click', () => {
-        messageModal.style.display = 'none';
-    });
+    // Ensure this listener is attached AFTER messageModal is defined
+    if (messageModal) {
+        const okButton = messageModal.querySelector('button');
+        if (okButton) {
+            okButton.addEventListener('click', window.closeMessageModal);
+        }
+    }
 }
 
+// Attached to window for global access from HTML onclick
 window.handleNavigation = function(page) {
     let url = page;
     const currentCustomerNo = config.customerNo || sessionStorage.getItem('customerNo');
@@ -1088,868 +1054,1317 @@ window.handleNavigation = function(page) {
 }
 
 function getStatusInfo(status) {
-    switch (status) {
+    switch ((status || '').toLowerCase()) { 
         case 'pending': return { text: 'Pending', iconClass: 'fas fa-clock', bgClass: 'bg-yellow-100', textClass: 'text-yellow-800' };
         case 'approved': return { text: 'Approved', iconClass: 'fas fa-check-circle', bgClass: 'bg-green-100', textClass: 'text-green-800' };
         case 'canceled': return { text: 'Canceled', iconClass: 'fas fa-times-circle', bgClass: 'bg-red-100', textClass: 'text-red-800' };
         case 'rejected': return { text: 'Rejected', iconClass: 'fas fa-exclamation-triangle', bgClass: 'bg-red-100', textClass: 'text-red-800' };
         case 'claimed': return { text: 'Claimed', iconClass: 'fas fa-dollar-sign', bgClass: 'bg-blue-100', textClass: 'text-blue-800'};
-        case 'Lapsed': return { text: 'Lapsed', iconClass: 'fas fa-exclamation-circle', bgClass: 'bg-orange-100', textClass: 'text-orange-800' };
-        case 'Active': return { text: 'Active', iconClass: 'fas fa-check-circle', bgClass: 'bg-green-100', textClass: 'text-green-800' };
-        case 'surrender_requested': return { text: 'Surrender Requested', iconClass: 'fas fa-hourglass-half', bgClass: 'bg-yellow-100', textClass: 'text-yellow-800' };
+        case 'lapsed': return { text: 'Lapsed', iconClass: 'fas fa-exclamation-circle', bgClass: 'bg-orange-100', textClass: 'text-orange-800' };
+        case 'active': return { text: 'Active', iconClass: 'fas fa-check-circle', bgClass: 'bg-green-100', textClass: 'text-green-800' };
+        case 'surrender_requested':
+        case 'pending verification': 
+        case 'pending approval':     
+            return { text: 'Surrender Requested', iconClass: 'fas fa-hourglass-half', bgClass: 'bg-yellow-100', textClass: 'text-yellow-800' };
         case 'completed': return { text: 'Completed', iconClass: 'fas fa-check-circle', bgClass: 'bg-green-100', textClass: 'text-green-800' };
         case 'in-progress': return { text: 'In Progress', iconClass: 'fas fa-spinner fa-spin', bgClass: 'bg-blue-100', textClass: 'text-blue-800' };
-        case 'Closed': return { text: 'Closed', iconClass: 'fas fa-folder-closed', bgClass: 'bg-gray-200', textClass: 'text-gray-800' };
+        case 'closed': return { text: 'Closed', iconClass: 'fas fa-folder-closed', bgClass: 'bg-gray-200', textClass: 'text-gray-800' };
         case 'canceled_surrender': return { text: 'Surrender Canceled', iconClass: 'fas fa-undo', bgClass: 'bg-red-100', textClass: 'text-red-800' };
         case 'claim_canceled': return { text: 'Claim Canceled', iconClass: 'fas fa-ban', bgClass: 'bg-red-100', textClass: 'text-red-800' };
         default: return { text: 'Unknown', iconClass: 'fas fa-question-circle', bgClass: 'bg-gray-100', textClass: 'text-gray-800' };
     }
 }
 
-function renderSurrenderPolicies() {
-    surrenderPolicyListEl.innerHTML = '';
-    const searchTerm = policySearchInput.value.toLowerCase();
-    const filterStatus = filterStatusSelect.value.toLowerCase();
-
-    const policiesToDisplay = mockAllPolicies.filter(pol => {
-        const matchesSearch = pol.policyName.toLowerCase().includes(searchTerm) || pol.policyNumber.toLowerCase().includes(searchTerm);
-        const matchesStatus = filterStatus === 'all' || pol.status.toLowerCase() === filterStatus;
-        return matchesSearch && matchesStatus && pol.status.toLowerCase() === 'active';
-    });
-
-    surrenderPolicyCountEl.textContent = policiesToDisplay.length;
-
-    if (policiesToDisplay.length === 0) {
-        surrenderPolicyListEl.innerHTML = `<p class="text-gray-500 text-center py-8 col-span-full">No active policies found for surrender.</p>`;
-        surrenderPolicyPaginationEl.innerHTML = '';
-        return;
-    }
-
-    const startIndex = (currentPageSurrenderPolicies - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const policiesOnPage = policiesToDisplay.slice(startIndex, endIndex);
-
-    policiesOnPage.forEach(pol => {
-        const card = document.createElement('div');
-        card.className = 'clickable-card';
-        card.onclick = () => openPolicyDetailsModal(pol.policyNumber);
-        card.innerHTML = `
-            <div class="flex items-center justify-between">
-                <h3 class="text-base font-bold">${pol.policyName}</h3>
-                <span class="text-xs font-medium">${pol.policyNumber}</span>
-            </div>
-            <div class="mt-2 flex items-center justify-between text-sm">
-                <p>Value: <span class="font-medium">₹${pol.coverageAmount.toLocaleString()}</span></p>
-                <p>Status: <span class="font-medium">${pol.policyStatus}</span></p>
-            </div>
-            <div class="mt-4 text-right">
-                <button onclick="event.stopPropagation(); openSurrenderModal('${pol.policyNumber}')" class="px-4 py-2 text-sm rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors">Request Surrender</button>
-            </div>
-        `;
-        surrenderPolicyListEl.appendChild(card);
-    });
-    renderPagination(surrenderPolicyPaginationEl, policiesToDisplay.length, currentPageSurrenderPolicies, page => {
-        currentPageSurrenderPolicies = page;
-        renderSurrenderPolicies();
-    });
-}
-
-function renderRequests() {
-    requestListEl.innerHTML = '';
-    const sortType = sortDateTypeSelect.value;
-    let filteredRequests = [...mockRequests];
-
-    if (activeSurrenderRequestFilter === 'ongoing') {
-        filteredRequests = filteredRequests.filter(req => req.status === 'pending' || req.status === 'in-progress');
-    } else if (activeSurrenderRequestFilter === 'approved') {
-        filteredRequests = filteredRequests.filter(req => req.status === 'approved');
-    } else if (activeSurrenderRequestFilter === 'canceled') {
-        filteredRequests = filteredRequests.filter(req => req.status === 'canceled');
-    } else if (activeSurrenderRequestFilter === 'rejected') {
-        filteredRequests = filteredRequests.filter(req => req.status === 'rejected');
-    }
-
-    if (sortType === 'submissionDateAsc') {
-        filteredRequests.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate));
-    } else if (sortType === 'submissionDateDesc') {
-        filteredRequests.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
-    }
-
-    if (filteredRequests.length === 0) {
-        requestListEl.innerHTML = `<p class="text-gray-500 text-center py-8">No ${activeSurrenderRequestFilter} surrender requests found.</p>`;
-        requestPaginationEl.innerHTML = '';
-        return;
-    }
-    const startIndex = (currentPageRequests - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const requestsToDisplay = filteredRequests.slice(startIndex, endIndex);
-
-    requestsToDisplay.forEach(request => {
-        const statusInfo = getStatusInfo(request.status);
-        const card = document.createElement('div');
-        card.className = 'bg-gray-100 p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between fade-in';
-        card.innerHTML = `
-            <div class="flex-1 min-w-0 mb-4 sm:mb-0">
-                <h3 class="text-lg font-bold truncate">${request.policyName}</h3>
-                <p class="text-sm text-gray-600 mt-1">Request ID: <span class="font-medium">${request.id}</span></p>
-                <p class="text-sm text-gray-600 mt-1">Requested on: <span class="font-medium">${request.requestDate}</span></p>
-            </div>
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <div class="flex items-center">
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.bgClass} ${statusInfo.textClass} flex items-center">
-                        <i class="${statusInfo.iconClass} mr-2"></i>${statusInfo.text}
-                    </span>
-                </div>
-                <div class="flex space-x-2">
-                     <button onclick="showSurrenderWorkflow('${request.id}')" class="px-4 py-2 text-sm rounded-full bg-gray-200 hover:bg-gray-300">View Workflow</button>
-                     ${request.status === 'pending' ?
-                         `<button onclick="openCancellationModal('${request.id}')" class="px-4 py-2 text-sm rounded-full text-white bg-red-600 hover:bg-red-700">Cancel Request</button>`
-                     : `<button onclick="reportIssue('${request.id}')" class="px-4 py-2 text-sm rounded-full text-white bg-yellow-600 hover:bg-yellow-700">Report Issue</button>`}
-                </div>
-            </div>
-        `;
-        requestListEl.appendChild(card);
-    });
-    renderPagination(requestPaginationEl, filteredRequests.length, currentPageRequests, page => {
-        currentPageRequests = page;
-        renderRequests();
-    });
-}
-
-window.filterSurrenderRequests = function(filter) {
-    activeSurrenderRequestFilter = filter;
-    allRequestsTabBtn.classList.remove('active');
-    ongoingRequestsTabBtn.classList.remove('active');
-    completedRequestsTabBtn.classList.remove('active');
-    canceledRequestsTabBtn.classList.remove('active');
-    rejectedRequestsTabBtn.classList.remove('active');
-
-    const targetBtnId = (filter === 'completed' ? 'completed' : filter) + '-requests-tab-btn';
-    const targetBtn = document.getElementById(targetBtnId);
-    if(targetBtn) {
-        targetBtn.classList.add('active');
-    }
-
-    currentPageRequests = 1;
-    renderRequests();
-}
-
-function renderClaimPolicies() {
-    claimPolicyListEl.innerHTML = '';
-    const searchTerm = policySearchInput.value.toLowerCase();
-    const filterStatus = filterStatusSelect.value.toLowerCase();
-
-    const policiesToDisplay = mockAllPolicies.filter(pol => {
-        const matchesSearch = pol.policyName.toLowerCase().includes(searchTerm) || pol.policyNumber.toLowerCase().includes(searchTerm);
-        const matchesStatus = filterStatus === 'all' || pol.status.toLowerCase() === filterStatus;
-        return matchesSearch && matchesStatus && pol.status.toLowerCase() === 'active';
-    });
-
-    claimPolicyCountEl.textContent = policiesToDisplay.length;
-
-    if (policiesToDisplay.length === 0) {
-        claimPolicyListEl.innerHTML = `<p class="text-gray-500 text-center py-8 col-span-full">No policies available for claim submission.</p>`;
-        claimPolicyPaginationEl.innerHTML = '';
-        return;
-    }
-
-    const startIndex = (currentPageClaimPolicies - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const policiesOnPage = policiesToDisplay.slice(startIndex, endIndex);
-
-    policiesOnPage.forEach(pol => {
-        const card = document.createElement('div');
-        card.className = 'clickable-card';
-        card.onclick = () => openClaimFormModal(pol.policyNumber);
-        card.innerHTML = `
-            <div class="flex items-center justify-between">
-                <h3 class="text-base font-bold">${pol.policyName}</h3>
-                <span class="text-xs font-medium">${pol.policyNumber}</span>
-            </div>
-            <div class="mt-2 flex items-center justify-between text-sm">
-                <p>Value: <span class="font-medium">₹${pol.coverageAmount.toLocaleString()}</span></p>
-                <p>Status: <span class="font-medium">${pol.policyStatus}</span></p>
-            </div>
-            <div class="mt-4 text-right">
-                <button onclick="event.stopPropagation(); openClaimFormModal('${pol.policyNumber}')" class="px-4 py-2 text-sm rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors">Submit Claim</button>
-            </div>
-        `;
-        claimPolicyListEl.appendChild(card);
-    });
-    renderPagination(claimPolicyPaginationEl, policiesToDisplay.length, currentPageClaimPolicies, page => {
-        currentPageClaimPolicies = page;
-        renderClaimPolicies();
-    });
-}
-
-function renderClaims() {
-    claimListEl.innerHTML = '';
-    const sortType = sortDateTypeSelect.value;
-    let sortedClaims = [...mockClaims];
-
-    if (sortType === 'submissionDateAsc') {
-        sortedClaims.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate));
-    } else if (sortType === 'submissionDateDesc') {
-        sortedClaims.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
-    }
-
-    if (sortedClaims.length === 0) {
-        claimListEl.innerHTML = `<p class="text-gray-500 text-center py-8">No claims found.</p>`;
-        claimPaginationEl.innerHTML = '';
-        return;
-    }
-    const startIndex = (currentPageClaims - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const claimsToDisplay = sortedClaims.slice(startIndex, endIndex);
-
-    claimsToDisplay.forEach(claim => {
-        const statusInfo = getStatusInfo(claim.status);
-        const card = document.createElement('div');
-        card.className = 'bg-gray-100 p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between fade-in';
-        card.innerHTML = `
-            <div class="flex-1 min-w-0 mb-4 sm:mb-0">
-                <h3 class="text-lg font-bold truncate">${claim.policyName}</h3>
-                <p class="text-sm text-gray-600 mt-1">Claim ID: <span class="font-medium">${claim.id}</span></p>
-                <p class="text-sm text-gray-600 mt-1">Claim Type: <span class="font-medium">${claim.claimType}</span></p>
-            </div>
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <div class="flex items-center">
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.bgClass} ${statusInfo.textClass} flex items-center">
-                        <i class="${statusInfo.iconClass} mr-2"></i>${statusInfo.text}
-                    </span>
-                </div>
-                <div class="flex space-x-2">
-                     <button onclick="showClaimWorkflow('${claim.id}')" class="px-4 py-2 text-sm rounded-full bg-gray-200 hover:bg-gray-300">View Workflow</button>
-                     ${claim.status === 'pending' ?
-                         `<button onclick="openCancelClaimModal('${claim.id}')" class="px-4 py-2 text-sm rounded-full text-white bg-red-600 hover:bg-red-700">Cancel Claim</button>`
-                     : ''}
-                </div>
-            </div>
-        `;
-        claimListEl.appendChild(card);
-    });
-    renderPagination(claimPaginationEl, sortedClaims.length, currentPageClaims, page => {
-        currentPageClaims = page;
-        renderClaims();
-    });
-}
-
-window.showTab = function(tab) {
-    activeTab = tab;
-    surrenderContentEl.style.display = 'none';
-    claimContentEl.style.display = 'none';
-    historyMainContentEl.style.display = 'none';
-
-    surrenderTabBtn.classList.remove('active');
-    claimTabBtn.classList.remove('active');
-
-    const activeSidebarLink = document.querySelector('.sidebar-link.active');
-    if (activeSidebarLink) {
-        activeSidebarLink.classList.remove('active');
-    }
-
-    policySearchInput.value = '';
-    filterStatusSelect.value = 'all';
-    sortDateTypeSelect.value = 'none';
-    
-    if (tab === 'surrender') {
-        mainTitleEl.textContent = 'Policy Surrender';
-        surrenderTabBtn.classList.add('active');
-        surrenderContentEl.style.display = 'block';
-        currentPageSurrenderPolicies = 1;
-        currentPageRequests = 1;
-        activeSurrenderRequestFilter = 'all';
-        filterSurrenderRequestTabButtons('all');
-        renderSurrenderPolicies();
-        renderRequests();
-        const policyManagementLink = document.querySelector('.sidebar nav a:nth-child(4)');
-        if(policyManagementLink) policyManagementLink.classList.add('active');
-    } else if (tab === 'claim') {
-        mainTitleEl.textContent = 'Policy Claim';
-        claimTabBtn.classList.add('active');
-        claimContentEl.style.display = 'block';
-        currentPageClaimPolicies = 1;
-        currentPageClaims = 1;
-        renderClaimPolicies();
-        renderClaims();
-        const policyManagementLink = document.querySelector('.sidebar nav a:nth-child(4)');
-        if(policyManagementLink) policyManagementLink.classList.add('active');
-    } else if (tab === 'history') {
-        mainTitleEl.textContent = 'Policy History';
-        historyMainContentEl.style.display = 'block';
-        currentPageHistory = 1;
-        activeHistoryFilter = 'all';
-        showHistoryTab('all');
-        const historyLink = document.querySelector('.sidebar nav a:nth-child(7)');
-        if(historyLink) historyLink.classList.add('active');
+// New helper for bank account status display
+function getAccountStatusInfo(status) {
+    switch ((status || '').toLowerCase()) {
+        case 'approved': return { text: 'Approved', bgClass: 'bg-green-100', textClass: 'text-green-800' };
+        case 'pending': return { text: 'Pending', bgClass: 'bg-orange-100', textClass: 'text-orange-800' };
+        case 'rejected': return { text: 'Rejected', bgClass: 'bg-red-100', textClass: 'text-red-800' };
+        default: return { text: 'Unknown', bgClass: 'bg-gray-100', textClass: 'text-gray-800' };
     }
 }
 
-function filterSurrenderRequestTabButtons(activeFilter) {
-    const buttons = [allRequestsTabBtn, ongoingRequestsTabBtn, completedRequestsTabBtn, canceledRequestsTabBtn, rejectedRequestsTabBtn];
-    buttons.forEach(btn => {
-        const buttonFilter = btn.id.replace('-requests-tab-btn', '');
-        if (buttonFilter === activeFilter || (buttonFilter === 'completed' && activeFilter === 'approved')) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
+// Function to convert file to Base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        if (!file) {
+            resolve(null);
+            return;
         }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            const base64String = reader.result.split(',')[1]; 
+            console.log(`Converted file ${file.name} to Base64 (first 50 chars):`, base64String ? base64String.substring(0, 50) + '...' : 'null');
+            resolve(base64String);
+        };
+        reader.onerror = error => {
+            console.error(`Error converting file ${file.name} to Base64:`, error);
+            reject(error);
+        };
     });
 }
 
-function renderPagination(container, totalItems, currentPage, onPageChange) {
-    container.innerHTML = '';
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    if (totalPages <= 1) return;
+/**
+ * Fetches all policies for a customer from the backend API.
+ * This function also updates global `currentPoliciesData` and `combinedWorkflow` and triggers rendering.
+ * @param {string} customerNo - The customer number.
+ * @param {string} [policyNoSearch=null] - Optional policy number for specific search.
+ * @param {number} [page=0] - The page number for pagination (0-indexed).
+ * @param {number} [size=itemsPerPage] - The number of items per page.
+ * @param {string} [filterStatus='all'] - Policy status filter.
+ * @param {string} [filterType='all'] - Policy type filter.
+ * @param {string} [sortDateType='none'] - Sorting criteria (e.g., 'issueDateAsc', 'maturityDateDesc').
+ */
+async function fetchAllPoliciesAndRender(customerNo, policyNoSearch = null, page = 0, size = itemsPerPage, filterStatus = 'all', filterType = 'all', sortDateType = 'none') {
+    showLoader();
+    let apiUrl = `http://localhost:8081/policy/policy-detailsNew?page=${page}&size=${size}`;
 
-    const createButton = (text, page, isActive = false, isArrow = false) => {
-        const button = document.createElement('button');
-        button.textContent = isArrow ? '' : text;
-        button.className = `px-3 py-1 rounded-full text-sm font-medium pagination-button ${isActive ? 'active' : ''}`;
-        if (isArrow) {
-            button.innerHTML = `<i class="${text}"></i>`;
-            button.classList.remove('px-3', 'py-1', 'rounded-full', 'font-medium');
-            button.classList.add('w-8', 'h-8', 'flex', 'items-center', 'justify-center', 'text-base');
+    if (customerNo) {
+        apiUrl += `&customerNo=${customerNo}`;
+    }
+    if (policyNoSearch) {
+        apiUrl += `&policyNo=${policyNoSearch}`;
+    }
+    // Always 'Y' for fetching all policies for general view, unless specified otherwise (e.g., specific work item search)
+    apiUrl += `&allpolSearch=N`; 
+
+    if (filterStatus !== 'all') {
+        apiUrl += `&policyStatus=${filterStatus}`;
+    }
+    if (filterType !== 'all') {
+        apiUrl += `&policyType=${filterType}`;
+    }
+
+    // Handle sorting parameters for the API
+    if (sortDateType !== 'none') {
+        let sortByField;
+        let sortOrder;
+        if (sortDateType.includes('Asc')) {
+            sortByField = sortDateType.replace('Asc', '');
+            sortOrder = 'asc';
+        } else if (sortDateType.includes('Desc')) {
+            sortByField = sortDateType.replace('Desc', '');
+            sortOrder = 'desc';
         }
-        button.onclick = () => onPageChange(page);
-        button.disabled = isActive;
-        container.appendChild(button);
+        if (sortByField && sortOrder) {
+            apiUrl += `&sortBy=${sortByField}&sortOrder=${sortOrder}`;
+        }
+    }
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'userCode': config.userCode || '', 
+        'customerNo': config.customerNo || '' 
     };
 
-    createButton('fas fa-chevron-left', currentPage - 1, currentPage === 1, true);
-    for (let i = 1; i <= totalPages; i++) { createButton(i, i, i === currentPage); }
-    createButton('fas fa-chevron-right', currentPage + 1, currentPage === totalPages, true);
+    console.log('GET All Policies API Request URL:', apiUrl);
+    console.log('GET All Policies API Request Headers:', headers);
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: headers
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('GET All Policies API Error Response:', errorData);
+            throw new Error(errorData.errorMessage || `HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('GET All Policies API Success Response:', result);
+
+        if (result.status === 'Success' && result.data && result.data.content) {
+            currentPoliciesData = result.data.content.flatMap(item => item.policyList || []);
+            currentTotalPolicyElements = result.data.totalElements || currentPoliciesData.length;
+            
+            processPolicyWorkflows(currentPoliciesData); // Process for workflow tab
+            renderPolicies(); // Re-render main policy list
+            renderWorkflowContent(activeWorkflowFilter); // Re-render workflow content based on current filter
+            
+            return currentPoliciesData;
+        } else {
+            currentPoliciesData = [];
+            currentTotalPolicyElements = 0;
+            mockRequests = [];
+            mockClaims = [];
+            combinedWorkflow = [];
+            window.showCustomError('Fetch Error', result.errorMessage || 'Failed to fetch policies or no content available.');
+            renderPolicies(); // Clear displayed policies
+            renderWorkflowContent(activeWorkflowFilter); // Clear displayed workflow
+            return [];
+        }
+    } catch (error) {
+        console.error('Catch Error fetching all policy data:', error);
+        window.showCustomError('Network Error', `Error fetching policies: ${error.message}. Please try again.`);
+        currentPoliciesData = []; 
+        currentTotalPolicyElements = 0;
+        mockRequests = [];
+        mockClaims = [];
+        combinedWorkflow = [];
+        renderPolicies(); // Clear displayed policies
+        renderWorkflowContent(activeWorkflowFilter); // Clear displayed workflow
+        return [];
+    } finally {
+        hideLoader();
+    }
 }
 
-window.openUserProfileModal = function() { 
-    userProfileModal.style.display = 'flex'; 
-    document.getElementById('profile-email').textContent = config.email || 'Not Provided';
-    document.getElementById('profile-user-code').textContent = config.userCode || 'Not Provided';
-};
-window.closeUserProfileModal = function() { userProfileModal.style.display = 'none'; };
-window.sendProfileEmail = function() {
-    const successMessageEl = document.getElementById('profile-email-success');
-    successMessageEl.textContent = `Email with profile details sent to ${config.email || 'your registered email'}!`;
-    show(successMessageEl);
-    setTimeout(() => hide(successMessageEl), 3000);
+/**
+ * Fetches details for a single policy. Does not affect global policy lists or trigger full re-renders.
+ */
+async function fetchSinglePolicyDetails(customerNo, policyNumber, workItemRefNo = null) {
+    showLoader();
+    let apiUrl = `http://localhost:8081/policy/policy-detailsNew?policyNo=${policyNumber}&allpolSearch=N`;
+
+    if (customerNo) {
+        apiUrl += `&customerNo=${customerNo}`;
+    }
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'userCode': config.userCode || '', 
+        'customerNo': config.customerNo || '' 
+    };
+
+    if (workItemRefNo) {
+        headers['workItemRefNo'] = workItemRefNo;
+    }
+
+    console.log('GET Single Policy API Request URL:', apiUrl);
+    console.log('GET Single Policy API Request Headers:', headers);
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: headers
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('GET Single Policy API Error Response:', errorData);
+            throw new Error(errorData.errorMessage || `HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('GET Single Policy API Success Response:', result);
+
+        if (result.status === 'Success' && result.data && result.data.content && result.data.content.length > 0) {
+            // The API response for single policy may be in content[0] or content[0].policyList[0]
+            const policy = result.data.content[0].policyList ? result.data.content[0].policyList[0] : result.data.content[0];
+            return policy; 
+        } else {
+            window.showCustomError('Fetch Error', result.errorMessage || 'Failed to fetch policy details or no content available.');
+            return null;
+        }
+    } catch (error) {
+        console.error('Catch Error fetching single policy data:', error);
+        window.showCustomError('Network Error', `Error fetching policy details: ${error.message}. Please try again.`);
+        return null;
+    } finally {
+        hideLoader();
+    }
 }
 
-window.openPolicyDetailsModal = function(policyId) {
-    const selectedPolicy = mockAllPolicies.find(p => p.policyNumber === policyId);
-    if (!selectedPolicy) {
-        showCustomError('Policy details not found.');
+
+// Function to process policy data and populate mockRequests and mockClaims
+function processPolicyWorkflows(policies) {
+    mockRequests = [];
+    mockClaims = [];
+    policies.forEach(policy => {
+        if (policy.surrenderDTO && Array.isArray(policy.surrenderDTO)) {
+            policy.surrenderDTO.forEach(dto => {
+                mockRequests.push({
+                    type: 'surrender', // Added type for filtering
+                    id: dto.surrenderRefNo,
+                    policyId: dto.policyNo,
+                    customerNo: dto.customerNo, // Added customerNo for workflow search
+                    policyName: policy.policyName || 'N/A', 
+                    requestDate: dto.surrDate ? new Date(dto.surrDate).toISOString().slice(0, 10) : 'N/A',
+                    status: dto.surrenderStatus, 
+                    reason: dto.surrReason,
+                    description: dto.surrReason,
+                    verificationDocument: dto.verificationDocument, 
+                    verificationDocumentName: dto.verificationDocumentName,
+                    otherSupportingDocument: dto.otherSupportingDocument, 
+                    otherSupportingDocumentName: dto.otherSupportingDocumentName,
+                    bankPassbookDocument: dto.bankPassbookDocument,
+                    bankPassbookDocumentName: dto.bankPassbookDocumentName,
+                });
+            });
+        }
+        if (policy.claimDTO && Array.isArray(policy.claimDTO)) {
+            policy.claimDTO.forEach(dto => {
+                mockClaims.push({
+                    type: 'claim', // Added type for filtering
+                    id: dto.claimRefNo,
+                    policyId: dto.policyNo,
+                    customerNo: dto.customerNo, // Added customerNo for workflow search
+                    policyName: policy.policyName || 'N/A', 
+                    requestDate: dto.claimDate ? new Date(dto.claimDate).toISOString().slice(0, 10) : 'N/A',
+                    status: dto.claimStatus, 
+                    claimType: dto.claimType || 'N/A', 
+                    description: dto.claimReason,
+                    verificationDocument: dto.verificationDocument, 
+                    verificationDocumentName: dto.verificationDocumentName,
+                    otherSupportingDocument: dto.otherSupportingDocument, 
+                    otherSupportingDocumentName: dto.otherSupportingDocumentName,
+                    bankPassbookDocument: dto.bankPassbookDocument,
+                    bankPassbookDocumentName: dto.bankPassbookDocumentName,
+                    idProofDocument: dto.idProofDocument,
+                    idProofDocumentName: dto.idProofDocumentName,
+                });
+            });
+        }
+    });
+    // Combine and sort for workflow tab
+    combinedWorkflow = [...mockRequests, ...mockClaims].sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
+    console.log('Processed mockRequests:', mockRequests);
+    console.log('Processed mockClaims:', mockClaims);
+    console.log('Combined Workflow for display:', combinedWorkflow);
+}
+
+
+function renderPolicies() { 
+    if (!policyListEl) return; 
+    policyListEl.innerHTML = '';
+    // The policy search input in the header affects the API call, not this render function's internal filtering
+    // The filtering logic below is for the filter modal which is already applied in fetchAllPoliciesAndRender
+
+    if (policyCountEl) policyCountEl.textContent = currentTotalPolicyElements; // Use total elements for the count display
+
+    if (currentPoliciesData.length === 0) {
+        if (policyListEl)
+            policyListEl.innerHTML = `<p class="text-gray-500 text-center py-8 col-span-full">No policies found matching your criteria.</p>`;
+        if (policyPaginationEl)
+            policyPaginationEl.innerHTML = '';
         return;
     }
 
-    const detailsTabContent = document.getElementById('policy-details-tab');
-    const bankTabContent = document.getElementById('bank-details-tab');
-    const paymentsTabContent = document.getElementById('payments-tab');
+    currentPoliciesData.forEach(pol => {
+        const card = document.createElement('div');
+        card.className = 'clickable-card';
+        card.setAttribute('data-policy-number', pol.policyNumber); // Set policy number for easy access
+        card.innerHTML = `
+            <h3 class="font-bold text-lg text-blue-700">${pol.policyName || 'N/A'}</h3>
+            <p class="text-sm text-gray-600 mb-2">Policy No: <span class="font-medium">${pol.policyNumber || 'N/A'}</span></p>
+            <p class="text-sm text-gray-600 mb-2">Customer No: <span class="font-medium">${pol.customer && pol.customer.customerNo || 'N/A'}</span></p>
+            <div class="flex items-center space-x-2 text-sm">
+                <span class="status-badge ${getStatusInfo(pol.policyStatus).bgClass} ${getStatusInfo(pol.policyStatus).textClass} flex items-center">
+                    <i class="${getStatusInfo(pol.policyStatus).iconClass} mr-1"></i>${getStatusInfo(pol.policyStatus).text}
+                </span>
+                <span class="text-xs font-medium text-gray-500">${pol.policyType || 'N/A'}</span>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button onclick="window.openPolicyDetailsModal('${pol.policyNumber}')" class="text-blue-600 hover:underline text-sm font-medium">View Details</button>
+            </div>
+        `;
+        policyListEl.appendChild(card);
+    });
 
-    policyDetailsModal.style.display = 'flex';
+    renderPagination(policyPaginationEl, currentPagePolicies, currentTotalPolicyElements, itemsPerPage, (page) => {
+        currentPagePolicies = page;
+        // Re-fetch using current search and filter values from the main controls
+        fetchAllPoliciesAndRender(
+            config.customerNo, 
+            policySearchInput.value, 
+            currentPagePolicies, 
+            itemsPerPage,
+            filterStatusSelect.value, // Pass current filter status
+            filterTypeSelect.value, // Pass current filter type
+            sortDateTypeSelect.value // Pass current sort type
+        );
+    });
+}
 
-    detailsTabContent.innerHTML = `
-        <h4 class="font-semibold text-gray-900 mb-2">${selectedPolicy.policyName} (${selectedPolicy.policyNumber})</h4>
-        <p><strong>Policy ID:</strong> ${selectedPolicy.id}</p>
-        <p><strong>Policy Number:</strong> ${selectedPolicy.policyNumber}</p>
-        <p><strong>Policy Name:</strong> ${selectedPolicy.policyName}</p>
-        <p><strong>Company Name:</strong> ${selectedPolicy.polCompanyName || 'N/A'}</p>
-        <p><strong>Policy Type:</strong> ${selectedPolicy.policyType}</p>
-        <p><strong>Policy Status:</strong> <span class="capitalize">${selectedPolicy.policyStatus}</span></p>
-        <p><strong>Premium:</strong> ₹${selectedPolicy.policyPremium ? selectedPolicy.policyPremium.toLocaleString() : 'N/A'}</p>
-        <p><strong>Coverage Amount:</strong> ₹${selectedPolicy.coverageAmount ? selectedPolicy.coverageAmount.toLocaleString() : 'N/A'}</p>
-        <p><strong>Premium Due Date:</strong> ${selectedPolicy.premiumDueDate || 'N/A'}</p>
-        <p><strong>Renewal Date:</strong> ${selectedPolicy.renewalDate || 'N/A'}</p>
-        <p><strong>Beneficiary Name:</strong> ${selectedPolicy.beneficiaryName || 'N/A'}</p>
-        <p><strong>Beneficiary Relationship:</strong> ${selectedPolicy.beneficiaryRelationship || 'N/A'}</p>
-        <p><strong>Policy Term:</strong> ${selectedPolicy.policyTerm || 'N/A'}</p>
-        <p><strong>Compliance Flag:</strong> ${selectedPolicy.complianceFlag || 'N/A'}</p>
-        <p><strong>Payment Frequency:</strong> ${selectedPolicy.paymentFrequency || 'N/A'}</p>
-        <p><strong>Smoker Status:</strong> ${selectedPolicy.smokerStatus || 'N/A'}</p>
-        <p><strong>Policy Date:</strong> ${selectedPolicy.policyDate || 'N/A'}</p>
-        <p><strong>Installment Count:</strong> ${selectedPolicy.installmentCount || 'N/A'}</p>
-        <p><strong>Due Date:</strong> ${selectedPolicy.dueDate || 'N/A'}</p>
-        <p><strong>Term:</strong> ${selectedPolicy.term || 'N/A'}</p>
-        <p><strong>Frequency:</strong> ${selectedPolicy.frequency || 'N/A'}</p>
-        <p><strong>Total Amount:</strong> ₹${selectedPolicy.totalAmount ? selectedPolicy.totalAmount.toLocaleString() : 'N/A'}</p>
-        <p><strong>Monthly Installment:</strong> ₹${selectedPolicy.monthlyInstallment ? selectedPolicy.monthlyInstallment.toLocaleString() : 'N/A'}</p>
-        <p><strong>Total Claimable Amount:</strong> ₹${selectedPolicy.totalClaimableAmount ? selectedPolicy.totalClaimableAmount.toLocaleString() : 'N/A'}</p>
-        <p><strong>Start Date:</strong> ${selectedPolicy.startDate || 'N/A'}</p>
-        <p><strong>End Date:</strong> ${selectedPolicy.endDate || 'N/A'}</p>
-        <p><strong>Beneficiary Aadhar Number:</strong> ${selectedPolicy.beneficiaryAadharNumber || 'N/A'}</p>
-        <p><strong>Nominee Contact Number:</strong> ${selectedPolicy.nomineeContactNumber || 'N/A'}</p>
-        <p><strong>Created By:</strong> ${selectedPolicy.createdBy || 'N/A'}</p>
-        <p><strong>Created Date:</strong> ${selectedPolicy.createdDate ? new Date(selectedPolicy.createdDate).toLocaleDateString() : 'N/A'}</p>
-        <p><strong>Updated By:</strong> ${selectedPolicy.updatedBy || 'N/A'}</p>
-        <p><strong>User Code:</strong> ${selectedPolicy.userCode || 'N/A'}</p>
-        <p><strong>Deleted Flag:</strong> ${selectedPolicy.deletedFlag || 'N/A'}</p>
-        <p><strong>Customer No:</strong> ${selectedPolicy.customerNo || 'N/A'}</p>
-        <p><strong>FCU Flag:</strong> ${selectedPolicy.fcuFlag || 'N/A'}</p>
-    `;
 
-    const bank = selectedPolicy.bankAccounts && selectedPolicy.bankAccounts.length > 0 ? selectedPolicy.bankAccounts[0] : null;
-    bankTabContent.innerHTML = bank ? `
-        <h4 class="font-semibold text-gray-900 mb-2">Bank Account Details</h4>
-        <p><strong>Bank Name:</strong> ${bank.bankName}</p>
-        <p><strong>Account Number:</strong> ${bank.accountNumber}</p>
-        <p><strong>IFSC Code:</strong> ${bank.ifscCode}</p>
-        <p><strong>Account Type:</strong> ${bank.accountType}</p>
-        <p><strong>Account Status:</strong> ${bank.status}</p>
-        <p><strong>Account Holder Name:</strong> ${bank.holderName}</p>
-        <p><strong>Customer Number:</strong> ${bank.customerNumber || 'N/A'}</p>
-        <p><strong>Customer Name:</strong> ${bank.customerName || 'N/A'}</p>
-        <p><strong>Policy Number:</strong> ${bank.policyNumber || 'N/A'}</p>
-        <p><strong>Policy Status:</strong> ${bank.policyStatus || 'N/A'}</p>
-        <p><strong>Last Verification Date:</strong> ${bank.lastVerificationDate ? new Date(bank.lastVerificationDate).toLocaleDateString() : 'N/A'}</p>
-        <p><strong>Created By:</strong> ${bank.createdBy || 'N/A'}</p>
-        <p><strong>Created Date:</strong> ${bank.createdDate ? new Date(bank.createdDate).toLocaleDateString() : 'N/A'}</p>
-        <p><strong>Account Holder Type:</strong> ${bank.accountHolderType || 'N/A'}</p>
-        <p><strong>Branch Code:</strong> ${bank.branchCode || 'N/A'}</p>
-        <p><strong>Swift Code:</strong> ${bank.swiftCode || 'N/A'}</p>
-        <p><strong>Payment Method Status:</strong> ${bank.paymentMethodStatus || 'N/A'}</p>
-        <p><strong>Last Payment Date:</strong> ${bank.lastPaymentDate ? new Date(bank.lastPaymentDate).toLocaleDateString() : 'N/A'}</p>
-        <p><strong>AML Status:</strong> ${bank.amlStatus || 'N/A'}</p>
-        <p><strong>Verification Attempts:</strong> ${bank.verificationAttempts || 'N/A'}</p>
-        <p><strong>Comment:</strong> ${bank.comment || 'N/A'}</p>
-        <p><strong>Verification Status:</strong> ${bank.verificationStatus || 'N/A'}</p>
-    ` : '<p class="text-center text-gray-500">No bank account details available.</p>';
+function renderWorkflowContent(filter = null) { // Default filter is now null to show nothing initially
+    if (!combinedWorkflowListEl) return;
+    combinedWorkflowListEl.innerHTML = ''; // Clear content first
 
-    const payment = selectedPolicy.paymentListDTO && selectedPolicy.paymentListDTO.length > 0 ? selectedPolicy.paymentListDTO[0] : null;
-    paymentsTabContent.innerHTML = payment ? `
-        <h4 class="font-semibold text-gray-900 mb-2">Payment History Summary</h4>
-        <p><strong>Total Installments Paid:</strong> ${payment.totalInstallemtPad}</p>
-        <p><strong>Total Unpaid Installments:</strong> ${payment.totalUnpiadInstallemts}</p>
-        <p class="text-sm mt-2"><em>For detailed installment history, please refer to your detailed payment statement.</em></p>
-    ` : '<p class="text-center text-gray-500">No payment history available.</p>';
+    // If no filter is active, show the default message
+    if (filter === null) {
+        combinedWorkflowListEl.innerHTML = `<p class="text-gray-500 text-center py-8">Select a filter above to view workflow items.</p>`;
+        workflowPaginationEl.innerHTML = '';
+        return;
+    }
 
-    document.getElementById('details-surrender-btn').dataset.policyId = selectedPolicy.policyNumber;
-    document.getElementById('details-surrender-btn').style.display = selectedPolicy.status === 'Active' ? 'inline-block' : 'none';
+    const workflowSearchTerm = workflowSearchInput.value.toLowerCase();
+    const workflowSearchBy = workflowSearchBySelect.value; // e.g., 'policyNo', 'customerNo', 'workItemRefNo'
 
-    showDetailsTab('policy');
-};
-window.closePolicyDetailsModal = function() { policyDetailsModal.style.display = 'none'; };
-
-window.showDetailsTab = function(tabName) {
-    const tabs = ['policy', 'bank', 'payments'];
-    tabs.forEach(tab => {
-        const content = document.getElementById(`${tab}-details-tab`);
-        const button = document.getElementById(`${tab}-details-tab-btn`);
-        if (content && button) {
-            if (tab === tabName) {
-                content.style.display = 'block';
-                button.classList.add('active');
-            } else {
-                content.style.display = 'none';
-                button.classList.remove('active');
+    const filteredWorkflow = combinedWorkflow.filter(item => {
+        let matchesSearch = true;
+        if (workflowSearchTerm) {
+            if (workflowSearchBy === 'policyNo') {
+                matchesSearch = (item.policyId && item.policyId.toLowerCase().includes(workflowSearchTerm));
+            } else if (workflowSearchBy === 'customerNo') {
+                matchesSearch = (item.customerNo && item.customerNo.toLowerCase().includes(workflowSearchTerm));
+            } else if (workflowSearchBy === 'workItemRefNo') {
+                matchesSearch = (item.id && item.id.toLowerCase().includes(workflowSearchTerm));
+            } else { // Fallback, could be useful if workflowSearchBy is unexpected
+                matchesSearch = (item.policyId && item.policyId.toLowerCase().includes(workflowSearchTerm)) || 
+                                (item.policyName && item.policyName.toLowerCase().includes(workflowSearchTerm)) || 
+                                (item.id && item.id.toLowerCase().includes(workflowSearchTerm)) ||
+                                (item.type === 'claim' && item.claimType && item.claimType.toLowerCase().includes(workflowSearchTerm));
             }
         }
+        
+        let matchesFilter = true;
+        if (filter !== null) { // Apply filter only if it's not null
+            if (filter === 'surrender') {
+                matchesFilter = item.type === 'surrender';
+            } else if (filter === 'claim') {
+                matchesFilter = item.type === 'claim';
+            } else if (filter === 'ongoing') {
+                matchesFilter = (item.type === 'surrender' && ['pending', 'surrender_requested', 'pending verification', 'pending approval', 'in-progress'].includes(item.status.toLowerCase())) ||
+                                (item.type === 'claim' && ['pending', 'in-progress'].includes(item.status.toLowerCase()));
+            } else if (filter === 'completed') {
+                matchesFilter = (item.type === 'surrender' && item.status.toLowerCase() === 'approved') ||
+                                (item.type === 'claim' && item.status.toLowerCase() === 'completed'); 
+            } else if (filter === 'canceled') {
+                matchesFilter = (item.type === 'surrender' && item.status.toLowerCase() === 'canceled') ||
+                                (item.type === 'claim' && item.status.toLowerCase() === 'claim_canceled');
+            } else if (filter === 'rejected') {
+                matchesFilter = item.status.toLowerCase() === 'rejected';
+            }
+        }
+        return matchesSearch && matchesFilter;
+    });
+
+    // Sort by date (latest first)
+    filteredWorkflow.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
+
+    const startIndex = currentPageWorkflow * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const itemsToDisplay = filteredWorkflow.slice(startIndex, endIndex);
+
+    if (itemsToDisplay.length === 0) {
+        combinedWorkflowListEl.innerHTML = `<p class="text-gray-500 text-center py-8">No workflow items found for current filters.</p>`;
+        workflowPaginationEl.innerHTML = '';
+        return;
+    }
+
+    itemsToDisplay.forEach(item => {
+        const statusInfo = getStatusInfo(item.status);
+        const card = document.createElement('div');
+        card.className = `workflow-detail-item flex flex-col sm:flex-row justify-between items-start sm:items-center ${statusInfo.statusClass}`;
+        
+        let actionsHtml = '';
+        if (item.type === 'surrender' && ['pending', 'surrender_requested', 'pending verification', 'pending approval', 'in-progress'].includes(item.status.toLowerCase())) {
+            actionsHtml = `<button onclick="window.openCancellationModal('${item.id}')" class="mt-2 text-red-600 hover:underline text-sm font-medium">Cancel Request</button>`;
+        } else if (item.type === 'claim' && ['pending', 'in-progress'].includes(item.status.toLowerCase())) {
+            actionsHtml = `<button onclick="window.openCancelClaimModal('${item.id}')" class="mt-2 text-red-600 hover:underline text-sm font-medium">Cancel Claim</button>`;
+        }
+
+        card.innerHTML = `
+            <div>
+                <p class="font-semibold text-lg text-blue-700">${item.policyName || 'N/A'} <span class="text-sm font-normal text-gray-500">(${item.type === 'surrender' ? 'Surrender' : 'Claim'})</span></p>
+                <p class="text-sm text-gray-600">Policy No: <span class="font-medium">${item.policyId || 'N/A'}</span></p>
+                <p class="text-sm text-gray-600">Ref No: <span class="font-medium">${item.id || 'N/A'}</span></p>
+                ${item.customerNo ? `<p class="text-sm text-gray-600">Customer No: <span class="font-medium">${item.customerNo || 'N/A'}</span></p>` : ''}
+                ${item.type === 'claim' ? `<p class="text-sm text-gray-600">Claim Type: <span class="font-medium">${item.claimType || 'N/A'}</span></p>` : ''}
+                <p class="text-sm text-gray-600">Requested: <span class="font-medium">${item.requestDate || 'N/A'}</span></p>
+            </div>
+            <div class="mt-3 sm:mt-0 sm:text-right">
+                <span class="status-badge ${statusInfo.bgClass} ${statusInfo.textClass} flex items-center justify-end">
+                    <i class="${statusInfo.iconClass} mr-1"></i>${statusInfo.text}
+                </span>
+                <p class="text-sm text-gray-600 mt-2">${item.reason || item.description || 'No specific reason provided.'}</p>
+                ${actionsHtml}
+            </div>
+        `;
+        combinedWorkflowListEl.appendChild(card);
+    });
+
+    renderPagination(workflowPaginationEl, currentPageWorkflow, filteredWorkflow.length, itemsPerPage, (page) => {
+        currentPageWorkflow = page;
+        renderWorkflowContent(activeWorkflowFilter);
     });
 }
 
-window.openSurrenderModal = function(policyId) {
-    const selectedPolicy = mockAllPolicies.find(p => p.policyNumber === policyId);
-    if (!selectedPolicy) {
-        showCustomError('Policy not found for surrender.');
-        return;
+
+function renderPagination(container, currentPage, totalItems, itemsPerPage, callback) {
+    container.innerHTML = '';
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (totalPages <= 1) return;
+
+    // Previous button
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'pagination-button px-4 py-2 text-sm';
+    prevBtn.innerHTML = `<i class="fas fa-chevron-left"></i>`;
+    prevBtn.disabled = currentPage === 0;
+    prevBtn.onclick = () => callback(currentPage - 1);
+    container.appendChild(prevBtn);
+
+    // Page numbers
+    const startPage = Math.max(0, currentPage - 2);
+    const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+    if (startPage > 0) {
+        const firstPageBtn = document.createElement('button');
+        firstPageBtn.className = 'pagination-button px-4 py-2 text-sm';
+        firstPageBtn.textContent = '1';
+        firstPageBtn.onclick = () => callback(0);
+        container.appendChild(firstPageBtn);
+        if (startPage > 1) {
+            const dots = document.createElement('span');
+            dots.textContent = '...';
+            dots.className = 'px-2 text-gray-600';
+            container.appendChild(dots);
+        }
     }
 
-    const isAlreadyRequested = mockRequests.some(req => req.policyId === policyId && req.status === 'pending');
-    if (isAlreadyRequested) {
-        showCustomAlert('Request Pending', 'A surrender request for this policy is already pending.');
-        return;
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = `pagination-button px-4 py-2 text-sm ${i === currentPage ? 'active' : ''}`;
+        pageBtn.textContent = i + 1;
+        pageBtn.onclick = () => callback(i);
+        container.appendChild(pageBtn);
     }
-    currentSurrenderPolicyId = policyId;
-    document.getElementById('surrender-policy-id').textContent = selectedPolicy.policyNumber;
-    document.getElementById('surrender-policy-name').textContent = selectedPolicy.policyName;
-    document.getElementById('surrender-reason-dropdown').value = '';
-    document.getElementById('surrender-description').value = '';
-    document.getElementById('surrender-doc-verification').value = '';
-    document.getElementById('surrender-doc-bank-passbook').value = '';
-    document.getElementById('surrender-doc-other').value = '';
-    surrenderModal.style.display = 'flex';
+
+    if (endPage < totalPages - 1) {
+        if (endPage < totalPages - 2) {
+            const dots = document.createElement('span');
+            dots.textContent = '...';
+            dots.className = 'px-2 text-gray-600';
+            container.appendChild(dots);
+        }
+        const lastPageBtn = document.createElement('button');
+        lastPageBtn.className = 'pagination-button px-4 py-2 text-sm';
+        lastPageBtn.textContent = totalPages;
+        lastPageBtn.onclick = () => callback(totalPages - 1);
+        container.appendChild(lastPageBtn);
+    }
+
+    // Next button
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'pagination-button px-4 py-2 text-sm';
+    nextBtn.innerHTML = `<i class="fas fa-chevron-right"></i>`;
+    nextBtn.disabled = currentPage >= totalPages - 1;
+    nextBtn.onclick = () => callback(currentPage + 1);
+    container.appendChild(nextBtn);
 }
+
+
+// Function to show/hide primary tabs (policies, workflow)
+window.showPrimaryTab = function(tabName) {
+    activePrimaryTab = tabName;
+    const tabs = {
+        'policies': {
+            content: policiesContentEl,
+            button: policiesTabBtn,
+            title: 'Policy Management'
+        },
+        'workflow': { // New workflow tab
+            content: workflowContentEl,
+            button: workflowTabBtn,
+            title: 'Workflow & History'
+        }
+    };
+
+    for (const key in tabs) {
+        if (tabs[key].content) {
+            if (tabs[key].button) tabs[key].button.classList.remove('active'); // Deactivate all tab buttons
+            if (key === tabName) {
+                show(tabs[key].content);
+                if (tabs[key].button) tabs[key].button.classList.add('active'); // Activate current tab button
+            } else {
+                hide(tabs[key].content);
+            }
+        }
+    }
+    if (mainTitleEl) mainTitleEl.textContent = tabs[tabName].title;
+
+    // Reset workflow filter buttons when switching to workflow tab
+    if (tabName === 'workflow') {
+        document.querySelectorAll('#workflow-content .tab-button').forEach(btn => btn.classList.remove('active'));
+        activeWorkflowFilter = null; // Set filter to null to show initial message
+        renderWorkflowContent(activeWorkflowFilter); // Explicitly render nothing for the workflow content
+    }
+};
+
+window.filterWorkflowRequests = function(filter) {
+    activeWorkflowFilter = filter;
+    document.querySelectorAll('#workflow-content .tab-button').forEach(btn => btn.classList.remove('active')); 
+    document.getElementById(`workflow-${filter}-tab-btn`).classList.add('active');
+    currentPageWorkflow = 0; // Reset pagination when filtering
+    renderWorkflowContent(filter); // Re-render with the selected filter
+};
+
+
+// Open/Close Modals - Attached to window for HTML onclick
+window.openUserProfileModal = function() { show(userProfileModal); };
+window.closeUserProfileModal = function() { hide(userProfileModal); };
+window.closePolicyDetailsModal = function() { hide(policyDetailsModal); };
+window.closeSurrenderModal = function() { hide(surrenderModal); };
+window.closeConfirmSurrenderModal = function() { hide(confirmSurrenderModal); };
+window.closeCancellationModal = function() { hide(cancellationModal); };
+window.closeSubmitClaimModal = function() { hide(submitClaimModal); };
+window.closeConfirmClaimModal = function() { hide(confirmClaimModal); };
+window.closeFraudWarningModal = function() { hide(fraudWarningModal); };
+window.closeCancelClaimModal = function() { hide(cancelClaimModal); };
+window.openFilterModal = function() { show(filterModal); };
+window.closeFilterModal = function() { hide(filterModal); };
+
+window.applyFilters = function() {
+    currentPagePolicies = 0;
+    // When filters are applied, always go back to the first page of policies
+    fetchAllPoliciesAndRender(
+        config.customerNo, 
+        policySearchInput.value, 
+        currentPagePolicies, 
+        itemsPerPage,
+        filterStatusSelect.value, 
+        filterTypeSelect.value, 
+        sortDateTypeSelect.value
+    );
+    closeFilterModal();
+};
+
+window.openPolicyDetailsModal = async function(policyNumber) {
+    showLoader();
+    try {
+        console.log("openPolicyDetailsModal called for policy:", policyNumber);
+        const policy = await fetchSinglePolicyDetails(config.customerNo, policyNumber, null);
+        
+        if (!policy) { 
+            console.error(`Policy not found after fetching for ${policyNumber}.`);
+            window.showCustomError('Policy Not Found', 'Could not retrieve details for this policy.');
+            return;
+        }
+
+        console.log("Fetched policy details:", policy);
+
+        const policyDetailsTabEl = document.getElementById('policy-details-tab');
+        policyDetailsTabEl.innerHTML = `
+            <div class="policy-detail-field">
+                <strong>Policy Name:</strong> <span>${policy.policyName || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Policy Number:</strong> <span>${policy.policyNumber || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Policy Type:</strong> <span>${policy.policyType || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Status:</strong> <span>${getStatusInfo(policy.policyStatus).text}</span>
+            </div>
+            <div class="policy-detail-field money-field">
+                <strong>Coverage Amount:</strong> <span>$${policy.coverageAmount ? parseFloat(policy.coverageAmount).toLocaleString('en-US') : 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field money-field">
+                <strong>Premium Amount:</strong> <span>$${policy.premiumAmount ? parseFloat(policy.premiumAmount).toLocaleString('en-US') : 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Issue Date:</strong> <span>${policy.issueDate || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Maturity Date:</strong> <span>${policy.maturityDate || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Renewal Date:</strong> <span>${policy.renewalDate || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Beneficiary Name:</strong> <span>${policy.beneficiaryName || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Beneficiary Relationship:</strong> <span>${policy.beneficiaryRelationship || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Policy Term:</strong> <span>${policy.policyTerm || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Payment Frequency:</strong> <span>${policy.paymentFrequency || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field money-field">
+                <strong>Total Policy Value:</strong> <span>$${policy.totalPolicyValue ? parseFloat(policy.totalPolicyValue).toLocaleString('en-US') : 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field money-field">
+                <strong>Total Claimable Amount:</strong> <span>$${policy.totalClaimableAmount ? parseFloat(policy.totalClaimableAmount).toLocaleString('en-US') : 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Total Installments Paid:</strong> <span>${policy.totalInstallmentsPaid || 'N/A'}</span>
+            </div>
+            <div class="policy-detail-field">
+                <strong>Total Installments Unpaid:</strong> <span>${policy.totalInstallmentsUnpaid || 'N/A'}</span>
+            </div>
+        `;
+
+        const bankDetailsTabEl = document.getElementById('bank-details-tab');
+        bankDetailsTabEl.innerHTML = ''; // Clear previous content
+        if (policy.bankAccounts && policy.bankAccounts.length > 0) {
+            policy.bankAccounts.forEach(bank => {
+                // Mock bank account status if not available, otherwise use actual
+                const accountStatus = bank.accountStatus || (Math.random() < 0.7 ? 'Approved' : (Math.random() < 0.5 ? 'Pending' : 'Rejected')); 
+                const statusInfo = getAccountStatusInfo(accountStatus); // Define statusInfo here
+                bankDetailsTabEl.innerHTML += `
+                    <div class="p-4 rounded-lg shadow-sm border border-gray-200">
+                        <p><strong>Bank Name:</strong> ${bank.bankName || 'N/A'}</p>
+                        <p><strong>Account Number:</strong> ${bank.accountNumber || 'N/A'}</p>
+                        <p><strong>IFSC Code:</strong> ${bank.ifscCode || 'N/A'}</p>
+                        <p><strong>Account Type:</strong> ${bank.accountType || 'N/A'}</p>
+                        <p><strong>Branch:</strong> ${bank.branch || 'N/A'}</p>
+                        <p class="mt-2"><strong>Status:</strong> 
+                            <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full ${statusInfo.bgClass} ${statusInfo.textClass}">
+                                ${statusInfo.text}
+                            </span>
+                        </p>
+                    </div>
+                `;
+            });
+        } else {
+            bankDetailsTabEl.innerHTML = `<p class="text-gray-500">No bank account details available for this policy.</p>`;
+        }
+
+        const paymentsTabEl = document.getElementById('payments-tab');
+        paymentsTabEl.innerHTML = ''; // Clear previous content
+        if (policy.payments && policy.payments.length > 0) {
+            policy.payments.forEach(payment => {
+                const paymentStatusInfo = getStatusInfo(payment.paymentStatus);
+                paymentsTabEl.innerHTML += `
+                    <div class="bg-green-50 p-4 rounded-lg shadow-sm">
+                        <p><strong>Payment ID:</strong> ${payment.paymentId || 'N/A'}</p>
+                        <p><strong>Amount:</strong> ${payment.amount || 'N/A'}</p>
+                        <p><strong>Date:</strong> ${payment.paymentDate || 'N/A'}</p>
+                        <p><strong>Status:</strong> <span class="${paymentStatusInfo.textClass}">${paymentStatusInfo.text}</span></p>
+                    </div>
+                `;
+            });
+        } else {
+            paymentsTabEl.innerHTML = `<p class="text-gray-500">No payment history available for this policy.</p>`;
+        }
+
+        // Set policy number to the surrender and claim buttons in the details modal
+        const detailsSurrenderBtn = document.getElementById('details-surrender-btn');
+        const detailsClaimBtn = document.getElementById('details-claim-btn');
+
+        if (detailsSurrenderBtn) {
+            detailsSurrenderBtn.dataset.policyNumber = policy.policyNumber;
+        }
+        if (detailsClaimBtn) {
+            detailsClaimBtn.dataset.policyNumber = policy.policyNumber;
+        }
+
+        // Store the entire policy object in session storage for surrender/claim modals
+        sessionStorage.setItem('selectedPolicyForAction', JSON.stringify(policy)); 
+
+        // Show the policy details tab by default when modal opens
+        window.showDetailsTab('policy');
+        console.log("Attempting to show policyDetailsModal");
+        show(policyDetailsModal); // Finally show the modal
+    } catch (error) {
+        console.error("Error opening policy details modal:", error);
+        window.showCustomError('Error', `Failed to load policy details: ${error.message}`);
+    } finally {
+        hideLoader();
+    }
+};
+
+window.showDetailsTab = function(tabName) {
+    document.getElementById('policy-details-tab').style.display = 'none';
+    document.getElementById('bank-details-tab').style.display = 'none';
+    document.getElementById('payments-tab').style.display = 'none';
+
+    document.getElementById('policy-details-tab-btn').classList.remove('active');
+    document.getElementById('bank-details-tab-btn').classList.remove('active');
+    document.getElementById('payments-tab-btn').classList.remove('active');
+
+    if (tabName === 'policy') {
+        document.getElementById('policy-details-tab').style.display = 'grid'; // Changed to grid for better layout
+        document.getElementById('policy-details-tab-btn').classList.add('active');
+    } else if (tabName === 'bank') {
+        document.getElementById('bank-details-tab').style.display = 'block';
+        document.getElementById('bank-details-tab-btn').classList.add('active');
+    } else if (tabName === 'payments') {
+        document.getElementById('payments-tab').style.display = 'block';
+        document.getElementById('payments-tab-btn').classList.add('active');
+    }
+};
+
+
+window.openSurrenderModal = async function(policyNumber) {
+    showLoader();
+    try {
+        // Retrieve policy from sessionStorage (set during openPolicyDetailsModal)
+        let selectedPolicy = JSON.parse(sessionStorage.getItem('selectedPolicyForAction'));
+        
+        // If for some reason, it's not in session storage or doesn't match, re-fetch it
+        if (!selectedPolicy || selectedPolicy.policyNumber !== policyNumber) {
+            console.warn("Policy not found in session storage or mismatch, re-fetching for surrender modal.");
+            selectedPolicy = await fetchSinglePolicyDetails(config.customerNo, policyNumber); // Use dedicated single fetch
+            if (!selectedPolicy) { // Check for null/undefined
+                window.showCustomError('Policy Not Found', 'Could not retrieve details for surrender request.');
+                return;
+            }
+            sessionStorage.setItem('selectedPolicyForAction', JSON.stringify(selectedPolicy));
+        }
+
+        document.getElementById('surrender-policy-id').textContent = selectedPolicy.policyNumber || 'N/A';
+        document.getElementById('surrender-policy-name').textContent = selectedPolicy.policyName || 'N/A';
+        document.getElementById('surrender-policy-coverage-amount').textContent = selectedPolicy.coverageAmount ? parseFloat(selectedPolicy.coverageAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('surrender-total-claimable-amount').textContent = selectedPolicy.totalClaimableAmount ? parseFloat(selectedPolicy.totalClaimableAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('surrender-total-amount').textContent = selectedPolicy.totalPolicyValue ? parseFloat(selectedPolicy.totalPolicyValue).toLocaleString('en-US') : 'N/A';
+        document.getElementById('surrender-monthly-installment').textContent = selectedPolicy.premiumAmount ? parseFloat(selectedPolicy.premiumAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('surrender-total-installments-paid').textContent = selectedPolicy.totalInstallmentsPaid || 'N/A';
+        document.getElementById('surrender-total-installments-unpaid').textContent = selectedPolicy.totalInstallmentsUnpaid || 'N/A';
+        
+        // Populate bank accounts dropdown - only approved accounts selectable
+        surrenderBankAccountDropdown.innerHTML = '<option value="">Select a bank account</option>';
+        let hasApprovedAccount = false;
+        if (selectedPolicy.bankAccounts && selectedPolicy.bankAccounts.length > 0) {
+            selectedPolicy.bankAccounts.forEach(bank => {
+                // Mock bank account status if not available, otherwise use actual
+                const accountStatus = (bank.accountStatus || (Math.random() < 0.7 ? 'Approved' : (Math.random() < 0.5 ? 'Pending' : 'Rejected'))).toLowerCase(); 
+                const statusInfo = getAccountStatusInfo(accountStatus); // Get status info for display
+                const option = document.createElement('option');
+                option.value = bank.accountNumber;
+                option.textContent = `${bank.bankName} - ${bank.accountNumber}`;
+                if (accountStatus === 'approved') {
+                    hasApprovedAccount = true;
+                } else {
+                    option.disabled = true;
+                    option.textContent += ` (${statusInfo.text})`; // Show status in disabled option
+                    option.classList.add('text-gray-400', 'italic');
+                }
+                surrenderBankAccountDropdown.appendChild(option);
+            });
+        }
+
+        if (!hasApprovedAccount) {
+            window.showCustomError('No Approved Bank Accounts', 'Please add an approved bank account before requesting a surrender.');
+            hide(modals['surrender-modal']);
+            return;
+        }
+
+        show(surrenderModal);
+        // Close policy details modal if it's open
+        hide(policyDetailsModal);
+    } catch (error) {
+        console.error('Error opening surrender modal:', error);
+        window.showCustomError('Error', `Failed to prepare surrender request: ${error.message}`);
+    } finally {
+        hideLoader();
+    }
+};
+
 window.confirmSurrenderRequest = function() {
     const reason = document.getElementById('surrender-reason-dropdown').value;
-    const description = document.getElementById('surrender-description').value.trim();
+    const description = document.getElementById('surrender-description').value;
+    const selectedAccountNo = document.getElementById('surrender-bank-account-dropdown').value;
     const verificationDoc = document.getElementById('surrender-doc-verification').files[0];
-    const bankPassbook = document.getElementById('surrender-doc-bank-passbook').files[0];
+    const bankPassbookDoc = document.getElementById('surrender-doc-bank-passbook').files[0];
+    const otherDocs = Array.from(document.getElementById('surrender-doc-other').files);
 
-    if (!reason || !description || !verificationDoc || !bankPassbook) {
-        showCustomError('Missing Information', 'Please select a reason, provide a description, and upload all required documents.');
+    if (!reason || !description || !selectedAccountNo || !verificationDoc || !bankPassbookDoc) {
+        window.showCustomError('Missing Information', 'Please fill in all required fields and upload all mandatory documents.');
         return;
     }
-    tempSurrenderData = { reason, description, docs: { verificationDoc, bankPassbook, other: document.getElementById('surrender-doc-other').files } };
-    
-    closeSurrenderModal();
-    confirmSurrenderModal.style.display = 'flex';
-}
-window.submitSurrenderRequest = function() {
-    const { reason, description } = tempSurrenderData;
-    const newRequestId = 'REQ-' + (mockRequests.length + 1).toString().padStart(3, '0');
-    const policyToSurrender = mockAllPolicies.find(p => p.policyNumber === currentSurrenderPolicyId);
 
-    const newRequest = {
-        id: newRequestId,
-        policyId: currentSurrenderPolicyId,
-        policyName: policyToSurrender ? policyToSurrender.policyName : 'Unknown Policy',
-        requestDate: new Date().toISOString().slice(0, 10),
-        status: 'pending',
-        reason: reason,
-        description: description,
-        workflow: [
-            { step: 'Request Submitted', date: new Date().toISOString().slice(0, 10), status: 'completed', stage: 'Initiation', pendingWithTeam: 'Customer Service', comment: 'Initial request received.', expectedResolutionDate: 'N/A', verificationStatus: 'Pending', commentByVerifier: 'None' },
-            { step: 'Documents Verification', date: 'N/A', status: 'pending', stage: 'Processing', pendingWithTeam: 'Verification Team', comment: 'Awaiting document verification.', expectedResolutionDate: '3 business days', verificationStatus: 'Pending', commentByVerifier: 'N/A' }
-        ]
+    tempSurrenderData = {
+        reason,
+        description,
+        selectedAccountNo,
+        docs: {
+            verificationDoc,
+            bankPassbookDoc,
+            otherDocs
+        }
     };
-    mockRequests.unshift(newRequest);
-    
-    if (policyToSurrender) {
-         policyToSurrender.policyStatus = 'surrender_requested';
-         policyToSurrender.status = 'surrender_requested';
+    show(confirmSurrenderModal);
+};
+
+window.submitSurrenderRequest = async function() {
+    showLoader();
+    hide(confirmSurrenderModal); // Hide confirmation modal
+
+    // Retrieve the full policy object from session storage
+    const policyToSurrender = JSON.parse(sessionStorage.getItem('selectedPolicyForAction'));
+
+    if (!policyToSurrender || !policyToSurrender.policyNumber) {
+        window.showCustomError('Error', 'No policy selected for surrender or policy data is incomplete.');
+        hideLoader();
+        return;
     }
-    
-    renderRequests();
-    renderSurrenderPolicies();
-    closeConfirmSurrenderModal();
-    showCustomAlert(`Surrender request ${newRequestId} has been submitted for policy ${currentSurrenderPolicyId}.`);
-}
-window.closeSurrenderModal = function() {
-    surrenderModal.style.display = 'none';
-    document.getElementById('surrender-reason-dropdown').value = '';
-    document.getElementById('surrender-description').value = '';
-    document.getElementById('surrender-doc-verification').value = '';
-    document.getElementById('surrender-doc-bank-passbook').value = '';
-    document.getElementById('surrender-doc-other').value = '';
-    currentSurrenderPolicyId = null;
-}
-window.closeConfirmSurrenderModal = function() {
-    confirmSurrenderModal.style.display = 'none';
-    if (currentSurrenderPolicyId) {
-        openSurrenderModal(currentSurrenderPolicyId);
+
+    const { reason, description, selectedAccountNo, docs } = tempSurrenderData;
+
+    const verificationDocBase64 = await fileToBase64(docs.verificationDoc);
+    const bankPassbookDocBase64 = await fileToBase64(docs.bankPassbookDoc);
+    const otherDocsBase64 = await Promise.all(docs.otherDocs.map(file => fileToBase64(file)));
+
+    const payload = {
+        action: "SURRENDER", // Add action field
+        policyNo: policyToSurrender.policyNumber, 
+        customerNo: config.customerNo,
+        surrReason: reason,
+        surrDescription: description, 
+        bankAccNo: selectedAccountNo,
+        verificationDocument: verificationDocBase64,
+        verificationDocumentName: docs.verificationDoc?.name || null,
+        bankPassbookDocument: bankPassbookDocBase64,
+        bankPassbookDocumentName: docs.bankPassbookDoc?.name || null,
+        otherSupportingDocument: otherDocsBase64.length > 0 ? otherDocsBase64[0] : null, 
+        otherSupportingDocumentName: otherDocsBase64.length > 0 ? docs.otherDocs[0]?.name : null,
+        surrenderBy: config.userCode 
+    };
+
+    const apiUrl = 'http://localhost:8081/policy/surrender'; // Existing API endpoint
+    const headers = {
+        'Content-Type': 'application/json',
+        'userCode': config.userCode || '', 
+        'customerNo': config.customerNo || '' 
+    };
+
+    console.log('Surrender Request Payload:', payload);
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        console.log('Surrender API Response:', result);
+
+        if (response.ok && result.status === 'Success') {
+            window.showCustomAlert('Surrender Request Submitted', result.message || 'Your surrender request has been submitted successfully!');
+            hide(surrenderModal);
+            // Re-fetch ALL policy data to update requests list in main view
+            await fetchAllPoliciesAndRender(
+                config.customerNo, 
+                policySearchInput.value, 
+                currentPagePolicies, 
+                itemsPerPage,
+                filterStatusSelect.value, 
+                filterTypeSelect.value, 
+                sortDateTypeSelect.value
+            ); 
+        } else {
+            window.showCustomError('Submission Failed', result.errorMessage || 'Failed to submit surrender request. Please try again.');
+        }
+    } catch (error) {
+        console.error('Network error during surrender submission:', error);
+        window.showCustomError('Network Error', `Could not connect to the server. Please try again: ${error.message}`);
+    } finally {
+        hideLoader();
+        tempSurrenderData = { reason: '', description: '', docs: {}, selectedAccountNo: null }; // Clear temp data
     }
-}
+};
 
 window.openCancellationModal = function(requestId) {
     currentCancellationRequestId = requestId;
-    cancellationModal.style.display = 'flex';
-}
-window.closeCancellationModal = function() {
-    cancellationModal.style.display = 'none';
-    document.getElementById('cancellation-reason').value = '';
-    currentCancellationRequestId = null;
-}
-window.submitCancellation = function() {
-    const reason = document.getElementById('cancellation-reason').value.trim();
-    if (!reason) { showCustomError('Reason Required', 'Please provide a reason for cancellation.'); return; }
-    const request = mockRequests.find(req => req.id === currentCancellationRequestId);
-    if (request) {
-        request.status = 'canceled';
-        request.cancellationReason = reason;
-        request.workflow.push({ step: 'Request Canceled', date: new Date().toISOString().slice(0, 10), status: 'canceled', stage: 'Cancellation', pendingWithTeam: 'N/A', comment: reason, expectedResolutionDate: 'N/A', verificationStatus: 'N/A', commentByVerifier: 'N/A' });
-        
-        const policyAffected = mockAllPolicies.find(p => p.policyNumber === request.policyId);
-        if (policyAffected && policyAffected.policyStatus === 'surrender_requested') {
-            policyAffected.policyStatus = 'Active';
-            policyAffected.status = 'Active';
+    show(cancellationModal);
+};
+
+window.submitCancellation = async function() {
+    showLoader();
+    hide(cancellationModal);
+    const reason = document.getElementById('cancellation-reason').value;
+
+    if (!reason) {
+        window.showCustomError('Missing Reason', 'Please provide a reason for cancellation.');
+        hideLoader();
+        return;
+    }
+
+    const payload = {
+        surrenderRefNo: currentCancellationRequestId,
+        surrReason: reason,
+        surrenderStatus: 'Canceled', // Explicitly setting status for cancellation
+        surrenderBy: config.userCode 
+    };
+
+    const apiUrl = `http://localhost:8081/policy/cancelSurrender`; // Adjust endpoint if needed
+    const headers = {
+        'Content-Type': 'application/json',
+        'userCode': config.userCode || '', 
+        'customerNo': config.customerNo || '' 
+    };
+
+    console.log('Cancellation Request Payload:', payload);
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        console.log('Cancellation API Response:', result);
+
+        if (response.ok && result.status === 'Success') {
+            window.showCustomAlert('Cancellation Successful', result.message || 'Surrender request has been canceled.');
+            // Re-fetch ALL policy data to update requests list in main view
+            await fetchAllPoliciesAndRender(
+                config.customerNo, 
+                policySearchInput.value, 
+                currentPagePolicies, 
+                itemsPerPage,
+                filterStatusSelect.value, 
+                filterTypeSelect.value, 
+                sortDateTypeSelect.value
+            ); 
+        } else {
+            window.showCustomError('Cancellation Failed', result.errorMessage || 'Failed to cancel surrender request.');
         }
-        renderRequests();
-        renderSurrenderPolicies();
-        showCustomAlert(`Request ${currentCancellationRequestId} has been successfully canceled.`);
+    } catch (error) {
+        console.error('Network error during cancellation:', error);
+        window.showCustomError('Network Error', `Could not connect to the server. Please try again: ${error.message}`);
+    } finally {
+        hideLoader();
+        currentCancellationRequestId = null; // Clear ID
     }
-    closeCancellationModal();
-}
-window.reportIssue = function(requestId) {
-    const request = mockRequests.find(req => req.id === requestId);
-    if(request) { showCustomAlert(`An issue for request ${requestId} has been reported. We will get back to you shortly.`); }
-}
+};
 
-window.showSurrenderWorkflow = function(requestId) {
-    const request = mockRequests.find(req => req.id === requestId);
-    if (!request || !request.workflow) {
-        document.getElementById('surrender-workflow-steps').innerHTML = '<p class="text-center text-gray-500">No detailed workflow found for this request.</p>';
-        surrenderWorkflowModal.style.display = 'flex';
-        return;
+
+window.openSubmitClaimModal = async function(policyNumber) {
+    showLoader();
+    try {
+        // Retrieve policy from sessionStorage (set during openPolicyDetailsModal)
+        let selectedPolicy = JSON.parse(sessionStorage.getItem('selectedPolicyForAction'));
+        
+        // If not in session storage or doesn't match, re-fetch it
+        if (!selectedPolicy || selectedPolicy.policyNumber !== policyNumber) {
+            console.warn("Policy not found in session storage or mismatch, re-fetching for claim modal.");
+            selectedPolicy = await fetchSinglePolicyDetails(config.customerNo, policyNumber); // Use dedicated single fetch
+            if (!selectedPolicy) { // Check for null/undefined
+                window.showCustomError('Policy Not Found', 'Could not retrieve details for claim submission.');
+                return;
+            }
+            sessionStorage.setItem('selectedPolicyForAction', JSON.stringify(selectedPolicy));
+        }
+
+        document.getElementById('claim-policy-id').textContent = selectedPolicy.policyNumber || 'N/A';
+        document.getElementById('claim-policy-name').textContent = selectedPolicy.policyName || 'N/A';
+        document.getElementById('claim-policy-coverage-amount').textContent = selectedPolicy.coverageAmount ? parseFloat(selectedPolicy.coverageAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('claim-total-claimable-amount').textContent = selectedPolicy.totalClaimableAmount ? parseFloat(selectedPolicy.totalClaimableAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('claim-total-amount').textContent = selectedPolicy.totalPolicyValue ? parseFloat(selectedPolicy.totalPolicyValue).toLocaleString('en-US') : 'N/A';
+        document.getElementById('claim-monthly-installment').textContent = selectedPolicy.premiumAmount ? parseFloat(selectedPolicy.premiumAmount).toLocaleString('en-US') : 'N/A';
+        
+        // Populate bank accounts dropdown - only approved accounts selectable
+        claimBankAccountDropdown.innerHTML = '<option value="">Select a bank account</option>';
+        let hasApprovedAccount = false;
+        if (selectedPolicy.bankAccounts && selectedPolicy.bankAccounts.length > 0) {
+            selectedPolicy.bankAccounts.forEach(bank => {
+                // Mock bank account status if not available, otherwise use actual
+                const accountStatus = (bank.accountStatus || (Math.random() < 0.7 ? 'Approved' : (Math.random() < 0.5 ? 'Pending' : 'Rejected'))).toLowerCase(); 
+                const statusInfo = getAccountStatusInfo(accountStatus); // Get status info for display
+                const option = document.createElement('option');
+                option.value = bank.accountNumber;
+                option.textContent = `${bank.bankName} - ${bank.accountNumber}`;
+                if (accountStatus === 'approved') {
+                    hasApprovedAccount = true;
+                } else {
+                    option.disabled = true;
+                    option.textContent += ` (${statusInfo.text})`; // Show status in disabled option
+                    option.classList.add('text-gray-400', 'italic');
+                }
+                claimBankAccountDropdown.appendChild(option);
+            });
+        }
+
+        if (!hasApprovedAccount) {
+            window.showCustomError('No Approved Bank Accounts', 'Please add an approved bank account before submitting a claim.');
+            hide(modals['submit-claim-modal']);
+            return;
+        }
+
+        show(submitClaimModal);
+        // Close policy details modal if it's open
+        hide(policyDetailsModal);
+    } catch (error) {
+        console.error('Error opening claim modal:', error);
+        window.showCustomError('Error', `Failed to prepare claim submission: ${error.message}`);
+    } finally {
+        hideLoader();
     }
+};
 
-    const workflowStepsEl = document.getElementById('surrender-workflow-steps');
-    workflowStepsEl.innerHTML = '';
-    
-    request.workflow.forEach((step, index) => {
-        const statusInfo = getStatusInfo(step.status);
-        const stepEl = document.createElement('div');
-        const statusClass = `status-${step.status.replace(/\s+/g, '-').toLowerCase()}`;
-        stepEl.className = `workflow-detail-item ${statusClass}`;
-
-        stepEl.innerHTML = `
-            <h4 class="font-semibold text-gray-900">${step.step} <span class="text-sm font-normal text-gray-600">(${step.stage})</span></h4>
-            <p class="text-sm text-gray-700 mt-1">Status: <span class="font-medium">${statusInfo.text}</span></p>
-            <p class="text-sm text-gray-700">Date: <span class="font-medium">${step.date}</span></p>
-            <p class="text-sm text-gray-700">Pending With: <span class="font-medium">${step.pendingWithTeam}</span></p>
-            <p class="text-sm text-gray-700">Comment: <span class="font-medium">${step.comment || 'N/A'}</span></p>
-            <p class="text-sm text-gray-700">Expected Resolution: <span class="font-medium">${step.expectedResolutionDate || 'N/A'}</span></p>
-            <p class="text-sm text-gray-700">Verification Status: <span class="font-medium">${step.verificationStatus || 'N/A'}</span></p>
-            <p class="text-sm text-gray-700">Comment by Verifier: <span class="font-medium">${step.commentByVerifier || 'N/A'}</span></p>
-        `;
-        workflowStepsEl.appendChild(stepEl);
-    });
-    surrenderWorkflowModal.style.display = 'flex';
-}
-window.closeWorkflowModal = function() { surrenderWorkflowModal.style.display = 'none'; }
-
-window.openClaimFormModal = function(policyId) {
-    const selectedPolicy = mockAllPolicies.find(p => p.policyNumber === policyId);
-    if (!selectedPolicy) {
-        showCustomError('Policy not found for claim.');
-        return;
-    }
-
-    currentClaimPolicyId = policyId;
-    document.getElementById('claim-policy-id').textContent = selectedPolicy.policyNumber;
-    document.getElementById('claim-policy-name').textContent = selectedPolicy.policyName;
-    document.getElementById('claim-type-dropdown').value = '';
-    document.getElementById('claim-description').value = '';
-    document.getElementById('verification-doc-upload').value = '';
-    document.getElementById('passbook-upload').value = '';
-    document.getElementById('id-proof-upload').value = '';
-    document.getElementById('other-docs-upload').value = '';
-    submitClaimModal.style.display = 'flex';
-}
-window.closeSubmitClaimModal = function() {
-    submitClaimModal.style.display = 'none';
-    document.getElementById('claim-type-dropdown').value = '';
-    document.getElementById('claim-description').value = '';
-    document.getElementById('verification-doc-upload').value = '';
-    document.getElementById('passbook-upload').value = '';
-    document.getElementById('id-proof-upload').value = '';
-    document.getElementById('other-docs-upload').value = '';
-    currentClaimPolicyId = null;
-}
 window.confirmClaimSubmission = function() {
     const claimType = document.getElementById('claim-type-dropdown').value;
-    const description = document.getElementById('claim-description').value.trim();
+    const description = document.getElementById('claim-description').value;
+    const selectedAccountNo = document.getElementById('claim-bank-account-dropdown').value;
     const verificationDoc = document.getElementById('verification-doc-upload').files[0];
-    const passbook = document.getElementById('passbook-upload').files[0];
-    const idProof = document.getElementById('id-proof-upload').files[0];
-    
-    if (!claimType || !description || !verificationDoc || !passbook || !idProof) {
-        showCustomError('Missing Information', 'Please fill all required fields and upload all documents.');
+    const passbookDoc = document.getElementById('passbook-upload').files[0];
+    const idProofDoc = document.getElementById('id-proof-upload').files[0];
+    const otherDocs = Array.from(document.getElementById('other-docs-upload').files);
+
+    if (!claimType || !description || !selectedAccountNo || !verificationDoc || !passbookDoc || !idProofDoc) {
+        window.showCustomError('Missing Information', 'Please fill in all required fields and upload all mandatory documents.');
         return;
     }
 
-    const isFraudulent = description.toLowerCase().includes('fraud') || description.toLowerCase().includes('unusual');
-    
-    if (isFraudulent) {
-        tempClaimData = { claimType, description };
-        closeSubmitClaimModal();
-        fraudWarningModal.style.display = 'flex';
-    } else {
-        tempClaimData = { claimType, description };
-        closeSubmitClaimModal();
-        confirmClaimModal.style.display = 'flex';
-    }
-}
-window.submitClaimRequest = function(isFraudulent = false) {
-    const { claimType, description } = tempClaimData;
-    const newClaimId = 'CLM-' + (mockClaims.length + 1).toString().padStart(3, '0');
-    const policyAffected = mockAllPolicies.find(p => p.policyNumber === currentClaimPolicyId);
-    const newClaim = {
-        id: newClaimId,
-        policyId: currentClaimPolicyId,
-        policyName: policyAffected ? policyAffected.policyName : 'Unknown Policy',
-        requestDate: new Date().toISOString().slice(0, 10),
-        status: 'pending',
-        claimType: claimType,
-        description: description,
-        workflow: [
-            { step: 'Claim Submitted', date: new Date().toISOString().slice(0, 10), status: 'completed', stage: 'Submission', pendingWithTeam: 'Customer Service', comment: 'Claim form received.', expectedResolutionDate: 'N/A' },
-            { step: 'Initial Review', date: 'N/A', status: 'in-progress', stage: 'Evaluation', pendingWithTeam: 'Claims Department', comment: 'Claim under initial review.', expectedResolutionDate: '3 business days' }
-        ]
+    tempClaimData = {
+        claimType,
+        description,
+        selectedAccountNo,
+        docs: {
+            verificationDoc,
+            passbookDoc,
+            idProofDoc,
+            otherDocs
+        }
     };
-    mockClaims.unshift(newClaim);
 
-    if (policyAffected) {
-        policyAffected.policyStatus = 'claimed';
-        policyAffected.status = 'claimed';
+    // Simple fraud check example: if description contains "fraud" or "fake"
+    if (description.toLowerCase().includes('fraud') || description.toLowerCase().includes('fake')) {
+        show(fraudWarningModal);
+    } else {
+        show(confirmClaimModal);
+    }
+};
+
+window.submitClaimRequest = async function(bypassFraudWarning = false) {
+    showLoader();
+    if (!bypassFraudWarning) {
+        hide(confirmClaimModal); // Hide confirmation modal
+    } else {
+        hide(fraudWarningModal); // Hide fraud warning modal
     }
 
-    renderClaims();
-    closeConfirmClaimModal();
-    closeFraudWarningModal();
-    showCustomAlert(`Claim ${newClaimId} has been submitted for policy ${currentClaimPolicyId}.`);
-}
-window.closeConfirmClaimModal = function() {
-    confirmClaimModal.style.display = 'none';
-    openClaimFormModal(currentClaimPolicyId);
-}
-window.closeFraudWarningModal = function() {
-    fraudWarningModal.style.display = 'none';
-    openClaimFormModal(currentClaimPolicyId);
-}
+    // Retrieve the full policy object from session storage
+    const policyAffected = JSON.parse(sessionStorage.getItem('selectedPolicyForAction'));
 
-window.showClaimWorkflow = function(claimId) {
-    const claim = mockClaims.find(c => c.id === claimId);
-    if (!claim || !claim.workflow) {
-        document.getElementById('claim-workflow-steps').innerHTML = '<p class="text-center text-gray-500">No detailed workflow found for this claim.</p>';
-        claimWorkflowModal.style.display = 'flex';
+    if (!policyAffected || !policyAffected.policyNumber) {
+        window.showCustomError('Error', 'No policy selected for claim or policy data is incomplete.');
+        hideLoader();
         return;
     }
 
-    const workflowStepsEl = document.getElementById('claim-workflow-steps');
-    workflowStepsEl.innerHTML = '';
-    
-    claim.workflow.forEach((step, index) => {
-        const statusInfo = getStatusInfo(step.status);
-        const stepEl = document.createElement('div');
-        const statusClass = `status-${step.status.replace(/\s+/g, '-').toLowerCase()}`;
-        stepEl.className = `workflow-detail-item ${statusClass}`;
-        
-        stepEl.innerHTML = `
-            <h4 class="font-semibold text-gray-900">${step.step} <span class="text-sm font-normal text-gray-600">(${step.stage})</span></h4>
-            <p class="text-sm text-gray-700 mt-1">Status: <span class="font-medium">${statusInfo.text}</span></p>
-            <p class="text-sm text-gray-700">Date: <span class="font-medium">${step.date}</span></p>
-            <p class="text-sm text-gray-700">Pending With: <span class="font-medium">${step.pendingWithTeam}</span></p>
-            <p class="text-sm text-gray-700">Comment: <span class="font-medium">${step.comment || 'N/A'}</span></p>
-            <p class="text-sm text-gray-700">Expected Resolution: <span class="font-medium">${step.expectedResolutionDate || 'N/A'}</span></p>
-        `;
-        workflowStepsEl.appendChild(stepEl);
-    });
-    claimWorkflowModal.style.display = 'flex';
-}
-window.closeClaimWorkflowModal = function() { claimWorkflowModal.style.display = 'none'; }
+    const { claimType, description, selectedAccountNo, docs } = tempClaimData;
+
+    const verificationDocBase64 = await fileToBase64(docs.verificationDoc);
+    const passbookDocBase64 = await fileToBase64(docs.passbookDoc);
+    const idProofDocBase64 = await fileToBase64(docs.idProofDoc);
+    const otherDocsBase64 = await Promise.all(docs.otherDocs.map(file => fileToBase64(file)));
+
+    const payload = {
+        action: "CLAIM", // Add action field
+        policyNo: policyAffected.policyNumber, 
+        customerNo: config.customerNo,
+        claimType: claimType,
+        claimReason: description, 
+        bankAccNo: selectedAccountNo,
+        verificationDocument: verificationDocBase64,
+        verificationDocumentName: docs.verificationDoc?.name || null,
+        bankPassbookDocument: passbookDocBase64,
+        bankPassbookDocumentName: docs.passbookDoc?.name || null,
+        idProofDocument: idProofDocBase64,
+        idProofDocumentName: docs.idProofDoc?.name || null,
+        otherSupportingDocument: otherDocsBase64.length > 0 ? otherDocsBase64[0] : null, 
+        otherSupportingDocumentName: otherDocsBase64.length > 0 ? docs.otherDocs[0]?.name : null,
+        claimBy: config.userCode
+    };
+
+    const apiUrl = 'http://localhost:8081/policy/claim'; // Existing API endpoint
+    const headers = {
+        'Content-Type': 'application/json',
+        'userCode': config.userCode || '', 
+        'customerNo': config.customerNo || '' 
+    };
+
+    console.log('Claim Request Payload:', payload);
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        console.log('Claim API Response:', result);
+
+        if (response.ok && result.status === 'Success') {
+            window.showCustomAlert('Claim Submitted', result.message || 'Your claim has been submitted successfully!');
+            hide(submitClaimModal);
+            // Re-fetch ALL policy data to update claims list in main view
+            await fetchAllPoliciesAndRender(
+                config.customerNo, 
+                policySearchInput.value, 
+                currentPagePolicies, 
+                itemsPerPage,
+                filterStatusSelect.value, 
+                filterTypeSelect.value, 
+                sortDateTypeSelect.value
+            ); 
+        } else {
+            window.showCustomError('Submission Failed', result.errorMessage || 'Failed to submit claim. Please try again.');
+        }
+    } catch (error) {
+        console.error('Network error during claim submission:', error);
+        window.showCustomError('Network Error', `Could not connect to the server. Please try again: ${error.message}`);
+    } finally {
+        hideLoader();
+        tempClaimData = { claimType: '', description: '', docs: {}, selectedAccountNo: null }; // Clear temp data
+    }
+};
 
 window.openCancelClaimModal = function(claimId) {
     currentCancellationClaimId = claimId;
-    cancelClaimModal.style.display = 'flex';
-}
-window.closeCancelClaimModal = function() {
-    cancelClaimModal.style.display = 'none';
-    document.getElementById('cancel-claim-reason').value = '';
-    currentCancellationClaimId = null;
-}
-window.submitClaimCancellation = function() {
-    const reason = document.getElementById('cancel-claim-reason').value.trim();
-    if (!reason) { showCustomError('Reason Required', 'Please provide a reason for cancellation.'); return; }
-    const claim = mockClaims.find(c => c.id === currentCancellationClaimId);
-    if (claim) {
-        claim.status = 'canceled';
-        claim.cancellationReason = reason;
-        claim.workflow.push({ step: 'Claim Canceled', date: new Date().toISOString().slice(0, 10), status: 'canceled', stage: 'Cancellation', pendingWithTeam: 'N/A', comment: reason, expectedResolutionDate: 'N/A' });
-        
-        const policyAffected = mockAllPolicies.find(p => p.policyNumber === claim.policyId);
-        if (policyAffected && policyAffected.policyStatus === 'claimed') {
-            policyAffected.policyStatus = 'Active';
-            policyAffected.status = 'Active';
-        }
+    show(cancelClaimModal);
+};
 
-        renderClaims();
-        showCustomAlert(`Claim ${currentCancellationClaimId} has been successfully canceled.`);
-    }
-    closeCancelClaimModal();
-}
+window.submitClaimCancellation = async function() {
+    showLoader();
+    hide(cancelClaimModal);
+    const reason = document.getElementById('cancel-claim-reason').value;
 
-window.openFilterModal = function() { filterModal.style.display = 'flex'; }
-window.closeFilterModal = function() { filterModal.style.display = 'none'; }
-window.applyFilters = function() {
-    if (activeTab === 'surrender') {
-        currentPageSurrenderPolicies = 1;
-        renderSurrenderPolicies();
-        currentPageRequests = 1;
-        renderRequests();
-    } else if (activeTab === 'claim') {
-        currentPageClaimPolicies = 1;
-        renderClaimPolicies();
-        currentPageClaims = 1;
-        renderClaims();
-    } else if (activeTab === 'history') {
-        currentPageHistory = 1;
-        renderHistoryContent(activeHistoryFilter);
-    }
-    closeFilterModal();
-}
-
-window.renderHistoryContent = function(filterType) {
-    const historyContent = document.getElementById('history-content-grid');
-    historyContent.innerHTML = '';
-
-    let policiesToDisplay = [...mockAllPolicies];
-
-    if (filterType !== 'all') {
-        policiesToDisplay = policiesToDisplay.filter(policy => {
-            switch(filterType) {
-                case 'active': return policy.status === 'Active';
-                case 'closed': return policy.status === 'Closed';
-                case 'surrendered': return policy.status === 'surrendered';
-                case 'canceled_surrender': return policy.status === 'canceled_surrender';
-                case 'claimed': return policy.status === 'claimed';
-                case 'claim_canceled': return policy.status === 'claim_canceled';
-                default: return true;
-            }
-        });
-    }
-    
-    policiesToDisplay.sort((a, b) => a.policyNumber.localeCompare(b.policyNumber));
-
-    if (policiesToDisplay.length === 0) {
-        historyContent.innerHTML = `<p class="text-center text-gray-500 py-8 col-span-full">No ${filterType !== 'all' ? filterType.replace('_', ' ') : ''} policies found.</p>`;
-        document.getElementById('history-pagination').innerHTML = '';
+    if (!reason) {
+        window.showCustomError('Missing Reason', 'Please provide a reason for cancellation.');
+        hideLoader();
         return;
     }
 
-    const startIndex = (currentPageHistory - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const policiesOnPage = policiesToDisplay.slice(startIndex, endIndex);
+    const payload = {
+        claimRefNo: currentCancellationClaimId,
+        claimReason: reason, 
+        claimStatus: 'Canceled', 
+        claimBy: config.userCode 
+    };
 
-    policiesOnPage.forEach(pol => {
-        const statusInfo = getStatusInfo(pol.status);
-        const card = document.createElement('div');
-        card.className = 'clickable-card';
-        card.onclick = () => openPolicyDetailsModal(pol.policyNumber); 
-        card.innerHTML = `
-            <div class="flex items-center justify-between">
-                <h3 class="text-base font-bold">${pol.policyName}</h3>
-                <span class="text-xs font-medium">${pol.policyNumber}</span>
-            </div>
-            <div class="mt-2 text-sm">
-                <p>Type: <span class="font-medium">${pol.policyType}</span></p>
-                <p>Value: <span class="font-medium">₹${pol.coverageAmount.toLocaleString()}</span></p>
-                <p>Status: <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusInfo.bgClass} ${statusInfo.textClass}">${statusInfo.text}</span></p>
-            </div>
-            <div class="mt-4 text-right">
-                <button onclick="event.stopPropagation(); openPolicyDetailsModal('${pol.policyNumber}')" class="px-4 py-2 text-sm rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors">View Details</button>
-            </div>
-        `;
-        historyContent.appendChild(card);
-    });
+    const apiUrl = `http://localhost:8081/policy/cancelClaim`; 
+    const headers = {
+        'Content-Type': 'application/json',
+        'userCode': config.userCode || '', 
+        'customerNo': config.customerNo || '' 
+    };
 
-    renderPagination(document.getElementById('history-pagination'), policiesToDisplay.length, currentPageHistory, page => {
-        currentPageHistory = page;
-        renderHistoryContent(activeHistoryFilter);
-    });
-}
+    console.log('Claim Cancellation Request Payload:', payload);
 
-window.showHistoryTab = function(tabName) {
-    activeHistoryFilter = tabName;
-    const historyTabButtons = document.querySelectorAll('.history-tabs .tab-button');
-    historyTabButtons.forEach(btn => {
-        btn.classList.remove('active');
-    });
-    const targetHistoryBtn = document.getElementById(`history-${tabName}-tab-btn`);
-    if (targetHistoryBtn) {
-        targetHistoryBtn.classList.add('active');
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        console.log('Claim Cancellation API Response:', result);
+
+        if (response.ok && result.status === 'Success') {
+            window.showCustomAlert('Claim Cancellation Successful', result.message || 'Claim request has been canceled.');
+            // Re-fetch ALL policy data to update claims list in main view
+            await fetchAllPoliciesAndRender(
+                config.customerNo, 
+                policySearchInput.value, 
+                currentPagePolicies, 
+                itemsPerPage,
+                filterStatusSelect.value, 
+                filterTypeSelect.value, 
+                sortDateTypeSelect.value
+            ); 
+        } else {
+            window.showCustomError('Cancellation Failed', result.errorMessage || 'Failed to cancel claim request.');
+        }
+    } catch (error) {
+        console.error('Network error during claim cancellation:', error);
+        window.showCustomError('Network Error', `Could not connect to the server. Please try again: ${error.message}`);
+    } finally {
+        hideLoader();
+        currentCancellationClaimId = null; // Clear ID
     }
-    currentPageHistory = 1;
-    renderHistoryContent(tabName);
-}
+};
 
-document.addEventListener('DOMContentLoaded', () => {
-    initializeModals();
+document.addEventListener('DOMContentLoaded', async () => {
+    // Assign DOM elements
+    mainTitleEl = document.getElementById('main-title');
+    policiesTabBtn = document.getElementById('policies-tab-btn'); 
+    workflowTabBtn = document.getElementById('workflow-tab-btn'); 
+    policiesContentEl = document.getElementById('policies-content'); 
+    workflowContentEl = document.getElementById('workflow-content'); // New workflow content div
+
+    policySearchInput = document.getElementById('policy-search');
+    filterStatusSelect = document.getElementById('filter-status');
+    sortDateTypeSelect = document.getElementById('sort-date-type');
+    filterTypeSelect = document.getElementById('filter-type'); // Assigned new filter type select
     
-    config.userCode = getuserCode();
-    if (!config.userCode) return;
+    policyListEl = document.getElementById('policy-list'); 
+    policyCountEl = document.getElementById('policy-count'); 
+    policyPaginationEl = document.getElementById('policy-pagination'); 
+    
+    combinedWorkflowListEl = document.getElementById('combined-workflow-list'); // New combined list
+    workflowPaginationEl = document.getElementById('workflow-pagination'); // New combined pagination
 
+    // Re-assign specific workflow filter buttons based on new structure (no 'all' button)
+    workflowSurrenderRequestsTabBtn = document.getElementById('workflow-surrender-requests-tab-btn');
+    workflowClaimsTabBtn = document.getElementById('workflow-claims-tab-btn');
+    workflowOngoingTabBtn = document.getElementById('workflow-ongoing-tab-btn');
+    workflowCompletedTabBtn = document.getElementById('workflow-completed-tab-btn');
+    workflowCanceledTabBtn = document.getElementById('workflow-canceled-tab-btn');
+    workflowRejectedTabBtn = document.getElementById('workflow-rejected-tab-btn');
+
+    workflowSearchInput = document.getElementById('workflow-search-input'); // New workflow search input
+    workflowSearchBySelect = document.getElementById('workflow-search-by'); // New workflow search by select
+
+    loaderEl = document.getElementById('loader');
+
+    // Initialize modals properly via initializeModals function call
+    initializeModals();
+
+    profileUserCodeDisplayEl = document.getElementById('profile-user-code-display');
+    profileCustomerNoDisplayEl = document.getElementById('profile-customer-no-display');
+
+    surrenderPolicyCoverageAmountEl = document.getElementById('surrender-policy-coverage-amount');
+    surrenderTotalClaimableAmountEl = document.getElementById('surrender-total-claimable-amount');
+    surrenderTotalAmountEl = document.getElementById('surrender-total-amount');
+    surrenderMonthlyInstallmentEl = document.getElementById('surrender-monthly-installment');
+    surrenderTotalInstallmentsPaidEl = document.getElementById('surrender-total-installments-paid');
+    surrenderTotalInstallmentsUnpaidEl = document.getElementById('surrender-total-installments-unpaid');
+    surrenderBankAccountDropdown = document.getElementById('surrender-bank-account-dropdown');
+
+    claimPolicyCoverageAmountEl = document.getElementById('claim-policy-coverage-amount');
+    claimTotalClaimableAmountEl = document.getElementById('claim-total-claimable-amount');
+    claimTotalAmountEl = document.getElementById('claim-total-amount');
+    claimMonthlyInstallmentEl = document.getElementById('claim-monthly-installment');
+    claimBankAccountDropdown = document.getElementById('claim-bank-account-dropdown');
+
+
+    getuserCodeAndCustomerNo(); // Populate user code and customer no from session storage
+
+    // Check URL parameters for customerNo and policyNo
+    const urlParams = new URLSearchParams(window.location.search);
+    const customerNoFromUrl = urlParams.get('customerNo');
+    const policyNoFromUrl = urlParams.get('policyNo');
+    const workItemRefNoFromUrl = urlParams.get('workItemRefNo'); // For manage workitems redirect
+
+    if (customerNoFromUrl) {
+        config.customerNo = customerNoFromUrl;
+        sessionStorage.setItem('customerNo', customerNoFromUrl);
+    }
+
+    if (policyNoFromUrl) {
+        config.policyNoFromUrl = policyNoFromUrl;
+        // Pre-fill search input if policy number is from URL
+        if (policySearchInput) policySearchInput.value = policyNoFromUrl;
+    }
+
+    // Initial fetch of policy data based on URL or general customer policies
+    if (config.policyNoFromUrl && !workItemRefNoFromUrl) {
+        // If a specific policy number is in the URL, fetch its details and show the modal
+        const fetchedPolicy = await fetchSinglePolicyDetails(config.customerNo, config.policyNoFromUrl);
+        if (fetchedPolicy) {
+             window.openPolicyDetailsModal(config.policyNoFromUrl);
+        }
+        await fetchAllPoliciesAndRender(config.customerNo, null, 0); // Also fetch all policies for the main list
+        window.showPrimaryTab('policies');
+    } else {
+        await fetchAllPoliciesAndRender(config.customerNo, policyNoFromUrl, 0); // Always fetch all policies for the main list and workflow data
+        window.showPrimaryTab('policies'); // Default to policies tab
+    }
+    
+    // Sidebar toggle functionality
     const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('main-content');
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    const mainContent = document.getElementById('main-content');
 
+    // Ensure sidebar is collapsed by default on page load for consistency
     sidebar.classList.remove('expanded');
     mainContent.style.marginLeft = '5rem';
 
@@ -1960,36 +2375,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Logout button listeners
     document.getElementById('btn-logout-header').addEventListener('click', logout);
     document.getElementById('btn-logout-sidebar').addEventListener('click', logout);
-    document.getElementById('send-profile-email-btn').addEventListener('click', window.sendProfileEmail);
 
+    // Main Policy Search and Filter Listeners
     policySearchInput.addEventListener('input', () => { 
-        if (activeTab === 'surrender') {
-            currentPageSurrenderPolicies = 1;
-            renderSurrenderPolicies();
-            currentPageRequests = 1;
-            renderRequests();
-        } else if (activeTab === 'claim') {
-            currentPageClaimPolicies = 1;
-            renderClaimPolicies();
-            currentPageClaims = 1;
-            renderClaims();
-        } else if (activeTab === 'history') {
-            currentPageHistory = 1;
-            renderHistoryContent(activeHistoryFilter);
-        }
+        // Reset page to 0 on new search input
+        currentPagePolicies = 0;
+        // Re-fetch data based on current filters and search term
+        fetchAllPoliciesAndRender(
+            config.customerNo, 
+            policySearchInput.value, 
+            currentPagePolicies, 
+            itemsPerPage,
+            filterStatusSelect.value, 
+            filterTypeSelect.value, 
+            sortDateTypeSelect.value
+        ); 
     });
 
     filterStatusSelect.addEventListener('change', () => {
-        applyFilters();
+        applyFilters(); // Apply all filters
+    });
+
+    filterTypeSelect.addEventListener('change', () => {
+        applyFilters(); // Apply all filters
     });
 
     sortDateTypeSelect.addEventListener('change', () => {
-        applyFilters();
+        applyFilters(); // Apply all filters
     });
-    
-    showTab('surrender');
+
+    // Workflow Tab Specific Search Listener
+    workflowSearchInput.addEventListener('input', () => {
+        currentPageWorkflow = 0; // Reset pagination for workflow search
+        renderWorkflowContent(activeWorkflowFilter); // Re-render workflow content with new search
+    });
+
+    workflowSearchBySelect.addEventListener('change', () => {
+        currentPageWorkflow = 0; // Reset pagination for workflow search
+        renderWorkflowContent(activeWorkflowFilter); // Re-render workflow content with new search by field
+    });
 });
 </script>
 </body>

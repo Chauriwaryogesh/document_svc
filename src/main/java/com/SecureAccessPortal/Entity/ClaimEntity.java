@@ -1,0 +1,255 @@
+package com.SecureAccessPortal.Entity;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "CLAIM_POLICY")
+public class ClaimEntity {
+
+	@Id
+	@Column
+	private String claimRefNo;
+
+	@Column
+	private String claimStatus;
+
+	@Column
+	private String claimAmount;
+
+	@Column
+	private String claimBy;
+
+	@Column
+	private String claimReason;
+
+	@Column
+	private LocalDateTime claimDate;
+
+	@Column
+	private String createdBy;
+	@Column
+	private LocalDateTime createdDate;
+	@Column
+	private String updatedBy;
+	@Column
+	private LocalDateTime updatedDate;
+	@Column
+	private String deletedFlag;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "policyNumber", referencedColumnName = "policyNumber")
+	private Policy policy;
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "payment_id", referencedColumnName = "payment_id", insertable = false, updatable = false)
+	private Payments payments;
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "accountNo", referencedColumnName = "accountNo", insertable = false, updatable = false)
+	private BankAccount bankAccount;
+	@Lob
+	@Column(columnDefinition = "LONGBLOB")
+	private byte[] verificationDocument;
+	@Column
+	private String verificationDocumentName;
+	@Column
+	private String verificationStatus;
+	@Column
+	private String verificationComment;
+	@OneToMany(mappedBy = "claimEntity", fetch = FetchType.LAZY)
+	private List<SurrenderWorkflowStep> surrenderWorkflowStep;
+	
+	@Lob
+	@Column(columnDefinition = "LONGBLOB")
+	private byte[] otherSupportingDocument;
+	@Column
+	private String otherSupportingDocumentName;
+	@Column
+	private String otherSupportingDocumentVerificationStatus;
+
+	public List<SurrenderWorkflowStep> getSurrenderWorkflowStep() {
+		return surrenderWorkflowStep;
+	}
+
+	public void setSurrenderWorkflowStep(List<SurrenderWorkflowStep> surrenderWorkflowStep) {
+		this.surrenderWorkflowStep = surrenderWorkflowStep;
+	}
+
+	public byte[] getOtherSupportingDocument() {
+		return otherSupportingDocument;
+	}
+
+	public void setOtherSupportingDocument(byte[] otherSupportingDocument) {
+		this.otherSupportingDocument = otherSupportingDocument;
+	}
+
+	public String getOtherSupportingDocumentName() {
+		return otherSupportingDocumentName;
+	}
+
+	public void setOtherSupportingDocumentName(String otherSupportingDocumentName) {
+		this.otherSupportingDocumentName = otherSupportingDocumentName;
+	}
+
+	public String getOtherSupportingDocumentVerificationStatus() {
+		return otherSupportingDocumentVerificationStatus;
+	}
+
+	public void setOtherSupportingDocumentVerificationStatus(String otherSupportingDocumentVerificationStatus) {
+		this.otherSupportingDocumentVerificationStatus = otherSupportingDocumentVerificationStatus;
+	}
+
+	public Payments getPayments() {
+		return payments;
+	}
+
+	public void setPayments(Payments payments) {
+		this.payments = payments;
+	}
+
+	public BankAccount getBankAccount() {
+		return bankAccount;
+	}
+
+	public void setBankAccount(BankAccount bankAccount) {
+		this.bankAccount = bankAccount;
+	}
+
+	public String getVerificationComment() {
+		return verificationComment;
+	}
+
+	public void setVerificationComment(String verificationComment) {
+		this.verificationComment = verificationComment;
+	}
+
+	public byte[] getVerificationDocument() {
+		return verificationDocument;
+	}
+
+	public void setVerificationDocument(byte[] verificationDocument) {
+		this.verificationDocument = verificationDocument;
+	}
+
+	public String getVerificationDocumentName() {
+		return verificationDocumentName;
+	}
+
+	public void setVerificationDocumentName(String verificationDocumentName) {
+		this.verificationDocumentName = verificationDocumentName;
+	}
+
+	public String getVerificationStatus() {
+		return verificationStatus;
+	}
+
+	public void setVerificationStatus(String verificationStatus) {
+		this.verificationStatus = verificationStatus;
+	}
+
+	public String getClaimBy() {
+		return claimBy;
+	}
+
+	public void setClaimBy(String claimBy) {
+		this.claimBy = claimBy;
+	}
+
+	public String getClaimReason() {
+		return claimReason;
+	}
+
+	public void setClaimReason(String claimReason) {
+		this.claimReason = claimReason;
+	}
+
+	public String getClaimRefNo() {
+		return claimRefNo;
+	}
+
+	public void setClaimRefNo(String claimRefNo) {
+		this.claimRefNo = claimRefNo;
+	}
+
+	public String getClaimStatus() {
+		return claimStatus;
+	}
+
+	public void setClaimStatus(String claimStatus) {
+		this.claimStatus = claimStatus;
+	}
+
+	public String getClaimAmount() {
+		return claimAmount;
+	}
+
+	public void setClaimAmount(String claimAmount) {
+		this.claimAmount = claimAmount;
+	}
+
+	public LocalDateTime getClaimDate() {
+		return claimDate;
+	}
+
+	public void setClaimDate(LocalDateTime claimDate) {
+		this.claimDate = claimDate;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(LocalDateTime createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+
+	public LocalDateTime getUpdatedDate() {
+		return updatedDate;
+	}
+
+	public void setUpdatedDate(LocalDateTime updatedDate) {
+		this.updatedDate = updatedDate;
+	}
+
+	public String getDeletedFlag() {
+		return deletedFlag;
+	}
+
+	public void setDeletedFlag(String deletedFlag) {
+		this.deletedFlag = deletedFlag;
+	}
+
+	public Policy getPolicy() {
+		return policy;
+	}
+
+	public void setPolicy(Policy policy) {
+		this.policy = policy;
+	}
+
+}

@@ -53,6 +53,10 @@ public class CommonConstant {
 	public static final String PAYMENT = "PAYMENT";
 	public static final String CREATE = "CREATE";
 	public static final String UPDATE = "UPDATE";
+	public static final String UNPAID = "Unpaid";
+	public static final String PAID = "Paid";
+	public static final String SURRENDER = "SURRENDER";
+	public static final String CLAIM = "CLAIM";
 	
 
 }

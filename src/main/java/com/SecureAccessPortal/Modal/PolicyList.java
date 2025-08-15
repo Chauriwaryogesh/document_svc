@@ -43,29 +43,24 @@ public class PolicyList {
 	private BigDecimal premium;
 	private int totalAmount;
 	private int monthlyInstallment;
-	private int totalClaimableAmount;
 	private String startDate;
 	private String endDate;
 	private String beneficiaryAadharNumber;
 	private String nomineeContactNumber;
 	private String status;
 	private String type;
+	private String reson;
 
-	public List<PaymentList> getPaymentListDTO() {
-		return paymentListDTO;
-	}
+	// for Surrener claim
+	private int totalInstallments;
+	private int totalInstallmentsPaid;
+	private int totalInstallmentsUnPaid;
+	private int totalClaimableAmount;
+	private String totalAmtPaidByInstallemt;
+	private String totalAmtUnPaidByInstallemt;
 
-	public void setPaymentListDTO(List<PaymentList> paymentListDTO) {
-		this.paymentListDTO = paymentListDTO;
-	}
-
-	public BigDecimal getPremium() {
-		return premium;
-	}
-
-	public void setPremium(BigDecimal premium) {
-		this.premium = premium;
-	}
+	private List<SurrenderClaimDTO> surrenderDTO;
+	private List<SurrenderClaimDTO> claimDTO;
 
 	public Long getId() {
 		return id;
@@ -89,6 +84,14 @@ public class PolicyList {
 
 	public void setBankAccounts(List<BankAccountDTO> bankAccounts) {
 		this.bankAccounts = bankAccounts;
+	}
+
+	public List<PaymentList> getPaymentListDTO() {
+		return paymentListDTO;
+	}
+
+	public void setPaymentListDTO(List<PaymentList> paymentListDTO) {
+		this.paymentListDTO = paymentListDTO;
 	}
 
 	public String getCreatedDate() {
@@ -323,6 +326,14 @@ public class PolicyList {
 		this.frequency = frequency;
 	}
 
+	public BigDecimal getPremium() {
+		return premium;
+	}
+
+	public void setPremium(BigDecimal premium) {
+		this.premium = premium;
+	}
+
 	public int getTotalAmount() {
 		return totalAmount;
 	}
@@ -337,14 +348,6 @@ public class PolicyList {
 
 	public void setMonthlyInstallment(int monthlyInstallment) {
 		this.monthlyInstallment = monthlyInstallment;
-	}
-
-	public int getTotalClaimableAmount() {
-		return totalClaimableAmount;
-	}
-
-	public void setTotalClaimableAmount(int totalClaimableAmount) {
-		this.totalClaimableAmount = totalClaimableAmount;
 	}
 
 	public String getStartDate() {
@@ -393,6 +396,78 @@ public class PolicyList {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getReson() {
+		return reson;
+	}
+
+	public void setReson(String reson) {
+		this.reson = reson;
+	}
+
+	public int getTotalInstallments() {
+		return totalInstallments;
+	}
+
+	public void setTotalInstallments(int totalInstallments) {
+		this.totalInstallments = totalInstallments;
+	}
+
+	public int getTotalInstallmentsPaid() {
+		return totalInstallmentsPaid;
+	}
+
+	public void setTotalInstallmentsPaid(int totalInstallmentsPaid) {
+		this.totalInstallmentsPaid = totalInstallmentsPaid;
+	}
+
+	public int getTotalInstallmentsUnPaid() {
+		return totalInstallmentsUnPaid;
+	}
+
+	public void setTotalInstallmentsUnPaid(int totalInstallmentsUnPaid) {
+		this.totalInstallmentsUnPaid = totalInstallmentsUnPaid;
+	}
+
+	public int getTotalClaimableAmount() {
+		return totalClaimableAmount;
+	}
+
+	public void setTotalClaimableAmount(int totalClaimableAmount) {
+		this.totalClaimableAmount = totalClaimableAmount;
+	}
+
+	public String getTotalAmtPaidByInstallemt() {
+		return totalAmtPaidByInstallemt;
+	}
+
+	public void setTotalAmtPaidByInstallemt(String totalAmtPaidByInstallemt) {
+		this.totalAmtPaidByInstallemt = totalAmtPaidByInstallemt;
+	}
+
+	public String getTotalAmtUnPaidByInstallemt() {
+		return totalAmtUnPaidByInstallemt;
+	}
+
+	public void setTotalAmtUnPaidByInstallemt(String totalAmtUnPaidByInstallemt) {
+		this.totalAmtUnPaidByInstallemt = totalAmtUnPaidByInstallemt;
+	}
+
+	public List<SurrenderClaimDTO> getSurrenderDTO() {
+		return surrenderDTO;
+	}
+
+	public void setSurrenderDTO(List<SurrenderClaimDTO> surrenderDTO) {
+		this.surrenderDTO = surrenderDTO;
+	}
+
+	public List<SurrenderClaimDTO> getClaimDTO() {
+		return claimDTO;
+	}
+
+	public void setClaimDTO(List<SurrenderClaimDTO> claimDTO) {
+		this.claimDTO = claimDTO;
 	}
 
 }

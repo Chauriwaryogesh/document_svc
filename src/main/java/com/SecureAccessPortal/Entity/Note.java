@@ -21,6 +21,13 @@ public class Note {
 	private String priority;
 	private String relatedTo;
 	private String customerNo;
+	@Lob
+	@Column(columnDefinition = "LONGBLOB")
+	private byte[] attachment;
+
+	private String docName;
+	private String docType;
+	private boolean deleted;
 
 //	@ManyToOne(fetch = FetchType.LAZY)
 //	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
@@ -58,13 +65,7 @@ public class Note {
 		this.updatedBy = updatedBy;
 	}
 
-	@Lob
-	@Column(columnDefinition = "LONGBLOB")
-	private byte[] attachment;
-
-	private String docName;
-	private String docType;
-	private boolean deleted;
+	
 
 	public String getId() {
 		return id;

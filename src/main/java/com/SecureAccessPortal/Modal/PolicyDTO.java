@@ -3,13 +3,13 @@ package com.SecureAccessPortal.Modal;
 import java.util.List;
 
 public class PolicyDTO {
-	private String associatedPolicyCount; // Renamed to camelCase
+	private String associatedPolicyCount;
 	private String userCode;
 	private String customerNo;
-	private String customerName; // Renamed to camelCase
+	private String customerName; 
 	private String middleName;
 	private String surname;
-	private String phoneNumber; // Renamed to camelCase
+	private String phoneNumber;
 	private String email;
 	private String dateOfBirth;
 	private String gender;

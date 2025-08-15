@@ -4,19 +4,24 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.BankAccount;
+import com.SecureAccessPortal.Entity.ClaimEntity;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Policy;
+import com.SecureAccessPortal.Entity.SurrenderEntity;
 import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.BankAccountDTO;
 import com.SecureAccessPortal.Modal.PolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyList;
+import com.SecureAccessPortal.Modal.SurrenderClaimDTO;
 import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Service.ResponseEntity;
 
@@ -159,6 +164,74 @@ public class PolicyMapper {
 				bankAccount.getLinkedPaymentMethod() != null ? bankAccount.getLinkedPaymentMethod() : "");
 		dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
 		return dto;
+	}
+
+	public Page<SurrenderClaimDTO> mapClaimSurreResponse(Page<SurrenderEntity> surrenderEntity) {
+		Page<SurrenderClaimDTO> response = null;
+		if (Objects.nonNull(surrenderEntity)) {
+			response = surrenderEntity.map(surr -> {
+				SurrenderClaimDTO surrender = new SurrenderClaimDTO();
+				surrender.setCustomerName(surr.getPolicy().getCustomer().getName());
+				surrender.setCustomerNo(surr.getPolicy().getCustomer().getCustomerNo());
+				surrender.setPolicyNo(surr.getPolicy().getPolicyNumber());
+				surrender.setOtherSupportingDocument(String.valueOf(surr.getOtherSupportingDocument()));
+				surrender.setOtherSupportingDocumentName(surr.getOtherSupportingDocumentName());
+				surrender.setOtherSupportingDocumentVerificationStatus(
+						surr.getOtherSupportingDocumentVerificationStatus());
+				if(surr.getPayments() != null) {
+					surrender.setPaymentDate(String.valueOf(surr.getPayments().getPaymentDate()));
+					surrender.setPaymentId(surr.getPayments().getPaymentId());
+					surrender.setPaymentStatus(surr.getPayments().getStatus());
+					surrender.setPaymentTransId(surr.getPayments().getTransactionId());	
+					surrender.setTransactionDate(String.valueOf(surr.getPayments().getPaymentDate()));
+				}	
+				surrender.setSurrAmount(surr.getSurrAmount());
+				surrender.setSurrDate(String.valueOf(surr.getSurrDate()));
+				surrender.setSurrenderBy(surr.getSurrenderBy());
+				surrender.setSurrenderRefNo(surr.getSurrRefNo());
+				surrender.setSurrenderStatus(surr.getSurrenderStatus());
+				surrender.setSurrReason(surr.getSurrenderReason());
+				surrender.setVerificationComment(surr.getVerificationComment());
+				surrender.setVerificationDocument(String.valueOf(surr.getVerificationDocument()));
+				surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
+				surrender.setVerificationStatus(surr.getVerificationStatus());
+				return surrender;
+			});
+		}
+//        claimEntity.map(claim ->{
+//		SurrenderClaimDTO surrender= new SurrenderClaimDTO();	
+//		surrender.setClaim(null);
+//		surrender.setClaimAmount(null);
+//		surrender.setClaimBy(null);
+//		surrender.setClaimDate(null);
+//		surrender.setClaimReason(null);
+//		surrender.setClaimRefNo(null);
+//		surrender.setClaimStatus(null);
+//		surrender.setCustomerName(null);
+//		surrender.setCustomerNo(null);
+//		surrender.setOtherSupportingDocument(null);
+//		surrender.setOtherSupportingDocumentName(null);
+//		surrender.setOtherSupportingDocumentVerificationStatus(null);
+//		surrender.setPaymentDate(null);
+//		surrender.setPaymentId(null);
+//		surrender.setPaymentStatus(null);
+//		surrender.setPaymentTransId(null);
+//		surrender.setPolicyNo(null);
+//		surrender.setSurrAmount(null);
+//		surrender.setSurrDate(null);
+//		surrender.setSurrenderBy(null);
+//		surrender.setSurrenderRefNo(null);
+//		surrender.setSurrenderStatus(null);
+//		surrender.setSurrReason(null);
+//		surrender.setTransactionDate(null);
+//		surrender.setVerificationComment(null);
+//		surrender.setVerificationDocument(null);
+//		surrender.setVerificationDocumentName(null);
+//		surrender.setVerificationStatus(null);
+//		return surrender;
+//	
+//});
+		return response;
 	}
 
 }

@@ -961,7 +961,7 @@
                             <div><h3 class="card-title">Surrender Policy</h3></div>
                         </div>
                         <p class="card-description">Request to surrender an existing policy.</p>
-                        <button class="btn-primary w-full" onclick="navigateToComplaintsForSurrender()">Surrender Policy</button>
+                        <button class="btn-primary w-full" onclick="navigateToSurrenderForPolicy()">Surrender Policy</button>
                     </div>
                     <div class="card">
                         <div class="card-header-content">
@@ -2765,6 +2765,13 @@
             }
             window.location.href = url;
         }
+        function navigateToSurrender(message = '') {
+            let url = `SurrenderPolicyForCustomer?customerNo=${config.customerNo || ''}`;
+            if (message) {
+                url += `&message=${encodeURIComponent(message)}`;
+            }
+            window.location.href = url;
+        }
         function navigateToComplaints(message = '') {
             let url = `ComplaintsForCustomer?customerNo=${config.customerNo || ''}`;
             if (message) {
@@ -2798,9 +2805,9 @@
             const message = `I would like to file a claim for my policy. My customer number is ${config.customerNo || 'N/A'}. Please provide details about your policy and the nature of the claim.`;
             navigateToComplaints(message);
         }
-        function navigateToComplaintsForSurrender() {
+        function navigateToSurrenderForPolicy() {
             const message = `I would like to surrender my policy. My customer number is ${config.customerNo || 'N/A'}. Please provide your policy number and the reason for surrender.`;
-            navigateToComplaints(message);
+            navigateToSurrender(message);
         }
 
         // Universal Search Logic

@@ -76,6 +76,19 @@ public class Payments {
 	@Column(name = "updated_time")
 	private LocalDateTime updatedTime;
 
+	@Column(name = "total_installments")
+	private int totalInstallments;
+	
+	
+
+	public int getTotalInstallments() {
+		return totalInstallments;
+	}
+
+	public void setTotalInstallments(int totalInstallments) {
+		this.totalInstallments = totalInstallments;
+	}
+
 	public List<Workitem> getWorkItem() {
 		return workItem;
 	}

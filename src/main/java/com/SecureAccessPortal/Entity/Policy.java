@@ -49,14 +49,6 @@ public class Policy {
 	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Complaint> complaint = new ArrayList<>();
 
-	public List<Complaint> getComplaint() {
-		return complaint;
-	}
-
-	public void setComplaint(List<Complaint> complaint) {
-		this.complaint = complaint;
-	}
-
 	@Column(name = "product_code")
 	private String productCode;
 
@@ -139,8 +131,49 @@ public class Policy {
 	@Column(name = "beneficiary_contactNumber")
 	private String beneficiaryContactNumber;
 
+	@Column(name = "total_installemts")
+	private int totalInstallments;
+
+	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<SurrenderEntity> surrender = new ArrayList<>();
+
+	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<ClaimEntity> claim = new ArrayList<>();
+
 	@Column(name = "reson")
 	private String reson;
+
+	public List<Complaint> getComplaint() {
+		return complaint;
+	}
+
+	public void setComplaint(List<Complaint> complaint) {
+		this.complaint = complaint;
+	}
+
+	public List<SurrenderEntity> getSurrender() {
+		return surrender;
+	}
+
+	public void setSurrender(List<SurrenderEntity> surrender) {
+		this.surrender = surrender;
+	}
+
+	public List<ClaimEntity> getClaim() {
+		return claim;
+	}
+
+	public void setClaim(List<ClaimEntity> claim) {
+		this.claim = claim;
+	}
+
+	public int getTotalInstallments() {
+		return totalInstallments;
+	}
+
+	public void setTotalInstallments(int totalInstallments) {
+		this.totalInstallments = totalInstallments;
+	}
 
 	public String getReson() {
 		return reson;
