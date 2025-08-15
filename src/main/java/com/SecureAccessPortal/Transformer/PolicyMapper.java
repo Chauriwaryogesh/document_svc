@@ -3,6 +3,7 @@ package com.SecureAccessPortal.Transformer;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -174,10 +175,21 @@ public class PolicyMapper {
 				surrender.setCustomerName(surr.getPolicy().getCustomer().getName());
 				surrender.setCustomerNo(surr.getPolicy().getCustomer().getCustomerNo());
 				surrender.setPolicyNo(surr.getPolicy().getPolicyNumber());
-				surrender.setOtherSupportingDocument(String.valueOf(surr.getOtherSupportingDocument()));
-				surrender.setOtherSupportingDocumentName(surr.getOtherSupportingDocumentName());
-				surrender.setOtherSupportingDocumentVerificationStatus(
-						surr.getOtherSupportingDocumentVerificationStatus());
+				if(surr.getOtherSupportingDocument() != null) {
+					String fileBytes = Base64.getEncoder().encodeToString(surr.getOtherSupportingDocument());
+					surrender.setOtherSupportingDocument(fileBytes);
+					surrender.setOtherSupportingDocumentName(surr.getOtherSupportingDocumentName());
+					surrender.setOtherSupportingDocumentVerificationStatus(
+							surr.getOtherSupportingDocumentVerificationStatus());
+				}
+				
+				if(surr.getVerificationDocument() != null) {
+					String fileBytes = Base64.getEncoder().encodeToString(surr.getVerificationDocument());
+					surrender.setVerificationDocument(fileBytes);
+					surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
+					surrender.setVerificationStatus(surr.getVerificationStatus());
+					
+				}
 				if(surr.getPayments() != null) {
 					surrender.setPaymentDate(String.valueOf(surr.getPayments().getPaymentDate()));
 					surrender.setPaymentId(surr.getPayments().getPaymentId());
@@ -195,42 +207,70 @@ public class PolicyMapper {
 				surrender.setVerificationDocument(String.valueOf(surr.getVerificationDocument()));
 				surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
 				surrender.setVerificationStatus(surr.getVerificationStatus());
+				surrender.setUpdatedBy(surr.getUpdatedBy());
+				surrender.setUpdatedDate(String.valueOf(surr.getUpdatedDate()));
+				return surrender;
+			});
+		} 
+		return response;
+	}
+
+	public Page<SurrenderClaimDTO> mapClaimResponse(Page<ClaimEntity> claimEntity) {
+		Page<SurrenderClaimDTO> response = null;
+		if (Objects.nonNull(claimEntity)) {
+			response = claimEntity.map(surr -> {
+				SurrenderClaimDTO surrender = new SurrenderClaimDTO();
+				surrender.setCustomerName(surr.getPolicy().getCustomer().getName());
+				surrender.setCustomerNo(surr.getPolicy().getCustomer().getCustomerNo());
+				surrender.setPolicyNo(surr.getPolicy().getPolicyNumber());
+				surrender.setUpdatedBy(surr.getUpdatedBy());
+				surrender.setUpdatedDate(String.valueOf(surr.getUpdatedDate()));
+				if(surr.getOtherSupportingDocument() != null) {
+					String fileBytes = Base64.getEncoder().encodeToString(surr.getOtherSupportingDocument());
+					surrender.setOtherSupportingDocument(fileBytes);
+					surrender.setOtherSupportingDocumentName(surr.getOtherSupportingDocumentName());
+					surrender.setOtherSupportingDocumentVerificationStatus(
+							surr.getOtherSupportingDocumentVerificationStatus());
+				}
+				if (surr.getBankDocument() != null) {
+					String fileBytes = Base64.getEncoder().encodeToString(surr.getBankDocument());
+					surrender.setBankPassbookDocument(fileBytes);
+					surrender.setBankPassbookDocumentName(CommonConstant.BANK);
+					surrender.setBankPassbookDocumentNameStatus(surr.getBankDocumentStatus());
+				}
+				if (surr.getIdDocument() != null) {
+					String fileBytes = Base64.getEncoder().encodeToString(surr.getIdDocument());
+					surrender.setIdProofDocument(fileBytes);
+					surrender.setIdProofDocumentStatus(surr.getIdDocumentStatus());
+					surrender.setIdProofDocumentName(CommonConstant.ID_PROOF);
+				}				
+				if(surr.getVerificationDocument() != null) {
+					String fileBytes = Base64.getEncoder().encodeToString(surr.getVerificationDocument());
+					surrender.setVerificationDocument(fileBytes);
+					surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
+					surrender.setVerificationStatus(surr.getVerificationStatus());
+					
+				}
+				if(surr.getPayments() != null) {
+					surrender.setPaymentDate(String.valueOf(surr.getPayments().getPaymentDate()));
+					surrender.setPaymentId(surr.getPayments().getPaymentId());
+					surrender.setPaymentStatus(surr.getPayments().getStatus());
+					surrender.setPaymentTransId(surr.getPayments().getTransactionId());	
+					surrender.setTransactionDate(String.valueOf(surr.getPayments().getPaymentDate()));
+				}	
+				surrender.setClaimAmount(surr.getClaimAmount());
+				surrender.setClaimDate(String.valueOf(surr.getClaimDate()));
+				surrender.setClaimBy(surr.getClaimBy());
+				surrender.setClaimRefNo(surr.getClaimRefNo());
+				surrender.setClaimStatus(surr.getClaimStatus());
+				surrender.setClaimReason(surr.getClaimReason());
+				surrender.setVerificationComment(surr.getVerificationComment());
+				surrender.setVerificationDocument(String.valueOf(surr.getVerificationDocument()));
+				surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
+				surrender.setVerificationStatus(surr.getVerificationStatus());
 				return surrender;
 			});
 		}
-//        claimEntity.map(claim ->{
-//		SurrenderClaimDTO surrender= new SurrenderClaimDTO();	
-//		surrender.setClaim(null);
-//		surrender.setClaimAmount(null);
-//		surrender.setClaimBy(null);
-//		surrender.setClaimDate(null);
-//		surrender.setClaimReason(null);
-//		surrender.setClaimRefNo(null);
-//		surrender.setClaimStatus(null);
-//		surrender.setCustomerName(null);
-//		surrender.setCustomerNo(null);
-//		surrender.setOtherSupportingDocument(null);
-//		surrender.setOtherSupportingDocumentName(null);
-//		surrender.setOtherSupportingDocumentVerificationStatus(null);
-//		surrender.setPaymentDate(null);
-//		surrender.setPaymentId(null);
-//		surrender.setPaymentStatus(null);
-//		surrender.setPaymentTransId(null);
-//		surrender.setPolicyNo(null);
-//		surrender.setSurrAmount(null);
-//		surrender.setSurrDate(null);
-//		surrender.setSurrenderBy(null);
-//		surrender.setSurrenderRefNo(null);
-//		surrender.setSurrenderStatus(null);
-//		surrender.setSurrReason(null);
-//		surrender.setTransactionDate(null);
-//		surrender.setVerificationComment(null);
-//		surrender.setVerificationDocument(null);
-//		surrender.setVerificationDocumentName(null);
-//		surrender.setVerificationStatus(null);
-//		return surrender;
-//	
-//});
 		return response;
 	}
 

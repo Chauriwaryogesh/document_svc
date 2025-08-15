@@ -1,5 +1,6 @@
 package com.SecureAccessPortal.Entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class ClaimEntity {
 	private String claimStatus;
 
 	@Column
-	private String claimAmount;
+	private BigDecimal claimAmount;
 
 	@Column
 	private String claimBy;
@@ -47,6 +48,11 @@ public class ClaimEntity {
 	private LocalDateTime updatedDate;
 	@Column
 	private String deletedFlag;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
+	private Customer customer;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "policyNumber", referencedColumnName = "policyNumber")
 	private Policy policy;
@@ -70,11 +76,92 @@ public class ClaimEntity {
 	
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
+	private byte[] bankDocument;
+	@Column
+	private String bankDocumentName;
+	@Column
+	private String bankDocumentStatus;
+	
+	@Lob
+	@Column(columnDefinition = "LONGBLOB")
+	private byte[] idDocument;
+	@Column
+	private String idDocumentName;
+	@Column
+	private String idDocumentStatus;
+	
+	
+	public byte[] getIdDocument() {
+		return idDocument;
+	}
+
+	public void setIdDocument(byte[] idDocument) {
+		this.idDocument = idDocument;
+	}
+
+	public String getIdDocumentName() {
+		return idDocumentName;
+	}
+
+	public void setIdDocumentName(String idDocumentName) {
+		this.idDocumentName = idDocumentName;
+	}
+
+	public String getIdDocumentStatus() {
+		return idDocumentStatus;
+	}
+
+	public void setIdDocumentStatus(String idDocumentStatus) {
+		this.idDocumentStatus = idDocumentStatus;
+	}
+
+	@Lob
+	@Column(columnDefinition = "LONGBLOB")
 	private byte[] otherSupportingDocument;
 	@Column
 	private String otherSupportingDocumentName;
 	@Column
 	private String otherSupportingDocumentVerificationStatus;
+
+	public BigDecimal getClaimAmount() {
+		return claimAmount;
+	}
+
+	public void setClaimAmount(BigDecimal claimAmount) {
+		this.claimAmount = claimAmount;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+
+	public byte[] getBankDocument() {
+		return bankDocument;
+	}
+
+	public void setBankDocument(byte[] bankDocument) {
+		this.bankDocument = bankDocument;
+	}
+
+	public String getBankDocumentName() {
+		return bankDocumentName;
+	}
+
+	public void setBankDocumentName(String bankDocumentName) {
+		this.bankDocumentName = bankDocumentName;
+	}
+
+	public String getBankDocumentStatus() {
+		return bankDocumentStatus;
+	}
+
+	public void setBankDocumentStatus(String bankDocumentStatus) {
+		this.bankDocumentStatus = bankDocumentStatus;
+	}
 
 	public List<SurrenderWorkflowStep> getSurrenderWorkflowStep() {
 		return surrenderWorkflowStep;
@@ -188,13 +275,6 @@ public class ClaimEntity {
 		this.claimStatus = claimStatus;
 	}
 
-	public String getClaimAmount() {
-		return claimAmount;
-	}
-
-	public void setClaimAmount(String claimAmount) {
-		this.claimAmount = claimAmount;
-	}
 
 	public LocalDateTime getClaimDate() {
 		return claimDate;

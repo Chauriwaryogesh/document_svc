@@ -41,9 +41,15 @@ public class SurrenderEntity {
 	private LocalDateTime updatedDate;
 	@Column
 	private String deletedFlag;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
+	private Customer customer;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "policyNumber", referencedColumnName = "policyNumber")
 	private Policy policy;
+	
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "payment_id", referencedColumnName = "payment_id", insertable = false, updatable = false)
 	private Payments payments;
@@ -72,6 +78,14 @@ public class SurrenderEntity {
 	private String otherSupportingDocumentVerificationStatus;
 	public BankAccount getBankAccount() {
 		return bankAccount;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public void setBankAccount(BankAccount bankAccount) {

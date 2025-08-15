@@ -2,8 +2,12 @@ package com.SecureAccessPortal.Modal;
 
 import java.math.BigDecimal;
 
-import org.springframework.data.domain.Page;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = Include.NON_NULL)
 public class SurrenderClaimDTO {
 	private String policyNo;
 	private String customerNo;
@@ -26,8 +30,8 @@ public class SurrenderClaimDTO {
 	private String otherSupportingDocument;
 	private String otherSupportingDocumentName;
 	private String otherSupportingDocumentVerificationStatus;
-	private String bankDocument;
-	private String bankDocumentStatus;
+//	private String bankDocument;
+//	private String bankDocumentStatus;
 	private String idDocument;
 	private String idDocumentStatus;
 	private String claimRefNo;
@@ -37,21 +41,126 @@ public class SurrenderClaimDTO {
 	private String claimDate;
 	private String claimBy;
 
-	public String getBankDocument() {
-		return bankDocument;
+	private String action;
+
+	private String surrDescription;
+	private String bankAccNo;
+
+	private String bankPassbookDocument;
+	private String bankPassbookDocumentName;
+	private String BankPassbookDocumentNameStatus;
+
+	private String idProofDocument;
+	private String idProofDocumentName;
+	private String idProofDocumentStatus;
+	
+	private String updatedBy;
+	private String updatedDate;
+	
+
+	public String getUpdatedBy() {
+		return updatedBy;
 	}
 
-	public void setBankDocument(String bankDocument) {
-		this.bankDocument = bankDocument;
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
 	}
 
-	public String getBankDocumentStatus() {
-		return bankDocumentStatus;
+	public String getUpdatedDate() {
+		return updatedDate;
 	}
 
-	public void setBankDocumentStatus(String bankDocumentStatus) {
-		this.bankDocumentStatus = bankDocumentStatus;
+	public void setUpdatedDate(String updatedDate) {
+		this.updatedDate = updatedDate;
 	}
+
+	public String getBankPassbookDocumentNameStatus() {
+		return BankPassbookDocumentNameStatus;
+	}
+
+	public void setBankPassbookDocumentNameStatus(String bankPassbookDocumentNameStatus) {
+		BankPassbookDocumentNameStatus = bankPassbookDocumentNameStatus;
+	}
+
+	public String getIdProofDocumentStatus() {
+		return idProofDocumentStatus;
+	}
+
+	public void setIdProofDocumentStatus(String idProofDocumentStatus) {
+		this.idProofDocumentStatus = idProofDocumentStatus;
+	}
+
+	public String getIdProofDocument() {
+		return idProofDocument;
+	}
+
+	public void setIdProofDocument(String idProofDocument) {
+		this.idProofDocument = idProofDocument;
+	}
+
+	public String getIdProofDocumentName() {
+		return idProofDocumentName;
+	}
+
+	public void setIdProofDocumentName(String idProofDocumentName) {
+		this.idProofDocumentName = idProofDocumentName;
+	}
+
+	public String getSurrDescription() {
+		return surrDescription;
+	}
+
+	public void setSurrDescription(String surrDescription) {
+		this.surrDescription = surrDescription;
+	}
+
+	public String getBankAccNo() {
+		return bankAccNo;
+	}
+
+	public void setBankAccNo(String bankAccNo) {
+		this.bankAccNo = bankAccNo;
+	}
+
+	public String getBankPassbookDocument() {
+		return bankPassbookDocument;
+	}
+
+	public void setBankPassbookDocument(String bankPassbookDocument) {
+		this.bankPassbookDocument = bankPassbookDocument;
+	}
+
+	public String getBankPassbookDocumentName() {
+		return bankPassbookDocumentName;
+	}
+
+	public void setBankPassbookDocumentName(String bankPassbookDocumentName) {
+		this.bankPassbookDocumentName = bankPassbookDocumentName;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+//	public String getBankDocument() {
+//		return bankDocument;
+//	}
+//
+//	public void setBankDocument(String bankDocument) {
+//		this.bankDocument = bankDocument;
+//	}
+//
+//	public String getBankDocumentStatus() {
+//		return bankDocumentStatus;
+//	}
+//
+//	public void setBankDocumentStatus(String bankDocumentStatus) {
+//		this.bankDocumentStatus = bankDocumentStatus;
+//	}
 
 	public String getIdDocument() {
 		return idDocument;

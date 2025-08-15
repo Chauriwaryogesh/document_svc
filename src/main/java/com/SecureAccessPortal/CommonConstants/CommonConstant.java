@@ -57,6 +57,9 @@ public class CommonConstant {
 	public static final String PAID = "Paid";
 	public static final String SURRENDER = "SURRENDER";
 	public static final String CLAIM = "CLAIM";
+	public static final String IN_PROGRESS = "IN_PROGRESS";
+	public static final String CANCEL = "CANCEL";
+	public static final String ID_PROOF = "ID_PROOF";
 	
 
 }

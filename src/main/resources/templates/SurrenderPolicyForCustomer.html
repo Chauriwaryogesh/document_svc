@@ -10,7 +10,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.autotable.min.js"></script>
 <style>
-/* Base styling */
 body {
     font-family: 'Inter', sans-serif;
     background-color: #f7f8fc;
@@ -20,13 +19,11 @@ body {
     color: #1f2937;
 }
 
-/* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
-/* Sidebar styling */
 #sidebar {
     transition: width 0.3s ease-in-out;
     width: 5rem;
@@ -121,7 +118,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    padding: 10; /* Increased padding */
+    padding: 2.5rem;
 }
 #sidebar.expanded + #main-content {
     margin-left: 16rem;
@@ -188,7 +185,7 @@ section {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     margin-bottom: 1.5rem;
-    width: 100%; /* Ensure sections take full width of their parent */
+    width: 100%;
 }
 section h2 { color: #1f2937; margin-bottom: 1.5rem; }
 
@@ -202,7 +199,7 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     cursor: pointer;
 }
 .clickable-card:hover {
-    transform: none;
+    transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     background-color: #f9fafb;
 }
@@ -236,23 +233,27 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     cursor: not-allowed;
 }
 
-.modal { 
-    display: none; 
-    position: fixed; 
-    z-index: 1000; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0, 0, 0, 0.6); 
-    justify-content: center; 
-    align-items: center; 
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000; /* Base z-index for most modals */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
     transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+/* Increased z-index for cancellation modals to appear on top */
+#cancellation-modal, #cancel-claim-modal {
+    z-index: 1001; /* Higher z-index */
 }
 .modal.hidden {
     opacity: 0;
     transform: scale(0.95);
-    pointer-events: none;
+    
 }
 .modal-content {
     background: #ffffff;
@@ -266,12 +267,11 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     max-height: 90vh;
     overflow-y: auto;
 }
-/* Specific modal sizes */
 .modal-content.max-w-xl { max-width: 640px; }
 .modal-content.max-w-2xl { max-width: 768px; }
 .modal-content.max-w-4xl { max-width: 900px; }
-.modal-content.max-w-5xl { max-width: 1024px; } /* New: for policy details */
-.modal-content.h-auto { height: auto; max-height: 90vh; } /* New: for dynamic content */
+.modal-content.max-w-5xl { max-width: 1024px; } 
+.modal-content.h-auto { height: auto; max-height: 90vh; } 
 
 
 .close-modal-btn {
@@ -315,7 +315,6 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     border-color: #2563eb;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
-/* Style for displaying non-editable form values */
 .form-input-display {
     border: 1px solid #e2e8f0;
     background-color: #f9fafb;
@@ -349,35 +348,76 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     font-weight: 500;
 }
 
-.policy-details-tabs .tab-button, .workflow-tabs .tab-button {
+.policy-details-tabs .tab-button {
     background-color: transparent;
     border-bottom: 2px solid transparent;
     padding: 0.75rem 1.25rem;
     font-size: 0.95rem;
     color: #6b7280;
 }
-.policy-details-tabs .tab-button.active, .workflow-tabs .tab-button.active {
+.policy-details-tabs .tab-button.active {
     border-bottom-color: #2563eb;
     color: #1f2937;
     font-weight: 700;
 }
-.policy-details-tabs .tab-button:hover:not(.active), .workflow-tabs .tab-button:hover:not(.active) {
+.policy-details-tabs .tab-button:hover:not(.active) {
     color: #2563eb;
 }
 
-.workflow-detail-item {
-    background-color: #f9fafb;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    margin-bottom: 0.75rem;
-    border-left: 5px solid;
-    border-color: #e2e8f0;
+/* --- REDESIGN STYLES START --- */
+.workflow-tabs {
+    display: flex;
+    flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+    gap: 0.5rem;     /* Add space between tab buttons */
+    border-bottom: -1px solid #e5e7eb;
 }
-.workflow-detail-item.status-completed { border-color: #10b981; }
-.workflow-detail-item.status-in-progress { border-color: #f59e0b; }
-.workflow-detail-item.status-pending { border-color: #3b82f6; }
-.workflow-detail-item.status-canceled, .workflow-detail-item.status-rejected { border-color: #ef4444; }
+
+.workflow-tabs .tab-button {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4b5563;
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0; /* Prevent tabs from shrinking */
+}
+
+.workflow-tabs .tab-button:hover {
+    color: #2563eb;
+    background-color: #eff6ff;
+}
+
+.workflow-tabs .tab-button.active {
+    color: #1d4ed8;
+    border-bottom-color: #2563eb;
+    transform: translateY(1px); /* Subtle lift effect */
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+/* --- REDESIGN STYLES END --- */
+
+
+.clickable-card.status-approved, .clickable-card.status-completed { border-left: 5px solid #10b981; }
+.clickable-card.status-in_progress, .clickable-card.status-pending_verification, .clickable-card.status-pending_approval, .clickable-card.status-open, .clickable-card.status-surrender_requested { border-left: 5px solid #f59e0b; }
+.clickable-card.status-canceled, .clickable-card.status-rejected, .clickable-card.status-claim_canceled, .clickable-card.status-canceled_surrender { border-left: 5px solid #ef4444; }
+
+
 .loader {
     position: fixed;
     inset: 0;
@@ -429,7 +469,6 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     to { transform: translateY(100%); opacity: 0; }
 }
 
-/* New styles for policy details fields */
 .policy-detail-field {
     @apply p-3 border border-gray-200 rounded-lg bg-gray-50;
 }
@@ -440,7 +479,6 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     @apply text-gray-800;
 }
 
-/* Highlighted money fields */
 .policy-detail-field.money-field {
     @apply bg-blue-100 border-blue-300 text-blue-800 font-bold;
 }
@@ -449,6 +487,34 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
 }
 .policy-detail-field.money-field span {
     @apply text-blue-800;
+}
+
+.workflow-status-highlight {
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.workflow-status-highlight i {
+    font-size: 1.25rem;
+}
+
+#view-document-modal .modal-content {
+    width: 95%;
+    max-width: 1000px;
+    height: 90vh;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+#view-document-modal iframe {
+    flex-grow: 1;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
 }
 
 </style>
@@ -475,19 +541,17 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
         </button>
     </div>
 </aside>
-<div id="main-content" class="p-10 custom-scrollbar"> <!-- Increased padding -->
+<div id="main-content" class="p-10 custom-scrollbar">
     <header class="flex justify-between items-center mb-6 flex-wrap pb-4 border-b border-gray-200">
         <h1 id="main-title" class="text-3xl font-bold mb-4 sm:mb-0">Policy Management</h1>
         <div class="flex items-center space-x-4">
             <div class="relative w-48">
-                <!-- Header search bar for Policy Number filtering (customer view) -->
                 <input type="text" id="policy-search" placeholder="Search Policy No..." class="w-full pl-10 pr-4 py-2 text-sm border rounded-full focus:outline-none focus:ring-2">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
             </div>
             <button onclick="window.openFilterModal()" class="px-4 py-2 text-sm rounded-full shadow bg-gray-200 text-gray-700 hover:bg-gray-300">
                 <i class="fas fa-filter mr-2"></i>Filter
             </button>
-            <!-- Profile display area - only showing User Code and Customer No -->
             <div onclick="window.openUserProfileModal()" class="flex items-center space-x-2 p-2 rounded-full bg-blue-100 text-blue-800 font-semibold text-sm cursor-pointer">
                 <span id="profile-user-code-display">User: N/A</span>
                 <span>|</span>
@@ -497,7 +561,6 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
         </div>
     </header>
 
-    <!-- Consolidated Primary Tabs -->
     <div class="flex border-b border-gray-200 mb-6" id="primary-tabs">
         <button id="policies-tab-btn" onclick="window.showPrimaryTab('policies')" class="tab-button px-6 py-3 font-medium text-sm active">
             Your Policies
@@ -507,9 +570,8 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
         </button>
     </div>
 
-    <!-- Policy Content Section -->
     <div id="policies-content" class="fade-in" style="display: block;">
-        <section class="w-full"> <!-- Ensure section takes full width -->
+        <section class="w-full">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">All Your Policies</h2>
                 <button id="total-policies-btn" class="px-4 py-2 text-sm rounded-full bg-blue-100 text-blue-800 font-semibold">
@@ -521,43 +583,63 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
         </section>
     </div>
 
-    <!-- Workflow Content Section (Combines Surrender and Claim Tracking, also acts as history) -->
     <div id="workflow-content" class="fade-in" style="display: none;">
-        <section class="w-full"> <!-- Ensure section takes full width -->
-            <h2 class="text-xl font-semibold mb-4">Surrender & Claim Workflow History</h2>
-            <div class="flex items-center space-x-4 mb-4">
-                <div class="relative w-72">
-                    <!-- Workflow specific search bar -->
-                    <input type="text" id="workflow-search-input" placeholder="Search workflow items..." class="w-full pl-10 pr-4 py-2 text-sm border rounded-full focus:outline-none focus:ring-2">
+        <section class="w-full">
+            <h2 class="text-xl font-semibold mb-4">Workflow & History</h2>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
+                <div class="relative w-full sm:w-72">
+                    <input type="text" id="workflow-search-input" placeholder="Search by Policy/Customer/WorkItem No..." class="w-full pl-10 pr-4 py-2 text-sm border rounded-full focus:outline-none focus:ring-2">
                     <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 </div>
-                <div>
+                <div class="w-full sm:w-auto">
                     <label for="workflow-search-by" class="sr-only">Search By:</label>
-                    <select id="workflow-search-by" class="form-input text-sm rounded-full px-4 py-2">
+                    <select id="workflow-search-by" class="form-input text-sm rounded-full px-4 py-2 w-full">
                         <option value="policyNo">Policy Number</option>
                         <option value="customerNo">Customer Number</option>
                         <option value="workItemRefNo">Work Item Ref No</option>
                     </select>
                 </div>
+                <div class="w-full sm:w-auto">
+                    <label for="workflow-start-date" class="sr-only">Start Date:</label>
+                    <input type="date" id="workflow-start-date" class="form-input text-sm rounded-full px-4 py-2 w-full" placeholder="Start Date">
+                </div>
+                <div class="w-full sm:w-auto">
+                    <label for="workflow-end-date" class="sr-only">End Date:</label>
+                    <input type="date" id="workflow-end-date" class="form-input text-sm rounded-full px-4 py-2 w-full" placeholder="End Date">
+                </div>
+                <button onclick="window.applyWorkflowFilters()" class="px-4 py-2 text-sm rounded-full shadow bg-blue-500 text-white hover:bg-blue-600 w-full sm:w-auto">
+                    Apply Filters
+                </button>
+                <button onclick="window.clearWorkflowFilters()" class="px-4 py-2 text-sm rounded-full shadow bg-gray-200 text-gray-700 hover:bg-gray-300 w-full sm:w-auto">
+                    Clear Filters
+                </button>
             </div>
 
-            <div class="flex border-b border-gray-200 mb-4 workflow-tabs">
-                <button id="workflow-ongoing-tab-btn" onclick="window.filterWorkflowRequests('ongoing')" class="tab-button px-4 py-2 text-sm font-medium">Ongoing</button>
-                <button id="workflow-surrender-requests-tab-btn" onclick="window.filterWorkflowRequests('surrender')" class="tab-button px-4 py-2 text-sm font-medium">Surrender Requests</button>
-                <button id="workflow-claims-tab-btn" onclick="window.filterWorkflowRequests('claim')" class="tab-button px-4 py-2 text-sm font-medium">Claims</button>
-                <button id="workflow-completed-tab-btn" onclick="window.filterWorkflowRequests('completed')" class="tab-button px-4 py-2 text-sm font-medium">Completed</button>
-                <button id="workflow-canceled-tab-btn" onclick="window.filterWorkflowRequests('canceled')" class="tab-button px-4 py-2 text-sm font-medium">Canceled</button>
-                <button id="workflow-rejected-tab-btn" onclick="window.filterWorkflowRequests('rejected')" class="tab-button px-4 py-2 text-sm font-medium">Rejected</button>
+            <div class="workflow-tabs mb-4">
+                <button id="workflow-surrender-tab-btn" onclick="window.showWorkflowSecondaryTab('surrender')" class="tab-button text-sm font-medium active">Surrender Workflow</button>
+                <button id="workflow-claim-tab-btn" onclick="window.showWorkflowSecondaryTab('claim')" class="tab-button text-sm font-medium">Claim Workflow</button>
             </div>
-            <div id="combined-workflow-list" class="space-y-4">
-                <!-- Content will be rendered here based on selected filter, initially empty -->
-                <p class="text-gray-500 text-center py-8">Select a filter above to view workflow items.</p>
+
+            <div id="surrender-workflow-details-content" style="display: block;">
+                <!-- Removed surrender workflow status tabs -->
+                <div id="surrender-requests-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4 mb-4">
+                    <p class="text-gray-500 text-center py-8 col-span-full">No surrender requests found for selected filters.</p>
+                </div>
+                <div id="surrender-workflow-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
             </div>
-            <div id="workflow-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
+
+            <div id="claim-workflow-details-content" style="display: none;">
+                <!-- Removed claim workflow status tabs -->
+                <div id="claims-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4 mb-4">
+                    <p class="text-gray-500 text-center py-8 col-span-full">No claims found for selected filters.</p>
+                </div>
+                <div id="claim-workflow-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
+            </div>
         </section>
     </div>
 
 </div>
+<!-- All Modals (no changes) -->
 <div id="user-profile-modal" class="modal">
     <div class="modal-content">
         <span class="close-modal-btn" onclick="window.closeUserProfileModal()">&times;</span>
@@ -569,7 +651,6 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     </div>
 </div>
 <div id="policy-details-modal" class="modal">
-    <!-- Adjusted max-width and height for more content -->
     <div class="modal-content max-w-5xl h-auto flex flex-col"> 
         <span class="close-modal-btn" onclick="window.closePolicyDetailsModal()">&times;</span>
         <h3 class="text-xl font-bold mb-4">Policy Details</h3>
@@ -588,13 +669,10 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
 
         <div id="policy-details-tab-content" class="flex-1 overflow-y-auto custom-scrollbar">
             <div id="policy-details-tab" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 p-2" style="display: block;">
-                <!-- Policy details will be rendered here dynamically -->
             </div>
             <div id="bank-details-tab" class="space-y-4 text-gray-700 p-2" style="display: none;">
-                <!-- Bank account details will be rendered here dynamically -->
             </div>
             <div id="payments-tab" class="space-y-4 text-gray-700 p-2" style="display: none;">
-                <!-- Payment history details will be rendered here dynamically -->
             </div>
         </div>
 
@@ -605,7 +683,7 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     </div>
 </div>
 <div id="surrender-modal" class="modal">
-    <div class="modal-content max-w-2xl h-auto flex flex-col"> <!-- Adjusted height for dynamic content -->
+    <div class="modal-content max-w-2xl h-auto flex flex-col">
         <span class="close-modal-btn" onclick="window.closeSurrenderModal()">&times;</span>
         <h3 class="text-xl font-bold mb-4">Request Policy Surrender</h3>
         <div class="flex-1 overflow-y-auto custom-scrollbar p-2">
@@ -642,7 +720,6 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
             <label for="surrender-bank-account-dropdown" class="form-label block text-sm required mb-1">Select Bank Account:</label>
             <select id="surrender-bank-account-dropdown" class="form-input mb-4" required>
                 <option value="">Select a bank account</option>
-                <!-- Options will be dynamically loaded here -->
             </select>
 
             <label for="surrender-reason-dropdown" class="form-label block text-sm required mb-1">Reason for Surrender:</label>
@@ -711,7 +788,7 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     </div>
 </div>
 <div id="submit-claim-modal" class="modal">
-    <div class="modal-content max-w-xl h-auto overflow-y-auto custom-scrollbar"> <!-- Adjusted height -->
+    <div class="modal-content max-w-xl h-auto overflow-y-auto custom-scrollbar">
         <span class="close-modal-btn" onclick="window.closeSubmitClaimModal()">&times;</span>
         <h3 class="text-xl font-bold mb-4">Submit a Claim</h3>
         <p class="text-gray-600 mb-2">Policy Number: <span id="claim-policy-id" class="font-semibold"></span></p>
@@ -739,7 +816,6 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
         <label for="claim-bank-account-dropdown" class="form-label block text-sm required mb-1">Select Bank Account:</label>
         <select id="claim-bank-account-dropdown" class="form-input mb-4" required>
             <option value="">Select a bank account</option>
-            <!-- Options will be dynamically loaded here -->
         </select>
 
         <label for="claim-type-dropdown" class="form-label block text-sm required mb-1">Claim Type:</label>
@@ -868,67 +944,156 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
         </div>
     </div>
 </div>
+
+<div id="workflow-item-details-modal" class="modal">
+    <div class="modal-content max-w-4xl h-auto flex flex-col">
+        <span class="close-modal-btn" onclick="window.closeWorkflowItemDetailsModal()">&times;</span>
+        <h3 class="text-xl font-bold mb-4" id="workflow-details-title">Workflow Item Details</h3>
+        
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="policy-detail-field"><strong>Type:</strong> <span id="workflow-type"></span></div>
+                <div class="policy-detail-field"><strong>Reference No:</strong> <span id="workflow-ref-no"></span></div>
+                <div class="policy-detail-field"><strong>Policy No:</strong> <span id="workflow-policy-no"></span></div>
+                <div class="policy-detail-field"><strong>Customer No:</strong> <span id="workflow-customer-no"></span></div>
+                <div class="policy-detail-field"><strong>Customer Name:</strong> <span id="workflow-customer-name"></span></div>
+                <div class="policy-detail-field"><strong>Requested By:</strong> <span id="workflow-requested-by"></span></div>
+                <div class="policy-detail-field"><strong>Request Date:</strong> <span id="workflow-request-date"></span></div>
+                <div class="policy-detail-field money-field"><strong>Amount:</strong> <span id="workflow-amount"></span></div>
+                <div id="workflow-claim-type-field" class="policy-detail-field" style="display: none;"><strong>Claim Type:</strong> <span id="workflow-claim-type"></span></div>
+            </div>
+
+            <div class="policy-detail-field"><strong>Reason/Description:</strong> <span id="workflow-reason"></span></div>
+            
+            <div class="border-t border-gray-200 pt-4 mt-4">
+                <h4 class="text-lg font-semibold mb-2">Status & Verification:</h4>
+                <div class="flex items-center space-x-2">
+                    <strong>Current Status:</strong> 
+                    <span id="workflow-current-status" class="workflow-status-highlight"></span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div class="policy-detail-field"><strong>Verification Status:</strong> <span id="workflow-verification-status"></span></div>
+                    <div class="policy-detail-field"><strong>Verification Comment:</strong> <span id="workflow-verification-comment"></span></div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-4 mt-4">
+                <h4 class="text-lg font-semibold mb-2">Documents:</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="policy-detail-field">
+                        <strong>Verification Document:</strong> 
+                        <span id="workflow-doc-verification-name"></span>
+                        <button id="workflow-doc-verification-btn" class="text-blue-600 hover:underline text-sm font-medium ml-2" style="display: none;"><i class="fas fa-eye"></i> View</button>
+                        <br><small class="text-gray-600">Status: <span id="workflow-verification-doc-status" class="font-semibold"></span></small>
+                    </div>
+                    <div class="policy-detail-field">
+                        <strong>Bank Passbook:</strong> 
+                        <span id="workflow-doc-bank-passbook-name"></span>
+                        <button id="workflow-doc-bank-passbook-btn" class="text-blue-600 hover:underline text-sm font-medium ml-2" style="display: none;"><i class="fas fa-eye"></i> View</button>
+                        <br><small class="text-gray-600">Status: <span id="workflow-bank-passbook-doc-status" class="font-semibold"></span></small>
+                    </div>
+                    <div id="workflow-doc-id-proof-field" class="policy-detail-field" style="display: none;">
+                        <strong>ID Proof:</strong> 
+                        <span id="workflow-doc-id-proof-name"></span>
+                        <button id="workflow-doc-id-proof-btn" class="text-blue-600 hover:underline text-sm font-medium ml-2" style="display: none;"><i class="fas fa-eye"></i> View</button>
+                        <br><small class="text-gray-600">Status: <span id="workflow-id-proof-doc-status" class="font-semibold"></span></small>
+                    </div>
+                    <div class="policy-detail-field">
+                        <strong>Other Supporting Document:</strong> 
+                        <span id="workflow-doc-other-name"></span>
+                        <button id="workflow-doc-other-btn" class="text-blue-600 hover:underline text-sm font-medium ml-2" style="display: none;"><i class="fas fa-eye"></i> View</button>
+                        <br><small class="text-gray-600">Status: <span id="workflow-other-doc-status" class="font-semibold"></span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-4 mt-6">
+            <button id="workflow-cancel-btn" class="px-6 py-2 rounded-full text-white bg-red-600" style="display: none;">Cancel Request</button>
+        </div>
+    </div>
+</div>
+
+<div id="view-document-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal-btn" onclick="window.closeViewDocumentModal()">&times;</span>
+        <h3 class="text-xl font-bold mb-4" id="view-document-title">View Document</h3>
+        <iframe id="document-viewer" src="" frameborder="0"></iframe>
+    </div>
+</div>
+
 <div id="loader" class="loader">
     <div class="spinner"></div>
 </div>
 <script>
+// --- CONFIGURATION AND GLOBAL VARIABLES ---
 const config = {
     userCode: null,
-    email: null, // Not used for display, but kept for consistency with session storage
+    email: null,
     loginUrl: 'Login.html',
     customerNo: null,
     policyNoFromUrl: null, 
 };
 
-// Global variables for policies, requests, and claims fetched from API
-let currentPoliciesData = []; // Policies displayed on the current page
-let currentTotalPolicyElements = 0; // Total count from API for pagination
+let currentPagePolicies = 0;
+let currentPoliciesData = [];
+let currentTotalPolicyElements = 0;
 
-let mockRequests = []; // Derived from policy data, updated on each policy fetch
-let mockClaims = [];   // Derived from policy data, updated on each policy fetch
-let combinedWorkflow = []; // To hold both requests and claims for the workflow tab
+let currentSurrenderWorkflowData = [];
+let currentSurrenderWorkflowTotalElements = 0;
+let currentSurrenderWorkflowPage = 0;
+
+let currentClaimWorkflowData = [];
+let currentClaimWorkflowTotalElements = 0;
+let currentClaimWorkflowPage = 0;
 
 let currentCancellationRequestId = null;
 let currentCancellationClaimId = null;
-let activePrimaryTab = 'policies'; // Tracks which primary tab is active
-let activeWorkflowFilter = null; // Changed to null: Initially no filter active for workflow tab
+let currentCancellationPolicyNo = null; // Added to store policy number for cancellation
+let activePrimaryTab = 'policies';
+let activeWorkflowSecondaryTab = 'surrender';
+// These filters are now hardcoded to 'ALL' as per requirement
+let activeSurrenderFilter = 'ALL';
+let activeClaimFilter = 'ALL';
 
-// API page indices start from 0
-let currentPagePolicies = 0; 
-let currentPageWorkflow = 0; // Pagination for combined workflow
-
-const itemsPerPage = 16; // Display 16 cards per page
+const itemsPerPage = 10;
 
 let tempSurrenderData = { reason: '', description: '', docs: {}, selectedAccountNo: null }; 
 let tempClaimData = { claimType: '', description: '', docs: {}, selectedAccountNo: null }; 
 
 let modals = {};
 
-// Declaring DOM element variables here, they will be assigned inside DOMContentLoaded
 let mainTitleEl, policiesTabBtn, workflowTabBtn, policiesContentEl, workflowContentEl; 
 let policySearchInput, filterStatusSelect, sortDateTypeSelect, filterTypeSelect; 
 let policyListEl, policyCountEl, policyPaginationEl; 
-let combinedWorkflowListEl, workflowPaginationEl;
-let workflowOngoingTabBtn, workflowSurrenderRequestsTabBtn, workflowClaimsTabBtn, workflowCompletedTabBtn, workflowCanceledTabBtn, workflowRejectedTabBtn;
 
-let workflowSearchInput, workflowSearchBySelect; // New workflow search elements
+let surrenderWorkflowDetailsContentEl, claimWorkflowDetailsContentEl;
+let surrenderRequestsListEl, claimsListEl;
+let surrenderWorkflowPaginationEl, claimWorkflowPaginationEl;
+let workflowSurrenderTabBtn, workflowClaimTabBtn;
+let workflowSearchInput, workflowSearchBySelect, workflowStartDateInput, workflowEndDateInput;
+
+let workflowItemDetailsModal, workflowDetailsTitleEl, workflowTypeEl, workflowRefNoEl, workflowPolicyNoEl, workflowCustomerNoEl, workflowCustomerNameEl, workflowRequestedByEl, workflowRequestDateEl, workflowAmountEl, workflowClaimTypeFieldEl, workflowClaimTypeEl, workflowReasonEl, workflowCurrentStatusEl, workflowVerificationStatusEl, workflowVerificationCommentEl;
+let workflowDocVerificationNameEl, workflowDocVerificationBtn, workflowDocBankPassbookNameEl, workflowDocBankPassbookBtn, workflowDocIdProofFieldEl, workflowDocIdProofNameEl, workflowDocIdProofBtn, workflowDocOtherNameEl, workflowDocOtherBtn;
+let workflowVerificationDocStatusEl, workflowBankPassbookDocStatusEl, workflowIdProofDocStatusEl, workflowOtherDocStatusEl;
+let workflowCancelBtn;
+let viewDocumentModal, documentViewerEl, viewDocumentTitleEl;
 
 let policyDetailsModal, surrenderModal, confirmSurrenderModal, cancellationModal; 
 let submitClaimModal, confirmClaimModal, fraudWarningModal, cancelClaimModal; 
 let messageModal, filterModal, userProfileModal;
 let loaderEl;
 
-// Elements for profile display in header
 let profileUserCodeDisplayEl, profileCustomerNoDisplayEl;
 
-// New elements for surrender/claim modals
 let surrenderPolicyCoverageAmountEl, surrenderTotalClaimableAmountEl, surrenderTotalAmountEl, surrenderMonthlyInstallmentEl, surrenderTotalInstallmentsPaidEl, surrenderTotalInstallmentsUnpaidEl;
 let surrenderBankAccountDropdown;
 
 let claimPolicyCoverageAmountEl, claimTotalClaimableAmountEl, claimTotalAmountEl, claimMonthlyInstallmentEl;
 let claimBankAccountDropdown;
 
-const show = el => el && (el.style.display = 'flex'); // Ensure display flex for modals
+// --- UTILITY FUNCTIONS ---
+const show = el => el && (el.style.display = 'flex');
 const hide = el => el && (el.style.display = 'none');
 
 function showLoader() { if(loaderEl) show(loaderEl); }
@@ -966,7 +1131,6 @@ window.showCustomError = function(title, message) {
     if (messageModal) messageModal.style.display = 'flex';
 }
 
-// Global function to close message modal
 window.closeMessageModal = function() {
     if (messageModal) messageModal.style.display = 'none';
 };
@@ -975,14 +1139,11 @@ function getuserCodeAndCustomerNo() {
     config.userCode = sessionStorage.getItem('userCode');
     config.customerNo = sessionStorage.getItem('customerNo');
     
-    // Update profile modal text and header display
     if (document.getElementById('profile-user-code')) document.getElementById('profile-user-code').textContent = config.userCode || 'Not Provided';
     if (document.getElementById('profile-customer-no')) document.getElementById('profile-customer-no').textContent = config.customerNo || 'Not Provided';
 
     if (profileUserCodeDisplayEl) profileUserCodeDisplayEl.textContent = `User: ${config.userCode || 'N/A'}`;
     if (profileCustomerNoDisplayEl) profileCustomerNoDisplayEl.textContent = `Cust: ${config.customerNo || 'N/A'}`;
-
-    console.log('User Code from session storage:', config.userCode, 'Customer No from session storage:', config.customerNo);
 }
 
 function logout() {
@@ -1003,10 +1164,11 @@ function initializeModals() {
         'fraud-warning-modal': document.getElementById('fraud-warning-modal'),
         'cancel-claim-modal': document.getElementById('cancel-claim-modal'),
         'message-modal': document.getElementById('message-modal'),
-        'filter-modal': document.getElementById('filter-modal')
+        'filter-modal': document.getElementById('filter-modal'),
+        'workflow-item-details-modal': document.getElementById('workflow-item-details-modal'),
+        'view-document-modal': document.getElementById('view-document-modal')
     };
 
-    // Assign directly to global variables for easier access
     policyDetailsModal = modals['policy-details-modal'];
     surrenderModal = modals['surrender-modal'];
     confirmSurrenderModal = modals['confirm-surrender-modal'];
@@ -1018,7 +1180,8 @@ function initializeModals() {
     messageModal = modals['message-modal'];
     filterModal = modals['filter-modal'];
     userProfileModal = modals['user-profile-modal'];
-
+    workflowItemDetailsModal = modals['workflow-item-details-modal'];
+    viewDocumentModal = modals['view-document-modal'];
 
     Object.keys(modals).forEach(modalId => {
         const modalElement = modals[modalId];
@@ -1029,7 +1192,6 @@ function initializeModals() {
             }
         }
     });
-    // Ensure this listener is attached AFTER messageModal is defined
     if (messageModal) {
         const okButton = messageModal.querySelector('button');
         if (okButton) {
@@ -1038,7 +1200,6 @@ function initializeModals() {
     }
 }
 
-// Attached to window for global access from HTML onclick
 window.handleNavigation = function(page) {
     let url = page;
     const currentCustomerNo = config.customerNo || sessionStorage.getItem('customerNo');
@@ -1057,7 +1218,8 @@ function getStatusInfo(status) {
     switch ((status || '').toLowerCase()) { 
         case 'pending': return { text: 'Pending', iconClass: 'fas fa-clock', bgClass: 'bg-yellow-100', textClass: 'text-yellow-800' };
         case 'approved': return { text: 'Approved', iconClass: 'fas fa-check-circle', bgClass: 'bg-green-100', textClass: 'text-green-800' };
-        case 'canceled': return { text: 'Canceled', iconClass: 'fas fa-times-circle', bgClass: 'bg-red-100', textClass: 'text-red-800' };
+        case 'canceled': 
+        case 'cancel': return { text: 'Canceled', iconClass: 'fas fa-times-circle', bgClass: 'bg-red-100', textClass: 'text-red-800' };
         case 'rejected': return { text: 'Rejected', iconClass: 'fas fa-exclamation-triangle', bgClass: 'bg-red-100', textClass: 'text-red-800' };
         case 'claimed': return { text: 'Claimed', iconClass: 'fas fa-dollar-sign', bgClass: 'bg-blue-100', textClass: 'text-blue-800'};
         case 'lapsed': return { text: 'Lapsed', iconClass: 'fas fa-exclamation-circle', bgClass: 'bg-orange-100', textClass: 'text-orange-800' };
@@ -1065,9 +1227,10 @@ function getStatusInfo(status) {
         case 'surrender_requested':
         case 'pending verification': 
         case 'pending approval':     
-            return { text: 'Surrender Requested', iconClass: 'fas fa-hourglass-half', bgClass: 'bg-yellow-100', textClass: 'text-yellow-800' };
+        case 'open':
+        case 'in_progress':
+            return { text: 'In Progress', iconClass: 'fas fa-hourglass-half', bgClass: 'bg-orange-100', textClass: 'text-orange-800' };
         case 'completed': return { text: 'Completed', iconClass: 'fas fa-check-circle', bgClass: 'bg-green-100', textClass: 'text-green-800' };
-        case 'in-progress': return { text: 'In Progress', iconClass: 'fas fa-spinner fa-spin', bgClass: 'bg-blue-100', textClass: 'text-blue-800' };
         case 'closed': return { text: 'Closed', iconClass: 'fas fa-folder-closed', bgClass: 'bg-gray-200', textClass: 'text-gray-800' };
         case 'canceled_surrender': return { text: 'Surrender Canceled', iconClass: 'fas fa-undo', bgClass: 'bg-red-100', textClass: 'text-red-800' };
         case 'claim_canceled': return { text: 'Claim Canceled', iconClass: 'fas fa-ban', bgClass: 'bg-red-100', textClass: 'text-red-800' };
@@ -1075,7 +1238,6 @@ function getStatusInfo(status) {
     }
 }
 
-// New helper for bank account status display
 function getAccountStatusInfo(status) {
     switch ((status || '').toLowerCase()) {
         case 'approved': return { text: 'Approved', bgClass: 'bg-green-100', textClass: 'text-green-800' };
@@ -1085,7 +1247,6 @@ function getAccountStatusInfo(status) {
     }
 }
 
-// Function to convert file to Base64
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         if (!file) {
@@ -1096,27 +1257,38 @@ function fileToBase64(file) {
         reader.readAsDataURL(file);
         reader.onload = () => {
             const base64String = reader.result.split(',')[1]; 
-            console.log(`Converted file ${file.name} to Base64 (first 50 chars):`, base64String ? base64String.substring(0, 50) + '...' : 'null');
             resolve(base64String);
         };
         reader.onerror = error => {
-            console.error(`Error converting file ${file.name} to Base64:`, error);
             reject(error);
         };
     });
 }
 
-/**
- * Fetches all policies for a customer from the backend API.
- * This function also updates global `currentPoliciesData` and `combinedWorkflow` and triggers rendering.
- * @param {string} customerNo - The customer number.
- * @param {string} [policyNoSearch=null] - Optional policy number for specific search.
- * @param {number} [page=0] - The page number for pagination (0-indexed).
- * @param {number} [size=itemsPerPage] - The number of items per page.
- * @param {string} [filterStatus='all'] - Policy status filter.
- * @param {string} [filterType='all'] - Policy type filter.
- * @param {string} [sortDateType='none'] - Sorting criteria (e.g., 'issueDateAsc', 'maturityDateDesc').
- */
+window.openViewDocumentModal = function(base64Data, fileName, mimeType = 'application/pdf') {
+    const isBase64String = base64Data && typeof base64Data === 'string' && base64Data.length > 50 && !base64Data.includes(' ');
+    if (!isBase64String || base64Data.trim() === 'null' || base64Data.trim() === 'Bank Name') {
+        window.showCustomError('Document Not Available', 'The document content is not available or is not in a viewable format.');
+        return;
+    }
+
+    const docViewer = document.getElementById('document-viewer');
+    const viewDocModalTitle = document.getElementById('view-document-title');
+
+    viewDocModalTitle.textContent = `Viewing: ${fileName || 'Untitled Document'}`;
+    
+    const dataUrl = `data:${mimeType};base64,${base64Data}`;
+    docViewer.src = dataUrl;
+    
+    show(viewDocumentModal);
+};
+
+window.closeViewDocumentModal = function() {
+    document.getElementById('document-viewer').src = '';
+    hide(viewDocumentModal);
+};
+
+// --- API FETCH FUNCTIONS ---
 async function fetchAllPoliciesAndRender(customerNo, policyNoSearch = null, page = 0, size = itemsPerPage, filterStatus = 'all', filterType = 'all', sortDateType = 'none') {
     showLoader();
     let apiUrl = `http://localhost:8081/policy/policy-detailsNew?page=${page}&size=${size}`;
@@ -1127,8 +1299,7 @@ async function fetchAllPoliciesAndRender(customerNo, policyNoSearch = null, page
     if (policyNoSearch) {
         apiUrl += `&policyNo=${policyNoSearch}`;
     }
-    // Always 'Y' for fetching all policies for general view, unless specified otherwise (e.g., specific work item search)
-    apiUrl += `&allpolSearch=N`; 
+    apiUrl += `&allpolSearch=Y`; 
 
     if (filterStatus !== 'all') {
         apiUrl += `&policyStatus=${filterStatus}`;
@@ -1137,7 +1308,6 @@ async function fetchAllPoliciesAndRender(customerNo, policyNoSearch = null, page
         apiUrl += `&policyType=${filterType}`;
     }
 
-    // Handle sorting parameters for the API
     if (sortDateType !== 'none') {
         let sortByField;
         let sortOrder;
@@ -1159,9 +1329,6 @@ async function fetchAllPoliciesAndRender(customerNo, policyNoSearch = null, page
         'customerNo': config.customerNo || '' 
     };
 
-    console.log('GET All Policies API Request URL:', apiUrl);
-    console.log('GET All Policies API Request Headers:', headers);
-
     try {
         const response = await fetch(apiUrl, {
             method: 'GET',
@@ -1170,52 +1337,36 @@ async function fetchAllPoliciesAndRender(customerNo, policyNoSearch = null, page
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('GET All Policies API Error Response:', errorData);
             throw new Error(errorData.errorMessage || `HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
-        console.log('GET All Policies API Success Response:', result);
 
         if (result.status === 'Success' && result.data && result.data.content) {
-            currentPoliciesData = result.data.content.flatMap(item => item.policyList || []);
+            currentPoliciesData = result.data.content.flatMap(item => item.policyList || (item.policyNumber ? [item] : []));
             currentTotalPolicyElements = result.data.totalElements || currentPoliciesData.length;
             
-            processPolicyWorkflows(currentPoliciesData); // Process for workflow tab
-            renderPolicies(); // Re-render main policy list
-            renderWorkflowContent(activeWorkflowFilter); // Re-render workflow content based on current filter
+            renderPolicies();
             
             return currentPoliciesData;
         } else {
             currentPoliciesData = [];
             currentTotalPolicyElements = 0;
-            mockRequests = [];
-            mockClaims = [];
-            combinedWorkflow = [];
             window.showCustomError('Fetch Error', result.errorMessage || 'Failed to fetch policies or no content available.');
-            renderPolicies(); // Clear displayed policies
-            renderWorkflowContent(activeWorkflowFilter); // Clear displayed workflow
+            renderPolicies();
             return [];
         }
     } catch (error) {
-        console.error('Catch Error fetching all policy data:', error);
         window.showCustomError('Network Error', `Error fetching policies: ${error.message}. Please try again.`);
         currentPoliciesData = []; 
         currentTotalPolicyElements = 0;
-        mockRequests = [];
-        mockClaims = [];
-        combinedWorkflow = [];
-        renderPolicies(); // Clear displayed policies
-        renderWorkflowContent(activeWorkflowFilter); // Clear displayed workflow
+        renderPolicies();
         return [];
     } finally {
         hideLoader();
     }
 }
 
-/**
- * Fetches details for a single policy. Does not affect global policy lists or trigger full re-renders.
- */
 async function fetchSinglePolicyDetails(customerNo, policyNumber, workItemRefNo = null) {
     showLoader();
     let apiUrl = `http://localhost:8081/policy/policy-detailsNew?policyNo=${policyNumber}&allpolSearch=N`;
@@ -1234,8 +1385,52 @@ async function fetchSinglePolicyDetails(customerNo, policyNumber, workItemRefNo 
         headers['workItemRefNo'] = workItemRefNo;
     }
 
-    console.log('GET Single Policy API Request URL:', apiUrl);
-    console.log('GET Single Policy API Request Headers:', headers);
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: headers
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.errorMessage || `HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.status === 'Success' && result.data && result.data.content && result.data.content.length > 0) {
+            const policy = result.data.content[0].policyList ? result.data.content[0].policyList[0] : result.data.content[0];
+            return policy; 
+        } else {
+            window.showCustomError('Fetch Error', result.errorMessage || 'Failed to fetch policy details or no content available.');
+            return null;
+        }
+    } catch (error) {
+        window.showCustomError('Network Error', `Error fetching policy details: ${error.message}. Please try again.`);
+        return null;
+    } finally {
+        hideLoader();
+    }
+}
+
+async function fetchSurrenderWorkflow(page = 0, size = itemsPerPage, type = 'ALL', customerNo = config.customerNo, policyNo = null, surrenderRefNo = null, startDate = null, endDate = null) {
+    showLoader();
+    let apiUrl = `http://localhost:8081/policy/getSurrenderDtls?page=${page}&size=${size}`;
+
+    if (customerNo) apiUrl += `&customerNo=${customerNo}`;
+    if (policyNo) apiUrl += `&policyNo=${policyNo}`;
+    if (surrenderRefNo) apiUrl += `&surrenderRefNo=${surrenderRefNo}`;
+    if (startDate) apiUrl += `&startDate=${startDate}`;
+    if (endDate) apiUrl += `&endDate=${endDate}`;
+    
+    // Always send type as 'ALL' as per the requirement
+    apiUrl += `&type=ALL`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'userCode': config.userCode || '', 
+        'customerNo': config.customerNo || '' 
+    };
 
     try {
         const response = await fetch(apiUrl, {
@@ -1245,109 +1440,106 @@ async function fetchSinglePolicyDetails(customerNo, policyNumber, workItemRefNo 
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('GET Single Policy API Error Response:', errorData);
             throw new Error(errorData.errorMessage || `HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
-        console.log('GET Single Policy API Success Response:', result);
 
-        if (result.status === 'Success' && result.data && result.data.content && result.data.content.length > 0) {
-            // The API response for single policy may be in content[0] or content[0].policyList[0]
-            const policy = result.data.content[0].policyList ? result.data.content[0].policyList[0] : result.data.content[0];
-            return policy; 
+        if (result.status === 'Success' && result.data && result.data.content) {
+            currentSurrenderWorkflowData = result.data.content;
+            currentSurrenderWorkflowTotalElements = result.data.totalElements;
+            currentSurrenderWorkflowPage = result.data.number;
+            renderSurrenderRequestsList();
         } else {
-            window.showCustomError('Fetch Error', result.errorMessage || 'Failed to fetch policy details or no content available.');
-            return null;
+            currentSurrenderWorkflowData = [];
+            currentSurrenderWorkflowTotalElements = 0;
+            currentSurrenderWorkflowPage = 0;
+            window.showCustomError('Fetch Error', result.errorMessage || 'Failed to fetch surrender requests.');
+            renderSurrenderRequestsList();
         }
     } catch (error) {
-        console.error('Catch Error fetching single policy data:', error);
-        window.showCustomError('Network Error', `Error fetching policy details: ${error.message}. Please try again.`);
-        return null;
+        window.showCustomError('Network Error', `Error fetching surrender requests: ${error.message}. Please try again.`);
+        currentSurrenderWorkflowData = [];
+        currentSurrenderWorkflowTotalElements = 0;
+        currentSurrenderWorkflowPage = 0;
+        renderSurrenderRequestsList();
     } finally {
         hideLoader();
     }
 }
 
+async function fetchClaimWorkflow(page = 0, size = itemsPerPage, type = 'ALL', customerNo = config.customerNo, policyNo = null, claimRefNo = null, startDate = null, endDate = null) {
+    showLoader();
+    let apiUrl = `http://localhost:8081/policy/getClaimDtls?page=${page}&size=${size}`;
 
-// Function to process policy data and populate mockRequests and mockClaims
-function processPolicyWorkflows(policies) {
-    mockRequests = [];
-    mockClaims = [];
-    policies.forEach(policy => {
-        if (policy.surrenderDTO && Array.isArray(policy.surrenderDTO)) {
-            policy.surrenderDTO.forEach(dto => {
-                mockRequests.push({
-                    type: 'surrender', // Added type for filtering
-                    id: dto.surrenderRefNo,
-                    policyId: dto.policyNo,
-                    customerNo: dto.customerNo, // Added customerNo for workflow search
-                    policyName: policy.policyName || 'N/A', 
-                    requestDate: dto.surrDate ? new Date(dto.surrDate).toISOString().slice(0, 10) : 'N/A',
-                    status: dto.surrenderStatus, 
-                    reason: dto.surrReason,
-                    description: dto.surrReason,
-                    verificationDocument: dto.verificationDocument, 
-                    verificationDocumentName: dto.verificationDocumentName,
-                    otherSupportingDocument: dto.otherSupportingDocument, 
-                    otherSupportingDocumentName: dto.otherSupportingDocumentName,
-                    bankPassbookDocument: dto.bankPassbookDocument,
-                    bankPassbookDocumentName: dto.bankPassbookDocumentName,
-                });
-            });
+    if (customerNo) apiUrl += `&customerNo=${customerNo}`;
+    if (policyNo) apiUrl += `&policyNo=${policyNo}`;
+    if (claimRefNo) apiUrl += `&claimRefNo=${claimRefNo}`;
+    if (startDate) apiUrl += `&startDate=${startDate}`;
+    if (endDate) apiUrl += `&endDate=${endDate}`;
+    
+    // Always send type as 'ALL' as per the requirement
+    apiUrl += `&type=ALL`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'userCode': config.userCode || '', 
+        'customerNo': config.customerNo || '' 
+    };
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: headers
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.errorMessage || `HTTP error! status: ${response.status}`);
         }
-        if (policy.claimDTO && Array.isArray(policy.claimDTO)) {
-            policy.claimDTO.forEach(dto => {
-                mockClaims.push({
-                    type: 'claim', // Added type for filtering
-                    id: dto.claimRefNo,
-                    policyId: dto.policyNo,
-                    customerNo: dto.customerNo, // Added customerNo for workflow search
-                    policyName: policy.policyName || 'N/A', 
-                    requestDate: dto.claimDate ? new Date(dto.claimDate).toISOString().slice(0, 10) : 'N/A',
-                    status: dto.claimStatus, 
-                    claimType: dto.claimType || 'N/A', 
-                    description: dto.claimReason,
-                    verificationDocument: dto.verificationDocument, 
-                    verificationDocumentName: dto.verificationDocumentName,
-                    otherSupportingDocument: dto.otherSupportingDocument, 
-                    otherSupportingDocumentName: dto.otherSupportingDocumentName,
-                    bankPassbookDocument: dto.bankPassbookDocument,
-                    bankPassbookDocumentName: dto.bankPassbookDocumentName,
-                    idProofDocument: dto.idProofDocument,
-                    idProofDocumentName: dto.idProofDocumentName,
-                });
-            });
+
+        const result = await response.json();
+
+        if (result.status === 'Success' && result.data && result.data.content) {
+            currentClaimWorkflowData = result.data.content;
+            currentClaimWorkflowTotalElements = result.data.totalElements;
+            currentClaimWorkflowPage = result.data.number;
+            renderClaimsList();
+        } else {
+            currentClaimWorkflowData = [];
+            currentClaimWorkflowTotalElements = 0;
+            currentClaimWorkflowPage = 0;
+            window.showCustomError('Fetch Error', result.errorMessage || 'Failed to fetch claim requests.');
+            renderClaimsList();
         }
-    });
-    // Combine and sort for workflow tab
-    combinedWorkflow = [...mockRequests, ...mockClaims].sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
-    console.log('Processed mockRequests:', mockRequests);
-    console.log('Processed mockClaims:', mockClaims);
-    console.log('Combined Workflow for display:', combinedWorkflow);
+    } catch (error) {
+        window.showCustomError('Network Error', `Error fetching claim requests: ${error.message}. Please try again.`);
+        currentClaimWorkflowData = [];
+        currentClaimWorkflowTotalElements = 0;
+        currentClaimWorkflowPage = 0;
+        renderClaimsList();
+    } finally {
+        hideLoader();
+    }
 }
 
-
+// --- RENDER FUNCTIONS ---
 function renderPolicies() { 
     if (!policyListEl) return; 
     policyListEl.innerHTML = '';
-    // The policy search input in the header affects the API call, not this render function's internal filtering
-    // The filtering logic below is for the filter modal which is already applied in fetchAllPoliciesAndRender
-
-    if (policyCountEl) policyCountEl.textContent = currentTotalPolicyElements; // Use total elements for the count display
+    
+    if (policyCountEl) policyCountEl.textContent = currentTotalPolicyElements; 
 
     if (currentPoliciesData.length === 0) {
-        if (policyListEl)
-            policyListEl.innerHTML = `<p class="text-gray-500 text-center py-8 col-span-full">No policies found matching your criteria.</p>`;
-        if (policyPaginationEl)
-            policyPaginationEl.innerHTML = '';
+        policyListEl.innerHTML = `<p class="text-gray-500 text-center py-8 col-span-full">No policies found matching your criteria.</p>`;
+        policyPaginationEl.innerHTML = '';
         return;
     }
 
     currentPoliciesData.forEach(pol => {
         const card = document.createElement('div');
         card.className = 'clickable-card';
-        card.setAttribute('data-policy-number', pol.policyNumber); // Set policy number for easy access
+        card.setAttribute('data-policy-number', pol.policyNumber);
         card.innerHTML = `
             <h3 class="font-bold text-lg text-blue-700">${pol.policyName || 'N/A'}</h3>
             <p class="text-sm text-gray-600 mb-2">Policy No: <span class="font-medium">${pol.policyNumber || 'N/A'}</span></p>
@@ -1367,121 +1559,117 @@ function renderPolicies() {
 
     renderPagination(policyPaginationEl, currentPagePolicies, currentTotalPolicyElements, itemsPerPage, (page) => {
         currentPagePolicies = page;
-        // Re-fetch using current search and filter values from the main controls
         fetchAllPoliciesAndRender(
             config.customerNo, 
             policySearchInput.value, 
             currentPagePolicies, 
             itemsPerPage,
-            filterStatusSelect.value, // Pass current filter status
-            filterTypeSelect.value, // Pass current filter type
-            sortDateTypeSelect.value // Pass current sort type
+            filterStatusSelect.value, 
+            filterTypeSelect.value, 
+            sortDateTypeSelect.value
         );
     });
 }
 
+function renderSurrenderRequestsList() {
+    if (!surrenderRequestsListEl) return;
+    surrenderRequestsListEl.innerHTML = '';
 
-function renderWorkflowContent(filter = null) { // Default filter is now null to show nothing initially
-    if (!combinedWorkflowListEl) return;
-    combinedWorkflowListEl.innerHTML = ''; // Clear content first
-
-    // If no filter is active, show the default message
-    if (filter === null) {
-        combinedWorkflowListEl.innerHTML = `<p class="text-gray-500 text-center py-8">Select a filter above to view workflow items.</p>`;
-        workflowPaginationEl.innerHTML = '';
+    if (currentSurrenderWorkflowData.length === 0) {
+        surrenderRequestsListEl.innerHTML = `<p class="text-gray-500 text-center py-8 col-span-full">No surrender requests found for selected filters.</p>`;
+        surrenderWorkflowPaginationEl.innerHTML = '';
         return;
     }
 
-    const workflowSearchTerm = workflowSearchInput.value.toLowerCase();
-    const workflowSearchBy = workflowSearchBySelect.value; // e.g., 'policyNo', 'customerNo', 'workItemRefNo'
-
-    const filteredWorkflow = combinedWorkflow.filter(item => {
-        let matchesSearch = true;
-        if (workflowSearchTerm) {
-            if (workflowSearchBy === 'policyNo') {
-                matchesSearch = (item.policyId && item.policyId.toLowerCase().includes(workflowSearchTerm));
-            } else if (workflowSearchBy === 'customerNo') {
-                matchesSearch = (item.customerNo && item.customerNo.toLowerCase().includes(workflowSearchTerm));
-            } else if (workflowSearchBy === 'workItemRefNo') {
-                matchesSearch = (item.id && item.id.toLowerCase().includes(workflowSearchTerm));
-            } else { // Fallback, could be useful if workflowSearchBy is unexpected
-                matchesSearch = (item.policyId && item.policyId.toLowerCase().includes(workflowSearchTerm)) || 
-                                (item.policyName && item.policyName.toLowerCase().includes(workflowSearchTerm)) || 
-                                (item.id && item.id.toLowerCase().includes(workflowSearchTerm)) ||
-                                (item.type === 'claim' && item.claimType && item.claimType.toLowerCase().includes(workflowSearchTerm));
-            }
-        }
-        
-        let matchesFilter = true;
-        if (filter !== null) { // Apply filter only if it's not null
-            if (filter === 'surrender') {
-                matchesFilter = item.type === 'surrender';
-            } else if (filter === 'claim') {
-                matchesFilter = item.type === 'claim';
-            } else if (filter === 'ongoing') {
-                matchesFilter = (item.type === 'surrender' && ['pending', 'surrender_requested', 'pending verification', 'pending approval', 'in-progress'].includes(item.status.toLowerCase())) ||
-                                (item.type === 'claim' && ['pending', 'in-progress'].includes(item.status.toLowerCase()));
-            } else if (filter === 'completed') {
-                matchesFilter = (item.type === 'surrender' && item.status.toLowerCase() === 'approved') ||
-                                (item.type === 'claim' && item.status.toLowerCase() === 'completed'); 
-            } else if (filter === 'canceled') {
-                matchesFilter = (item.type === 'surrender' && item.status.toLowerCase() === 'canceled') ||
-                                (item.type === 'claim' && item.status.toLowerCase() === 'claim_canceled');
-            } else if (filter === 'rejected') {
-                matchesFilter = item.status.toLowerCase() === 'rejected';
-            }
-        }
-        return matchesSearch && matchesFilter;
-    });
-
-    // Sort by date (latest first)
-    filteredWorkflow.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
-
-    const startIndex = currentPageWorkflow * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const itemsToDisplay = filteredWorkflow.slice(startIndex, endIndex);
-
-    if (itemsToDisplay.length === 0) {
-        combinedWorkflowListEl.innerHTML = `<p class="text-gray-500 text-center py-8">No workflow items found for current filters.</p>`;
-        workflowPaginationEl.innerHTML = '';
-        return;
-    }
-
-    itemsToDisplay.forEach(item => {
-        const statusInfo = getStatusInfo(item.status);
+    currentSurrenderWorkflowData.forEach((item, index) => {
+        const statusInfo = getStatusInfo(item.surrenderStatus);
         const card = document.createElement('div');
-        card.className = `workflow-detail-item flex flex-col sm:flex-row justify-between items-start sm:items-center ${statusInfo.statusClass}`;
+        card.className = `clickable-card fade-in-up status-${(item.surrenderStatus || '').toLowerCase().replace(/\s/g, '_')}`;
+        card.style.animationDelay = `${index * 50}ms`; // Stagger animation
+        card.onclick = (event) => { 
+            event.stopPropagation(); 
+            window.openWorkflowItemDetailsModal(item, 'surrender');
+        };
         
-        let actionsHtml = '';
-        if (item.type === 'surrender' && ['pending', 'surrender_requested', 'pending verification', 'pending approval', 'in-progress'].includes(item.status.toLowerCase())) {
-            actionsHtml = `<button onclick="window.openCancellationModal('${item.id}')" class="mt-2 text-red-600 hover:underline text-sm font-medium">Cancel Request</button>`;
-        } else if (item.type === 'claim' && ['pending', 'in-progress'].includes(item.status.toLowerCase())) {
-            actionsHtml = `<button onclick="window.openCancelClaimModal('${item.id}')" class="mt-2 text-red-600 hover:underline text-sm font-medium">Cancel Claim</button>`;
-        }
-
         card.innerHTML = `
-            <div>
-                <p class="font-semibold text-lg text-blue-700">${item.policyName || 'N/A'} <span class="text-sm font-normal text-gray-500">(${item.type === 'surrender' ? 'Surrender' : 'Claim'})</span></p>
-                <p class="text-sm text-gray-600">Policy No: <span class="font-medium">${item.policyId || 'N/A'}</span></p>
-                <p class="text-sm text-gray-600">Ref No: <span class="font-medium">${item.id || 'N/A'}</span></p>
-                ${item.customerNo ? `<p class="text-sm text-gray-600">Customer No: <span class="font-medium">${item.customerNo || 'N/A'}</span></p>` : ''}
-                ${item.type === 'claim' ? `<p class="text-sm text-gray-600">Claim Type: <span class="font-medium">${item.claimType || 'N/A'}</span></p>` : ''}
-                <p class="text-sm text-gray-600">Requested: <span class="font-medium">${item.requestDate || 'N/A'}</span></p>
-            </div>
-            <div class="mt-3 sm:mt-0 sm:text-right">
-                <span class="status-badge ${statusInfo.bgClass} ${statusInfo.textClass} flex items-center justify-end">
+            <h3 class="font-bold text-lg text-blue-700">${item.customerName || 'N/A'} <span class="text-sm font-normal text-gray-500">(Surrender Request)</span></h3>
+            <p class="text-sm text-gray-600 mb-2">Policy No: <span class="font-medium">${item.policyNo || 'N/A'}</span></p>
+            <p class="text-sm text-gray-600 mb-2">Ref No: <span class="font-medium">${item.surrenderRefNo || 'N/A'}</span></p>
+            <div class="flex items-center space-x-2 text-sm">
+                <span class="status-badge ${statusInfo.bgClass} ${statusInfo.textClass} flex items-center">
                     <i class="${statusInfo.iconClass} mr-1"></i>${statusInfo.text}
                 </span>
-                <p class="text-sm text-gray-600 mt-2">${item.reason || item.description || 'No specific reason provided.'}</p>
-                ${actionsHtml}
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button onclick="event.stopPropagation(); window.openWorkflowItemDetailsModal(${JSON.stringify(item).replace(/'/g, '&apos;')}, 'surrender')" class="text-blue-600 hover:underline text-sm font-medium">View Details</button>
             </div>
         `;
-        combinedWorkflowListEl.appendChild(card);
+        surrenderRequestsListEl.appendChild(card);
     });
 
-    renderPagination(workflowPaginationEl, currentPageWorkflow, filteredWorkflow.length, itemsPerPage, (page) => {
-        currentPageWorkflow = page;
-        renderWorkflowContent(activeWorkflowFilter);
+    renderPagination(surrenderWorkflowPaginationEl, currentSurrenderWorkflowPage, currentSurrenderWorkflowTotalElements, itemsPerPage, (page) => {
+        currentSurrenderWorkflowPage = page;
+        fetchSurrenderWorkflow(
+            currentSurrenderWorkflowPage, 
+            itemsPerPage, 
+            activeSurrenderFilter, // This will now always be 'ALL'
+            config.customerNo, 
+            workflowSearchBySelect.value === 'policyNo' ? workflowSearchInput.value : null,
+            workflowSearchBySelect.value === 'workItemRefNo' ? workflowSearchInput.value : null,
+            workflowStartDateInput.value,
+            workflowEndDateInput.value
+        );
+    });
+}
+
+function renderClaimsList() {
+    if (!claimsListEl) return;
+    claimsListEl.innerHTML = '';
+
+    if (currentClaimWorkflowData.length === 0) {
+        claimsListEl.innerHTML = `<p class="text-gray-500 text-center py-8 col-span-full">No claims found for selected filters.</p>`;
+        claimWorkflowPaginationEl.innerHTML = '';
+        return;
+    }
+
+    currentClaimWorkflowData.forEach((item, index) => {
+        const statusInfo = getStatusInfo(item.claimStatus);
+        const card = document.createElement('div');
+        card.className = `clickable-card fade-in-up status-${(item.claimStatus || '').toLowerCase().replace(/\s/g, '_')}`;
+        card.style.animationDelay = `${index * 50}ms`; // Stagger animation
+        card.onclick = (event) => { 
+            event.stopPropagation(); 
+            window.openWorkflowItemDetailsModal(item, 'claim');
+        };
+
+        card.innerHTML = `
+            <h3 class="font-bold text-lg text-blue-700">${item.customerName || 'N/A'} <span class="text-sm font-normal text-gray-500">(Claim)</span></h3>
+            <p class="text-sm text-gray-600 mb-2">Policy No: <span class="font-medium">${item.policyNo || 'N/A'}</span></p>
+            <p class="text-sm text-gray-600 mb-2">Ref No: <span class="font-medium">${item.claimRefNo || 'N/A'}</span></p>
+            <div class="flex items-center space-x-2 text-sm">
+                <span class="status-badge ${statusInfo.bgClass} ${statusInfo.textClass} flex items-center">
+                    <i class="${statusInfo.iconClass} mr-1"></i>${statusInfo.text}
+                </span>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button onclick="event.stopPropagation(); window.openWorkflowItemDetailsModal(${JSON.stringify(item).replace(/'/g, '&apos;')}, 'claim')" class="text-blue-600 hover:underline text-sm font-medium">View Details</button>
+            </div>
+        `;
+        claimsListEl.appendChild(card);
+    });
+
+    renderPagination(claimWorkflowPaginationEl, currentClaimWorkflowPage, currentClaimWorkflowTotalElements, itemsPerPage, (page) => {
+        currentClaimWorkflowPage = page;
+        fetchClaimWorkflow(
+            currentClaimWorkflowPage, 
+            itemsPerPage, 
+            activeClaimFilter, // This will now always be 'ALL'
+            config.customerNo, 
+            workflowSearchBySelect.value === 'policyNo' ? workflowSearchInput.value : null,
+            workflowSearchBySelect.value === 'workItemRefNo' ? workflowSearchInput.value : null,
+            workflowStartDateInput.value,
+            workflowEndDateInput.value
+        );
     });
 }
 
@@ -1492,7 +1680,6 @@ function renderPagination(container, currentPage, totalItems, itemsPerPage, call
 
     if (totalPages <= 1) return;
 
-    // Previous button
     const prevBtn = document.createElement('button');
     prevBtn.className = 'pagination-button px-4 py-2 text-sm';
     prevBtn.innerHTML = `<i class="fas fa-chevron-left"></i>`;
@@ -1500,7 +1687,6 @@ function renderPagination(container, currentPage, totalItems, itemsPerPage, call
     prevBtn.onclick = () => callback(currentPage - 1);
     container.appendChild(prevBtn);
 
-    // Page numbers
     const startPage = Math.max(0, currentPage - 2);
     const endPage = Math.min(totalPages - 1, currentPage + 2);
 
@@ -1540,7 +1726,6 @@ function renderPagination(container, currentPage, totalItems, itemsPerPage, call
         container.appendChild(lastPageBtn);
     }
 
-    // Next button
     const nextBtn = document.createElement('button');
     nextBtn.className = 'pagination-button px-4 py-2 text-sm';
     nextBtn.innerHTML = `<i class="fas fa-chevron-right"></i>`;
@@ -1549,8 +1734,7 @@ function renderPagination(container, currentPage, totalItems, itemsPerPage, call
     container.appendChild(nextBtn);
 }
 
-
-// Function to show/hide primary tabs (policies, workflow)
+// --- UI LOGIC AND EVENT HANDLERS ---
 window.showPrimaryTab = function(tabName) {
     activePrimaryTab = tabName;
     const tabs = {
@@ -1559,7 +1743,7 @@ window.showPrimaryTab = function(tabName) {
             button: policiesTabBtn,
             title: 'Policy Management'
         },
-        'workflow': { // New workflow tab
+        'workflow': {
             content: workflowContentEl,
             button: workflowTabBtn,
             title: 'Workflow & History'
@@ -1568,10 +1752,10 @@ window.showPrimaryTab = function(tabName) {
 
     for (const key in tabs) {
         if (tabs[key].content) {
-            if (tabs[key].button) tabs[key].button.classList.remove('active'); // Deactivate all tab buttons
+            if (tabs[key].button) tabs[key].button.classList.remove('active');
             if (key === tabName) {
                 show(tabs[key].content);
-                if (tabs[key].button) tabs[key].button.classList.add('active'); // Activate current tab button
+                if (tabs[key].button) tabs[key].button.classList.add('active');
             } else {
                 hide(tabs[key].content);
             }
@@ -1579,40 +1763,146 @@ window.showPrimaryTab = function(tabName) {
     }
     if (mainTitleEl) mainTitleEl.textContent = tabs[tabName].title;
 
-    // Reset workflow filter buttons when switching to workflow tab
     if (tabName === 'workflow') {
-        document.querySelectorAll('#workflow-content .tab-button').forEach(btn => btn.classList.remove('active'));
-        activeWorkflowFilter = null; // Set filter to null to show initial message
-        renderWorkflowContent(activeWorkflowFilter); // Explicitly render nothing for the workflow content
+        // When switching to workflow, default to Surrender Workflow and the 'ALL' filter.
+        window.showWorkflowSecondaryTab('surrender');
     }
 };
 
-window.filterWorkflowRequests = function(filter) {
-    activeWorkflowFilter = filter;
-    document.querySelectorAll('#workflow-content .tab-button').forEach(btn => btn.classList.remove('active')); 
-    document.getElementById(`workflow-${filter}-tab-btn`).classList.add('active');
-    currentPageWorkflow = 0; // Reset pagination when filtering
-    renderWorkflowContent(filter); // Re-render with the selected filter
+window.showWorkflowSecondaryTab = function(tabName) {
+    activeWorkflowSecondaryTab = tabName;
+
+    // This targets only the main workflow tabs (Surrender/Claim)
+    document.querySelectorAll('#workflow-content > section > .workflow-tabs .tab-button').forEach(btn => btn.classList.remove('active'));
+
+    document.getElementById(`workflow-${tabName}-tab-btn`).classList.add('active');
+
+    if (tabName === 'surrender') {
+        show(surrenderWorkflowDetailsContentEl);
+        hide(claimWorkflowDetailsContentEl);
+        // Default to the 'ALL' tab when switching to surrender workflow
+        window.filterSurrenderWorkflow('ALL');
+    } else if (tabName === 'claim') {
+        show(claimWorkflowDetailsContentEl);
+        hide(surrenderWorkflowDetailsContentEl);
+        // Default to the 'ALL' tab when switching to claim workflow
+        window.filterClaimWorkflow('ALL');
+    }
 };
 
+window.filterSurrenderWorkflow = function(filter) {
+    // This function will now always call fetchSurrenderWorkflow with 'ALL'
+    activeSurrenderFilter = 'ALL'; // Override filter to 'ALL'
+    
+    // No need to set active classes for status tabs as they are removed
+    
+    currentSurrenderWorkflowPage = 0;
+    fetchSurrenderWorkflow(
+        currentSurrenderWorkflowPage, 
+        itemsPerPage, 
+        activeSurrenderFilter, // Always 'ALL'
+        config.customerNo, 
+        workflowSearchBySelect.value === 'policyNo' ? workflowSearchInput.value : null,
+        workflowSearchBySelect.value === 'workItemRefNo' ? workflowSearchInput.value : null,
+        workflowStartDateInput.value,
+        workflowEndDateInput.value
+    );
+};
 
-// Open/Close Modals - Attached to window for HTML onclick
+window.filterClaimWorkflow = function(filter) {
+    // This function will now always call fetchClaimWorkflow with 'ALL'
+    activeClaimFilter = 'ALL'; // Override filter to 'ALL'
+    
+    // No need to set active classes for status tabs as they are removed
+    
+    currentClaimWorkflowPage = 0;
+    fetchClaimWorkflow(
+        currentClaimWorkflowPage, 
+        itemsPerPage, 
+        activeClaimFilter, // Always 'ALL'
+        config.customerNo, 
+        workflowSearchBySelect.value === 'policyNo' ? workflowSearchInput.value : null,
+        workflowSearchBySelect.value === 'workItemRefNo' ? workflowSearchInput.value : null,
+        workflowStartDateInput.value,
+        workflowEndDateInput.value
+    );
+};
+
+window.applyWorkflowFilters = function() {
+    let customerNoParam = config.customerNo;
+    let policyNoParam = null;
+    let surrenderRefNoParam = null;
+    let claimRefNoParam = null;
+
+    const searchTerm = workflowSearchInput.value;
+    const searchBy = workflowSearchBySelect.value;
+
+    if (searchBy === 'customerNo') {
+        customerNoParam = searchTerm;
+        policyNoParam = null;
+        surrenderRefNoParam = null;
+        claimRefNoParam = null;
+    } else if (searchBy === 'policyNo') {
+        policyNoParam = searchTerm;
+    } else if (searchBy === 'workItemRefNo') {
+        surrenderRefNoParam = searchTerm;
+        claimRefNoParam = searchTerm;
+    }
+
+    const startDate = workflowStartDateInput.value;
+    const endDate = workflowEndDateInput.value;
+
+    if (activeWorkflowSecondaryTab === 'surrender') {
+        currentSurrenderWorkflowPage = 0;
+        fetchSurrenderWorkflow(currentSurrenderWorkflowPage, itemsPerPage, activeSurrenderFilter, customerNoParam, policyNoParam, surrenderRefNoParam, startDate, endDate);
+    } else if (activeWorkflowSecondaryTab === 'claim') {
+        currentClaimWorkflowPage = 0;
+        fetchClaimWorkflow(currentClaimWorkflowPage, itemsPerPage, activeClaimFilter, customerNoParam, policyNoParam, claimRefNoParam, startDate, endDate);
+    }
+};
+
+window.clearWorkflowFilters = function() {
+    workflowSearchInput.value = '';
+    workflowSearchBySelect.value = 'policyNo';
+    workflowStartDateInput.value = '';
+    workflowEndDateInput.value = '';
+
+    // Reset filter to 'ALL' for the currently active workflow
+    if (activeWorkflowSecondaryTab === 'surrender') {
+        window.filterSurrenderWorkflow('ALL'); // Calls with 'ALL'
+    } else if (activeWorkflowSecondaryTab === 'claim') {
+        window.filterClaimWorkflow('ALL'); // Calls with 'ALL'
+    }
+};
+
+// --- MODAL VISIBILITY AND ACTIONS ---
 window.openUserProfileModal = function() { show(userProfileModal); };
 window.closeUserProfileModal = function() { hide(userProfileModal); };
 window.closePolicyDetailsModal = function() { hide(policyDetailsModal); };
 window.closeSurrenderModal = function() { hide(surrenderModal); };
 window.closeConfirmSurrenderModal = function() { hide(confirmSurrenderModal); };
-window.closeCancellationModal = function() { hide(cancellationModal); };
+window.closeCancellationModal = function() { 
+    hide(cancellationModal); 
+    // Do not hide workflowItemDetailsModal here, it might be the parent.
+};
 window.closeSubmitClaimModal = function() { hide(submitClaimModal); };
 window.closeConfirmClaimModal = function() { hide(confirmClaimModal); };
 window.closeFraudWarningModal = function() { hide(fraudWarningModal); };
-window.closeCancelClaimModal = function() { hide(cancelClaimModal); };
+window.closeCancelClaimModal = function() { 
+    hide(cancelClaimModal); 
+    // Do not hide workflowItemDetailsModal here, it might be the parent.
+};
 window.openFilterModal = function() { show(filterModal); };
 window.closeFilterModal = function() { hide(filterModal); };
+window.closeWorkflowItemDetailsModal = function() { 
+    hide(workflowItemDetailsModal); 
+    // Ensure cancellation modals are also hidden if they were opened from here
+    hide(cancellationModal);
+    hide(cancelClaimModal);
+};
 
 window.applyFilters = function() {
     currentPagePolicies = 0;
-    // When filters are applied, always go back to the first page of policies
     fetchAllPoliciesAndRender(
         config.customerNo, 
         policySearchInput.value, 
@@ -1628,86 +1918,85 @@ window.applyFilters = function() {
 window.openPolicyDetailsModal = async function(policyNumber) {
     showLoader();
     try {
-        console.log("openPolicyDetailsModal called for policy:", policyNumber);
-        const policy = await fetchSinglePolicyDetails(config.customerNo, policyNumber, null);
+        let selectedPolicy = JSON.parse(sessionStorage.getItem('selectedPolicyForAction'));
         
-        if (!policy) { 
-            console.error(`Policy not found after fetching for ${policyNumber}.`);
-            window.showCustomError('Policy Not Found', 'Could not retrieve details for this policy.');
-            return;
+        // Fetch policy details only if not already loaded or if a different policy is requested
+        if (!selectedPolicy || selectedPolicy.policyNumber !== policyNumber) {
+            selectedPolicy = await fetchSinglePolicyDetails(config.customerNo, policyNumber);
+            if (!selectedPolicy) {
+                window.showCustomError('Policy Not Found', 'Could not retrieve details for this policy.');
+                return;
+            }
+            sessionStorage.setItem('selectedPolicyForAction', JSON.stringify(selectedPolicy));
         }
-
-        console.log("Fetched policy details:", policy);
 
         const policyDetailsTabEl = document.getElementById('policy-details-tab');
         policyDetailsTabEl.innerHTML = `
             <div class="policy-detail-field">
-                <strong>Policy Name:</strong> <span>${policy.policyName || 'N/A'}</span>
+                <strong>Policy Name:</strong> <span>${selectedPolicy.policyName || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Policy Number:</strong> <span>${policy.policyNumber || 'N/A'}</span>
+                <strong>Policy Number:</strong> <span>${selectedPolicy.policyNumber || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Policy Type:</strong> <span>${policy.policyType || 'N/A'}</span>
+                <strong>Policy Type:</strong> <span>${selectedPolicy.policyType || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Status:</strong> <span>${getStatusInfo(policy.policyStatus).text}</span>
+                <strong>Status:</strong> <span>${getStatusInfo(selectedPolicy.policyStatus).text}</span>
             </div>
             <div class="policy-detail-field money-field">
-                <strong>Coverage Amount:</strong> <span>$${policy.coverageAmount ? parseFloat(policy.coverageAmount).toLocaleString('en-US') : 'N/A'}</span>
+                <strong>Coverage Amount:</strong> <span>$${selectedPolicy.coverageAmount ? parseFloat(selectedPolicy.coverageAmount).toLocaleString('en-US') : 'N/A'}</span>
             </div>
             <div class="policy-detail-field money-field">
-                <strong>Premium Amount:</strong> <span>$${policy.premiumAmount ? parseFloat(policy.premiumAmount).toLocaleString('en-US') : 'N/A'}</span>
+                <strong>Premium Amount:</strong> <span>$${selectedPolicy.premiumAmount ? parseFloat(selectedPolicy.premiumAmount).toLocaleString('en-US') : 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Issue Date:</strong> <span>${policy.issueDate || 'N/A'}</span>
+                <strong>Issue Date:</strong> <span>${selectedPolicy.issueDate || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Maturity Date:</strong> <span>${policy.maturityDate || 'N/A'}</span>
+                <strong>Maturity Date:</strong> <span>${selectedPolicy.maturityDate || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Renewal Date:</strong> <span>${policy.renewalDate || 'N/A'}</span>
+                <strong>Renewal Date:</strong> <span>${selectedPolicy.renewalDate || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Beneficiary Name:</strong> <span>${policy.beneficiaryName || 'N/A'}</span>
+                <strong>Beneficiary Name:</strong> <span>${selectedPolicy.beneficiaryName || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Beneficiary Relationship:</strong> <span>${policy.beneficiaryRelationship || 'N/A'}</span>
+                <strong>Beneficiary Relationship:</strong> <span>${selectedPolicy.beneficiaryRelationship || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Policy Term:</strong> <span>${policy.policyTerm || 'N/A'}</span>
+                <strong>Policy Term:</strong> <span>${selectedPolicy.policyTerm || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Payment Frequency:</strong> <span>${policy.paymentFrequency || 'N/A'}</span>
+                <strong>Payment Frequency:</strong> <span>${selectedPolicy.paymentFrequency || 'N/A'}</span>
             </div>
             <div class="policy-detail-field money-field">
-                <strong>Total Policy Value:</strong> <span>$${policy.totalPolicyValue ? parseFloat(policy.totalPolicyValue).toLocaleString('en-US') : 'N/A'}</span>
+                <strong>Total Policy Value:</strong> <span>$${selectedPolicy.totalPolicyValue ? parseFloat(selectedPolicy.totalPolicyValue).toLocaleString('en-US') : 'N/A'}</span>
             </div>
             <div class="policy-detail-field money-field">
-                <strong>Total Claimable Amount:</strong> <span>$${policy.totalClaimableAmount ? parseFloat(policy.totalClaimableAmount).toLocaleString('en-US') : 'N/A'}</span>
+                <strong>Total Claimable Amount:</strong> <span>$${selectedPolicy.totalClaimableAmount ? parseFloat(selectedPolicy.totalClaimableAmount).toLocaleString('en-US') : 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Total Installments Paid:</strong> <span>${policy.totalInstallmentsPaid || 'N/A'}</span>
+                <strong>Total Installments Paid:</strong> <span>${selectedPolicy.totalInstallmentsPaid || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Total Installments Unpaid:</strong> <span>${policy.totalInstallmentsUnpaid || 'N/A'}</span>
+                <strong>Total Installments Unpaid:</strong> <span>${selectedPolicy.totalInstallmentsUnpaid || 'N/A'}</span>
             </div>
         `;
 
         const bankDetailsTabEl = document.getElementById('bank-details-tab');
-        bankDetailsTabEl.innerHTML = ''; // Clear previous content
-        if (policy.bankAccounts && policy.bankAccounts.length > 0) {
-            policy.bankAccounts.forEach(bank => {
-                // Mock bank account status if not available, otherwise use actual
-                const accountStatus = bank.accountStatus || (Math.random() < 0.7 ? 'Approved' : (Math.random() < 0.5 ? 'Pending' : 'Rejected')); 
-                const statusInfo = getAccountStatusInfo(accountStatus); // Define statusInfo here
+        bankDetailsTabEl.innerHTML = '';
+        if (selectedPolicy.bankAccounts && selectedPolicy.bankAccounts.length > 0) {
+            selectedPolicy.bankAccounts.forEach(bank => {
+                const accountStatus = bank.accountStatus || (Math.random() < 0.7 ? 'Approved' : (Math.random() < 0.5 ? 'Pending' : 'Rejected')).toLowerCase(); 
+                const statusInfo = getAccountStatusInfo(accountStatus);
                 bankDetailsTabEl.innerHTML += `
                     <div class="p-4 rounded-lg shadow-sm border border-gray-200">
                         <p><strong>Bank Name:</strong> ${bank.bankName || 'N/A'}</p>
                         <p><strong>Account Number:</strong> ${bank.accountNumber || 'N/A'}</p>
                         <p><strong>IFSC Code:</strong> ${bank.ifscCode || 'N/A'}</p>
                         <p><strong>Account Type:</strong> ${bank.accountType || 'N/A'}</p>
-                        <p><strong>Branch:</strong> ${bank.branch || 'N/A'}</p>
                         <p class="mt-2"><strong>Status:</strong> 
                             <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full ${statusInfo.bgClass} ${statusInfo.textClass}">
                                 ${statusInfo.text}
@@ -1721,9 +2010,9 @@ window.openPolicyDetailsModal = async function(policyNumber) {
         }
 
         const paymentsTabEl = document.getElementById('payments-tab');
-        paymentsTabEl.innerHTML = ''; // Clear previous content
-        if (policy.payments && policy.payments.length > 0) {
-            policy.payments.forEach(payment => {
+        paymentsTabEl.innerHTML = '';
+        if (selectedPolicy.payments && selectedPolicy.payments.length > 0) {
+            selectedPolicy.payments.forEach(payment => {
                 const paymentStatusInfo = getStatusInfo(payment.paymentStatus);
                 paymentsTabEl.innerHTML += `
                     <div class="bg-green-50 p-4 rounded-lg shadow-sm">
@@ -1738,26 +2027,21 @@ window.openPolicyDetailsModal = async function(policyNumber) {
             paymentsTabEl.innerHTML = `<p class="text-gray-500">No payment history available for this policy.</p>`;
         }
 
-        // Set policy number to the surrender and claim buttons in the details modal
         const detailsSurrenderBtn = document.getElementById('details-surrender-btn');
         const detailsClaimBtn = document.getElementById('details-claim-btn');
 
         if (detailsSurrenderBtn) {
-            detailsSurrenderBtn.dataset.policyNumber = policy.policyNumber;
+            detailsSurrenderBtn.dataset.policyNumber = selectedPolicy.policyNumber;
         }
         if (detailsClaimBtn) {
-            detailsClaimBtn.dataset.policyNumber = policy.policyNumber;
+            detailsClaimBtn.dataset.policyNumber = selectedPolicy.policyNumber;
         }
 
-        // Store the entire policy object in session storage for surrender/claim modals
-        sessionStorage.setItem('selectedPolicyForAction', JSON.stringify(policy)); 
+        sessionStorage.setItem('selectedPolicyForAction', JSON.stringify(selectedPolicy)); 
 
-        // Show the policy details tab by default when modal opens
         window.showDetailsTab('policy');
-        console.log("Attempting to show policyDetailsModal");
-        show(policyDetailsModal); // Finally show the modal
+        show(policyDetailsModal);
     } catch (error) {
-        console.error("Error opening policy details modal:", error);
         window.showCustomError('Error', `Failed to load policy details: ${error.message}`);
     } finally {
         hideLoader();
@@ -1774,7 +2058,7 @@ window.showDetailsTab = function(tabName) {
     document.getElementById('payments-tab-btn').classList.remove('active');
 
     if (tabName === 'policy') {
-        document.getElementById('policy-details-tab').style.display = 'grid'; // Changed to grid for better layout
+        document.getElementById('policy-details-tab').style.display = 'grid';
         document.getElementById('policy-details-tab-btn').classList.add('active');
     } else if (tabName === 'bank') {
         document.getElementById('bank-details-tab').style.display = 'block';
@@ -1785,18 +2069,15 @@ window.showDetailsTab = function(tabName) {
     }
 };
 
-
+// --- WORKFLOW ITEM MODAL AND ACTIONS ---
 window.openSurrenderModal = async function(policyNumber) {
     showLoader();
     try {
-        // Retrieve policy from sessionStorage (set during openPolicyDetailsModal)
         let selectedPolicy = JSON.parse(sessionStorage.getItem('selectedPolicyForAction'));
         
-        // If for some reason, it's not in session storage or doesn't match, re-fetch it
         if (!selectedPolicy || selectedPolicy.policyNumber !== policyNumber) {
-            console.warn("Policy not found in session storage or mismatch, re-fetching for surrender modal.");
-            selectedPolicy = await fetchSinglePolicyDetails(config.customerNo, policyNumber); // Use dedicated single fetch
-            if (!selectedPolicy) { // Check for null/undefined
+            selectedPolicy = await fetchSinglePolicyDetails(config.customerNo, policyNumber);
+            if (!selectedPolicy) {
                 window.showCustomError('Policy Not Found', 'Could not retrieve details for surrender request.');
                 return;
             }
@@ -1812,14 +2093,12 @@ window.openSurrenderModal = async function(policyNumber) {
         document.getElementById('surrender-total-installments-paid').textContent = selectedPolicy.totalInstallmentsPaid || 'N/A';
         document.getElementById('surrender-total-installments-unpaid').textContent = selectedPolicy.totalInstallmentsUnpaid || 'N/A';
         
-        // Populate bank accounts dropdown - only approved accounts selectable
         surrenderBankAccountDropdown.innerHTML = '<option value="">Select a bank account</option>';
         let hasApprovedAccount = false;
         if (selectedPolicy.bankAccounts && selectedPolicy.bankAccounts.length > 0) {
             selectedPolicy.bankAccounts.forEach(bank => {
-                // Mock bank account status if not available, otherwise use actual
                 const accountStatus = (bank.accountStatus || (Math.random() < 0.7 ? 'Approved' : (Math.random() < 0.5 ? 'Pending' : 'Rejected'))).toLowerCase(); 
-                const statusInfo = getAccountStatusInfo(accountStatus); // Get status info for display
+                const statusInfo = getAccountStatusInfo(accountStatus);
                 const option = document.createElement('option');
                 option.value = bank.accountNumber;
                 option.textContent = `${bank.bankName} - ${bank.accountNumber}`;
@@ -1827,7 +2106,7 @@ window.openSurrenderModal = async function(policyNumber) {
                     hasApprovedAccount = true;
                 } else {
                     option.disabled = true;
-                    option.textContent += ` (${statusInfo.text})`; // Show status in disabled option
+                    option.textContent += ` (${statusInfo.text})`;
                     option.classList.add('text-gray-400', 'italic');
                 }
                 surrenderBankAccountDropdown.appendChild(option);
@@ -1841,10 +2120,8 @@ window.openSurrenderModal = async function(policyNumber) {
         }
 
         show(surrenderModal);
-        // Close policy details modal if it's open
         hide(policyDetailsModal);
     } catch (error) {
-        console.error('Error opening surrender modal:', error);
         window.showCustomError('Error', `Failed to prepare surrender request: ${error.message}`);
     } finally {
         hideLoader();
@@ -1879,9 +2156,8 @@ window.confirmSurrenderRequest = function() {
 
 window.submitSurrenderRequest = async function() {
     showLoader();
-    hide(confirmSurrenderModal); // Hide confirmation modal
+    hide(confirmSurrenderModal);
 
-    // Retrieve the full policy object from session storage
     const policyToSurrender = JSON.parse(sessionStorage.getItem('selectedPolicyForAction'));
 
     if (!policyToSurrender || !policyToSurrender.policyNumber) {
@@ -1897,7 +2173,7 @@ window.submitSurrenderRequest = async function() {
     const otherDocsBase64 = await Promise.all(docs.otherDocs.map(file => fileToBase64(file)));
 
     const payload = {
-        action: "SURRENDER", // Add action field
+        action: "SURRENDER",
         policyNo: policyToSurrender.policyNumber, 
         customerNo: config.customerNo,
         surrReason: reason,
@@ -1912,14 +2188,12 @@ window.submitSurrenderRequest = async function() {
         surrenderBy: config.userCode 
     };
 
-    const apiUrl = 'http://localhost:8081/policy/surrender'; // Existing API endpoint
+    const apiUrl = 'http://localhost:8081/policy/surrender';
     const headers = {
         'Content-Type': 'application/json',
         'userCode': config.userCode || '', 
         'customerNo': config.customerNo || '' 
     };
-
-    console.log('Surrender Request Payload:', payload);
 
     try {
         const response = await fetch(apiUrl, {
@@ -1929,12 +2203,10 @@ window.submitSurrenderRequest = async function() {
         });
 
         const result = await response.json();
-        console.log('Surrender API Response:', result);
 
         if (response.ok && result.status === 'Success') {
             window.showCustomAlert('Surrender Request Submitted', result.message || 'Your surrender request has been submitted successfully!');
             hide(surrenderModal);
-            // Re-fetch ALL policy data to update requests list in main view
             await fetchAllPoliciesAndRender(
                 config.customerNo, 
                 policySearchInput.value, 
@@ -1944,20 +2216,23 @@ window.submitSurrenderRequest = async function() {
                 filterTypeSelect.value, 
                 sortDateTypeSelect.value
             ); 
+            fetchSurrenderWorkflow(0, itemsPerPage, activeSurrenderFilter, config.customerNo, null, null, null, null);
+
         } else {
             window.showCustomError('Submission Failed', result.errorMessage || 'Failed to submit surrender request. Please try again.');
         }
     } catch (error) {
-        console.error('Network error during surrender submission:', error);
         window.showCustomError('Network Error', `Could not connect to the server. Please try again: ${error.message}`);
     } finally {
         hideLoader();
-        tempSurrenderData = { reason: '', description: '', docs: {}, selectedAccountNo: null }; // Clear temp data
+        tempSurrenderData = { reason: '', description: '', docs: {}, selectedAccountNo: null };
     }
 };
 
-window.openCancellationModal = function(requestId) {
+window.openCancellationModal = function(requestId, policyNo) { // Added policyNo parameter
     currentCancellationRequestId = requestId;
+    currentCancellationPolicyNo = policyNo; // Store policy number
+    hide(workflowItemDetailsModal); // Hide parent modal
     show(cancellationModal);
 };
 
@@ -1974,19 +2249,20 @@ window.submitCancellation = async function() {
 
     const payload = {
         surrenderRefNo: currentCancellationRequestId,
+        policyNo: currentCancellationPolicyNo, 
+        customerNo: config.customerNo,
         surrReason: reason,
-        surrenderStatus: 'Canceled', // Explicitly setting status for cancellation
-        surrenderBy: config.userCode 
+        surrenderStatus: 'CANCEL',
+        surrenderBy: config.userCode ,
+        action:'CANCEL'
     };
 
-    const apiUrl = `http://localhost:8081/policy/cancelSurrender`; // Adjust endpoint if needed
+    const apiUrl = `http://localhost:8081/policy/cancelSurrender`;
     const headers = {
         'Content-Type': 'application/json',
         'userCode': config.userCode || '', 
         'customerNo': config.customerNo || '' 
     };
-
-    console.log('Cancellation Request Payload:', payload);
 
     try {
         const response = await fetch(apiUrl, {
@@ -1996,11 +2272,9 @@ window.submitCancellation = async function() {
         });
 
         const result = await response.json();
-        console.log('Cancellation API Response:', result);
 
         if (response.ok && result.status === 'Success') {
             window.showCustomAlert('Cancellation Successful', result.message || 'Surrender request has been canceled.');
-            // Re-fetch ALL policy data to update requests list in main view
             await fetchAllPoliciesAndRender(
                 config.customerNo, 
                 policySearchInput.value, 
@@ -2010,30 +2284,27 @@ window.submitCancellation = async function() {
                 filterTypeSelect.value, 
                 sortDateTypeSelect.value
             ); 
+            fetchSurrenderWorkflow(0, itemsPerPage, activeSurrenderFilter, config.customerNo, null, null, null, null);
         } else {
             window.showCustomError('Cancellation Failed', result.errorMessage || 'Failed to cancel surrender request.');
         }
     } catch (error) {
-        console.error('Network error during cancellation:', error);
         window.showCustomError('Network Error', `Could not connect to the server. Please try again: ${error.message}`);
     } finally {
         hideLoader();
-        currentCancellationRequestId = null; // Clear ID
+        currentCancellationRequestId = null;
+        currentCancellationPolicyNo = null; // Clear policy number
     }
 };
-
 
 window.openSubmitClaimModal = async function(policyNumber) {
     showLoader();
     try {
-        // Retrieve policy from sessionStorage (set during openPolicyDetailsModal)
         let selectedPolicy = JSON.parse(sessionStorage.getItem('selectedPolicyForAction'));
         
-        // If not in session storage or doesn't match, re-fetch it
         if (!selectedPolicy || selectedPolicy.policyNumber !== policyNumber) {
-            console.warn("Policy not found in session storage or mismatch, re-fetching for claim modal.");
-            selectedPolicy = await fetchSinglePolicyDetails(config.customerNo, policyNumber); // Use dedicated single fetch
-            if (!selectedPolicy) { // Check for null/undefined
+            selectedPolicy = await fetchSinglePolicyDetails(config.customerNo, policyNumber);
+            if (!selectedPolicy) {
                 window.showCustomError('Policy Not Found', 'Could not retrieve details for claim submission.');
                 return;
             }
@@ -2047,14 +2318,12 @@ window.openSubmitClaimModal = async function(policyNumber) {
         document.getElementById('claim-total-amount').textContent = selectedPolicy.totalPolicyValue ? parseFloat(selectedPolicy.totalPolicyValue).toLocaleString('en-US') : 'N/A';
         document.getElementById('claim-monthly-installment').textContent = selectedPolicy.premiumAmount ? parseFloat(selectedPolicy.premiumAmount).toLocaleString('en-US') : 'N/A';
         
-        // Populate bank accounts dropdown - only approved accounts selectable
         claimBankAccountDropdown.innerHTML = '<option value="">Select a bank account</option>';
         let hasApprovedAccount = false;
         if (selectedPolicy.bankAccounts && selectedPolicy.bankAccounts.length > 0) {
             selectedPolicy.bankAccounts.forEach(bank => {
-                // Mock bank account status if not available, otherwise use actual
                 const accountStatus = (bank.accountStatus || (Math.random() < 0.7 ? 'Approved' : (Math.random() < 0.5 ? 'Pending' : 'Rejected'))).toLowerCase(); 
-                const statusInfo = getAccountStatusInfo(accountStatus); // Get status info for display
+                const statusInfo = getAccountStatusInfo(accountStatus);
                 const option = document.createElement('option');
                 option.value = bank.accountNumber;
                 option.textContent = `${bank.bankName} - ${bank.accountNumber}`;
@@ -2062,7 +2331,7 @@ window.openSubmitClaimModal = async function(policyNumber) {
                     hasApprovedAccount = true;
                 } else {
                     option.disabled = true;
-                    option.textContent += ` (${statusInfo.text})`; // Show status in disabled option
+                    option.textContent += ` (${statusInfo.text})`;
                     option.classList.add('text-gray-400', 'italic');
                 }
                 claimBankAccountDropdown.appendChild(option);
@@ -2076,10 +2345,8 @@ window.openSubmitClaimModal = async function(policyNumber) {
         }
 
         show(submitClaimModal);
-        // Close policy details modal if it's open
         hide(policyDetailsModal);
     } catch (error) {
-        console.error('Error opening claim modal:', error);
         window.showCustomError('Error', `Failed to prepare claim submission: ${error.message}`);
     } finally {
         hideLoader();
@@ -2112,7 +2379,6 @@ window.confirmClaimSubmission = function() {
         }
     };
 
-    // Simple fraud check example: if description contains "fraud" or "fake"
     if (description.toLowerCase().includes('fraud') || description.toLowerCase().includes('fake')) {
         show(fraudWarningModal);
     } else {
@@ -2123,12 +2389,11 @@ window.confirmClaimSubmission = function() {
 window.submitClaimRequest = async function(bypassFraudWarning = false) {
     showLoader();
     if (!bypassFraudWarning) {
-        hide(confirmClaimModal); // Hide confirmation modal
+        hide(confirmClaimModal);
     } else {
-        hide(fraudWarningModal); // Hide fraud warning modal
+        hide(fraudWarningModal);
     }
 
-    // Retrieve the full policy object from session storage
     const policyAffected = JSON.parse(sessionStorage.getItem('selectedPolicyForAction'));
 
     if (!policyAffected || !policyAffected.policyNumber) {
@@ -2145,7 +2410,7 @@ window.submitClaimRequest = async function(bypassFraudWarning = false) {
     const otherDocsBase64 = await Promise.all(docs.otherDocs.map(file => fileToBase64(file)));
 
     const payload = {
-        action: "CLAIM", // Add action field
+        action: "CLAIM",
         policyNo: policyAffected.policyNumber, 
         customerNo: config.customerNo,
         claimType: claimType,
@@ -2162,14 +2427,12 @@ window.submitClaimRequest = async function(bypassFraudWarning = false) {
         claimBy: config.userCode
     };
 
-    const apiUrl = 'http://localhost:8081/policy/claim'; // Existing API endpoint
+    const apiUrl = 'http://localhost:8081/policy/claim';
     const headers = {
         'Content-Type': 'application/json',
         'userCode': config.userCode || '', 
         'customerNo': config.customerNo || '' 
     };
-
-    console.log('Claim Request Payload:', payload);
 
     try {
         const response = await fetch(apiUrl, {
@@ -2179,12 +2442,10 @@ window.submitClaimRequest = async function(bypassFraudWarning = false) {
         });
 
         const result = await response.json();
-        console.log('Claim API Response:', result);
 
         if (response.ok && result.status === 'Success') {
             window.showCustomAlert('Claim Submitted', result.message || 'Your claim has been submitted successfully!');
             hide(submitClaimModal);
-            // Re-fetch ALL policy data to update claims list in main view
             await fetchAllPoliciesAndRender(
                 config.customerNo, 
                 policySearchInput.value, 
@@ -2194,20 +2455,22 @@ window.submitClaimRequest = async function(bypassFraudWarning = false) {
                 filterTypeSelect.value, 
                 sortDateTypeSelect.value
             ); 
+            fetchClaimWorkflow(0, itemsPerPage, activeClaimFilter, config.customerNo, null, null, null, null);
         } else {
             window.showCustomError('Submission Failed', result.errorMessage || 'Failed to submit claim. Please try again.');
         }
     } catch (error) {
-        console.error('Network error during claim submission:', error);
         window.showCustomError('Network Error', `Could not connect to the server. Please try again: ${error.message}`);
     } finally {
         hideLoader();
-        tempClaimData = { claimType: '', description: '', docs: {}, selectedAccountNo: null }; // Clear temp data
+        tempClaimData = { claimType: '', description: '', docs: {}, selectedAccountNo: null };
     }
 };
 
-window.openCancelClaimModal = function(claimId) {
+window.openCancelClaimModal = function(claimId, policyNo) { // Added policyNo parameter
     currentCancellationClaimId = claimId;
+    currentCancellationPolicyNo = policyNo; // Store policy number
+    hide(workflowItemDetailsModal); // Hide parent modal
     show(cancelClaimModal);
 };
 
@@ -2224,8 +2487,10 @@ window.submitClaimCancellation = async function() {
 
     const payload = {
         claimRefNo: currentCancellationClaimId,
+        policyNo: currentCancellationPolicyNo, // Added policyNo
+        customerNo: config.customerNo, // Added customerNo
         claimReason: reason, 
-        claimStatus: 'Canceled', 
+        claimStatus: 'CANCEL',
         claimBy: config.userCode 
     };
 
@@ -2236,8 +2501,6 @@ window.submitClaimCancellation = async function() {
         'customerNo': config.customerNo || '' 
     };
 
-    console.log('Claim Cancellation Request Payload:', payload);
-
     try {
         const response = await fetch(apiUrl, {
             method: 'POST',
@@ -2246,11 +2509,9 @@ window.submitClaimCancellation = async function() {
         });
 
         const result = await response.json();
-        console.log('Claim Cancellation API Response:', result);
 
         if (response.ok && result.status === 'Success') {
             window.showCustomAlert('Claim Cancellation Successful', result.message || 'Claim request has been canceled.');
-            // Re-fetch ALL policy data to update claims list in main view
             await fetchAllPoliciesAndRender(
                 config.customerNo, 
                 policySearchInput.value, 
@@ -2260,79 +2521,198 @@ window.submitClaimCancellation = async function() {
                 filterTypeSelect.value, 
                 sortDateTypeSelect.value
             ); 
+            fetchClaimWorkflow(0, itemsPerPage, activeClaimFilter, config.customerNo, null, null, null, null);
         } else {
             window.showCustomError('Cancellation Failed', result.errorMessage || 'Failed to cancel claim request.');
         }
     } catch (error) {
-        console.error('Network error during claim cancellation:', error);
         window.showCustomError('Network Error', `Could not connect to the server. Please try again: ${error.message}`);
     } finally {
         hideLoader();
-        currentCancellationClaimId = null; // Clear ID
+        currentCancellationClaimId = null;
+        currentCancellationPolicyNo = null; // Clear policy number
     }
 };
 
+
+window.openWorkflowItemDetailsModal = function(item, type) {
+    workflowDetailsTitleEl.textContent = `${type === 'surrender' ? 'Surrender Request' : 'Claim'} Details`;
+    workflowTypeEl.textContent = type === 'surrender' ? 'Surrender' : 'Claim';
+    workflowPolicyNoEl.textContent = item.policyNo || 'N/A';
+    workflowCustomerNoEl.textContent = item.customerNo || 'N/A';
+    workflowCustomerNameEl.textContent = item.customerName || 'N/A';
+    
+    if (type === 'surrender') {
+        workflowRefNoEl.textContent = item.surrenderRefNo || 'N/A';
+        workflowRequestedByEl.textContent = item.surrenderBy || 'N/A';
+        workflowRequestDateEl.textContent = item.surrDate ? new Date(item.surrDate).toLocaleString() : 'N/A';
+        workflowAmountEl.textContent = `$${item.surrAmount ? parseFloat(item.surrAmount).toLocaleString('en-US') : 'N/A'}`;
+        workflowReasonEl.textContent = item.surrReason || 'No reason provided.';
+        workflowCurrentStatusEl.innerHTML = `<i class="${getStatusInfo(item.surrenderStatus).iconClass}"></i>${getStatusInfo(item.surrenderStatus).text}`;
+        workflowCurrentStatusEl.className = `workflow-status-highlight ${getStatusInfo(item.surrenderStatus).bgClass} ${getStatusInfo(item.surrenderStatus).textClass}`;
+        
+        workflowVerificationStatusEl.textContent = item.verificationStatus || 'N/A';
+        workflowVerificationCommentEl.textContent = item.verificationComment || 'N/A';
+        
+        workflowVerificationDocStatusEl.textContent = item.verificationStatus || 'N/A';
+        workflowBankPassbookDocStatusEl.textContent = item.bankProofStatus || 'N/A';
+        workflowOtherDocStatusEl.textContent = item.otherSupportingDocumentVerificationStatus || 'N/A';
+
+        workflowDocVerificationNameEl.textContent = item.verificationDocumentName || 'No document available';
+        const hasVerificationDoc = item.verificationDocument && item.verificationDocument.trim() !== 'null' && item.verificationDocument.trim() !== '';
+        workflowDocVerificationBtn.style.display = hasVerificationDoc ? 'inline' : 'none';
+        workflowDocVerificationBtn.onclick = () => window.openViewDocumentModal(item.verificationDocument, item.verificationDocumentName, 'application/pdf');
+
+        workflowDocBankPassbookNameEl.textContent = item.bankPassbookDocumentName || 'No document available';
+        const hasBankPassbookDoc = item.bankPassbookDocument && item.bankPassbookDocument.trim() !== 'null' && item.bankPassbookDocument.trim() !== '';
+        workflowDocBankPassbookBtn.style.display = hasBankPassbookDoc ? 'inline' : 'none';
+        workflowDocBankPassbookBtn.onclick = () => window.openViewDocumentModal(item.bankPassbookDocument, item.bankPassbookDocumentName, 'application/pdf');
+
+        workflowDocOtherNameEl.textContent = item.otherSupportingDocumentName || 'No document available';
+        const hasOtherDoc = item.otherSupportingDocument && item.otherSupportingDocument.trim() !== 'null' && item.otherSupportingDocument.trim() !== '';
+        workflowDocOtherBtn.style.display = hasOtherDoc ? 'inline' : 'none';
+        workflowDocOtherBtn.onclick = () => window.openViewDocumentModal(item.otherSupportingDocument, item.otherSupportingDocumentName, 'application/pdf');
+
+        hide(workflowClaimTypeFieldEl);
+        hide(workflowDocIdProofFieldEl);
+        workflowIdProofDocStatusEl.textContent = 'N/A';
+        
+        const surrenderCancelStatus = ['OPEN', 'IN_PROGRESS', 'PENDING VERIFICATION', 'PENDING APPROVAL', 'SURRENDER_REQUESTED'];
+        if (surrenderCancelStatus.includes((item.surrenderStatus || '').toUpperCase())) {
+            show(workflowCancelBtn);
+            // Pass policyNo to openCancellationModal
+            workflowCancelBtn.onclick = () => window.openCancellationModal(item.surrenderRefNo, item.policyNo);
+        } else {
+            hide(workflowCancelBtn);
+        }
+
+    } else if (type === 'claim') {
+        workflowRefNoEl.textContent = item.claimRefNo || 'N/A';
+        workflowRequestedByEl.textContent = item.claimBy || 'N/A';
+        workflowRequestDateEl.textContent = item.claimDate ? new Date(item.claimDate).toLocaleString() : 'N/A';
+        workflowAmountEl.textContent = `$${item.claimAmount ? parseFloat(item.claimAmount).toLocaleString('en-US') : 'N/A'}`;
+        workflowReasonEl.textContent = item.claimReason || 'No reason provided.';
+        workflowCurrentStatusEl.innerHTML = `<i class="${getStatusInfo(item.claimStatus).iconClass}"></i>${getStatusInfo(item.claimStatus).text}`;
+        workflowCurrentStatusEl.className = `workflow-status-highlight ${getStatusInfo(item.claimStatus).bgClass} ${getStatusInfo(item.claimStatus).textClass}`;
+        
+        workflowVerificationStatusEl.textContent = item.verificationStatus || 'N/A';
+        workflowVerificationCommentEl.textContent = item.verificationComment || 'N/A';
+
+        workflowVerificationDocStatusEl.textContent = item.verificationStatus || 'N/A';
+        workflowBankPassbookDocStatusEl.textContent = item.bankProofStatus || 'N/A';
+        workflowIdProofDocStatusEl.textContent = item.idProofStatus || 'N/A';
+        workflowOtherDocStatusEl.textContent = item.otherSupportingDocumentVerificationStatus || 'N/A';
+
+        show(workflowClaimTypeFieldEl);
+        workflowClaimTypeEl.textContent = item.claimType || 'N/A';
+
+        workflowDocVerificationNameEl.textContent = item.verificationDocumentName || 'No document available';
+        const hasVerificationDoc = item.verificationDocument && item.verificationDocument.trim() !== 'null' && item.verificationDocument.trim() !== '';
+        workflowDocVerificationBtn.style.display = hasVerificationDoc ? 'inline' : 'none';
+        workflowDocVerificationBtn.onclick = () => window.openViewDocumentModal(item.verificationDocument, item.verificationDocumentName, 'application/pdf');
+
+        workflowDocBankPassbookNameEl.textContent = item.bankPassbookDocumentName || 'No document available';
+        const hasBankPassbookDoc = item.bankPassbookDocument && item.bankPassbookDocument.trim() !== 'null' && item.bankPassbookDocument.trim() !== '';
+        workflowDocBankPassbookBtn.style.display = hasBankPassbookDoc ? 'inline' : 'none';
+        workflowDocBankPassbookBtn.onclick = () => window.openViewDocumentModal(item.bankPassbookDocument, item.bankPassbookDocumentName, 'application/pdf');
+
+        show(workflowDocIdProofFieldEl);
+        workflowDocIdProofNameEl.textContent = item.idProofDocumentName || 'No document available';
+        const hasIdProofDoc = item.idProofDocument && item.idProofDocument.trim() !== 'null' && item.idProofDocument.trim() !== '';
+        workflowDocIdProofBtn.style.display = hasIdProofDoc ? 'inline' : 'none';
+        workflowDocIdProofBtn.onclick = () => window.openViewDocumentModal(item.idProofDocument, item.idProofDocumentName, 'application/pdf');
+
+        workflowDocOtherNameEl.textContent = item.otherSupportingDocumentName || 'No document available';
+        const hasOtherDoc = item.otherSupportingDocument && item.otherSupportingDocument.trim() !== 'null' && item.otherSupportingDocument.trim() !== '';
+        workflowDocOtherBtn.style.display = hasOtherDoc ? 'inline' : 'none';
+        workflowDocOtherBtn.onclick = () => window.openViewDocumentModal(item.otherSupportingDocument, item.otherSupportingDocumentName, 'application/pdf');
+        
+        const claimCancelStatus = ['OPEN', 'IN_PROGRESS'];
+        if (claimCancelStatus.includes((item.claimStatus || '').toUpperCase())) {
+            show(workflowCancelBtn);
+            // Pass policyNo to openCancelClaimModal
+            workflowCancelBtn.onclick = () => window.openCancelClaimModal(item.claimRefNo, item.policyNo);
+        } else {
+            hide(workflowCancelBtn);
+        }
+    }
+    
+    show(workflowItemDetailsModal);
+};
+
+// --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
-    // Assign DOM elements
+    // Cache DOM elements
     mainTitleEl = document.getElementById('main-title');
     policiesTabBtn = document.getElementById('policies-tab-btn'); 
     workflowTabBtn = document.getElementById('workflow-tab-btn'); 
     policiesContentEl = document.getElementById('policies-content'); 
-    workflowContentEl = document.getElementById('workflow-content'); // New workflow content div
-
+    workflowContentEl = document.getElementById('workflow-content'); 
     policySearchInput = document.getElementById('policy-search');
     filterStatusSelect = document.getElementById('filter-status');
     sortDateTypeSelect = document.getElementById('sort-date-type');
-    filterTypeSelect = document.getElementById('filter-type'); // Assigned new filter type select
-    
+    filterTypeSelect = document.getElementById('filter-type'); 
     policyListEl = document.getElementById('policy-list'); 
     policyCountEl = document.getElementById('policy-count'); 
     policyPaginationEl = document.getElementById('policy-pagination'); 
-    
-    combinedWorkflowListEl = document.getElementById('combined-workflow-list'); // New combined list
-    workflowPaginationEl = document.getElementById('workflow-pagination'); // New combined pagination
-
-    // Re-assign specific workflow filter buttons based on new structure (no 'all' button)
-    workflowSurrenderRequestsTabBtn = document.getElementById('workflow-surrender-requests-tab-btn');
-    workflowClaimsTabBtn = document.getElementById('workflow-claims-tab-btn');
-    workflowOngoingTabBtn = document.getElementById('workflow-ongoing-tab-btn');
-    workflowCompletedTabBtn = document.getElementById('workflow-completed-tab-btn');
-    workflowCanceledTabBtn = document.getElementById('workflow-canceled-tab-btn');
-    workflowRejectedTabBtn = document.getElementById('workflow-rejected-tab-btn');
-
-    workflowSearchInput = document.getElementById('workflow-search-input'); // New workflow search input
-    workflowSearchBySelect = document.getElementById('workflow-search-by'); // New workflow search by select
-
+    surrenderWorkflowDetailsContentEl = document.getElementById('surrender-workflow-details-content');
+    claimWorkflowDetailsContentEl = document.getElementById('claim-workflow-details-content');
+    surrenderRequestsListEl = document.getElementById('surrender-requests-list');
+    claimsListEl = document.getElementById('claims-list');
+    surrenderWorkflowPaginationEl = document.getElementById('surrender-workflow-pagination');
+    claimWorkflowPaginationEl = document.getElementById('claim-workflow-pagination');
+    workflowSurrenderTabBtn = document.getElementById('workflow-surrender-tab-btn');
+    workflowClaimTabBtn = document.getElementById('workflow-claim-tab-btn');
+    workflowSearchInput = document.getElementById('workflow-search-input'); 
+    workflowSearchBySelect = document.getElementById('workflow-search-by'); 
+    workflowStartDateInput = document.getElementById('workflow-start-date');
+    workflowEndDateInput = document.getElementById('workflow-end-date');
+    workflowItemDetailsModal = document.getElementById('workflow-item-details-modal');
+    workflowDetailsTitleEl = document.getElementById('workflow-details-title');
+    workflowTypeEl = document.getElementById('workflow-type');
+    workflowRefNoEl = document.getElementById('workflow-ref-no');
+    workflowPolicyNoEl = document.getElementById('workflow-policy-no');
+    workflowCustomerNoEl = document.getElementById('workflow-customer-no');
+    workflowCustomerNameEl = document.getElementById('workflow-customer-name');
+    workflowRequestedByEl = document.getElementById('workflow-requested-by');
+    workflowRequestDateEl = document.getElementById('workflow-request-date');
+    workflowAmountEl = document.getElementById('workflow-amount');
+    workflowClaimTypeFieldEl = document.getElementById('workflow-claim-type-field');
+    workflowClaimTypeEl = document.getElementById('workflow-claim-type');
+    workflowReasonEl = document.getElementById('workflow-reason');
+    workflowCurrentStatusEl = document.getElementById('workflow-current-status');
+    workflowVerificationStatusEl = document.getElementById('workflow-verification-status');
+    workflowVerificationCommentEl = document.getElementById('workflow-verification-comment');
+    workflowDocVerificationNameEl = document.getElementById('workflow-doc-verification-name');
+    workflowDocVerificationBtn = document.getElementById('workflow-doc-verification-btn');
+    workflowDocBankPassbookNameEl = document.getElementById('workflow-doc-bank-passbook-name');
+    workflowDocBankPassbookBtn = document.getElementById('workflow-doc-bank-passbook-btn');
+    workflowDocIdProofFieldEl = document.getElementById('workflow-doc-id-proof-field');
+    workflowDocIdProofNameEl = document.getElementById('workflow-doc-id-proof-name');
+    workflowDocIdProofBtn = document.getElementById('workflow-doc-id-proof-btn');
+    workflowDocOtherNameEl = document.getElementById('workflow-doc-other-name');
+    workflowDocOtherBtn = document.getElementById('workflow-doc-other-btn');
+    workflowVerificationDocStatusEl = document.getElementById('workflow-verification-doc-status');
+    workflowBankPassbookDocStatusEl = document.getElementById('workflow-bank-passbook-doc-status');
+    workflowIdProofDocStatusEl = document.getElementById('workflow-id-proof-doc-status');
+    workflowOtherDocStatusEl = document.getElementById('workflow-other-doc-status');
+    workflowCancelBtn = document.getElementById('workflow-cancel-btn');
+    viewDocumentModal = document.getElementById('view-document-modal');
+    documentViewerEl = document.getElementById('document-viewer');
+    viewDocumentTitleEl = document.getElementById('view-document-title');
     loaderEl = document.getElementById('loader');
-
-    // Initialize modals properly via initializeModals function call
-    initializeModals();
-
     profileUserCodeDisplayEl = document.getElementById('profile-user-code-display');
     profileCustomerNoDisplayEl = document.getElementById('profile-customer-no-display');
-
-    surrenderPolicyCoverageAmountEl = document.getElementById('surrender-policy-coverage-amount');
-    surrenderTotalClaimableAmountEl = document.getElementById('surrender-total-claimable-amount');
-    surrenderTotalAmountEl = document.getElementById('surrender-total-amount');
-    surrenderMonthlyInstallmentEl = document.getElementById('surrender-monthly-installment');
-    surrenderTotalInstallmentsPaidEl = document.getElementById('surrender-total-installments-paid');
-    surrenderTotalInstallmentsUnpaidEl = document.getElementById('surrender-total-installments-unpaid');
     surrenderBankAccountDropdown = document.getElementById('surrender-bank-account-dropdown');
-
-    claimPolicyCoverageAmountEl = document.getElementById('claim-policy-coverage-amount');
-    claimTotalClaimableAmountEl = document.getElementById('claim-total-claimable-amount');
-    claimTotalAmountEl = document.getElementById('claim-total-amount');
-    claimMonthlyInstallmentEl = document.getElementById('claim-monthly-installment');
     claimBankAccountDropdown = document.getElementById('claim-bank-account-dropdown');
 
+    initializeModals();
+    getuserCodeAndCustomerNo();
 
-    getuserCodeAndCustomerNo(); // Populate user code and customer no from session storage
-
-    // Check URL parameters for customerNo and policyNo
     const urlParams = new URLSearchParams(window.location.search);
     const customerNoFromUrl = urlParams.get('customerNo');
     const policyNoFromUrl = urlParams.get('policyNo');
-    const workItemRefNoFromUrl = urlParams.get('workItemRefNo'); // For manage workitems redirect
+    const workItemRefNoFromUrl = urlParams.get('workItemRefNo');
 
     if (customerNoFromUrl) {
         config.customerNo = customerNoFromUrl;
@@ -2341,30 +2721,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (policyNoFromUrl) {
         config.policyNoFromUrl = policyNoFromUrl;
-        // Pre-fill search input if policy number is from URL
         if (policySearchInput) policySearchInput.value = policyNoFromUrl;
     }
 
-    // Initial fetch of policy data based on URL or general customer policies
     if (config.policyNoFromUrl && !workItemRefNoFromUrl) {
-        // If a specific policy number is in the URL, fetch its details and show the modal
         const fetchedPolicy = await fetchSinglePolicyDetails(config.customerNo, config.policyNoFromUrl);
         if (fetchedPolicy) {
              window.openPolicyDetailsModal(config.policyNoFromUrl);
         }
-        await fetchAllPoliciesAndRender(config.customerNo, null, 0); // Also fetch all policies for the main list
+        await fetchAllPoliciesAndRender(config.customerNo, null, currentPagePolicies);
         window.showPrimaryTab('policies');
     } else {
-        await fetchAllPoliciesAndRender(config.customerNo, policyNoFromUrl, 0); // Always fetch all policies for the main list and workflow data
-        window.showPrimaryTab('policies'); // Default to policies tab
+        await fetchAllPoliciesAndRender(config.customerNo, policyNoFromUrl, currentPagePolicies);
+        window.showPrimaryTab('policies');
     }
     
-    // Sidebar toggle functionality
     const sidebar = document.getElementById('sidebar');
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
     const mainContent = document.getElementById('main-content');
 
-    // Ensure sidebar is collapsed by default on page load for consistency
     sidebar.classList.remove('expanded');
     mainContent.style.marginLeft = '5rem';
 
@@ -2375,15 +2750,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Logout button listeners
     document.getElementById('btn-logout-header').addEventListener('click', logout);
     document.getElementById('btn-logout-sidebar').addEventListener('click', logout);
 
-    // Main Policy Search and Filter Listeners
     policySearchInput.addEventListener('input', () => { 
-        // Reset page to 0 on new search input
         currentPagePolicies = 0;
-        // Re-fetch data based on current filters and search term
         fetchAllPoliciesAndRender(
             config.customerNo, 
             policySearchInput.value, 
@@ -2395,28 +2766,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         ); 
     });
 
-    filterStatusSelect.addEventListener('change', () => {
-        applyFilters(); // Apply all filters
-    });
+    filterStatusSelect.addEventListener('change', window.applyFilters);
+    filterTypeSelect.addEventListener('change', window.applyFilters);
+    sortDateTypeSelect.addEventListener('change', window.applyFilters);
 
-    filterTypeSelect.addEventListener('change', () => {
-        applyFilters(); // Apply all filters
-    });
-
-    sortDateTypeSelect.addEventListener('change', () => {
-        applyFilters(); // Apply all filters
-    });
-
-    // Workflow Tab Specific Search Listener
-    workflowSearchInput.addEventListener('input', () => {
-        currentPageWorkflow = 0; // Reset pagination for workflow search
-        renderWorkflowContent(activeWorkflowFilter); // Re-render workflow content with new search
-    });
-
-    workflowSearchBySelect.addEventListener('change', () => {
-        currentPageWorkflow = 0; // Reset pagination for workflow search
-        renderWorkflowContent(activeWorkflowFilter); // Re-render workflow content with new search by field
-    });
+    workflowSearchInput.addEventListener('input', window.applyWorkflowFilters);
+    workflowSearchBySelect.addEventListener('change', window.applyWorkflowFilters);
+    workflowStartDateInput.addEventListener('change', window.applyWorkflowFilters);
+    workflowEndDateInput.addEventListener('change', window.applyWorkflowFilters);
 });
 </script>
 </body>

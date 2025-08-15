@@ -3,7 +3,6 @@ package com.SecureAccessPortal.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -201,21 +200,46 @@ public class PolicyController {
 
 		return response;
 	}
-//	@RequestMapping(value="getSurrender-Claim" ,method= RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<Page<SurrenderClaimDTO>> getSurrenderClaimDetails(
-//			@RequestParam(required = false) String action, @RequestParam(required = false) String claimRefNo,
-//			@RequestParam(required = false) String policyNo, @RequestParam(required = false) String customerNo,
-//			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
-//			@RequestParam(required = false) String type,
-//			@RequestParam(defaultValue="0") int page,
-//			@RequestParam(defaultValue = "20") int size, @RequestHeader(required = false) String userCode) {
-//		ResponseEntity<Page<SurrenderClaimDTO>> response = new ResponseEntity<>();
-//
-//		response = policyService.getClaim(action, claimRefNo, policyNo, customerNo, startDate, endDate, type,
-//				page, size, userCode);
-//
-//		return response;
-//	}
+	@RequestMapping(value="getClaimDtls" ,method= RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Page<SurrenderClaimDTO>> getSurrenderClaimDetails(
+			@RequestParam(required = false) String action, @RequestParam(required = false) String claimRefNo,
+			@RequestParam(required = false) String policyNo, @RequestParam(required = false) String customerNo,
+			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+			@RequestParam(required = false) String type,
+			@RequestParam(defaultValue="0") int page,
+			@RequestParam(defaultValue = "20") int size, @RequestHeader(required = false) String userCode) {
+		ResponseEntity<Page<SurrenderClaimDTO>> response = new ResponseEntity<>();
+
+		response = policyService.getClaim(action, claimRefNo, policyNo, customerNo, startDate, endDate, type,
+				page, size, userCode);
+
+		return response;
+	}
 	
+	@PostMapping(value ="/surrender", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SurrenderClaimDTO> submitSurrender(@RequestBody SurrenderClaimDTO request,
+			@RequestHeader String userCode) {
+		ResponseEntity<SurrenderClaimDTO> response = new ResponseEntity<>();
+
+		response = policyService.submitSurrenderRequest(request, userCode);
+
+		return response;
+	}
+	@PostMapping(value ="/cancelSurrender", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SurrenderClaimDTO> cancelSurrender(@RequestBody SurrenderClaimDTO request,
+			@RequestHeader String userCode) {
+		ResponseEntity<SurrenderClaimDTO> response = new ResponseEntity<>();
+
+		response = policyService.submitSurrenderRequest(request, userCode);
+
+		return response;
+	}
+	@PostMapping(value ="/claim", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SurrenderClaimDTO> claim(@RequestBody SurrenderClaimDTO request,
+			@RequestHeader String userCode) {
+		ResponseEntity<SurrenderClaimDTO> response = new ResponseEntity<>();
+		response = policyService.submitSurrenderRequest(request, userCode);
+		return response;
+	}
 
 }

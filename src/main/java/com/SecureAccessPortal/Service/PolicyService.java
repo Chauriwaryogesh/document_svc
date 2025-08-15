@@ -7,6 +7,7 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -97,6 +98,8 @@ public class PolicyService {
 	
 	@Autowired
 	private ClaimRepo claimRepoSitory;
+	
+	
 
 	@Transactional
 	public ResponseDTO createPolicy(PolicyRequest policyDTO, String userCode) {
@@ -865,12 +868,14 @@ public class PolicyService {
 				predicate.add(cb.equal(root.get("surrRefNo"), surrenderRefNo));
 			}
 			if (policyNo != null) {
-				predicate.add(cb.equal(root.get("policy.policyNumber"), policyNo));
+				predicate.add(cb.like(cb.lower(root.get("policy").get("policyNumber")),
+						"%" + policyNo.toLowerCase() + "%"));
 			}
 			if (customerNo != null) {
-				predicate.add(cb.equal(root.get("customerNo"), customerNo));
+				predicate.add(cb.like(cb.lower(root.get("customer").get("customerNo")),
+						"%" + customerNo.toLowerCase() + "%"));
 			}
-			if (type != null) {
+			if (type != null && !type.equalsIgnoreCase(CommonConstant.ALL)) {
 				predicate.add(cb.equal(root.get("surrenderStatus"), type));
 			}
 			if (startDate != null && !startDate.isEmpty()) {
@@ -901,6 +906,8 @@ public class PolicyService {
 			response.setStatus(CommonConstant.FAILURE);
 			response.setErrorMessage("No Data found");
 			e.getLocalizedMessage();
+		}catch(Throwable t) {
+			t.printStackTrace();
 		}
 		return response;
 	}
@@ -1003,4 +1010,246 @@ public class PolicyService {
 //		response.setStatus(CommonConstant.SUCCESS);
 //		return response;
 //	}
+
+	public ResponseEntity<Page<SurrenderClaimDTO>> getClaim(String action, String claimRefNo, String policyNo,
+			String customerNo, String startDate, String endDate, String type, int page, int size, String userCode) {
+
+		ResponseEntity<Page<SurrenderClaimDTO>> response = new ResponseEntity<>();
+		try {
+		Pageable pagable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+		Specification<ClaimEntity> spec = (root, query, cb) -> {
+			List<jakarta.persistence.criteria.Predicate> predicate = new ArrayList<>();
+			if (claimRefNo != null) {
+				predicate.add(cb.equal(root.get("claimRefNo"), claimRefNo));
+			}
+			if (policyNo != null) {
+				predicate.add(cb.like(cb.lower(root.get("policy").get("policyNumber")),
+						"%" + policyNo.toLowerCase() + "%"));
+			}
+			if (customerNo != null) {
+				predicate.add(cb.like(cb.lower(root.get("customer").get("customerNo")),
+						"%" + customerNo.toLowerCase() + "%"));
+			}
+			if (type != null && !type.equalsIgnoreCase(CommonConstant.ALL)) {
+				predicate.add(cb.equal(root.get("surrenderStatus"), type));
+			}
+			if (startDate != null && !startDate.isEmpty()) {
+				try {
+					LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
+							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					predicate.add(cb.greaterThanOrEqualTo(root.get("createdDate"), startDateTime));
+				} catch (DateTimeParseException e) {
+					System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
+				}
+			}
+			if (endDate != null && !endDate.isEmpty()) {
+				try {
+					LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
+							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					predicate.add(cb.lessThanOrEqualTo(root.get("createdDate"), endDateTime));
+				} catch (DateTimeParseException e) {
+					System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
+				}
+			}
+			return cb.and(predicate.toArray(new jakarta.persistence.criteria.Predicate[0]));
+		};
+		Page<ClaimEntity> claimEntity =claimRepoSitory.findAll(spec, pagable);
+		Page<SurrenderClaimDTO> mapClaimSurreResponse = policyMapper.mapClaimResponse(claimEntity);
+		response.setData(mapClaimSurreResponse);
+		response.setStatus(CommonConstant.SUCCESS);
+		}catch(Exception e) {
+			response.setStatus(CommonConstant.FAILURE);
+			response.setErrorMessage("No Data found");
+			e.getLocalizedMessage();
+		}catch(Throwable t) {
+			t.printStackTrace();
+		}
+		return response;
+	
+	}
+
+	public ResponseEntity<SurrenderClaimDTO> submitSurrenderRequest(SurrenderClaimDTO request, String userCode) {
+		ResponseEntity<SurrenderClaimDTO> response = new ResponseEntity<>();
+		SurrenderClaimDTO surrenderClaimDTO = new SurrenderClaimDTO();
+		switch (request.getAction()) {
+		case CommonConstant.SURRENDER -> {
+			SurrenderEntity surrenderEntity = new SurrenderEntity();
+			surrenderEntity.setSurrRefNo(generateSurrenderRefNo());
+			surrenderEntity.setCreatedBy(userCode);
+			surrenderEntity.setDeletedFlag(CommonConstant.N);
+			surrenderEntity.setCreatedDate(LocalDateTime.now());
+			surrenderEntity.setSurrAmount(request.getSurrAmount());
+			surrenderEntity.setSurrDate(LocalDateTime.now());
+			surrenderEntity.setSurrenderBy(request.getSurrenderBy());
+			surrenderEntity.setSurrenderReason(request.getSurrReason());
+			surrenderEntity.setSurrenderStatus(CommonConstant.IN_PROGRESS);
+
+			// surrenderEntity.setVerificationComment(userCode);
+			// surrenderEntity.setPayments(null);
+//			surrenderEntity.setUpdatedBy(userCode);
+//			surrenderEntity.setUpdatedDate(null);
+
+			BankAccount byAccountNo = bankAccountRepository.findByAccountNo(request.getBankAccNo(), CommonConstant.N);
+			if (byAccountNo != null) {
+				surrenderEntity.setBankAccount(byAccountNo);
+			}
+			Customer byCustomerNoNew = customerRepository.findByCustomerNoNew(request.getCustomerNo(),
+					CommonConstant.N);
+			if (byCustomerNoNew != null) {
+				surrenderEntity.setCustomer(byCustomerNoNew);
+			}
+			if (request.getOtherSupportingDocument() != null) {
+				byte[] fileBytes = Base64.getDecoder().decode(request.getOtherSupportingDocument());
+				surrenderEntity.setOtherSupportingDocument(fileBytes);
+				surrenderEntity.setOtherSupportingDocumentName(request.getOtherSupportingDocumentName());
+				surrenderEntity.setOtherSupportingDocumentVerificationStatus(CommonConstant.PENDING);
+			}
+			if (request.getVerificationDocument() != null) {
+				byte[] fileBytes = Base64.getDecoder().decode(request.getVerificationDocument());
+				surrenderEntity.setVerificationDocument(fileBytes);
+				surrenderEntity.setVerificationDocumentName(request.getVerificationDocumentName());
+				surrenderEntity.setVerificationStatus(CommonConstant.PENDING);
+			}
+
+			Policy byPolicyNum = policyRepository.findByPolicyNum(request.getPolicyNo(), CommonConstant.N);
+			if (byPolicyNum != null) {
+				surrenderEntity.setPolicy(byPolicyNum);
+			}
+
+			SurrenderEntity save = surrenderRepoSitory.save(surrenderEntity);
+			if (save != null) {
+				logger.info("{}", save.getSurrRefNo());
+				surrenderClaimDTO.setSurrenderRefNo(save.getSurrRefNo());
+				surrenderClaimDTO.setSurrenderStatus(save.getSurrenderStatus());
+				response.setData(surrenderClaimDTO);
+				response.setStatus(CommonConstant.SUCCESS);
+			} else {
+				response.setStatus(CommonConstant.FAILURE);
+			}
+		}
+		case CommonConstant.CANCEL -> {
+			if (request.getSurrenderRefNo() != null) {
+				SurrenderEntity surrender = surrenderRepoSitory.findBySurrenderRefNo(request.getSurrenderRefNo(),
+						CommonConstant.N);
+				surrender.setSurrenderStatus(request.getSurrenderStatus());
+				surrender.setSurrenderReason(request.getSurrReason());
+				surrender.setUpdatedBy(userCode);
+				surrender.setVerificationComment("Cancelled By user");
+				surrender.setVerificationStatus(CommonConstant.CANCELED);
+				surrender.setUpdatedDate(LocalDateTime.now());
+				SurrenderEntity save = surrenderRepoSitory.save(surrender);
+				if (save != null) {
+					logger.info("{}", save.getSurrRefNo());
+					surrenderClaimDTO.setSurrenderRefNo(save.getSurrRefNo());
+					surrenderClaimDTO.setSurrenderStatus(save.getSurrenderStatus());
+					response.setData(surrenderClaimDTO);
+					response.setStatus(CommonConstant.SUCCESS);
+				} else {
+					response.setStatus(CommonConstant.FAILURE);
+				}
+			}
+
+		}
+		case CommonConstant.CLAIM ->{
+			ClaimEntity surrenderEntity = new ClaimEntity();
+			surrenderEntity.setClaimRefNo(generateClaimRefNo());
+			surrenderEntity.setCreatedBy(userCode);
+			surrenderEntity.setDeletedFlag(CommonConstant.N);
+			surrenderEntity.setCreatedDate(LocalDateTime.now());
+			surrenderEntity.setClaimAmount(request.getSurrAmount());
+			surrenderEntity.setClaimDate(LocalDateTime.now());
+			surrenderEntity.setClaimBy(request.getSurrenderBy());
+			surrenderEntity.setClaimReason(request.getSurrReason());
+			surrenderEntity.setClaimStatus(CommonConstant.IN_PROGRESS);
+
+			// surrenderEntity.setVerificationComment(userCode);
+			// surrenderEntity.setPayments(null);
+//			surrenderEntity.setUpdatedBy(userCode);
+//			surrenderEntity.setUpdatedDate(null);
+
+			BankAccount byAccountNo = bankAccountRepository.findByAccountNo(request.getBankAccNo(), CommonConstant.N);
+			if (byAccountNo != null) {
+				surrenderEntity.setBankAccount(byAccountNo);
+			}
+			Customer byCustomerNoNew = customerRepository.findByCustomerNoNew(request.getCustomerNo(),
+					CommonConstant.N);
+			if (byCustomerNoNew != null) {
+				surrenderEntity.setCustomer(byCustomerNoNew);
+			}
+			if (request.getOtherSupportingDocument() != null) {
+				byte[] fileBytes = Base64.getDecoder().decode(request.getOtherSupportingDocument());
+				surrenderEntity.setOtherSupportingDocument(fileBytes);
+				surrenderEntity.setOtherSupportingDocumentName(request.getOtherSupportingDocumentName());
+				surrenderEntity.setOtherSupportingDocumentVerificationStatus(CommonConstant.PENDING);
+			}
+			if (request.getBankPassbookDocument() != null) {
+				byte[] fileBytes = Base64.getDecoder().decode(request.getBankPassbookDocument());
+				surrenderEntity.setBankDocument(fileBytes);;
+				surrenderEntity.setBankDocumentName(request.getBankPassbookDocumentName());
+				surrenderEntity.setBankDocumentStatus(CommonConstant.PENDING);
+			}
+			if (request.getIdDocument() != null) {
+				byte[] fileBytes = Base64.getDecoder().decode(request.getIdDocument());
+				surrenderEntity.setIdDocument(fileBytes);;
+				surrenderEntity.setIdDocumentName(request.getIdDocumentStatus());
+				surrenderEntity.setIdDocumentStatus(CommonConstant.PENDING);
+			}
+			if (request.getVerificationDocument() != null) {
+				byte[] fileBytes = Base64.getDecoder().decode(request.getVerificationDocument());
+				surrenderEntity.setVerificationDocument(fileBytes);
+				surrenderEntity.setVerificationDocumentName(request.getVerificationDocumentName());
+				surrenderEntity.setVerificationStatus(CommonConstant.PENDING);
+			}
+
+			Policy byPolicyNum = policyRepository.findByPolicyNum(request.getPolicyNo(), CommonConstant.N);
+			if (byPolicyNum != null) {
+				surrenderEntity.setPolicy(byPolicyNum);
+			}
+
+			ClaimEntity save = claimRepoSitory.save(surrenderEntity);
+			if (save != null) {
+				logger.info("{}", save.getClaimRefNo());
+				surrenderClaimDTO.setSurrenderRefNo(save.getClaimRefNo());
+				surrenderClaimDTO.setSurrenderStatus(save.getClaimStatus());
+				response.setData(surrenderClaimDTO);
+				response.setStatus(CommonConstant.SUCCESS);
+			} else {
+				response.setStatus(CommonConstant.FAILURE);
+			}
+		
+			
+		}
+		}
+		return response;
+	}
+	public   String generateSurrenderRefNo() {
+		String prefix = "SURR/";
+		int currentYear = LocalDate.now().getYear();
+		String latestComplaintNumber = surrenderRepoSitory.findLatestByNotesId();
+		int nextNumber = 1;
+		if (latestComplaintNumber != null && latestComplaintNumber.startsWith(prefix)
+				&& latestComplaintNumber.endsWith("/" + currentYear)) {
+			String numberPart = latestComplaintNumber.replace(prefix, "").replace("/" + currentYear, "");
+			try {
+				nextNumber = Integer.parseInt(numberPart) + 1;
+			} catch (NumberFormatException e) {
+			}
+		}
+		return String.format("%s%06d/%d", prefix, nextNumber, currentYear);
+	}
+	public   String generateClaimRefNo() {
+		String prefix = "CLAIM/";
+		int currentYear = LocalDate.now().getYear();
+		String latestComplaintNumber = claimRepoSitory.findLatestByNotesId();
+		int nextNumber = 1;
+		if (latestComplaintNumber != null && latestComplaintNumber.startsWith(prefix)
+				&& latestComplaintNumber.endsWith("/" + currentYear)) {
+			String numberPart = latestComplaintNumber.replace(prefix, "").replace("/" + currentYear, "");
+			try {
+				nextNumber = Integer.parseInt(numberPart) + 1;
+			} catch (NumberFormatException e) {
+			}
+		}
+		return String.format("%s%06d/%d", prefix, nextNumber, currentYear);
+	}
 }

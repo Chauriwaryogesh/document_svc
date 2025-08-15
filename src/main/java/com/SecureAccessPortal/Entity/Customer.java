@@ -125,6 +125,12 @@ public class Customer {
 
 	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Policy> policies = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<SurrenderEntity> surrenderEntity = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<ClaimEntity> claimEntity = new ArrayList<>();
 
 	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<BankAccount> bankAccounts = new ArrayList<>();
@@ -148,6 +154,14 @@ public class Customer {
 		return feedback;
 	}
 
+	public List<ClaimEntity> getClaimEntity() {
+		return claimEntity;
+	}
+
+	public void setClaimEntity(List<ClaimEntity> claimEntity) {
+		this.claimEntity = claimEntity;
+	}
+
 	public void setFeedback(List<FeedbackEntity> feedback) {
 		this.feedback = feedback;
 	}
@@ -157,6 +171,14 @@ public class Customer {
 
 	@Column
 	private String updatedBy;
+
+	public List<SurrenderEntity> getSurrenderEntity() {
+		return surrenderEntity;
+	}
+
+	public void setSurrenderEntity(List<SurrenderEntity> surrenderEntity) {
+		this.surrenderEntity = surrenderEntity;
+	}
 
 	@Column
 	private LocalDateTime updatedTime;
