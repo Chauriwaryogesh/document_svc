@@ -1156,7 +1156,7 @@ public class PolicyService {
 			surrenderEntity.setCreatedBy(userCode);
 			surrenderEntity.setDeletedFlag(CommonConstant.N);
 			surrenderEntity.setCreatedDate(LocalDateTime.now());
-			surrenderEntity.setClaimAmount(request.getSurrAmount());
+			surrenderEntity.setClaimAmount(request.getClaimAmount());
 			surrenderEntity.setClaimDate(LocalDateTime.now());
 			surrenderEntity.setClaimBy(request.getSurrenderBy());
 			surrenderEntity.setClaimReason(request.getSurrReason());

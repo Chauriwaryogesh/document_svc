@@ -974,6 +974,8 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div class="policy-detail-field"><strong>Verification Status:</strong> <span id="workflow-verification-status"></span></div>
                     <div class="policy-detail-field"><strong>Verification Comment:</strong> <span id="workflow-verification-comment"></span></div>
+                    <div class="policy-detail-field"><strong>Verification updatedBy:</strong> <span id="workflow-updatedBy-status"></span></div>
+                    <div class="policy-detail-field"><strong>Verification UpdatedTime:</strong> <span id="workflow-updatedTime-comment"></span></div>
                 </div>
             </div>
 
@@ -1073,7 +1075,7 @@ let surrenderWorkflowPaginationEl, claimWorkflowPaginationEl;
 let workflowSurrenderTabBtn, workflowClaimTabBtn;
 let workflowSearchInput, workflowSearchBySelect, workflowStartDateInput, workflowEndDateInput;
 
-let workflowItemDetailsModal, workflowDetailsTitleEl, workflowTypeEl, workflowRefNoEl, workflowPolicyNoEl, workflowCustomerNoEl, workflowCustomerNameEl, workflowRequestedByEl, workflowRequestDateEl, workflowAmountEl, workflowClaimTypeFieldEl, workflowClaimTypeEl, workflowReasonEl, workflowCurrentStatusEl, workflowVerificationStatusEl, workflowVerificationCommentEl;
+let workflowItemDetailsModal, workflowDetailsTitleEl, workflowTypeEl, workflowRefNoEl, workflowPolicyNoEl, workflowCustomerNoEl, workflowCustomerNameEl, workflowRequestedByEl, workflowRequestDateEl, workflowAmountEl, workflowClaimTypeFieldEl, workflowClaimTypeEl, workflowReasonEl, workflowCurrentStatusEl, workflowVerificationStatusEl, workflowVerificationCommentEl,workflowUpdatedByEl,workflowUpdatedTimeEl;
 let workflowDocVerificationNameEl, workflowDocVerificationBtn, workflowDocBankPassbookNameEl, workflowDocBankPassbookBtn, workflowDocIdProofFieldEl, workflowDocIdProofNameEl, workflowDocIdProofBtn, workflowDocOtherNameEl, workflowDocOtherBtn;
 let workflowVerificationDocStatusEl, workflowBankPassbookDocStatusEl, workflowIdProofDocStatusEl, workflowOtherDocStatusEl;
 let workflowCancelBtn;
@@ -1265,28 +1267,41 @@ function fileToBase64(file) {
     });
 }
 
-window.openViewDocumentModal = function(base64Data, fileName, mimeType = 'application/pdf') {
-    const isBase64String = base64Data && typeof base64Data === 'string' && base64Data.length > 50 && !base64Data.includes(' ');
-    if (!isBase64String || base64Data.trim() === 'null' || base64Data.trim() === 'Bank Name') {
-        window.showCustomError('Document Not Available', 'The document content is not available or is not in a viewable format.');
+window.openViewDocumentModal = function(base64Data, fileName, mimeType) {
+    if (!base64Data || base64Data.trim() === '' || base64Data.trim().toLowerCase() === 'null') {
+        window.showCustomError('Document Not Available', 'The document content is not available.');
         return;
     }
-
-    const docViewer = document.getElementById('document-viewer');
-    const viewDocModalTitle = document.getElementById('view-document-title');
-
-    viewDocModalTitle.textContent = `Viewing: ${fileName || 'Untitled Document'}`;
-    
-    const dataUrl = `data:${mimeType};base64,${base64Data}`;
-    docViewer.src = dataUrl;
-    
-    show(viewDocumentModal);
+    if (!mimeType) {
+        if (fileName && fileName.toLowerCase().endsWith('.pdf')) {
+            mimeType = 'application/pdf';
+        } else if (fileName && (fileName.toLowerCase().endsWith('.jpg') || fileName.toLowerCase().endsWith('.jpeg'))) {
+            mimeType = 'image/jpeg';
+        } else if (fileName && fileName.toLowerCase().endsWith('.png')) {
+            mimeType = 'image/png';
+        } else {
+            mimeType = 'application/pdf';
+        }
+    }
+    if (viewDocumentTitleEl) {
+        viewDocumentTitleEl.textContent = `Viewing: ${fileName || 'Untitled Document'}`;
+    }
+    if (documentViewerEl) {
+        documentViewerEl.src = `data:${mimeType};base64,${base64Data}`;
+    }
+    if (viewDocumentModal) {
+        viewDocumentModal.style.display = 'flex';
+    }
 };
-
 window.closeViewDocumentModal = function() {
-    document.getElementById('document-viewer').src = '';
-    hide(viewDocumentModal);
+    if (documentViewerEl) {
+        documentViewerEl.src = '';
+    }
+    if (viewDocumentModal) {
+        viewDocumentModal.style.display = 'none';
+    }
 };
+
 
 // --- API FETCH FUNCTIONS ---
 async function fetchAllPoliciesAndRender(customerNo, policyNoSearch = null, page = 0, size = itemsPerPage, filterStatus = 'all', filterType = 'all', sortDateType = 'none') {
@@ -2037,7 +2052,26 @@ window.openPolicyDetailsModal = async function(policyNumber) {
         if (detailsClaimBtn) {
             detailsClaimBtn.dataset.policyNumber = selectedPolicy.policyNumber;
         }
-
+     // ✅ Enable/disable Surrender & Claim buttons based on policy status
+        if ((selectedPolicy.policyStatus || '').toUpperCase() === 'ACTIVE') {
+            if (detailsSurrenderBtn) {
+                detailsSurrenderBtn.disabled = false;
+                detailsSurrenderBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+            if (detailsClaimBtn) {
+                detailsClaimBtn.disabled = false;
+                detailsClaimBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        } else {
+            if (detailsSurrenderBtn) {
+                detailsSurrenderBtn.disabled = true;
+                detailsSurrenderBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            if (detailsClaimBtn) {
+                detailsClaimBtn.disabled = true;
+                detailsClaimBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
         sessionStorage.setItem('selectedPolicyForAction', JSON.stringify(selectedPolicy)); 
 
         window.showDetailsTab('policy');
@@ -2416,6 +2450,7 @@ window.submitClaimRequest = async function(bypassFraudWarning = false) {
         customerNo: config.customerNo,
         claimType: claimType,
         claimReason: description, 
+        claimAmount:policyAffected.totalAmount,
         bankAccNo: selectedAccountNo,
         verificationDocument: verificationDocBase64,
         verificationDocumentName: docs.verificationDoc?.name || null,
@@ -2427,7 +2462,7 @@ window.submitClaimRequest = async function(bypassFraudWarning = false) {
         otherSupportingDocumentName: otherDocsBase64.length > 0 ? docs.otherDocs[0]?.name : null,
         claimBy: config.userCode
     };
-
+    console.log(policyAffected);
     const apiUrl = 'http://localhost:8081/policy/claim';
     const headers = {
         'Content-Type': 'application/json',
@@ -2446,6 +2481,7 @@ window.submitClaimRequest = async function(bypassFraudWarning = false) {
 
         if (response.ok && result.status === 'Success') {
             window.showCustomAlert('Claim Submitted', result.message || 'Your claim has been submitted successfully!');
+            console.log(policyAffected);
             hide(submitClaimModal);
             await fetchAllPoliciesAndRender(
                 config.customerNo, 
@@ -2554,6 +2590,8 @@ window.openWorkflowItemDetailsModal = function(item, type) {
         
         workflowVerificationStatusEl.textContent = item.verificationStatus || 'N/A';
         workflowVerificationCommentEl.textContent = item.verificationComment || 'N/A';
+        workflowUpdatedByEl.textContent = item.updatedBy || 'N/A';
+        workflowUpdatedTimeEl.textContent = item.updatedDate || 'N/A';
         
         workflowVerificationDocStatusEl.textContent = item.verificationStatus || 'N/A';
         workflowBankPassbookDocStatusEl.textContent = item.bankProofStatus || 'N/A';
@@ -2598,6 +2636,8 @@ window.openWorkflowItemDetailsModal = function(item, type) {
         
         workflowVerificationStatusEl.textContent = item.verificationStatus || 'N/A';
         workflowVerificationCommentEl.textContent = item.verificationComment || 'N/A';
+        workflowUpdatedByEl.textContent = item.updatedBy || 'N/A';
+        workflowUpdatedTimeEl.textContent = item.updatedDate || 'N/A';
 
         workflowVerificationDocStatusEl.textContent = item.verificationStatus || 'N/A';
         workflowBankPassbookDocStatusEl.textContent = item.bankProofStatus || 'N/A';
@@ -2684,6 +2724,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     workflowCurrentStatusEl = document.getElementById('workflow-current-status');
     workflowVerificationStatusEl = document.getElementById('workflow-verification-status');
     workflowVerificationCommentEl = document.getElementById('workflow-verification-comment');
+    workflowUpdatedByEl = document.getElementById('workflow-updatedBy-status');
+    workflowUpdatedTimeEl = document.getElementById('workflow-updatedTime-comment');
     workflowDocVerificationNameEl = document.getElementById('workflow-doc-verification-name');
     workflowDocVerificationBtn = document.getElementById('workflow-doc-verification-btn');
     workflowDocBankPassbookNameEl = document.getElementById('workflow-doc-bank-passbook-name');
