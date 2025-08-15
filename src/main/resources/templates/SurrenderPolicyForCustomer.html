@@ -1543,7 +1543,7 @@ function renderPolicies() {
         card.innerHTML = `
             <h3 class="font-bold text-lg text-blue-700">${pol.policyName || 'N/A'}</h3>
             <p class="text-sm text-gray-600 mb-2">Policy No: <span class="font-medium">${pol.policyNumber || 'N/A'}</span></p>
-            <p class="text-sm text-gray-600 mb-2">Customer No: <span class="font-medium">${pol.customer && pol.customer.customerNo || 'N/A'}</span></p>
+            <p class="text-sm text-gray-600 mb-2">Customer No: <span class="font-medium">${pol.customerNo && pol.customerNo || 'N/A'}</span></p>
             <div class="flex items-center space-x-2 text-sm">
                 <span class="status-badge ${getStatusInfo(pol.policyStatus).bgClass} ${getStatusInfo(pol.policyStatus).textClass} flex items-center">
                     <i class="${getStatusInfo(pol.policyStatus).iconClass} mr-1"></i>${getStatusInfo(pol.policyStatus).text}
@@ -1948,13 +1948,13 @@ window.openPolicyDetailsModal = async function(policyNumber) {
                 <strong>Coverage Amount:</strong> <span>$${selectedPolicy.coverageAmount ? parseFloat(selectedPolicy.coverageAmount).toLocaleString('en-US') : 'N/A'}</span>
             </div>
             <div class="policy-detail-field money-field">
-                <strong>Premium Amount:</strong> <span>$${selectedPolicy.premiumAmount ? parseFloat(selectedPolicy.premiumAmount).toLocaleString('en-US') : 'N/A'}</span>
+                <strong>Premium Amount:</strong> <span>$${selectedPolicy.premium ? parseFloat(selectedPolicy.premium).toLocaleString('en-US') : selectedPolicy.premium}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Issue Date:</strong> <span>${selectedPolicy.issueDate || 'N/A'}</span>
+                <strong>Issue Date:</strong> <span>${selectedPolicy.createdDate || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Maturity Date:</strong> <span>${selectedPolicy.maturityDate || 'N/A'}</span>
+                <strong>Maturity Date:</strong> <span>${selectedPolicy.endDate || 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
                 <strong>Renewal Date:</strong> <span>${selectedPolicy.renewalDate || 'N/A'}</span>
@@ -1972,16 +1972,16 @@ window.openPolicyDetailsModal = async function(policyNumber) {
                 <strong>Payment Frequency:</strong> <span>${selectedPolicy.paymentFrequency || 'N/A'}</span>
             </div>
             <div class="policy-detail-field money-field">
-                <strong>Total Policy Value:</strong> <span>$${selectedPolicy.totalPolicyValue ? parseFloat(selectedPolicy.totalPolicyValue).toLocaleString('en-US') : 'N/A'}</span>
+                <strong>Total Policy Value:</strong> <span>$${selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US') :0}</span>
             </div>
             <div class="policy-detail-field money-field">
                 <strong>Total Claimable Amount:</strong> <span>$${selectedPolicy.totalClaimableAmount ? parseFloat(selectedPolicy.totalClaimableAmount).toLocaleString('en-US') : 'N/A'}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Total Installments Paid:</strong> <span>${selectedPolicy.totalInstallmentsPaid || 'N/A'}</span>
+                <strong>Total Installments Paid:</strong> <span>${selectedPolicy.totalInstallmentsPaid || 0}</span>
             </div>
             <div class="policy-detail-field">
-                <strong>Total Installments Unpaid:</strong> <span>${selectedPolicy.totalInstallmentsUnpaid || 'N/A'}</span>
+                <strong>Total Installments Unpaid:</strong> <span>${selectedPolicy.totalInstallmentsUnPaid || 0}</span>
             </div>
         `;
 
@@ -2011,15 +2011,16 @@ window.openPolicyDetailsModal = async function(policyNumber) {
 
         const paymentsTabEl = document.getElementById('payments-tab');
         paymentsTabEl.innerHTML = '';
-        if (selectedPolicy.payments && selectedPolicy.payments.length > 0) {
-            selectedPolicy.payments.forEach(payment => {
+        console.log(selectedPolicy.paymentListDTO);
+        if (selectedPolicy.paymentListDTO && selectedPolicy.paymentListDTO.length > 0) {
+            selectedPolicy.paymentListDTO.forEach(payment => {
                 const paymentStatusInfo = getStatusInfo(payment.paymentStatus);
                 paymentsTabEl.innerHTML += `
                     <div class="bg-green-50 p-4 rounded-lg shadow-sm">
                         <p><strong>Payment ID:</strong> ${payment.paymentId || 'N/A'}</p>
-                        <p><strong>Amount:</strong> ${payment.amount || 'N/A'}</p>
-                        <p><strong>Date:</strong> ${payment.paymentDate || 'N/A'}</p>
-                        <p><strong>Status:</strong> <span class="${paymentStatusInfo.textClass}">${paymentStatusInfo.text}</span></p>
+                        <p><strong>Amount:</strong> ${payment.installmentAmount || 'N/A'}</p>
+                        <p><strong>Date:</strong> ${payment.dueDate || 'N/A'}</p>
+                        <p><strong>Status:</strong> <span class="${paymentStatusInfo.textClass}">${payment.status}</span></p>
                     </div>
                 `;
             });
@@ -2087,11 +2088,11 @@ window.openSurrenderModal = async function(policyNumber) {
         document.getElementById('surrender-policy-id').textContent = selectedPolicy.policyNumber || 'N/A';
         document.getElementById('surrender-policy-name').textContent = selectedPolicy.policyName || 'N/A';
         document.getElementById('surrender-policy-coverage-amount').textContent = selectedPolicy.coverageAmount ? parseFloat(selectedPolicy.coverageAmount).toLocaleString('en-US') : 'N/A';
-        document.getElementById('surrender-total-claimable-amount').textContent = selectedPolicy.totalClaimableAmount ? parseFloat(selectedPolicy.totalClaimableAmount).toLocaleString('en-US') : 'N/A';
-        document.getElementById('surrender-total-amount').textContent = selectedPolicy.totalPolicyValue ? parseFloat(selectedPolicy.totalPolicyValue).toLocaleString('en-US') : 'N/A';
-        document.getElementById('surrender-monthly-installment').textContent = selectedPolicy.premiumAmount ? parseFloat(selectedPolicy.premiumAmount).toLocaleString('en-US') : 'N/A';
-        document.getElementById('surrender-total-installments-paid').textContent = selectedPolicy.totalInstallmentsPaid || 'N/A';
-        document.getElementById('surrender-total-installments-unpaid').textContent = selectedPolicy.totalInstallmentsUnpaid || 'N/A';
+        document.getElementById('surrender-total-claimable-amount').textContent = selectedPolicy.totalAmtPaidByInstallemt ? parseFloat(selectedPolicy.totalAmtPaidByInstallemt).toLocaleString('en-US') : 'N/A';
+        document.getElementById('surrender-total-amount').textContent = selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('surrender-monthly-installment').textContent = selectedPolicy.monthlyInstallment ? parseFloat(selectedPolicy.monthlyInstallment).toLocaleString('en-US') : 'N/A';
+        document.getElementById('surrender-total-installments-paid').textContent = selectedPolicy.totalInstallmentsPaid || 0;
+        document.getElementById('surrender-total-installments-unpaid').textContent = selectedPolicy.totalInstallmentsUnPaid || 0;
         
         surrenderBankAccountDropdown.innerHTML = '<option value="">Select a bank account</option>';
         let hasApprovedAccount = false;
@@ -2311,12 +2312,12 @@ window.openSubmitClaimModal = async function(policyNumber) {
             sessionStorage.setItem('selectedPolicyForAction', JSON.stringify(selectedPolicy));
         }
 
-        document.getElementById('claim-policy-id').textContent = selectedPolicy.policyNumber || 'N/A';
-        document.getElementById('claim-policy-name').textContent = selectedPolicy.policyName || 'N/A';
+        document.getElementById('claim-policy-id').textContent = selectedPolicy.policyNumber;
+        document.getElementById('claim-policy-name').textContent = selectedPolicy.policyName;
         document.getElementById('claim-policy-coverage-amount').textContent = selectedPolicy.coverageAmount ? parseFloat(selectedPolicy.coverageAmount).toLocaleString('en-US') : 'N/A';
-        document.getElementById('claim-total-claimable-amount').textContent = selectedPolicy.totalClaimableAmount ? parseFloat(selectedPolicy.totalClaimableAmount).toLocaleString('en-US') : 'N/A';
-        document.getElementById('claim-total-amount').textContent = selectedPolicy.totalPolicyValue ? parseFloat(selectedPolicy.totalPolicyValue).toLocaleString('en-US') : 'N/A';
-        document.getElementById('claim-monthly-installment').textContent = selectedPolicy.premiumAmount ? parseFloat(selectedPolicy.premiumAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('claim-total-claimable-amount').textContent = selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('claim-total-amount').textContent = selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('claim-monthly-installment').textContent = selectedPolicy.monthlyInstallment ? parseFloat(selectedPolicy.monthlyInstallment).toLocaleString('en-US') : 'N/A';
         
         claimBankAccountDropdown.innerHTML = '<option value="">Select a bank account</option>';
         let hasApprovedAccount = false;
