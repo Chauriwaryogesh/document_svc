@@ -40,6 +40,7 @@ public class SurrenderClaimDTO {
 	private BigDecimal claimAmount;
 	private String claimDate;
 	private String claimBy;
+	private String claimType;
 	private String action;
 
 	private String surrDescription;
@@ -47,7 +48,7 @@ public class SurrenderClaimDTO {
 
 	private String bankPassbookDocument;
 	private String bankPassbookDocumentName;
-	private String BankPassbookDocumentNameStatus;
+	private String bankPassbookDocumentNameStatus;
 
 	private String idProofDocument;
 	private String idProofDocumentName;
@@ -60,6 +61,14 @@ public class SurrenderClaimDTO {
 	private String documentStatus;
 	private String documentType;
 	
+	public String getClaimType() {
+		return claimType;
+	}
+
+	public void setClaimType(String claimType) {
+		this.claimType = claimType;
+	}
+
 	public String getDocumentStatus() {
 		return documentStatus;
 	}
@@ -102,12 +111,14 @@ public class SurrenderClaimDTO {
 		this.updatedDate = updatedDate;
 	}
 
+	
+
 	public String getBankPassbookDocumentNameStatus() {
-		return BankPassbookDocumentNameStatus;
+		return bankPassbookDocumentNameStatus;
 	}
 
 	public void setBankPassbookDocumentNameStatus(String bankPassbookDocumentNameStatus) {
-		BankPassbookDocumentNameStatus = bankPassbookDocumentNameStatus;
+		this.bankPassbookDocumentNameStatus = bankPassbookDocumentNameStatus;
 	}
 
 	public String getIdProofDocumentStatus() {

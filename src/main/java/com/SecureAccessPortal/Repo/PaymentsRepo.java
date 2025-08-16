@@ -39,5 +39,8 @@ public interface PaymentsRepo extends JpaRepository<Payments, String> {
 
 	@Query("SELECT p FROM Payments  p WHERE p.customer.customerNo= :number")
 	List<Payments> findByCustomerNo(String number);
+	
+	@Query("SELECT p FROM Payments  p WHERE p.paymentId= :paymentId")
+	Optional< Payments> findByPaymentIs(String pymentId);
 
 }

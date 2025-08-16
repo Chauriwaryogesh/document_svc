@@ -4,24 +4,23 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.BankAccount;
-import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Payments;
 import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Modal.DashboardStats;
@@ -35,6 +34,9 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class PaymentService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(PolicyService.class);
+
 
 	@Autowired
 	private PaymentsRepo paymentsRepository;
@@ -57,14 +59,16 @@ public class PaymentService {
 	@Transactional
 	public Payments processPayment(PaymentRequest request, String paymentId, String paymentMethod, String userCode) {
 		Payments payment = new Payments();
-		if (paymentId.contains("SURR")) {
-			payment = paymentsRepository.findByPaymentId(paymentId);
-			if (payment == null) {
-//						.orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
-//						if ("Paid".equals(payment.getStatus())) {
-//							throw new IllegalStateException("Payment is already done: " + paymentId);
-//						}	
-			}
+		if (paymentId.contains("SURR") || paymentId.contains("CLAIM") ) {
+//		 Optional<Payments> byPaymentIs = paymentsRepository.findByPaymentIs(paymentId);
+//			if (byPaymentIs == null) {
+//				logger.error("payment not found");
+////						.orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
+////						if ("Paid".equals(payment.getStatus())) {
+////							throw new IllegalStateException("Payment is already done: " + paymentId);
+////						}	
+//			}
+			
 			payment = createPaymentEntries(request);
 		} else {
 			payment = paymentsRepository.findById(paymentId)
@@ -87,6 +91,7 @@ public class PaymentService {
 				payment.setTransactionId(generateTransactionId());
 				payment.setPaymentDate(LocalDate.now());
 				payment.setPaymentMethod(paymentMethod);
+				payment.setPaymentType(CommonConstant.POL_INSTLMNT);
 				payment.setEmailStatus("Service Not Available Now");
 				sendPaymentConfirmationEmail(payment);
 			} else {
@@ -97,9 +102,10 @@ public class PaymentService {
 
 			payment.setUpdatedBy(userCode);
 			payment.setUpdatedTime(LocalDateTime.now());
+			 payment = paymentsRepository.save(payment);
 		}
 
-		return paymentsRepository.save(payment);
+		return payment;
 	}
 
 	private Payments createPaymentEntries(PaymentRequest request) {
@@ -121,7 +127,7 @@ public class PaymentService {
 					.findByAccountNo(request.getPaymentDetails().getBankaccount(), CommonConstant.N);
 			payment.setBankAccount(bankAccounts);
 		}
-
+        payment.setPaymentType(request.getPaymentType());
 		payment.setInstallmentCount(0);
 		payment.setTotalInstallments(0);
 		String mockResponse = simulatePaymentGateway();

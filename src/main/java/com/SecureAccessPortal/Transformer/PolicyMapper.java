@@ -229,9 +229,6 @@ public class PolicyMapper {
 				surrender.setSurrenderStatus(surr.getSurrenderStatus());
 				surrender.setSurrReason(surr.getSurrenderReason());
 				surrender.setVerificationComment(surr.getVerificationComment());
-				surrender.setVerificationDocument(String.valueOf(surr.getVerificationDocument()));
-				surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
-				surrender.setVerificationStatus(surr.getVerificationStatus());
 				surrender.setUpdatedBy(surr.getUpdatedBy());
 				surrender.setUpdatedDate(String.valueOf(surr.getUpdatedDate()));
 				if (surr.getBankAccount() != null) {
@@ -267,7 +264,7 @@ public class PolicyMapper {
 				if (surr.getBankDocument() != null) {
 					String fileBytes = Base64.getEncoder().encodeToString(surr.getBankDocument());
 					surrender.setBankPassbookDocument(fileBytes);
-					surrender.setBankPassbookDocumentName(CommonConstant.BANK);
+					surrender.setBankPassbookDocumentName(CommonConstant.BANK_PROOF);
 					surrender.setBankPassbookDocumentNameStatus(surr.getBankDocumentStatus());
 				}
 				if (surr.getIdDocument() != null) {
@@ -296,10 +293,12 @@ public class PolicyMapper {
 				surrender.setClaimRefNo(surr.getClaimRefNo());
 				surrender.setClaimStatus(surr.getClaimStatus());
 				surrender.setClaimReason(surr.getClaimReason());
+				surrender.setClaimType(surr.getClaimType());
 				surrender.setVerificationComment(surr.getVerificationComment());
-				surrender.setVerificationDocument(String.valueOf(surr.getVerificationDocument()));
-				surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
-				surrender.setVerificationStatus(surr.getVerificationStatus());
+				if (surr.getBankAccount() != null) {
+					BankDetailsDTO convertToDTO = bankDetailsService.convertToDTO(surr.getBankAccount());
+					surrender.setBankAccount(convertToDTO);
+				}
 				return surrender;
 			});
 		}

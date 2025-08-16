@@ -8,6 +8,15 @@ public class PaymentRequest {
 	public PaymentDetails paymentDetails;
 	public String userCode;
 	private String paymentAmount;
+	private String paymentType;
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 
 	public String getPaymentAmount() {
 		return paymentAmount;

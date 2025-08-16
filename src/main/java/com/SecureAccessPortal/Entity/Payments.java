@@ -85,12 +85,23 @@ public class Payments {
 	@Column(name = "total_installments")
 	private int totalInstallments;
 	
+	@Column(name = "payment_type")
+	private String paymentType;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "accountNo", referencedColumnName = "accountNo")
 	private BankAccount bankAccount;
 	
 	@Column(name = "total_AmountPaid")
 	private BigDecimal totalAmountPaid;
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 
 	public List<SurrenderEntity> getSurrenderEntity() {
 		return surrenderEntity;

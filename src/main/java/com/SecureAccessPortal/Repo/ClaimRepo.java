@@ -19,4 +19,7 @@ public interface ClaimRepo  extends JpaRepository<ClaimEntity, String> {
 	@Query("Select s from ClaimEntity s WHERE s.customer.customerNo =:customerNo AND s.deletedFlag=:deletedFlag")
 	List<ClaimEntity> findBuCustomerNo(String customerNo, String deletedFlag);
 
+	@Query("SELECT c FROM ClaimEntity c WHERE c.claimRefNo =:claimRefNo AND c.deletedFlag=:deletedFlag")
+	ClaimEntity findByClaimRefNo(String claimRefNo, String deletedFlag);
+
 }

@@ -30,6 +30,9 @@ public class ClaimEntity {
 	private String claimBy;
 
 	@Column
+	private String claimType;
+	
+	@Column
 	private String claimReason;
 
 	@Column
@@ -88,6 +91,14 @@ public class ClaimEntity {
 	private String idDocumentStatus;
 	
 	
+	public String getClaimType() {
+		return claimType;
+	}
+
+	public void setClaimType(String claimType) {
+		this.claimType = claimType;
+	}
+
 	public byte[] getIdDocument() {
 		return idDocument;
 	}
@@ -95,7 +106,6 @@ public class ClaimEntity {
 	public void setIdDocument(byte[] idDocument) {
 		this.idDocument = idDocument;
 	}
-
 	public String getIdDocumentName() {
 		return idDocumentName;
 	}

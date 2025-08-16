@@ -1546,6 +1546,7 @@
                 paymentAmount: amount,
                 customerNumber: currentSelectedRequest.customerNo,
                 paymentMethod: "BANK_TRANSFER",
+                paymentType: "SURRENDER", // Use paymentType as 'CLAIM'
                 paymentDetails: {
                     bankaccount: currentSelectedRequest.bankAccount?.accountNumber,
                     ifscCode: currentSelectedRequest.bankAccount?.ifscCode

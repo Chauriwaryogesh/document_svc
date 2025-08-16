@@ -940,7 +940,7 @@ public class PolicyService {
 							"%" + customerNo.toLowerCase() + "%"));
 				}
 				if (type != null && !type.equalsIgnoreCase(CommonConstant.ALL)) {
-					predicate.add(cb.equal(root.get("surrenderStatus"), type));
+					predicate.add(cb.equal(root.get("claimStatus"), type));
 				}
 				if (startDate != null && !startDate.isEmpty()) {
 					try {
@@ -1073,10 +1073,10 @@ public class PolicyService {
 			surrenderEntity.setCreatedDate(LocalDateTime.now());
 			surrenderEntity.setClaimAmount(request.getClaimAmount());
 			surrenderEntity.setClaimDate(LocalDateTime.now());
-			surrenderEntity.setClaimBy(request.getSurrenderBy());
-			surrenderEntity.setClaimReason(request.getSurrReason());
+			surrenderEntity.setClaimBy(request.getClaimBy());
+			surrenderEntity.setClaimReason(request.getClaimReason());
 			surrenderEntity.setClaimStatus(CommonConstant.IN_PROGRESS);
-
+			surrenderEntity.setClaimType(request.getClaimType());
 			// surrenderEntity.setVerificationComment(userCode);
 			// surrenderEntity.setPayments(null);
 //			surrenderEntity.setUpdatedBy(userCode);
@@ -1094,27 +1094,27 @@ public class PolicyService {
 			if (request.getOtherSupportingDocument() != null) {
 				byte[] fileBytes = Base64.getDecoder().decode(request.getOtherSupportingDocument());
 				surrenderEntity.setOtherSupportingDocument(fileBytes);
-				surrenderEntity.setOtherSupportingDocumentName(CommonConstant.OTH_DOC);
-				surrenderEntity.setOtherSupportingDocumentVerificationStatus(CommonConstant.PEND);
+				surrenderEntity.setOtherSupportingDocumentName(CommonConstant.OTH_DOC_1);
+				surrenderEntity.setOtherSupportingDocumentVerificationStatus(CommonConstant.IN_PROGRESS);
 			}
 			if (request.getBankPassbookDocument() != null) {
 				byte[] fileBytes = Base64.getDecoder().decode(request.getBankPassbookDocument());
 				surrenderEntity.setBankDocument(fileBytes);
 				;
 				surrenderEntity.setBankDocumentName(CommonConstant.BANK_PROOF);
-				surrenderEntity.setBankDocumentStatus(CommonConstant.PEND);
+				surrenderEntity.setBankDocumentStatus(CommonConstant.IN_PROGRESS);
 			}
-			if (request.getIdDocument() != null) {
-				byte[] fileBytes = Base64.getDecoder().decode(request.getIdDocument());
+			if (request.getIdProofDocument() != null) {
+				byte[] fileBytes = Base64.getDecoder().decode(request.getIdProofDocument());
 				surrenderEntity.setIdDocument(fileBytes);
 				surrenderEntity.setIdDocumentName(CommonConstant.ID_PROOF);
-				surrenderEntity.setIdDocumentStatus(CommonConstant.PEND);
+				surrenderEntity.setIdDocumentStatus(CommonConstant.IN_PROGRESS);
 			}
 			if (request.getVerificationDocument() != null) {
 				byte[] fileBytes = Base64.getDecoder().decode(request.getVerificationDocument());
 				surrenderEntity.setVerificationDocument(fileBytes);
 				surrenderEntity.setVerificationDocumentName(CommonConstant.OTH_DOC);
-				surrenderEntity.setVerificationStatus(CommonConstant.PENDING);
+				surrenderEntity.setVerificationStatus(CommonConstant.IN_PROGRESS);
 			}
 
 			Policy byPolicyNum = policyRepository.findByPolicyNum(request.getPolicyNo(), CommonConstant.N);
@@ -1157,6 +1157,27 @@ public class PolicyService {
 				} else {
 					response.setStatus(CommonConstant.FAILURE);
 				}
+			}else if(request.getClaimRefNo() != null){
+				ClaimEntity surrender = claimRepoSitory.findByClaimRefNo(request.getClaimRefNo(),CommonConstant.N);
+				surrender.setClaimStatus(request.getClaimStatus());
+				surrender.setClaimReason(request.getClaimReason());
+				surrender.setUpdatedBy(request.getUpdatedBy());
+				if(request.getVerificationComment() != null) {
+					surrender.setVerificationComment(request.getVerificationComment());
+				}else {
+					surrender.setVerificationComment(CommonConstant.APPROVED);
+				}
+				surrender.setUpdatedDate(LocalDateTime.now());
+				ClaimEntity save = claimRepoSitory.save(surrender);
+				if (save != null) {
+					logger.info("{}", save.getClaimRefNo());
+					surrenderClaimDTO.setClaimRefNo(save.getClaimRefNo());
+					surrenderClaimDTO.setClaimStatus(save.getClaimStatus());
+					response.setData(surrenderClaimDTO);
+					response.setStatus(CommonConstant.SUCCESS);
+				} else {
+					response.setStatus(CommonConstant.FAILURE);
+				}	
 			}
 		}
 		case CommonConstant.UPDATE_DOCUMENT_STATUS ->{
@@ -1185,9 +1206,35 @@ public class PolicyService {
 				} else {
 					response.setStatus(CommonConstant.FAILURE);
 				}
-			}
-			
-			
+			}else if(request.getClaimRefNo() != null) {
+				ClaimEntity surrender = claimRepoSitory.findByClaimRefNo(request.getClaimRefNo(),CommonConstant.N);
+				switch (request.getDocumentType()) {
+				case CommonConstant.BANK_PROOF -> {
+					surrender.setBankDocumentStatus(request.getDocumentStatus());
+				}
+				case CommonConstant.ID_PROOF -> {
+					surrender.setIdDocumentStatus(request.getDocumentStatus());
+				}
+				case CommonConstant.OTH_DOC -> {
+					surrender.setVerificationStatus(request.getDocumentStatus());
+				}
+				case CommonConstant.OTH_DOC_1 -> {
+					surrender.setOtherSupportingDocumentVerificationStatus(request.getDocumentStatus());
+				}
+				}
+				surrender.setUpdatedDate(LocalDateTime.now());
+				surrender.setUpdatedBy(request.getUpdatedBy());
+				ClaimEntity save = claimRepoSitory.save(surrender);
+				if (save != null) {
+					logger.info("{}", save.getClaimRefNo());
+					surrenderClaimDTO.setClaimRefNo(save.getClaimRefNo());
+					surrenderClaimDTO.setClaimStatus(save.getClaimStatus());
+					response.setData(surrenderClaimDTO);
+					response.setStatus(CommonConstant.SUCCESS);
+				} else {
+					response.setStatus(CommonConstant.FAILURE);
+				}	
+			}		
 		}
 		}
 		return response;
@@ -1272,13 +1319,13 @@ public class PolicyService {
 					.setClaimInProgress(
 							claim.stream()
 									.filter(surr -> surr.getClaimStatus() != null
-											&& surr.getClaimStatus().equalsIgnoreCase(CommonConstant.APPROVED))
+											&& surr.getClaimStatus().equalsIgnoreCase(CommonConstant.IN_PROGRESS))
 									.count());
 			dashboardStats
 					.setClaimRejected(
 							claim.stream()
 									.filter(surr -> surr.getClaimStatus() != null
-											&& surr.getClaimStatus().equalsIgnoreCase(CommonConstant.APPROVED))
+											&& surr.getClaimStatus().equalsIgnoreCase(CommonConstant.REJECTED))
 									.count());
 		}
 		response.setData(dashboardStats);
