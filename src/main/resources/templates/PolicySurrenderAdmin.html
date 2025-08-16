@@ -252,6 +252,7 @@
         .status-badge.in_progress { background-color: #fef3c7; color: #d97706; }
         .status-badge.approved { background-color: #d1fae5; color: #065f46; }
         .status-badge.rejected { background-color: #fee2e2; color: #991b1b; }
+        .status-badge.completed { background-color: #dbeafe; color: #1e40af; }
 
 
         .document-item.approved .fa-check-circle { color: #22c55e; }
@@ -595,7 +596,6 @@
                     </div>
 
                     <div class="tab-row-controls flex-grow justify-end pr-4 py-2 w-full sm:w-auto">
-                        <!-- The second search bar has been removed as per your request -->
                         <details class="collapsible-section horizontal-flow relative">
                             <summary class="collapsible-summary flex items-center gap-2 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 cursor-pointer">
                                 <i class="fa-solid fa-filter text-blue-600"></i>
@@ -683,6 +683,7 @@
                             <option value="IN_PROGRESS">In Progress</option>
                             <option value="APPROVED">Approved</option>
                             <option value="REJECTED">Rejected</option>
+                            <option value="COMPLETED">Completed</option> <!-- Added Completed status -->
                         </select>
                     </div>
                 </div>
@@ -727,6 +728,17 @@
                     <div class="flex flex-col sm:flex-row gap-2 mt-4 justify-end">
                         <button id="verify-bank-btn" class="modern-button primary"><i class="fa-solid fa-bank mr-2"></i> Update Bank Status</button>
                         <button id="process-payment-btn" class="modern-button primary bg-purple-600 hover:bg-purple-700"><i class="fa-solid fa-money-bill-transfer mr-2"></i> Process Payment</button>
+                    </div>
+                </div>
+
+                <!-- New Payment Information Section -->
+                <div class="bg-green-50 p-6 rounded-xl shadow-inner mb-6">
+                    <h3 class="text-xl font-bold text-green-700 mb-4">Payment Information</h3>
+                    <div id="payment-info-display">
+                        <p class="text-gray-500 text-center py-4">No payment information available yet.</p>
+                    </div>
+                    <div id="payment-history-list" class="space-y-2 mt-4">
+                        <!-- Payment history items will be dynamically added here -->
                     </div>
                 </div>
 
@@ -778,12 +790,11 @@
     <footer class="main-footer">© 2025 Secure Access Limited. All rights reserved ❤️ Company.</footer>
 
     <script>
-        const config = { loginUrl: 'login', userCode: null, customerNo: null };
+        const config = { loginUrl: 'login.html', userCode: null, customerNo: null };
         let currentSelectedRequest = null;
         let currentPage = 1;
         const requestsPerPage = 5;
         let currentFilterStatus = 'ALL';
-        // Object to hold parameters for the single header search bar
         let currentSearchParams = {
             surrenderRefNo: '',
             policyNo: '',
@@ -822,13 +833,13 @@
 
         window.navigateTo = (page) => {
             const pageUrls = {
-                dashboard: 'dashboard', 
-                policySurrenderAdmin: 'PolicySurrenderAdmin', 
-                policyClaimAdmin: 'PolicyClaimAdmin',
-                bankAccount:'bankAccount',
-                payment: 'PaymentForCustomer',
-                complaints:'Complaints',
-                logout: 'login'
+                dashboard: 'dashboard.html', 
+                policySurrenderAdmin: 'PolicySurrenderAdmin.html', 
+                policyClaimAdmin: 'PolicyClaimAdmin.html', // Added for Claim Requests
+                bankAccount:'bankAccount.html',
+                payment: 'PaymentForCustomer.html',
+                complaints:'Complaints.html',
+                logout: 'login.html'
             };
 
             const targetFileName = pageUrls[page];
@@ -883,6 +894,12 @@
                     return { text: 'Approved', className: 'status-badge approved' };
                 case 'REJECTED':
                     return { text: 'Rejected', className: 'status-badge rejected' };
+                case 'COMPLETED': 
+                    return { text: 'Completed', className: 'status-badge completed' };
+                case 'PAID': // New for payment status
+                    return { text: 'Paid', className: 'status-badge approved' }; // Green
+                case 'UNPAID': // New for payment status
+                    return { text: 'Unpaid', className: 'status-badge rejected' }; // Red
                 default:
                     return { text: 'Unknown', className: 'status-badge' };
             }
@@ -1111,6 +1128,7 @@
             updateModalStatusDisplay();
             renderModalDocuments();
             updateBankVerificationState();
+            fetchAndDisplayPaymentStatus(request.surrenderRefNo, request.customerNo, request.policyNo); // Fetch payment status
 
             openModal('request-details-modal');
         }
@@ -1135,7 +1153,7 @@
             const rejectBtn = document.getElementById('modal-reject-request-btn');
             
             // Enable/disable approve/reject buttons based on current surrender status
-            if (currentStatus === 'APPROVED' || currentStatus === 'REJECTED') {
+            if (currentStatus === 'APPROVED' || currentStatus === 'REJECTED' || currentStatus === 'COMPLETED') {
                 approveBtn.disabled = true;
                 rejectBtn.disabled = true;
                 approveBtn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -1523,17 +1541,23 @@
         async function processPayment(refNo, amount) {
             showLoader();
             const payload = {
-                referenceNumber: refNo,
-                paymentType: 'SURRENDER',
-                amount: amount,
-                processedBy: config.userCode
+                paymentId: refNo, // Using surrender refNo as paymentId
+                policyNumber: currentSelectedRequest.policyNo,
+                paymentAmount: amount,
+                customerNumber: currentSelectedRequest.customerNo,
+                paymentMethod: "BANK_TRANSFER",
+                paymentDetails: {
+                    bankaccount: currentSelectedRequest.bankAccount?.accountNumber,
+                    ifscCode: currentSelectedRequest.bankAccount?.ifscCode
+                },
+                userCode: config.userCode
             };
             const headers = {
                 'Content-Type': 'application/json',
                 'userCode': config.userCode || ''
             };
             try {
-                const response = await fetch('http://localhost:8081/policy/processPayment', {
+                const response = await fetch('http://localhost:8081/Payments/process', { // Updated API endpoint
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(payload)
@@ -1542,7 +1566,9 @@
                 if (response.ok && result.status === 'Success') {
                     showMessage('Payment Processed', `Payment of $${amount.toLocaleString('en-US')} processed for surrender request ${refNo}.`);
                     // Update overall request status to 'COMPLETED' after successful payment
-                    await updateOverallRequestStatus(currentSelectedRequest.surrenderRefNo, 'COMPLETED', currentSelectedRequest.verificationComment); 
+                    await updateOverallRequestStatus('COMPLETED'); // Pass only the new status
+                    // Update payment info display
+                    fetchAndDisplayPaymentStatus(currentSelectedRequest.surrenderRefNo, currentSelectedRequest.customerNo, currentSelectedRequest.policyNo);
                     return true;
                 } else {
                     showErrorAlert(result.errorMessage || `Failed to process payment for surrender request ${refNo}.`);
@@ -1566,6 +1592,69 @@
                 showErrorAlert('Payment cannot be processed. Request must be approved and bank account approved.');
             }
         });
+
+        // Function to fetch and display payment status
+        async function fetchAndDisplayPaymentStatus(surrenderRefNo, customerNo, policyNo) {
+            showLoader();
+            const paymentInfoDisplay = document.getElementById('payment-info-display');
+            const paymentHistoryList = document.getElementById('payment-history-list');
+            paymentInfoDisplay.innerHTML = '';
+            paymentHistoryList.innerHTML = '';
+
+            const apiUrl =`http://localhost:8081/Payments/history?paymentId=${surrenderRefNo}&page=${0}&size=${100}`;
+            const headers = {
+                'Content-Type': 'application/json',
+                'userCode': config.userCode || ''
+            };
+
+            try {
+                const response = await fetch(apiUrl, { method: 'GET', headers: headers });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.errorMessage || `HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                
+                let payments = [];
+                if (result.data && result.data.content && result.data.content.length > 0) {
+                    payments = result.data.content[0].paymentList || [];
+                }
+
+                if (payments.length > 0) {
+                    paymentInfoDisplay.innerHTML = `<p class="font-semibold text-gray-800">Total Payments Recorded: ${payments.length}</p>`;
+                    
+                    payments.forEach(payment => {
+                        const paymentItem = document.createElement('div');
+                        paymentItem.className = 'bg-white p-4 rounded-lg shadow-sm mb-2 text-gray-700 border border-gray-200';
+                        
+                        const paymentStatusInfo = getStatusBadgeClass(payment.status);
+
+                        const displayAmount = payment.totalAmount ? parseFloat(payment.totalAmount).toLocaleString('en-US') : (payment.installmentAmount ? parseFloat(payment.installmentAmount).toLocaleString('en-US') : 'N/A');
+
+                        paymentItem.innerHTML = `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <p><strong>Payment ID:</strong> ${payment.paymentId || 'N/A'}</p>
+                                <p><strong>BankAccount No:</strong> ${payment.bankAccNo || 'N/A'}</p>
+                                <p><strong>Transaction ID:</strong> ${payment.transactionId || 'N/A'}</p>
+                                <p><strong>Amount:</strong> $${displayAmount}</p>
+                                <p><strong>Payment Date:</strong> ${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}</p>
+                                <p><strong>Method:</strong> ${payment.paymentMethod || 'N/A'}</p>
+                                <div><p><strong>Status:</strong> <span class="${paymentStatusInfo.className}">${paymentStatusInfo.text}</span></p></div>
+                                <p class="col-span-full"><strong>Message:</strong> ${payment.message || 'N/A'}</p>
+                            </div>
+                        `;
+                        paymentHistoryList.appendChild(paymentItem);
+                    });
+                } else {
+                    paymentInfoDisplay.innerHTML = '<p class="text-gray-500 text-center py-4">No payment information available yet.</p>';
+                }
+            } catch (error) {
+                paymentInfoDisplay.innerHTML = '<p class="text-gray-500 text-center py-4">Error loading payment information.</p>';
+                console.error(`Error fetching payment status: ${error.message}.`);
+            } finally {
+                hideLoader();
+            }
+        }
         
         function setupHeaderSearchBar() {
             const input = document.getElementById('header-search-bar');

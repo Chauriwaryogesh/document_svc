@@ -65,6 +65,8 @@ public class CommonConstant {
 	public static final String BANK_PROOF = "BANK_PROOF";
 	public static final String OTH_DOC = "OTH_DOC";
 	public static final String UPDATE_DOCUMENT_STATUS = "UPDATE_DOCUMENT_STATUS";
+	public static final String POLICY_SURENDERRED = "POLICY_SURRENDERED";
+	public static final String FAILED = "FAILED";
 	
 
 }

@@ -7,6 +7,15 @@ public class PaymentRequest {
 	public String paymentMethod;
 	public PaymentDetails paymentDetails;
 	public String userCode;
+	private String paymentAmount;
+
+	public String getPaymentAmount() {
+		return paymentAmount;
+	}
+
+	public void setPaymentAmount(String paymentAmount) {
+		this.paymentAmount = paymentAmount;
+	}
 
 	public String getPolicyNumber() {
 		return policyNumber;

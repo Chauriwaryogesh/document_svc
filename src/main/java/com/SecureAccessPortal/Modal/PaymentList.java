@@ -15,6 +15,24 @@ public class PaymentList {
 	private String responseStatus;
 	private String message;
 	private String paymentMethod;
+	private String totalAmount;
+	private String bankAccNo;
+
+	public String getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(String totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public String getBankAccNo() {
+		return bankAccNo;
+	}
+
+	public void setBankAccNo(String bankAccNo) {
+		this.bankAccNo = bankAccNo;
+	}
 
 	public String getPaymentMethod() {
 		return paymentMethod;

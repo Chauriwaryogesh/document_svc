@@ -85,7 +85,44 @@ public class Payments {
 	@Column(name = "total_installments")
 	private int totalInstallments;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "accountNo", referencedColumnName = "accountNo")
+	private BankAccount bankAccount;
 	
+	@Column(name = "total_AmountPaid")
+	private BigDecimal totalAmountPaid;
+
+	public List<SurrenderEntity> getSurrenderEntity() {
+		return surrenderEntity;
+	}
+
+	public void setSurrenderEntity(List<SurrenderEntity> surrenderEntity) {
+		this.surrenderEntity = surrenderEntity;
+	}
+
+	public List<ClaimEntity> getClaimEntity() {
+		return claimEntity;
+	}
+
+	public void setClaimEntity(List<ClaimEntity> claimEntity) {
+		this.claimEntity = claimEntity;
+	}
+
+	public BankAccount getBankAccount() {
+		return bankAccount;
+	}
+
+	public void setBankAccount(BankAccount bankAccount) {
+		this.bankAccount = bankAccount;
+	}
+
+	public BigDecimal getTotalAmountPaid() {
+		return totalAmountPaid;
+	}
+
+	public void setTotalAmountPaid(BigDecimal totalAmountPaid) {
+		this.totalAmountPaid = totalAmountPaid;
+	}
 
 	public int getTotalInstallments() {
 		return totalInstallments;

@@ -38,9 +38,13 @@ public class PaymentController {
 	public ResponseEntity<PaymentResponse> processPayment(@RequestBody PaymentRequest request) {
 		ResponseEntity responseEntity = new ResponseEntity<>();
 		try {
-			Payments payment = paymentService.processPayment(request.getPaymentId(), request.getPaymentMethod(),
+			Payments payment = paymentService.processPayment(request,request.getPaymentId(), request.getPaymentMethod(),
 					request.getUserCode());
 			PaymentList response = new PaymentList();
+			response.setPaymentDate(payment.getPaymentDate());
+			response.setBankAccNo(payment.getBankAccount().getAccountNo());
+			response.setTotalAmount(String.valueOf(payment.getTotalAmountPaid()));
+			response.setPaymentMethod(payment.getPaymentMethod());
 			response.setPaymentId(payment.getPaymentId());
 			response.setTransactionId(payment.getTransactionId());
 			response.setStatus(payment.getStatus());
@@ -51,7 +55,7 @@ public class PaymentController {
 			responseEntity.setData(response);
 		} catch (Exception e) {
 			responseEntity.setStatus(CommonConstant.FAILURE);
-			responseEntity.setErrorMessage("Payment has been failed");
+			responseEntity.setErrorMessage("Payment Already Done");
 		}
 		return responseEntity;
 	}
@@ -86,15 +90,18 @@ public class PaymentController {
 			pr.setPolicyType(firstPayment.getPolicy().getPolicyType());
 
 			// Map all payments to PaymentList
-			List<PaymentList> paymentList = entry.getValue().stream().map(p -> {
+			List<PaymentList> paymentList = entry.getValue().stream().map(payment -> {
 				PaymentList pl = new PaymentList();
-				pl.setPaymentId(p.getPaymentId());
-				pl.setInstallmentAmount(p.getInstallmentAmount());
-				pl.setDueDate(p.getDueDate());
-				pl.setPaymentDate(p.getPaymentDate());
-				pl.setStatus(p.getStatus());
-				pl.setTransactionId(p.getTransactionId());
-				pl.setEmailStatus(p.getEmailStatus());
+				pl.setPaymentDate(payment.getPaymentDate());
+				pl.setBankAccNo(payment.getBankAccount().getAccountNo());
+				pl.setTotalAmount(String.valueOf(payment.getTotalAmountPaid()));
+				pl.setPaymentMethod(payment.getPaymentMethod());
+				pl.setPaymentId(payment.getPaymentId());
+				pl.setTransactionId(payment.getTransactionId());
+				pl.setStatus(payment.getStatus());
+				pl.setEmailStatus(payment.getEmailStatus());
+				pl.setMessage("Payment processed successfully");
+				pl.setResponseStatus(CommonConstant.SUCCESS);
 				return pl;
 			})
 					// .sorted((p1, p2) -> p1.getDueDate().compareTo(p2.getDueDate())) // Sort by

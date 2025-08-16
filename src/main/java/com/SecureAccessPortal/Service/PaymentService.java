@@ -1,8 +1,10 @@
 package com.SecureAccessPortal.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,8 +20,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
+import com.SecureAccessPortal.Entity.BankAccount;
+import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.Payments;
+import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Modal.DashboardStats;
+import com.SecureAccessPortal.Modal.PaymentRequest;
+import com.SecureAccessPortal.Repo.BankAccountRepo;
+import com.SecureAccessPortal.Repo.IPolicyRepo;
 import com.SecureAccessPortal.Repo.PaymentsRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,20 +38,92 @@ public class PaymentService {
 
 	@Autowired
 	private PaymentsRepo paymentsRepository;
+	
+	@Autowired
+	private IPolicyRepo policyRepository;
 
 	@Autowired
 	private Environment env;
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private IWorkItemService workItemService;
+	
+	@Autowired
+	private BankAccountRepo bankAccountRepository;
 
 	@Transactional
-	public Payments processPayment(String paymentId, String paymentMethod, String userCode) {
-		Payments payment = paymentsRepository.findById(paymentId)
-				.orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
-		if ("Paid".equals(payment.getStatus())) {
-			throw new IllegalStateException("Payment is already done: " + paymentId);
+	public Payments processPayment(PaymentRequest request, String paymentId, String paymentMethod, String userCode) {
+		Payments payment = new Payments();
+		if (paymentId.contains("SURR")) {
+			payment = paymentsRepository.findByPaymentId(paymentId);
+			if (payment == null) {
+//						.orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
+//						if ("Paid".equals(payment.getStatus())) {
+//							throw new IllegalStateException("Payment is already done: " + paymentId);
+//						}	
+			}
+			payment = createPaymentEntries(request);
+		} else {
+			payment = paymentsRepository.findById(paymentId)
+					.orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
+			if ("Paid".equals(payment.getStatus())) {
+				throw new IllegalStateException("Payment is already done: " + paymentId);
+			}
+			String mockResponse = simulatePaymentGateway();
+			boolean paymentSuccess;
+			try {
+				// Parse JSON response
+				Map<String, String> responseMap = objectMapper.readValue(mockResponse, Map.class);
+				paymentSuccess = "success".equalsIgnoreCase(responseMap.get("status"));
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to parse payment gateway response: " + mockResponse, e);
+			}
+
+			if (paymentSuccess) {
+				payment.setStatus("Paid");
+				payment.setTransactionId(generateTransactionId());
+				payment.setPaymentDate(LocalDate.now());
+				payment.setPaymentMethod(paymentMethod);
+				payment.setEmailStatus("Service Not Available Now");
+				sendPaymentConfirmationEmail(payment);
+			} else {
+				payment.setStatus("Failed");
+				payment.setPaymentDate(LocalDate.now());
+				payment.setEmailStatus("NotSent");
+			}
+
+			payment.setUpdatedBy(userCode);
+			payment.setUpdatedTime(LocalDateTime.now());
 		}
+
+		return paymentsRepository.save(payment);
+	}
+
+	private Payments createPaymentEntries(PaymentRequest request) {
+		Payments payment = new Payments();
+		Policy byPolicyNum = new Policy();
+		payment.setPaymentId(request.getPaymentId());
+		if (request.getPolicyNumber() != null) {
+			byPolicyNum = policyRepository.findByPolicyNum(request.getPolicyNumber(), CommonConstant.N);
+			payment.setPolicy(byPolicyNum);
+			payment.setCustomer(byPolicyNum.getCustomer());
+			payment.setProductCode(byPolicyNum.getProductCode());
+			payment.setPolicyName(byPolicyNum.getPolicyName());
+			payment.setInstallmentAmount(BigDecimal.valueOf(byPolicyNum.getTotalAmount()));
+			payment.setDueDate(LocalDate.now());
+		}
+
+		if (request.getPaymentDetails().getBankaccount() != null) {
+			BankAccount bankAccounts = bankAccountRepository
+					.findByAccountNo(request.getPaymentDetails().getBankaccount(), CommonConstant.N);
+			payment.setBankAccount(bankAccounts);
+		}
+
+		payment.setInstallmentCount(0);
+		payment.setTotalInstallments(0);
 		String mockResponse = simulatePaymentGateway();
 		boolean paymentSuccess;
 		try {
@@ -53,23 +133,34 @@ public class PaymentService {
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to parse payment gateway response: " + mockResponse, e);
 		}
-
 		if (paymentSuccess) {
-			payment.setStatus("Paid");
+			payment.setStatus(CommonConstant.PAID);
 			payment.setTransactionId(generateTransactionId());
 			payment.setPaymentDate(LocalDate.now());
-			payment.setPaymentMethod(paymentMethod);
+			payment.setPaymentMethod(request.getPaymentMethod());
 			payment.setEmailStatus("Service Not Available Now");
 			sendPaymentConfirmationEmail(payment);
 		} else {
-			payment.setStatus("Failed");
+			payment.setStatus(CommonConstant.FAILED);
 			payment.setPaymentDate(LocalDate.now());
 			payment.setEmailStatus("NotSent");
 		}
-
-		payment.setUpdatedBy(userCode);
+		payment.setCreatedBy(request.getUserCode());
+		payment.setUpdatedBy(request.getUserCode());
+		payment.setCreatedTime(LocalDateTime.now());
 		payment.setUpdatedTime(LocalDateTime.now());
-		return paymentsRepository.save(payment);
+		payment.setTotalAmountPaid(new BigDecimal(request.getPaymentAmount()));
+		Payments paymentList = paymentsRepository.save(payment);
+		// Create work item
+		String workType = CommonConstant.PAYMENT;
+		String workItemName = CommonConstant.POLICY_SURENDERRED;
+		String status = CommonConstant.APPROVED;
+		String comment = "Policy has been Surrrendred on " + LocalDateTime.now() + "and amount disbursed "
+				+ request.getPaymentAmount();
+		workItemService.mapRequetforWorkItem(request.getUserCode(), byPolicyNum, byPolicyNum.getCustomer(), workType,
+				workItemName, comment, null, null, paymentList, status);
+
+		return paymentList;
 	}
 
 	private String simulatePaymentGateway() {

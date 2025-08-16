@@ -517,6 +517,17 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
     margin-top: 1rem;
 }
 
+/* Payment Status Badges */
+.payment-status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+.payment-status-badge.paid { background-color: #d1fae5; color: #065f46; } /* Green for Paid */
+.payment-status-badge.unpaid { background-color: #fee2e2; color: #991b1b; } /* Red for Unpaid */
+
 </style>
 </head>
 <body class="flex">
@@ -621,7 +632,6 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
             </div>
 
             <div id="surrender-workflow-details-content" style="display: block;">
-                <!-- Removed surrender workflow status tabs -->
                 <div id="surrender-requests-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4 mb-4">
                     <p class="text-gray-500 text-center py-8 col-span-full">No surrender requests found for selected filters.</p>
                 </div>
@@ -629,7 +639,6 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
             </div>
 
             <div id="claim-workflow-details-content" style="display: none;">
-                <!-- Removed claim workflow status tabs -->
                 <div id="claims-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4 mb-4">
                     <p class="text-gray-500 text-center py-8 col-span-full">No claims found for selected filters.</p>
                 </div>
@@ -1008,6 +1017,15 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
                     </div>
                 </div>
             </div>
+
+            <!-- New Payment Information Section for Workflow Items -->
+            <div class="border-t border-gray-200 pt-4 mt-4 bg-purple-50 p-4 rounded-xl shadow-inner">
+                <h4 class="text-lg font-semibold mb-2 text-purple-800">Payment Information:</h4>
+                <div id="workflow-payment-info-container" class="space-y-3">
+                    <p class="text-gray-500 text-center py-4">No payment information available for this request.</p>
+                </div>
+            </div>
+
         </div>
 
         <div class="flex justify-end space-x-4 mt-6">
@@ -1093,6 +1111,8 @@ let surrenderBankAccountDropdown;
 
 let claimPolicyCoverageAmountEl, claimTotalClaimableAmountEl, claimTotalAmountEl, claimMonthlyInstallmentEl;
 let claimBankAccountDropdown;
+
+let workflowPaymentInfoContainerEl; // New element for workflow payment info
 
 // --- UTILITY FUNCTIONS ---
 const show = el => el && (el.style.display = 'flex');
@@ -1202,20 +1222,6 @@ function initializeModals() {
     }
 }
 
-window.handleNavigation = function(page) {
-    let url = page;
-    const currentCustomerNo = config.customerNo || sessionStorage.getItem('customerNo');
-    
-    if (currentCustomerNo) {
-        if (url.includes('?')) {
-            url += `&customerNo=${currentCustomerNo}`;
-        } else {
-            url += `?customerNo=${currentCustomerNo}`;
-        }
-    }
-    window.location.href = url;
-}
-
 function getStatusInfo(status) {
     switch ((status || '').toLowerCase()) { 
         case 'pending': return { text: 'Pending', iconClass: 'fas fa-clock', bgClass: 'bg-yellow-100', textClass: 'text-yellow-800' };
@@ -1236,6 +1242,8 @@ function getStatusInfo(status) {
         case 'closed': return { text: 'Closed', iconClass: 'fas fa-folder-closed', bgClass: 'bg-gray-200', textClass: 'text-gray-800' };
         case 'canceled_surrender': return { text: 'Surrender Canceled', iconClass: 'fas fa-undo', bgClass: 'bg-red-100', textClass: 'text-red-800' };
         case 'claim_canceled': return { text: 'Claim Canceled', iconClass: 'fas fa-ban', bgClass: 'bg-red-100', textClass: 'text-red-800' };
+        case 'paid': return { text: 'Paid', iconClass: 'fas fa-money-check-alt', bgClass: 'bg-green-100', textClass: 'text-green-800' }; // New for payment status
+        case 'unpaid': return { text: 'Unpaid', iconClass: 'fas fa-hand-holding-usd', bgClass: 'bg-red-100', textClass: 'text-red-800' }; // New for payment status
         default: return { text: 'Unknown', iconClass: 'fas fa-question-circle', bgClass: 'bg-gray-100', textClass: 'text-gray-800' };
     }
 }
@@ -1358,6 +1366,7 @@ async function fetchAllPoliciesAndRender(customerNo, policyNoSearch = null, page
         const result = await response.json();
 
         if (result.status === 'Success' && result.data && result.data.content) {
+            // Flatten the structure if content contains policyList
             currentPoliciesData = result.data.content.flatMap(item => item.policyList || (item.policyNumber ? [item] : []));
             currentTotalPolicyElements = result.data.totalElements || currentPoliciesData.length;
             
@@ -1414,7 +1423,9 @@ async function fetchSinglePolicyDetails(customerNo, policyNumber, workItemRefNo 
         const result = await response.json();
 
         if (result.status === 'Success' && result.data && result.data.content && result.data.content.length > 0) {
-            const policy = result.data.content[0].policyList ? result.data.content[0].policyList[0] : result.data.content[0];
+            // Adjust to get the correct policy object
+            const policyData = result.data.content[0];
+            const policy = policyData.policyList ? policyData.policyList[0] : policyData;
             return policy; 
         } else {
             window.showCustomError('Fetch Error', result.errorMessage || 'Failed to fetch policy details or no content available.');
@@ -1537,6 +1548,68 @@ async function fetchClaimWorkflow(page = 0, size = itemsPerPage, type = 'ALL', c
         hideLoader();
     }
 }
+
+// Function to fetch payment history for a specific payment ID (refNo)
+async function fetchAndRenderWorkflowPaymentHistory(paymentId, policyNo, customerNo, containerElement) {
+    showLoader();
+    containerElement.innerHTML = ''; // Clear previous content
+
+    const apiUrl = `http://localhost:8081/Payments/history?paymentId=${paymentId}&policyNumber=${policyNo}&customerNumber=${customerNo}&page=0&size=100`;
+    const headers = {
+        'Content-Type': 'application/json',
+        'userCode': config.userCode || '',
+        'customerNo': config.customerNo || ''
+    };
+
+    try {
+        const response = await fetch(apiUrl, { method: 'GET', headers: headers });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.errorMessage || `HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+
+        let payments = [];
+        if (result.data && result.data.content && result.data.content.length > 0) {
+            payments = result.data.content[0].paymentList || [];
+        }
+
+        if (payments.length > 0) {
+            payments.forEach(payment => {
+                const paymentItem = document.createElement('div');
+                paymentItem.className = 'bg-white p-3 rounded-lg shadow-sm border border-gray-100 flex flex-wrap items-center justify-between gap-2 text-sm';
+                
+                // Determine the status class for color coding
+                const paymentStatusClass = (payment.status || '').toLowerCase() === 'paid' ? 'paid' : 'unpaid';
+
+                const displayAmount = payment.totalAmount ? parseFloat(payment.totalAmount).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 
+                                      (payment.installmentAmount ? parseFloat(payment.installmentAmount).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A');
+
+                paymentItem.innerHTML = `
+                    <div class="flex-1 min-w-[48%]"><strong>Payment ID:</strong> ${payment.paymentId || 'N/A'}</div>
+                    <div class="flex-1 min-w-[48%]"><strong>Bank Acc No:</strong> ${payment.bankAccNo || 'N/A'}</div>
+                    <div class="flex-1 min-w-[48%]"><strong>Transaction ID:</strong> ${payment.transactionId || 'N/A'}</div>
+                    <div class="flex-1 min-w-[48%]"><strong>Amount:</strong> ${displayAmount}</div>
+                    <div class="flex-1 min-w-[48%]"><strong>Payment Date:</strong> ${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}</div>
+                    <div class="flex-1 min-w-[48%]"><strong>Method:</strong> ${payment.paymentMethod || 'N/A'}</div>
+                    <div class="flex-1 min-w-[48%]">
+                        <strong>Status:</strong> <span class="payment-status-badge ${paymentStatusClass}">${payment.status || 'N/A'}</span>
+                    </div>
+                    <div class="w-full"><strong>Message:</strong> ${payment.message || 'N/A'}</div>
+                `;
+                containerElement.appendChild(paymentItem);
+            });
+        } else {
+            containerElement.innerHTML = '<p class="text-gray-500 text-center py-4">No payment information available for this request.</p>';
+        }
+    } catch (error) {
+        containerElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading payment information.</p>';
+        console.error(`Error fetching payment history for workflow: ${error.message}.`);
+    } finally {
+        hideLoader();
+    }
+}
+
 
 // --- RENDER FUNCTIONS ---
 function renderPolicies() { 
@@ -1678,7 +1751,7 @@ function renderClaimsList() {
         fetchClaimWorkflow(
             currentClaimWorkflowPage, 
             itemsPerPage, 
-            activeClaimFilter, // This will now always be 'ALL'
+            activeClaimFilter, // Always 'ALL'
             config.customerNo, 
             workflowSearchBySelect.value === 'policyNo' ? workflowSearchInput.value : null,
             workflowSearchBySelect.value === 'workItemRefNo' ? workflowSearchInput.value : null,
@@ -1860,6 +1933,7 @@ window.applyWorkflowFilters = function() {
     } else if (searchBy === 'policyNo') {
         policyNoParam = searchTerm;
     } else if (searchBy === 'workItemRefNo') {
+        // If searching by work item ref, it could be either surrender or claim
         surrenderRefNoParam = searchTerm;
         claimRefNoParam = searchTerm;
     }
@@ -2029,13 +2103,20 @@ window.openPolicyDetailsModal = async function(policyNumber) {
         console.log(selectedPolicy.paymentListDTO);
         if (selectedPolicy.paymentListDTO && selectedPolicy.paymentListDTO.length > 0) {
             selectedPolicy.paymentListDTO.forEach(payment => {
-                const paymentStatusInfo = getStatusInfo(payment.paymentStatus);
+                const paymentStatusInfo = getStatusInfo(payment.status); // Use getStatusInfo for payment status
+                const displayAmount = payment.totalAmount ? parseFloat(payment.totalAmount).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) :
+                                      (payment.installmentAmount ? parseFloat(payment.installmentAmount).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A');
+
                 paymentsTabEl.innerHTML += `
-                    <div class="bg-green-50 p-4 rounded-lg shadow-sm">
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-2">
                         <p><strong>Payment ID:</strong> ${payment.paymentId || 'N/A'}</p>
-                        <p><strong>Amount:</strong> ${payment.installmentAmount || 'N/A'}</p>
-                        <p><strong>Date:</strong> ${payment.dueDate || 'N/A'}</p>
-                        <p><strong>Status:</strong> <span class="${paymentStatusInfo.textClass}">${payment.status}</span></p>
+                        <p><strong>Amount:</strong> ${displayAmount}</p>
+                        <p><strong>Date:</strong> ${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}</p>
+                        <p><strong>Status:</strong> <span class="payment-status-badge ${paymentStatusInfo.text.toLowerCase()}">${paymentStatusInfo.text}</span></p>
+                        <p><strong>Transaction ID:</strong> ${payment.transactionId || 'N/A'}</p>
+                        <p><strong>Method:</strong> ${payment.paymentMethod || 'N/A'}</p>
+                        <p><strong>Message:</strong> ${payment.message || 'N/A'}</p>
+                        <p><strong>Bank Account:</strong> ${payment.bankAccNo || 'N/A'}</p>
                     </div>
                 `;
             });
@@ -2580,6 +2661,9 @@ window.openWorkflowItemDetailsModal = function(item, type) {
     workflowCustomerNoEl.textContent = item.customerNo || 'N/A';
     workflowCustomerNameEl.textContent = item.customerName || 'N/A';
     
+    // Set payment info container to empty initially
+    workflowPaymentInfoContainerEl.innerHTML = ''; 
+
     if (type === 'surrender') {
         workflowRefNoEl.textContent = item.surrenderRefNo || 'N/A';
         workflowRequestedByEl.textContent = item.surrenderBy || 'N/A';
@@ -2625,6 +2709,8 @@ window.openWorkflowItemDetailsModal = function(item, type) {
         } else {
             hide(workflowCancelBtn);
         }
+        // Fetch and display payment history for surrender requests
+        fetchAndRenderWorkflowPaymentHistory(item.surrenderRefNo, item.policyNo, item.customerNo, workflowPaymentInfoContainerEl);
 
     } else if (type === 'claim') {
         workflowRefNoEl.textContent = item.claimRefNo || 'N/A';
@@ -2677,6 +2763,8 @@ window.openWorkflowItemDetailsModal = function(item, type) {
         } else {
             hide(workflowCancelBtn);
         }
+        // Fetch and display payment history for claim requests
+        fetchAndRenderWorkflowPaymentHistory(item.claimRefNo, item.policyNo, item.customerNo, workflowPaymentInfoContainerEl);
     }
     
     show(workflowItemDetailsModal);
@@ -2749,6 +2837,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     profileCustomerNoDisplayEl = document.getElementById('profile-customer-no-display');
     surrenderBankAccountDropdown = document.getElementById('surrender-bank-account-dropdown');
     claimBankAccountDropdown = document.getElementById('claim-bank-account-dropdown');
+    workflowPaymentInfoContainerEl = document.getElementById('workflow-payment-info-container'); // Cache the new element
 
     initializeModals();
     getuserCodeAndCustomerNo();

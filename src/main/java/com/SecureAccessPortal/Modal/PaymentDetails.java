@@ -10,6 +10,22 @@ public class PaymentDetails {
 	private String bankaccount;
 	private String ifscCode;
 
+	public String getBankaccount() {
+		return bankaccount;
+	}
+
+	public void setBankaccount(String bankaccount) {
+		this.bankaccount = bankaccount;
+	}
+
+	public String getIfscCode() {
+		return ifscCode;
+	}
+
+	public void setIfscCode(String ifscCode) {
+		this.ifscCode = ifscCode;
+	}
+
 	public String getCardNumber() {
 		return cardNumber;
 	}

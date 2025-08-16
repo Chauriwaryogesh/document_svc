@@ -64,6 +64,9 @@ public class BankAccount {
 	@OneToMany(mappedBy = "bankAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Workitem> workitems = new ArrayList<>();
 
+	@OneToMany(mappedBy = "bankAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Payments> payments = new ArrayList<>();
+	
 	@Column(name = "last_verification_date")
 	private LocalDateTime lastVerificationDate;
 
@@ -114,6 +117,14 @@ public class BankAccount {
 
 	@Column(name = "account_holder_name")
 	private String accountHolderName;
+
+	public List<Payments> getPayments() {
+		return payments;
+	}
+
+	public void setPayments(List<Payments> payments) {
+		this.payments = payments;
+	}
 
 	public List<SurrenderEntity> getSurrenderEntity() {
 		return surrenderEntity;
