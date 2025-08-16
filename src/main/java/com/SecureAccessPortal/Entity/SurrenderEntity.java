@@ -2,7 +2,6 @@ package com.SecureAccessPortal.Entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,8 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -50,11 +47,12 @@ public class SurrenderEntity {
 	@JoinColumn(name = "policyNumber", referencedColumnName = "policyNumber")
 	private Policy policy;
 	
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "payment_id", referencedColumnName = "payment_id", insertable = false, updatable = false)
-	private Payments payments;
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "accountNo", referencedColumnName = "accountNo", insertable = false, updatable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "payment_id", referencedColumnName = "payment_id")
+	private Payments payment;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "accountNo", referencedColumnName = "accountNo")
 	private BankAccount bankAccount;
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
@@ -65,9 +63,6 @@ public class SurrenderEntity {
 	private String verificationStatus;
 	@Column
 	private String verificationComment;
-
-	@OneToMany(mappedBy = "surrenderEntity", fetch = FetchType.LAZY)
-	private List<SurrenderWorkflowStep> surrenderWorkflowStep;
 	
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
@@ -76,6 +71,40 @@ public class SurrenderEntity {
 	private String otherSupportingDocumentName;
 	@Column
 	private String otherSupportingDocumentVerificationStatus;
+	
+	@Lob
+	@Column(columnDefinition = "LONGBLOB")
+	private byte[] bankDocument;
+	@Column
+	private String bankDocumentName;
+	@Column
+	private String bankDocumentStatus;
+	
+	
+	public byte[] getBankDocument() {
+		return bankDocument;
+	}
+
+	public void setBankDocument(byte[] bankDocument) {
+		this.bankDocument = bankDocument;
+	}
+
+	public String getBankDocumentName() {
+		return bankDocumentName;
+	}
+
+	public void setBankDocumentName(String bankDocumentName) {
+		this.bankDocumentName = bankDocumentName;
+	}
+
+	public String getBankDocumentStatus() {
+		return bankDocumentStatus;
+	}
+
+	public void setBankDocumentStatus(String bankDocumentStatus) {
+		this.bankDocumentStatus = bankDocumentStatus;
+	}
+
 	public BankAccount getBankAccount() {
 		return bankAccount;
 	}
@@ -95,15 +124,6 @@ public class SurrenderEntity {
 	public byte[] getOtherSupportingDocument() {
 		return otherSupportingDocument;
 	}
-
-	public List<SurrenderWorkflowStep> getSurrenderWorkflowStep() {
-		return surrenderWorkflowStep;
-	}
-
-	public void setSurrenderWorkflowStep(List<SurrenderWorkflowStep> surrenderWorkflowStep) {
-		this.surrenderWorkflowStep = surrenderWorkflowStep;
-	}
-
 	public void setOtherSupportingDocument(byte[] otherSupportingDocument) {
 		this.otherSupportingDocument = otherSupportingDocument;
 	}
@@ -166,12 +186,14 @@ public class SurrenderEntity {
 
 	
 
-	public Payments getPayments() {
-		return payments;
+	
+
+	public Payments getPayment() {
+		return payment;
 	}
 
-	public void setPayments(Payments payments) {
-		this.payments = payments;
+	public void setPayment(Payments payment) {
+		this.payment = payment;
 	}
 
 	public String getSurrRefNo() {

@@ -2209,6 +2209,7 @@ window.submitSurrenderRequest = async function() {
 
     const payload = {
         action: "SURRENDER",
+        surrAmount:policyToSurrender.totalAmount, 
         policyNo: policyToSurrender.policyNumber, 
         customerNo: config.customerNo,
         surrReason: reason,

@@ -1,5 +1,7 @@
 package com.SecureAccessPortal.Repo;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,5 +16,7 @@ public interface ClaimRepo  extends JpaRepository<ClaimEntity, String> {
 	
 	@Query("SELECT c.claimRefNo FROM ClaimEntity c WHERE c.claimRefNo LIKE 'CLAIM/%' ORDER BY c.claimRefNo DESC LIMIT 1")
 	String findLatestByNotesId();
+	@Query("Select s from ClaimEntity s WHERE s.customer.customerNo =:customerNo AND s.deletedFlag=:deletedFlag")
+	List<ClaimEntity> findBuCustomerNo(String customerNo, String deletedFlag);
 
 }

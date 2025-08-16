@@ -33,6 +33,12 @@ public class Payments {
 
 	@OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Workitem> workItem = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<SurrenderEntity> surrenderEntity = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<ClaimEntity> claimEntity = new ArrayList<>();
 
 	@Column(name = "product_code")
 	private String productCode;

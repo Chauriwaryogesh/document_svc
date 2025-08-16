@@ -598,4 +598,21 @@ public class BankDetailsService {
 
 		return message;
 	}
+
+	public ResponseEntity<BankDetailsDTO> updateBankAccountStatus(BankDetailsDTO bankDetailsDTO, String userCode) {
+		ResponseEntity<BankDetailsDTO> response = new ResponseEntity<BankDetailsDTO>();
+		BankDetailsDTO bankDetails= new BankDetailsDTO();
+		BankAccount bankAccount = bankAccountRepository.findByAccountNo(bankDetailsDTO.getAccountNumber(), "N");
+		bankAccount.setStatus(bankDetailsDTO.getStatus());
+		bankAccount.setComment(CommonConstant.APPROVED);
+		bankAccount.setUpdatedBy(bankDetailsDTO.getUpdatedBy());
+		bankAccount.setUpdatedTime(LocalDateTime.now());
+		BankAccount save = bankAccountRepository.save(bankAccount);
+		bankDetails.setAccountNumber(save.getAccountNo());
+		bankDetails.setStatus(save.getStatus());
+		response.setData(bankDetails);
+		response.setStatus(CommonConstant.SUCCESS);
+		return response;
+
+	}
 }

@@ -26,7 +26,7 @@ public class BankAccount {
 	@Column(name = "id")
 	private Long id;
 
-	@Column(name = "accountNo", unique = true)
+	@Column(name = "accountNo")
 	private String accountNo;
 
 	@Column(name = "ifscCode")
@@ -43,6 +43,12 @@ public class BankAccount {
 
 	@Column(name = "deletedFlag")
 	private String deletedFlag;
+	
+	@OneToMany(mappedBy = "bankAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<SurrenderEntity> surrenderEntity = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "bankAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<ClaimEntity> claimEntity = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
@@ -108,6 +114,22 @@ public class BankAccount {
 
 	@Column(name = "account_holder_name")
 	private String accountHolderName;
+
+	public List<SurrenderEntity> getSurrenderEntity() {
+		return surrenderEntity;
+	}
+
+	public void setSurrenderEntity(List<SurrenderEntity> surrenderEntity) {
+		this.surrenderEntity = surrenderEntity;
+	}
+
+	public List<ClaimEntity> getClaimEntity() {
+		return claimEntity;
+	}
+
+	public void setClaimEntity(List<ClaimEntity> claimEntity) {
+		this.claimEntity = claimEntity;
+	}
 
 	public String getAccountHolderName() {
 		return accountHolderName;

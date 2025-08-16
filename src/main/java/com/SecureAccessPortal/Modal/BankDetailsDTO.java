@@ -34,6 +34,16 @@ public class BankDetailsDTO {
 	private Integer verificationAttempts;
 	private String comment;
 	private String verificationStatus;
+	
+	private String updatedBy;
+
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
 
 	public String getVerificationStatus() {
 		return verificationStatus;

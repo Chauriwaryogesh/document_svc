@@ -2,7 +2,6 @@ package com.SecureAccessPortal.Entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,8 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -56,11 +53,13 @@ public class ClaimEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "policyNumber", referencedColumnName = "policyNumber")
 	private Policy policy;
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "payment_id", referencedColumnName = "payment_id", insertable = false, updatable = false)
-	private Payments payments;
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "accountNo", referencedColumnName = "accountNo", insertable = false, updatable = false)
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "payment_id", referencedColumnName = "payment_id")
+	private Payments payment;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "accountNo", referencedColumnName = "accountNo")
 	private BankAccount bankAccount;
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
@@ -71,8 +70,6 @@ public class ClaimEntity {
 	private String verificationStatus;
 	@Column
 	private String verificationComment;
-	@OneToMany(mappedBy = "claimEntity", fetch = FetchType.LAZY)
-	private List<SurrenderWorkflowStep> surrenderWorkflowStep;
 	
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
@@ -163,13 +160,6 @@ public class ClaimEntity {
 		this.bankDocumentStatus = bankDocumentStatus;
 	}
 
-	public List<SurrenderWorkflowStep> getSurrenderWorkflowStep() {
-		return surrenderWorkflowStep;
-	}
-
-	public void setSurrenderWorkflowStep(List<SurrenderWorkflowStep> surrenderWorkflowStep) {
-		this.surrenderWorkflowStep = surrenderWorkflowStep;
-	}
 
 	public byte[] getOtherSupportingDocument() {
 		return otherSupportingDocument;
@@ -195,12 +185,14 @@ public class ClaimEntity {
 		this.otherSupportingDocumentVerificationStatus = otherSupportingDocumentVerificationStatus;
 	}
 
-	public Payments getPayments() {
-		return payments;
+	
+
+	public Payments getPayment() {
+		return payment;
 	}
 
-	public void setPayments(Payments payments) {
-		this.payments = payments;
+	public void setPayment(Payments payment) {
+		this.payment = payment;
 	}
 
 	public BankAccount getBankAccount() {

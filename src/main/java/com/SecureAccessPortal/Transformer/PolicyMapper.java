@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -20,17 +22,25 @@ import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.SurrenderEntity;
 import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.BankAccountDTO;
+import com.SecureAccessPortal.Modal.BankDetailsDTO;
 import com.SecureAccessPortal.Modal.PolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyList;
 import com.SecureAccessPortal.Modal.SurrenderClaimDTO;
 import com.SecureAccessPortal.Repo.BankAccountRepo;
+import com.SecureAccessPortal.Service.BankDetailsService;
+import com.SecureAccessPortal.Service.PolicyService;
 import com.SecureAccessPortal.Service.ResponseEntity;
 
 @Component
 public class PolicyMapper {
 
+	private static final Logger logger = LoggerFactory.getLogger(PolicyMapper.class);
+
 	@Autowired
 	private BankAccountRepo bankAccountRepository;
+	
+	@Autowired
+	private BankDetailsService bankDetailsService;
 
 	public ResponseEntity<List<PolicyDTO>> mapAllPolicies(List<Customer> customer, List<Policy> policies) {
 
@@ -170,6 +180,7 @@ public class PolicyMapper {
 	public Page<SurrenderClaimDTO> mapClaimSurreResponse(Page<SurrenderEntity> surrenderEntity) {
 		Page<SurrenderClaimDTO> response = null;
 		if (Objects.nonNull(surrenderEntity)) {
+			try {
 			response = surrenderEntity.map(surr -> {
 				SurrenderClaimDTO surrender = new SurrenderClaimDTO();
 				surrender.setCustomerName(surr.getPolicy().getCustomer().getName());
@@ -190,12 +201,26 @@ public class PolicyMapper {
 					surrender.setVerificationStatus(surr.getVerificationStatus());
 					
 				}
-				if(surr.getPayments() != null) {
-					surrender.setPaymentDate(String.valueOf(surr.getPayments().getPaymentDate()));
-					surrender.setPaymentId(surr.getPayments().getPaymentId());
-					surrender.setPaymentStatus(surr.getPayments().getStatus());
-					surrender.setPaymentTransId(surr.getPayments().getTransactionId());	
-					surrender.setTransactionDate(String.valueOf(surr.getPayments().getPaymentDate()));
+				if(surr.getVerificationDocument() != null) {
+					String fileBytes = Base64.getEncoder().encodeToString(surr.getVerificationDocument());
+					surrender.setVerificationDocument(fileBytes);
+					surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
+					surrender.setVerificationStatus(surr.getVerificationStatus());
+					
+				}
+				if(surr.getBankDocument() != null) {
+					String fileBytes = Base64.getEncoder().encodeToString(surr.getBankDocument());
+					surrender.setBankPassbookDocument(fileBytes);
+					surrender.setBankPassbookDocumentName(surr.getBankDocumentName());
+					surrender.setBankPassbookDocumentNameStatus(surr.getBankDocumentStatus());
+					
+				}
+				if(surr.getPayment() != null) {
+					surrender.setPaymentDate(String.valueOf(surr.getPayment().getPaymentDate()));
+					surrender.setPaymentId(surr.getPayment().getPaymentId());
+					surrender.setPaymentStatus(surr.getPayment().getStatus());
+					surrender.setPaymentTransId(surr.getPayment().getTransactionId());	
+					surrender.setTransactionDate(String.valueOf(surr.getPayment().getPaymentDate()));
 				}	
 				surrender.setSurrAmount(surr.getSurrAmount());
 				surrender.setSurrDate(String.valueOf(surr.getSurrDate()));
@@ -209,9 +234,16 @@ public class PolicyMapper {
 				surrender.setVerificationStatus(surr.getVerificationStatus());
 				surrender.setUpdatedBy(surr.getUpdatedBy());
 				surrender.setUpdatedDate(String.valueOf(surr.getUpdatedDate()));
+				if (surr.getBankAccount() != null) {
+					BankDetailsDTO convertToDTO = bankDetailsService.convertToDTO(surr.getBankAccount());
+					surrender.setBankAccount(convertToDTO);
+				}
 				return surrender;
 			});
-		} 
+		}catch(Exception e) {
+			logger.error("Issue found in mapping", e);
+		}
+		}
 		return response;
 	}
 
@@ -251,12 +283,12 @@ public class PolicyMapper {
 					surrender.setVerificationStatus(surr.getVerificationStatus());
 					
 				}
-				if(surr.getPayments() != null) {
-					surrender.setPaymentDate(String.valueOf(surr.getPayments().getPaymentDate()));
-					surrender.setPaymentId(surr.getPayments().getPaymentId());
-					surrender.setPaymentStatus(surr.getPayments().getStatus());
-					surrender.setPaymentTransId(surr.getPayments().getTransactionId());	
-					surrender.setTransactionDate(String.valueOf(surr.getPayments().getPaymentDate()));
+				if(surr.getPayment() != null) {
+					surrender.setPaymentDate(String.valueOf(surr.getPayment().getPaymentDate()));
+					surrender.setPaymentId(surr.getPayment().getPaymentId());
+					surrender.setPaymentStatus(surr.getPayment().getStatus());
+					surrender.setPaymentTransId(surr.getPayment().getTransactionId());	
+					surrender.setTransactionDate(String.valueOf(surr.getPayment().getPaymentDate()));
 				}	
 				surrender.setClaimAmount(surr.getClaimAmount());
 				surrender.setClaimDate(String.valueOf(surr.getClaimDate()));

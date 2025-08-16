@@ -36,6 +36,7 @@ import com.SecureAccessPortal.Entity.Policy_Info;
 import com.SecureAccessPortal.Entity.SurrenderEntity;
 import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.BankAccountDTO;
+import com.SecureAccessPortal.Modal.DashboardStats;
 import com.SecureAccessPortal.Modal.GroupedPolicyDTO;
 import com.SecureAccessPortal.Modal.PaymentList;
 import com.SecureAccessPortal.Modal.PolicyDTO;
@@ -92,14 +93,12 @@ public class PolicyService {
 
 	@Autowired
 	private DateUtil dateUtil;
-	
+
 	@Autowired
 	private SurrenderRepo surrenderRepoSitory;
-	
+
 	@Autowired
 	private ClaimRepo claimRepoSitory;
-	
-	
 
 	@Transactional
 	public ResponseDTO createPolicy(PolicyRequest policyDTO, String userCode) {
@@ -187,7 +186,7 @@ public class PolicyService {
 			Payments payment = new Payments();
 			payment.setPaymentId(generatePaymentId());
 			payment.setPolicy(policy);
-			payment.setInstallmentCount(i +1 );
+			payment.setInstallmentCount(i + 1);
 			payment.setTotalInstallments(installmentCount);
 			payment.setCustomer(customer);
 			payment.setProductCode(productCode);
@@ -385,7 +384,7 @@ public class PolicyService {
 	}
 
 	private PolicyList mapPolicyToPolicyList(Policy policy) {
-		
+
 		PolicyList pol = new PolicyList();
 
 		pol.setId(policy.getId());
@@ -398,7 +397,7 @@ public class PolicyService {
 		pol.setCreatedDate(String.valueOf(policy.getCreatedTime()));
 		pol.setWorkItemRefNo(policy.getWorkitems() != null
 				? policy.getWorkitems().stream().map(Workitem::getWorkItemRefNumber).collect(Collectors.toList())
-						: new ArrayList<>());
+				: new ArrayList<>());
 		pol.setUpdatedBy(policy.getUpdatedBy() != null ? policy.getUpdatedBy() : "");
 		pol.setUserCode(policy.getUserCode() != null ? policy.getUserCode() : "");
 		pol.setDeletedFlag(policy.getDeletedFlag() != null ? policy.getDeletedFlag() : "");
@@ -432,61 +431,70 @@ public class PolicyService {
 		pol.setEndDate(String.valueOf(policy.getPolicyEndDate()));
 		pol.setPolicyDate(String.valueOf(policy.getPolicyStartDate()));
 		pol.setDueDate(String.valueOf(policy.getPremiumDueDate()));
-		List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber(),CommonConstant.N);
-		pol.setBankAccounts(bankAccounts != null ? bankAccounts.stream().map(this::mapToBankAccountDTO).collect(Collectors.toList())
-				: new ArrayList<>());
+		List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber(),
+				CommonConstant.N);
+		pol.setBankAccounts(
+				bankAccounts != null ? bankAccounts.stream().map(this::mapToBankAccountDTO).collect(Collectors.toList())
+						: new ArrayList<>());
 		pol.setPaymentListDTO(mapForPayments(policy.getPayments()));
 		pol.setTotalAmount(policy.getTotalAmount());
 		pol.setTotalClaimableAmount(policy.getTotalAmount());
 		pol.setCoverageAmount(policy.getCoverageAmount() != null ? policy.getCoverageAmount() : BigDecimal.ZERO);
-		//mapPaymentList for surr and claim
+		// mapPaymentList for surr and claim
 		List<Payments> payments = policy.getPayments();
-		if(payments != null) {
-			long paidCount = payments.stream().filter(Objects::nonNull).filter(p -> CommonConstant.PAID.equalsIgnoreCase(p.getStatus())).count();
-			long unpaidCount = payments.stream().filter(Objects::nonNull).filter(p -> CommonConstant.UNPAID.equalsIgnoreCase(p.getStatus())).count();
+		if (payments != null) {
+			long paidCount = payments.stream().filter(Objects::nonNull)
+					.filter(p -> CommonConstant.PAID.equalsIgnoreCase(p.getStatus())).count();
+			long unpaidCount = payments.stream().filter(Objects::nonNull)
+					.filter(p -> CommonConstant.UNPAID.equalsIgnoreCase(p.getStatus())).count();
 			BigDecimal totalPaidAmount = payments.stream().filter(Objects::nonNull)
-					.filter(p -> CommonConstant.PAID.equalsIgnoreCase(p.getStatus())).map(Payments::getInstallmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+					.filter(p -> CommonConstant.PAID.equalsIgnoreCase(p.getStatus()))
+					.map(Payments::getInstallmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 			BigDecimal totalUnpaidAmount = payments.stream().filter(Objects::nonNull)
-					.filter(p -> CommonConstant.UNPAID.equalsIgnoreCase(p.getStatus())).map(Payments::getInstallmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+					.filter(p -> CommonConstant.UNPAID.equalsIgnoreCase(p.getStatus()))
+					.map(Payments::getInstallmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 			pol.setTotalInstallmentsPaid((int) paidCount);
 			pol.setTotalInstallmentsUnPaid((int) unpaidCount);
 			pol.setTotalAmtPaidByInstallemt(String.valueOf(totalPaidAmount));
 			pol.setTotalAmtUnPaidByInstallemt(String.valueOf(totalUnpaidAmount));
 		}
-		
-		if(policy.getSurrender() != null) {
-			List<SurrenderClaimDTO> surrenderList = policy.getSurrender().stream().filter(Objects :: nonNull).map(surr ->{
-				SurrenderClaimDTO surrender= new SurrenderClaimDTO();
-				surrender.setPolicyNo(policy.getPolicyNumber());
-				surrender.setCustomerNo(policy.getCustomer().getCustomerNo());
-				surrender.setCustomerName(policy.getCustomer().getName());
-				surrender.setSurrenderRefNo(surr.getSurrRefNo());
-				BigDecimal totalPaidAmount = payments.stream().filter(Objects::nonNull)
-						.filter(p -> CommonConstant.PAID.equalsIgnoreCase(p.getStatus())).map(Payments::getInstallmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-				surrender.setSurrAmount(totalPaidAmount);
-				surrender.setSurrDate(String.valueOf(surr.getSurrDate()));
-				surrender.setSurrenderStatus(surr.getSurrenderStatus());
-				surrender.setSurrenderBy(surr.getSurrenderBy());
-				surrender.setSurrReason(surr.getSurrenderReason());
-				surrender.setPaymentDate(null);
-				surrender.setPaymentStatus(null);
-				surrender.setTransactionDate(null);
-				surrender.setPaymentId(null);
-				surrender.setPaymentTransId(null);
-				surrender.setVerificationComment(surr.getVerificationComment());
-				surrender.setVerificationDocument(null);
-				surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
-				surrender.setVerificationStatus(surr.getVerificationStatus());
-				surrender.setOtherSupportingDocumentVerificationStatus(surr.getOtherSupportingDocumentVerificationStatus());
-				surrender.setOtherSupportingDocument(null);
-				surrender.setOtherSupportingDocumentName(surr.getOtherSupportingDocumentName());
-				return surrender;
-			}).collect(Collectors.toList());
+
+		if (policy.getSurrender() != null) {
+			List<SurrenderClaimDTO> surrenderList = policy.getSurrender().stream().filter(Objects::nonNull)
+					.map(surr -> {
+						SurrenderClaimDTO surrender = new SurrenderClaimDTO();
+						surrender.setPolicyNo(policy.getPolicyNumber());
+						surrender.setCustomerNo(policy.getCustomer().getCustomerNo());
+						surrender.setCustomerName(policy.getCustomer().getName());
+						surrender.setSurrenderRefNo(surr.getSurrRefNo());
+						BigDecimal totalPaidAmount = payments.stream().filter(Objects::nonNull)
+								.filter(p -> CommonConstant.PAID.equalsIgnoreCase(p.getStatus()))
+								.map(Payments::getInstallmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+						surrender.setSurrAmount(totalPaidAmount);
+						surrender.setSurrDate(String.valueOf(surr.getSurrDate()));
+						surrender.setSurrenderStatus(surr.getSurrenderStatus());
+						surrender.setSurrenderBy(surr.getSurrenderBy());
+						surrender.setSurrReason(surr.getSurrenderReason());
+						surrender.setPaymentDate(null);
+						surrender.setPaymentStatus(null);
+						surrender.setTransactionDate(null);
+						surrender.setPaymentId(null);
+						surrender.setPaymentTransId(null);
+						surrender.setVerificationComment(surr.getVerificationComment());
+						surrender.setVerificationDocument(null);
+						surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
+						surrender.setVerificationStatus(surr.getVerificationStatus());
+						surrender.setOtherSupportingDocumentVerificationStatus(
+								surr.getOtherSupportingDocumentVerificationStatus());
+						surrender.setOtherSupportingDocument(null);
+						surrender.setOtherSupportingDocumentName(surr.getOtherSupportingDocumentName());
+						return surrender;
+					}).collect(Collectors.toList());
 			pol.setSurrenderDTO(surrenderList);
 		}
-		if(policy.getClaim() != null) {
-			List<SurrenderClaimDTO> claimList = policy.getClaim().stream().filter(Objects :: nonNull).map(surr ->{
-				SurrenderClaimDTO surrender= new SurrenderClaimDTO();
+		if (policy.getClaim() != null) {
+			List<SurrenderClaimDTO> claimList = policy.getClaim().stream().filter(Objects::nonNull).map(surr -> {
+				SurrenderClaimDTO surrender = new SurrenderClaimDTO();
 				surrender.setPolicyNo(policy.getPolicyNumber());
 				surrender.setCustomerNo(policy.getCustomer().getCustomerNo());
 				surrender.setCustomerName(policy.getCustomer().getName());
@@ -508,7 +516,8 @@ public class PolicyService {
 				surrender.setVerificationDocument(null);
 				surrender.setVerificationDocumentName(surr.getVerificationDocumentName());
 				surrender.setVerificationStatus(surr.getVerificationStatus());
-				surrender.setOtherSupportingDocumentVerificationStatus(surr.getOtherSupportingDocumentVerificationStatus());
+				surrender.setOtherSupportingDocumentVerificationStatus(
+						surr.getOtherSupportingDocumentVerificationStatus());
 				surrender.setOtherSupportingDocument(null);
 				surrender.setOtherSupportingDocumentName(surr.getOtherSupportingDocumentName());
 				return surrender;
@@ -605,7 +614,7 @@ public class PolicyService {
 								productCodeEntry.getKey(), policyTypeEntry.getKey(), policyTypeEntry.getValue()))))
 				.collect(Collectors.toList());
 	}
-	
+
 	private PolicyInfoDTO mapToDTO(Policy_Info policy) {
 		PolicyInfoDTO dto = new PolicyInfoDTO();
 		dto.setPolicyId(String.valueOf(policy.getPolicy_id()));
@@ -856,216 +865,116 @@ public class PolicyService {
 		return response;
 	}
 
-	public ResponseEntity<Page<SurrenderClaimDTO>> getSurrender(String action,String surrenderRefNo,
-			String policyNo, String customerNo, String startDate, String endDate, String type, int page, int size,
-			String userCode) {
+	public ResponseEntity<Page<SurrenderClaimDTO>> getSurrender(String action, String surrenderRefNo, String policyNo,
+			String customerNo, String startDate, String endDate, String type, int page, int size, String userCode) {
 		ResponseEntity<Page<SurrenderClaimDTO>> response = new ResponseEntity<>();
 		try {
-		Pageable pagable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-		Specification<SurrenderEntity> spec = (root, query, cb) -> {
-			List<jakarta.persistence.criteria.Predicate> predicate = new ArrayList<>();
-			if (surrenderRefNo != null) {
-				predicate.add(cb.equal(root.get("surrRefNo"), surrenderRefNo));
-			}
-			if (policyNo != null) {
-				predicate.add(cb.like(cb.lower(root.get("policy").get("policyNumber")),
-						"%" + policyNo.toLowerCase() + "%"));
-			}
-			if (customerNo != null) {
-				predicate.add(cb.like(cb.lower(root.get("customer").get("customerNo")),
-						"%" + customerNo.toLowerCase() + "%"));
-			}
-			if (type != null && !type.equalsIgnoreCase(CommonConstant.ALL)) {
-				predicate.add(cb.equal(root.get("surrenderStatus"), type));
-			}
-			if (startDate != null && !startDate.isEmpty()) {
-				try {
-					LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
-							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-					predicate.add(cb.greaterThanOrEqualTo(root.get("createdDate"), startDateTime));
-				} catch (DateTimeParseException e) {
-					System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
+			Pageable pagable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+			Specification<SurrenderEntity> spec = (root, query, cb) -> {
+				List<jakarta.persistence.criteria.Predicate> predicate = new ArrayList<>();
+				if (surrenderRefNo != null) {
+					predicate.add(cb.equal(root.get("surrRefNo"), surrenderRefNo));
 				}
-			}
-			if (endDate != null && !endDate.isEmpty()) {
-				try {
-					LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
-							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-					predicate.add(cb.lessThanOrEqualTo(root.get("createdDate"), endDateTime));
-				} catch (DateTimeParseException e) {
-					System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
+				if (policyNo != null) {
+					predicate.add(cb.like(cb.lower(root.get("policy").get("policyNumber")),
+							"%" + policyNo.toLowerCase() + "%"));
 				}
-			}
-			return cb.and(predicate.toArray(new jakarta.persistence.criteria.Predicate[0]));
-		};
-		Page<SurrenderEntity> surrenderEntity = surrenderRepoSitory.findAll(spec, pagable);
-		Page<SurrenderClaimDTO> mapClaimSurreResponse = policyMapper.mapClaimSurreResponse(surrenderEntity);
-		response.setData(mapClaimSurreResponse);
-		response.setStatus(CommonConstant.SUCCESS);
-		}catch(Exception e) {
+				if (customerNo != null) {
+					predicate.add(cb.like(cb.lower(root.get("customer").get("customerNo")),
+							"%" + customerNo.toLowerCase() + "%"));
+				}
+				if (type != null && !type.equalsIgnoreCase(CommonConstant.ALL)) {
+					predicate.add(cb.equal(root.get("surrenderStatus"), type));
+				}
+				if (startDate != null && !startDate.isEmpty()) {
+					try {
+						LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
+								DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+						predicate.add(cb.greaterThanOrEqualTo(root.get("createdDate"), startDateTime));
+					} catch (DateTimeParseException e) {
+						System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
+					}
+				}
+				if (endDate != null && !endDate.isEmpty()) {
+					try {
+						LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
+								DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+						predicate.add(cb.lessThanOrEqualTo(root.get("createdDate"), endDateTime));
+					} catch (DateTimeParseException e) {
+						System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
+					}
+				}
+				return cb.and(predicate.toArray(new jakarta.persistence.criteria.Predicate[0]));
+			};
+			Page<SurrenderEntity> surrenderEntity = surrenderRepoSitory.findAll(spec, pagable);
+			Page<SurrenderClaimDTO> mapClaimSurreResponse = policyMapper.mapClaimSurreResponse(surrenderEntity);
+			response.setData(mapClaimSurreResponse);
+			response.setStatus(CommonConstant.SUCCESS);
+		} catch (Exception e) {
 			response.setStatus(CommonConstant.FAILURE);
 			response.setErrorMessage("No Data found");
 			e.getLocalizedMessage();
-		}catch(Throwable t) {
+		} catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return response;
 	}
-//	public ResponseEntity<Page<SurrenderClaimDTO>> getClaimSurrender(String action,String surrenderRefNo, String claimRefNo,
-//			String policyNo, String customerNo, String startDate, String endDate, String type, int page, int size,
-//			String userCode) {
-//		ResponseEntity<Page<SurrenderClaimDTO>> response = new ResponseEntity<>();
-//		Page<SurrenderClaimDTO> dto = null;
-//		Page<SurrenderEntity> surrenderEntity = null;
-//		Page<ClaimEntity> claimEntity = null;
-//		Pageable pagable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-//		switch (action) {
-//		case CommonConstant.SURRENDER -> {
-//			Specification<SurrenderEntity> spec = (root, query, cb) -> {
-//				List<jakarta.persistence.criteria.Predicate> predicate = new ArrayList<>();
-//				if (surrenderRefNo != null) {
-//					predicate.add(cb.equal(root.get("surrRefNo"), surrenderRefNo));
-//				}
-//				if (policyNo != null) {
-//					predicate.add(cb.equal(root.get("policy.policyNumber"), policyNo));
-//				}
-//				if (customerNo != null) {
-//					predicate.add(cb.equal(root.get("customerNo"), customerNo));
-//				}
-//				if (type != null) {
-//					predicate.add(cb.equal(root.get("surrenderStatus"), type));
-//				}
-//				if (startDate != null && !startDate.isEmpty()) {
-//					try {
-//						LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
-//								DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-//						predicate.add(cb.greaterThanOrEqualTo(root.get("createdDate"), startDateTime));
-//					} catch (DateTimeParseException e) {
-//						System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
-//					}
-//				}
-//				if (endDate != null && !endDate.isEmpty()) {
-//					try {
-//						LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
-//								DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-//						predicate.add(cb.lessThanOrEqualTo(root.get("createdDate"), endDateTime));
-//					} catch (DateTimeParseException e) {
-//						System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
-//					}
-//				}
-//				return cb.and(predicate.toArray(new jakarta.persistence.criteria.Predicate[0]));
-//
-//			};
-//			surrenderEntity = surrenderRepoSitory.findAll(spec, pagable);
-//			policyMapper.mapClaimSurreResponse(surrenderEntity, claimEntity);
-//
-//		}
-//		case CommonConstant.CLAIM -> {
-//			Specification<ClaimEntity> spec = (root, query, cb) -> {
-//				List<jakarta.persistence.criteria.Predicate> predicate = new ArrayList<>();
-//				if (claimRefNo != null) {
-//					predicate.add(cb.equal(root.get("claimRefNo"), claimRefNo));
-//				}
-//				if (policyNo != null) {
-//					predicate.add(cb.equal(root.get("policy.policyNumber"), policyNo));
-//				}
-//				if (customerNo != null) {
-//					predicate.add(cb.equal(root.get("customerNo"), customerNo));
-//				}
-//
-//				if (type != null) {
-//					predicate.add(cb.equal(root.get("surrenderStatus"), type));
-//				}
-//				if (startDate != null && !startDate.isEmpty()) {
-//					try {
-//						LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
-//								DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-//						predicate.add(cb.greaterThanOrEqualTo(root.get("createdDate"), startDateTime));
-//					} catch (DateTimeParseException e) {
-//						System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
-//					}
-//				}
-//				if (endDate != null && !endDate.isEmpty()) {
-//					try {
-//						LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
-//								DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-//						predicate.add(cb.lessThanOrEqualTo(root.get("createdDate"), endDateTime));
-//					} catch (DateTimeParseException e) {
-//						System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
-//					}
-//				}
-//				return cb.and(predicate.toArray(new jakarta.persistence.criteria.Predicate[0]));
-//
-//			};
-//			claimEntity = claimRepoSitory.findAll(spec, pagable);
-//			dto = policyMapper.mapClaimSurreResponse(surrenderEntity, claimEntity);
-//		}
-//		case CommonConstant.ALL ->{
-//			claimEntity  = claimRepoSitory.findAll(pagable);
-//			surrenderEntity=surrenderRepoSitory.findAll(pagable);
-//			dto = policyMapper.mapClaimSurreResponse(surrenderEntity, claimEntity);
-//		}
-//		}
-//		response.setData(dto);
-//		response.setStatus(CommonConstant.SUCCESS);
-//		return response;
-//	}
-
+	
 	public ResponseEntity<Page<SurrenderClaimDTO>> getClaim(String action, String claimRefNo, String policyNo,
 			String customerNo, String startDate, String endDate, String type, int page, int size, String userCode) {
 
 		ResponseEntity<Page<SurrenderClaimDTO>> response = new ResponseEntity<>();
 		try {
-		Pageable pagable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-		Specification<ClaimEntity> spec = (root, query, cb) -> {
-			List<jakarta.persistence.criteria.Predicate> predicate = new ArrayList<>();
-			if (claimRefNo != null) {
-				predicate.add(cb.equal(root.get("claimRefNo"), claimRefNo));
-			}
-			if (policyNo != null) {
-				predicate.add(cb.like(cb.lower(root.get("policy").get("policyNumber")),
-						"%" + policyNo.toLowerCase() + "%"));
-			}
-			if (customerNo != null) {
-				predicate.add(cb.like(cb.lower(root.get("customer").get("customerNo")),
-						"%" + customerNo.toLowerCase() + "%"));
-			}
-			if (type != null && !type.equalsIgnoreCase(CommonConstant.ALL)) {
-				predicate.add(cb.equal(root.get("surrenderStatus"), type));
-			}
-			if (startDate != null && !startDate.isEmpty()) {
-				try {
-					LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
-							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-					predicate.add(cb.greaterThanOrEqualTo(root.get("createdDate"), startDateTime));
-				} catch (DateTimeParseException e) {
-					System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
+			Pageable pagable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+			Specification<ClaimEntity> spec = (root, query, cb) -> {
+				List<jakarta.persistence.criteria.Predicate> predicate = new ArrayList<>();
+				if (claimRefNo != null) {
+					predicate.add(cb.equal(root.get("claimRefNo"), claimRefNo));
 				}
-			}
-			if (endDate != null && !endDate.isEmpty()) {
-				try {
-					LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
-							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-					predicate.add(cb.lessThanOrEqualTo(root.get("createdDate"), endDateTime));
-				} catch (DateTimeParseException e) {
-					System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
+				if (policyNo != null) {
+					predicate.add(cb.like(cb.lower(root.get("policy").get("policyNumber")),
+							"%" + policyNo.toLowerCase() + "%"));
 				}
-			}
-			return cb.and(predicate.toArray(new jakarta.persistence.criteria.Predicate[0]));
-		};
-		Page<ClaimEntity> claimEntity =claimRepoSitory.findAll(spec, pagable);
-		Page<SurrenderClaimDTO> mapClaimSurreResponse = policyMapper.mapClaimResponse(claimEntity);
-		response.setData(mapClaimSurreResponse);
-		response.setStatus(CommonConstant.SUCCESS);
-		}catch(Exception e) {
+				if (customerNo != null) {
+					predicate.add(cb.like(cb.lower(root.get("customer").get("customerNo")),
+							"%" + customerNo.toLowerCase() + "%"));
+				}
+				if (type != null && !type.equalsIgnoreCase(CommonConstant.ALL)) {
+					predicate.add(cb.equal(root.get("surrenderStatus"), type));
+				}
+				if (startDate != null && !startDate.isEmpty()) {
+					try {
+						LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
+								DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+						predicate.add(cb.greaterThanOrEqualTo(root.get("createdDate"), startDateTime));
+					} catch (DateTimeParseException e) {
+						System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
+					}
+				}
+				if (endDate != null && !endDate.isEmpty()) {
+					try {
+						LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
+								DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+						predicate.add(cb.lessThanOrEqualTo(root.get("createdDate"), endDateTime));
+					} catch (DateTimeParseException e) {
+						System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
+					}
+				}
+				return cb.and(predicate.toArray(new jakarta.persistence.criteria.Predicate[0]));
+			};
+			Page<ClaimEntity> claimEntity = claimRepoSitory.findAll(spec, pagable);
+			Page<SurrenderClaimDTO> mapClaimSurreResponse = policyMapper.mapClaimResponse(claimEntity);
+			response.setData(mapClaimSurreResponse);
+			response.setStatus(CommonConstant.SUCCESS);
+		} catch (Exception e) {
 			response.setStatus(CommonConstant.FAILURE);
 			response.setErrorMessage("No Data found");
 			e.getLocalizedMessage();
-		}catch(Throwable t) {
+		} catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return response;
-	
+
 	}
 
 	public ResponseEntity<SurrenderClaimDTO> submitSurrenderRequest(SurrenderClaimDTO request, String userCode) {
@@ -1101,14 +1010,20 @@ public class PolicyService {
 			if (request.getOtherSupportingDocument() != null) {
 				byte[] fileBytes = Base64.getDecoder().decode(request.getOtherSupportingDocument());
 				surrenderEntity.setOtherSupportingDocument(fileBytes);
-				surrenderEntity.setOtherSupportingDocumentName(request.getOtherSupportingDocumentName());
-				surrenderEntity.setOtherSupportingDocumentVerificationStatus(CommonConstant.PENDING);
+				surrenderEntity.setOtherSupportingDocumentName(CommonConstant.OTH_DOC);
+				surrenderEntity.setOtherSupportingDocumentVerificationStatus(CommonConstant.IN_PROGRESS);
 			}
 			if (request.getVerificationDocument() != null) {
 				byte[] fileBytes = Base64.getDecoder().decode(request.getVerificationDocument());
 				surrenderEntity.setVerificationDocument(fileBytes);
-				surrenderEntity.setVerificationDocumentName(request.getVerificationDocumentName());
-				surrenderEntity.setVerificationStatus(CommonConstant.PENDING);
+				surrenderEntity.setVerificationDocumentName(CommonConstant.ID_PROOF);
+				surrenderEntity.setVerificationStatus(CommonConstant.IN_PROGRESS);
+			}
+			if (request.getBankPassbookDocument() != null) {
+				byte[] fileBytes = Base64.getDecoder().decode(request.getBankPassbookDocument());
+				surrenderEntity.setBankDocument(fileBytes);
+				surrenderEntity.setBankDocumentName(CommonConstant.BANK_PROOF);
+				surrenderEntity.setBankDocumentStatus(CommonConstant.IN_PROGRESS);
 			}
 
 			Policy byPolicyNum = policyRepository.findByPolicyNum(request.getPolicyNo(), CommonConstant.N);
@@ -1150,7 +1065,7 @@ public class PolicyService {
 			}
 
 		}
-		case CommonConstant.CLAIM ->{
+		case CommonConstant.CLAIM -> {
 			ClaimEntity surrenderEntity = new ClaimEntity();
 			surrenderEntity.setClaimRefNo(generateClaimRefNo());
 			surrenderEntity.setCreatedBy(userCode);
@@ -1179,25 +1094,26 @@ public class PolicyService {
 			if (request.getOtherSupportingDocument() != null) {
 				byte[] fileBytes = Base64.getDecoder().decode(request.getOtherSupportingDocument());
 				surrenderEntity.setOtherSupportingDocument(fileBytes);
-				surrenderEntity.setOtherSupportingDocumentName(request.getOtherSupportingDocumentName());
-				surrenderEntity.setOtherSupportingDocumentVerificationStatus(CommonConstant.PENDING);
+				surrenderEntity.setOtherSupportingDocumentName(CommonConstant.OTH_DOC);
+				surrenderEntity.setOtherSupportingDocumentVerificationStatus(CommonConstant.PEND);
 			}
 			if (request.getBankPassbookDocument() != null) {
 				byte[] fileBytes = Base64.getDecoder().decode(request.getBankPassbookDocument());
-				surrenderEntity.setBankDocument(fileBytes);;
-				surrenderEntity.setBankDocumentName(request.getBankPassbookDocumentName());
-				surrenderEntity.setBankDocumentStatus(CommonConstant.PENDING);
+				surrenderEntity.setBankDocument(fileBytes);
+				;
+				surrenderEntity.setBankDocumentName(CommonConstant.BANK_PROOF);
+				surrenderEntity.setBankDocumentStatus(CommonConstant.PEND);
 			}
 			if (request.getIdDocument() != null) {
 				byte[] fileBytes = Base64.getDecoder().decode(request.getIdDocument());
-				surrenderEntity.setIdDocument(fileBytes);;
-				surrenderEntity.setIdDocumentName(request.getIdDocumentStatus());
-				surrenderEntity.setIdDocumentStatus(CommonConstant.PENDING);
+				surrenderEntity.setIdDocument(fileBytes);
+				surrenderEntity.setIdDocumentName(CommonConstant.ID_PROOF);
+				surrenderEntity.setIdDocumentStatus(CommonConstant.PEND);
 			}
 			if (request.getVerificationDocument() != null) {
 				byte[] fileBytes = Base64.getDecoder().decode(request.getVerificationDocument());
 				surrenderEntity.setVerificationDocument(fileBytes);
-				surrenderEntity.setVerificationDocumentName(request.getVerificationDocumentName());
+				surrenderEntity.setVerificationDocumentName(CommonConstant.OTH_DOC);
 				surrenderEntity.setVerificationStatus(CommonConstant.PENDING);
 			}
 
@@ -1216,13 +1132,68 @@ public class PolicyService {
 			} else {
 				response.setStatus(CommonConstant.FAILURE);
 			}
-		
+
+		}
+		case CommonConstant.UPDATE ->{
+			if (request.getSurrenderRefNo() != null) {
+				SurrenderEntity surrender = surrenderRepoSitory.findBySurrenderRefNo(request.getSurrenderRefNo(),
+						CommonConstant.N);
+				surrender.setSurrenderStatus(request.getSurrenderStatus());
+				surrender.setSurrenderReason(request.getSurrReason());
+				surrender.setUpdatedBy(request.getUpdatedBy());
+				if(request.getVerificationComment() != null) {
+					surrender.setVerificationComment(request.getVerificationComment());
+				}else {
+					surrender.setVerificationComment(CommonConstant.APPROVED);
+				}
+				surrender.setUpdatedDate(LocalDateTime.now());
+				SurrenderEntity save = surrenderRepoSitory.save(surrender);
+				if (save != null) {
+					logger.info("{}", save.getSurrRefNo());
+					surrenderClaimDTO.setSurrenderRefNo(save.getSurrRefNo());
+					surrenderClaimDTO.setSurrenderStatus(save.getSurrenderStatus());
+					response.setData(surrenderClaimDTO);
+					response.setStatus(CommonConstant.SUCCESS);
+				} else {
+					response.setStatus(CommonConstant.FAILURE);
+				}
+			}
+		}
+		case CommonConstant.UPDATE_DOCUMENT_STATUS ->{
+			if (request.getSurrenderRefNo() != null) {
+				SurrenderEntity surrender = surrenderRepoSitory.findBySurrenderRefNo(request.getSurrenderRefNo(),CommonConstant.N);
+				switch (request.getDocumentType()) {
+				case CommonConstant.BANK_PROOF -> {
+					surrender.setBankDocumentStatus(request.getDocumentStatus());
+				}
+				case CommonConstant.ID_PROOF -> {
+					surrender.setVerificationStatus(request.getDocumentStatus());
+				}
+				case CommonConstant.OTH_DOC -> {
+					surrender.setOtherSupportingDocumentVerificationStatus(request.getDocumentStatus());
+				}
+				}
+				surrender.setUpdatedDate(LocalDateTime.now());
+				surrender.setUpdatedBy(request.getUpdatedBy());
+				SurrenderEntity save = surrenderRepoSitory.save(surrender);
+				if (save != null) {
+					logger.info("{}", save.getSurrRefNo());
+					surrenderClaimDTO.setSurrenderRefNo(save.getSurrRefNo());
+					surrenderClaimDTO.setSurrenderStatus(save.getSurrenderStatus());
+					response.setData(surrenderClaimDTO);
+					response.setStatus(CommonConstant.SUCCESS);
+				} else {
+					response.setStatus(CommonConstant.FAILURE);
+				}
+			}
+			
 			
 		}
 		}
 		return response;
 	}
-	public   String generateSurrenderRefNo() {
+
+	public String generateSurrenderRefNo() {
 		String prefix = "SURR/";
 		int currentYear = LocalDate.now().getYear();
 		String latestComplaintNumber = surrenderRepoSitory.findLatestByNotesId();
@@ -1237,7 +1208,8 @@ public class PolicyService {
 		}
 		return String.format("%s%06d/%d", prefix, nextNumber, currentYear);
 	}
-	public   String generateClaimRefNo() {
+
+	public String generateClaimRefNo() {
 		String prefix = "CLAIM/";
 		int currentYear = LocalDate.now().getYear();
 		String latestComplaintNumber = claimRepoSitory.findLatestByNotesId();
@@ -1251,5 +1223,66 @@ public class PolicyService {
 			}
 		}
 		return String.format("%s%06d/%d", prefix, nextNumber, currentYear);
+	}
+
+	public ResponseEntity<DashboardStats> getSurrenderCount(String customerNo, String userCode) {
+		ResponseEntity<DashboardStats> response = new ResponseEntity<DashboardStats>();
+		List<SurrenderEntity> surrender = null;
+		List<ClaimEntity> claim = null;
+		DashboardStats dashboardStats = new DashboardStats();
+		if (customerNo != null) {
+			surrender = surrenderRepoSitory.findBuCustomerNo(customerNo, CommonConstant.N);
+			claim = claimRepoSitory.findBuCustomerNo(customerNo, CommonConstant.N);
+		} else {
+			surrender = surrenderRepoSitory.findAll();
+			claim = claimRepoSitory.findAll();
+		}
+		if (surrender != null) {
+			dashboardStats
+					.setAllSurrender(surrender.stream().filter(surr -> surr.getSurrenderStatus() != null).count());
+			dashboardStats
+					.setSurrApproved(
+							surrender.stream()
+									.filter(surr -> surr.getSurrenderStatus() != null
+											&& surr.getSurrenderStatus().equalsIgnoreCase(CommonConstant.APPROVED))
+									.count());
+			dashboardStats
+					.setSurrInProgress(
+							surrender.stream()
+									.filter(surr -> surr.getSurrenderStatus() != null
+											&& surr.getSurrenderStatus().equalsIgnoreCase(CommonConstant.IN_PROGRESS))
+									.count());
+			dashboardStats
+					.setSurrRejected(
+							surrender.stream()
+									.filter(surr -> surr.getSurrenderStatus() != null
+											&& surr.getSurrenderStatus().equalsIgnoreCase(CommonConstant.REJECTED))
+									.count());
+
+		}
+		if (claim != null) {
+			dashboardStats.setAllClaim(claim.stream().filter(surr -> surr.getClaimStatus() != null).count());
+			dashboardStats
+					.setClaimApproved(
+							claim.stream()
+									.filter(surr -> surr.getClaimStatus() != null
+											&& surr.getClaimStatus().equalsIgnoreCase(CommonConstant.APPROVED))
+									.count());
+			dashboardStats
+					.setClaimInProgress(
+							claim.stream()
+									.filter(surr -> surr.getClaimStatus() != null
+											&& surr.getClaimStatus().equalsIgnoreCase(CommonConstant.APPROVED))
+									.count());
+			dashboardStats
+					.setClaimRejected(
+							claim.stream()
+									.filter(surr -> surr.getClaimStatus() != null
+											&& surr.getClaimStatus().equalsIgnoreCase(CommonConstant.APPROVED))
+									.count());
+		}
+		response.setData(dashboardStats);
+		response.setStatus(CommonConstant.SUCCESS);
+		return response;
 	}
 }

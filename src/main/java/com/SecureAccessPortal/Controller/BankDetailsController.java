@@ -271,5 +271,15 @@ public class BankDetailsController {
 		}
 		return response;
 	}
+	@PostMapping(value = "/updateBankAccountStatus", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public com.SecureAccessPortal.Service.ResponseEntity<BankDetailsDTO> updateBankAccountStatus(
+			@RequestBody BankDetailsDTO bankDetailsDTO,
+			@RequestHeader(value = "userCode", required = true) String userCode) {
+
+		com.SecureAccessPortal.Service.ResponseEntity<BankDetailsDTO> response = bankDetailsService
+				.updateBankAccountStatus(bankDetailsDTO, userCode);
+
+		return response;
+	}
 
 }

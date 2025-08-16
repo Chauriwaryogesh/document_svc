@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -84,7 +85,7 @@ public class EmailService {
 		Security security = null;
 
 		try {
-			if (email != null && email.contains("@")) {
+			if (Objects.nonNull(email) && email.contains("@")) {
 				security = securityRepo.findByEmail(email, "N");
 			} else if (userCode != null) {
 				security = securityRepo.findByUserCodeDeletedN(userCode, "N");
@@ -94,7 +95,7 @@ public class EmailService {
 				return response;
 			}
 			if (security != null) {
-				if (security.getEmail().equalsIgnoreCase(email) && "Y".equals(security.getIsEmailVerified())
+				if ((security.getEmail().equalsIgnoreCase(email) || security.getUserCode().equalsIgnoreCase(userCode)) && "Y".equals(security.getIsEmailVerified())
 						&& "Y".equals(security.getIsUserCodeVerified())) {
 
 					try {
@@ -177,7 +178,7 @@ public class EmailService {
 					OtpStore otpStore = new OtpStore();
 					otpStore.setId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE); // Generate unique ID
 					otpStore.setOtp(otp);
-					otpStore.setEmail(email);
+					otpStore.setEmail(security.getEmail());
 					otpStore.setUserCode(userCode);
 					otpStore.setCreatedTime(LocalDateTime.now());
 					otpStore.setCreatedBy(userCode);

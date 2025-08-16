@@ -1,5 +1,7 @@
 package com.SecureAccessPortal.Repo;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,5 +19,8 @@ public interface SurrenderRepo  extends JpaRepository<SurrenderEntity, String>{
 
 	@Query("SELECT s from  SurrenderEntity s WHERE s.surrRefNo =:surrenderRefNo AND s.deletedFlag =:deletedFlag")
 	SurrenderEntity findBySurrenderRefNo(String surrenderRefNo, String deletedFlag);
+
+	@Query("Select s from SurrenderEntity s WHERE s.customer.customerNo =:customerNo AND s.deletedFlag=:deletedFlag")
+	List<SurrenderEntity> findBuCustomerNo(String customerNo,String deletedFlag);
 
 }

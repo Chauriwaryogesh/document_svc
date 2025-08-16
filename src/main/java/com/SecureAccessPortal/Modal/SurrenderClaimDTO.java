@@ -40,7 +40,6 @@ public class SurrenderClaimDTO {
 	private BigDecimal claimAmount;
 	private String claimDate;
 	private String claimBy;
-
 	private String action;
 
 	private String surrDescription;
@@ -57,6 +56,35 @@ public class SurrenderClaimDTO {
 	private String updatedBy;
 	private String updatedDate;
 	
+	// for updateDocument
+	private String documentStatus;
+	private String documentType;
+	
+	public String getDocumentStatus() {
+		return documentStatus;
+	}
+
+	public void setDocumentStatus(String documentStatus) {
+		this.documentStatus = documentStatus;
+	}
+
+	public String getDocumentType() {
+		return documentType;
+	}
+
+	public void setDocumentType(String documentType) {
+		this.documentType = documentType;
+	}
+
+	private BankDetailsDTO bankAccount;
+	
+	public BankDetailsDTO getBankAccount() {
+		return bankAccount;
+	}
+
+	public void setBankAccount(BankDetailsDTO bankAccount) {
+		this.bankAccount = bankAccount;
+	}
 
 	public String getUpdatedBy() {
 		return updatedBy;

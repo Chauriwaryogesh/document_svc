@@ -52,6 +52,84 @@ public class DashboardStats {
 	private long failed;
 	private long cancelled;
 	private long pending;
+	
+	//for SurrenderClaim
+	private long allSurrender;
+	private long surrInProgress;
+	private long surrApproved;
+	private long surrRejected;
+	
+	private long allClaim;
+	private long claimInProgress;
+	private long claimApproved;
+	private long claimRejected;
+	
+	
+	
+
+	public long getAllSurrender() {
+		return allSurrender;
+	}
+
+	public void setAllSurrender(long allSurrender) {
+		this.allSurrender = allSurrender;
+	}
+
+	public long getAllClaim() {
+		return allClaim;
+	}
+
+	public void setAllClaim(long allClaim) {
+		this.allClaim = allClaim;
+	}
+
+	public long getSurrInProgress() {
+		return surrInProgress;
+	}
+
+	public void setSurrInProgress(long surrInProgress) {
+		this.surrInProgress = surrInProgress;
+	}
+
+	public long getSurrApproved() {
+		return surrApproved;
+	}
+
+	public void setSurrApproved(long surrApproved) {
+		this.surrApproved = surrApproved;
+	}
+
+	public long getSurrRejected() {
+		return surrRejected;
+	}
+
+	public void setSurrRejected(long surrRejected) {
+		this.surrRejected = surrRejected;
+	}
+
+	public long getClaimInProgress() {
+		return claimInProgress;
+	}
+
+	public void setClaimInProgress(long claimInProgress) {
+		this.claimInProgress = claimInProgress;
+	}
+
+	public long getClaimApproved() {
+		return claimApproved;
+	}
+
+	public void setClaimApproved(long claimApproved) {
+		this.claimApproved = claimApproved;
+	}
+
+	public long getClaimRejected() {
+		return claimRejected;
+	}
+
+	public void setClaimRejected(long claimRejected) {
+		this.claimRejected = claimRejected;
+	}
 
 	public long getTotalPolicies() {
 		return totalPolicies;

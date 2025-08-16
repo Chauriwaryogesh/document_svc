@@ -60,6 +60,11 @@ public class CommonConstant {
 	public static final String IN_PROGRESS = "IN_PROGRESS";
 	public static final String CANCEL = "CANCEL";
 	public static final String ID_PROOF = "ID_PROOF";
+	public static final String PEND = "PENDING";
+	public static final String APPROVED = "APPROVED";
+	public static final String BANK_PROOF = "BANK_PROOF";
+	public static final String OTH_DOC = "OTH_DOC";
+	public static final String UPDATE_DOCUMENT_STATUS = "UPDATE_DOCUMENT_STATUS";
 	
 
 }

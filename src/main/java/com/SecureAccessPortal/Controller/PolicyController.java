@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Modal.CustomerDTO;
+import com.SecureAccessPortal.Modal.DashboardStats;
 import com.SecureAccessPortal.Modal.GroupedPolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyRequest;
@@ -239,6 +240,16 @@ public class PolicyController {
 			@RequestHeader String userCode) {
 		ResponseEntity<SurrenderClaimDTO> response = new ResponseEntity<>();
 		response = policyService.submitSurrenderRequest(request, userCode);
+		return response;
+	}
+	@RequestMapping(value="getSurrenderCount" ,method= RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<DashboardStats> getSurrenderCount(
+			@RequestParam(required = false) String customerNo,
+			@RequestHeader(required = false) String userCode) {
+		ResponseEntity<DashboardStats> response = new ResponseEntity<>();
+
+		response = policyService.getSurrenderCount(customerNo, userCode);
+
 		return response;
 	}
 
