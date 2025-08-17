@@ -35,16 +35,13 @@ public class CommonConstant {
 	public static final String COMPLAINT_CREATE_UPDATE = "Updating the Complaint";
 
 	// complaints status
-	public static final String ALL = "All";
-	public static final String OPEN = "Open";
-	public static final String REOPEN = "Reopen";
-	public static final String CLOSED = "Closed";
-	public static final String RESOLVED = "Resolved";
-	public static final String REJECTED = "Rejected";
-	public static final String CANCELED = "Canceled";
-	public static final String PENDING = "Pending";
+	public static final String ALL = "ALL";
+	public static final String APPROVED = "APPROVED";
+	public static final String OPEN = "OPEN";
+	public static final String REOPEN = "REOPEN";
+	public static final String REJECTED = "REJECTED";
+	public static final String CANCELED = "CANCELLED";
 	public static final String Y = "Y";
-	public static final String PENE = "PENDING";
 	public static final String POLICY = "POLICY";
 	public static final String COMPLAINT = "COMPLAINT";
 	public static final String WORKITEM = "WORKITEM";
@@ -60,8 +57,8 @@ public class CommonConstant {
 	public static final String IN_PROGRESS = "IN_PROGRESS";
 	public static final String CANCEL = "CANCEL";
 	public static final String ID_PROOF = "ID_PROOF";
-	public static final String PEND = "PENDING";
-	public static final String APPROVED = "APPROVED";
+
+	
 	public static final String BANK_PROOF = "BANK_PROOF";
 	public static final String OTH_DOC = "OTH_DOC";
 	public static final String UPDATE_DOCUMENT_STATUS = "UPDATE_DOCUMENT_STATUS";

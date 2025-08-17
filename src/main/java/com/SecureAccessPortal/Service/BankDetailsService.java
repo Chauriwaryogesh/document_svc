@@ -206,7 +206,7 @@ public class BankDetailsService {
 					dto.setIfscCode(bankAccount.getIfscCode());
 					dto.setBankName(bankAccount.getBankName());
 					dto.setAccountType(bankAccount.getAccountType());
-					dto.setStatus(CommonConstant.PENE);
+					dto.setStatus(CommonConstant.IN_PROGRESS);
 					dto.setDeletedFlag("N");
 					if (bankAccount.getCustomerNumber() != null) {
 						customer = customerRepo.findByCustomerNoNew(bankAccount.getCustomerNumber(), "N");
@@ -234,7 +234,7 @@ public class BankDetailsService {
 					// call workitem Service to generate WIrefNo.
 					String workType = CommonConstant.BANK_ACC_CREATED;
 					String workItemName = CommonConstant.BANK_ACC_WORKITEM;
-					String status = CommonConstant.OPEN;
+					String status = CommonConstant.IN_PROGRESS;
 					String comment = "Bank Account is created " + save.getAccountNo() + " and customer Number is"
 							+ bankAccount.getCustomerNumber();
 					workItemService.mapRequetforWorkItem(userCode, policy, customer, workType, workItemName, comment,
@@ -500,7 +500,7 @@ public class BankDetailsService {
 			verificationRecordRepository.save(verificationRecord);
 			String workType = CommonConstant.VERIFICATION_RECORD;
 			String workItemName = CommonConstant.VER_REC_WORKITEM;
-			String status = CommonConstant.CLOSED;
+			String status = CommonConstant.APPROVED;
 			message = "Verification Record is created " + verificationRecord.getId() + " and customer Number is"
 					+ verificationRecord.getCustomer().getCustomerNo() + "action is" + verificationRecordDTO.getAction()
 					+ "Status is" + verificationRecordDTO.getStatus();

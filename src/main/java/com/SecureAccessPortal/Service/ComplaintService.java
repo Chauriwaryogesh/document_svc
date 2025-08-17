@@ -46,7 +46,7 @@ public class ComplaintService {
 	public List<ComplaintDTO> searchComplaints(String complaintId, String complaintNumber, String customerNo,
 			String policyNumber, String workitemNumber, String type, String usrCode) {
 		List<Complaint> complaints = new ArrayList<>();
-		if (CommonConstant.ALL.equals(type)) {
+		if (CommonConstant.ALL.equalsIgnoreCase(type)) {
 			complaints = complaintRepository.findByCriteria(complaintId, complaintNumber, customerNo, policyNumber,
 					workitemNumber, null, "N");
 		} else {
@@ -184,7 +184,7 @@ public class ComplaintService {
 				// code for link workitemwill implement soon.
 				String workType = CommonConstant.COMPLAINT_UPDATE;
 				String workItemName = CommonConstant.COMPLAINT_CREATE_UPDATE;
-				String status = CommonConstant.CLOSED;
+				String status = CommonConstant.APPROVED;
 				String comment = "Complaint is updateing  " + policy.getPolicyNumber() + " for the customer";
 				Workitem mapRequetforWorkItem = workItemService.mapRequetforWorkItem(userCode, policy, customer,
 						workType, workItemName, comment, null, null, null, status);

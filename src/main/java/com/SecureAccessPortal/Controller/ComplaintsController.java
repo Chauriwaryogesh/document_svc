@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
+import com.SecureAccessPortal.CommonConstants.ErrorConstants;
 import com.SecureAccessPortal.Modal.ComplaintDTO;
 import com.SecureAccessPortal.Modal.DashboardStats;
 import com.SecureAccessPortal.Modal.RoleDTO;
@@ -35,7 +36,14 @@ public class ComplaintsController {
 		ResponseEntity<List<ComplaintDTO>> response = new ResponseEntity<>();
 		List<ComplaintDTO> complaints = complaintService.searchComplaints(complaintId, complaintNumber, customerNo,
 				policyNumber, workitemNumber, type, userCode);
-		response.setData(complaints);
+		if(complaints != null) {
+			response.setData(complaints);
+			response.setStatus(CommonConstant.SUCCESS);
+		}else {
+			response.setStatus(ErrorConstants.FAILURE);
+			response.setErrorMessage(ErrorConstants.NO_DATA_FOUND);
+		}
+		
 		return response;
 	}
 

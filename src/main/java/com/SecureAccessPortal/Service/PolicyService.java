@@ -759,7 +759,7 @@ public class PolicyService {
 			// Create work item
 			String workType = CommonConstant.POLICY_DELETED;
 			String workItemName = CommonConstant.POLICY_DELETED;
-			String status = CommonConstant.CLOSED;
+			String status = CommonConstant.APPROVED;
 			String comment = "Policy Deleted  " + policy.getPolicyNumber() + " for the customer";
 			Workitem mapRequetforWorkItem = workItemService.mapRequetforWorkItem(userCode, policy, customer, workType,
 					workItemName, comment, null, null, null, status);

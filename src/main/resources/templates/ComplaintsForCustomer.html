@@ -401,9 +401,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentView = 'cards';
     let currentInputTypeFilter = 'All';
     let userCode = sessionStorage.getItem('userCode');
-    console.log(userCode);
     const customerNoFromUrl = new URLSearchParams(window.location.search).get('customerNo');
-    console.log(customerNoFromUrl);
+    
+    // Retrieve allPolicyNumbers from session storage
+    let allPolicyNumbers = [];
+    try {
+        const storedPolicies = sessionStorage.getItem('allPolicyNumbers');
+        if (storedPolicies) {
+            allPolicyNumbers = JSON.parse(storedPolicies);
+        }
+    } catch (e) {
+        console.error("Error parsing allPolicyNumbers from session storage:", e);
+        allPolicyNumbers = [];
+    }
+
     const showErrorToast = (message, bgClass = 'bg-red-600') => {
         const toast = document.createElement('div');
         toast.className = `fixed bottom-5 right-5 ${bgClass} text-white py-3 px-5 rounded-xl shadow-lg z-50 transform transition-all duration-300 translate-y-full opacity-0`;
@@ -446,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function logout() {
         sessionStorage.removeItem('userCode');
         sessionStorage.removeItem('customerNo'); // Ensure customerNo is also cleared if it was ever stored separately
+        sessionStorage.removeItem('allPolicyNumbers'); // Clear policy numbers on logout
         userCode = null;
         showErrorToast('You have been successfully logged out.', 'bg-green-500');
         setTimeout(() => {
@@ -462,7 +474,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const BASE_URL = 'http://localhost:8081';
     const api = {
         fetchTeamDetails: async () => {
-            console.log(userCode);
             if (!userCode) return null;         
             const url = `${BASE_URL}/Complaint/fetch-Team?userCode=${userCode}`;
             try {
@@ -478,8 +489,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         searchComplaints: async (params = {}) => {
             const queryParams = new URLSearchParams();
-            // customerNo will be the same as userCode for this customer's view
-            console.log(customerNoFromUrl);
             queryParams.set('customerNo', customerNoFromUrl); 
             Object.entries(params).forEach(([key, value]) => {
                 if (value || key === 'type') {
@@ -502,7 +511,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         getComplaint: async (complaintNumber, type = '') => {
             const queryParams = new URLSearchParams({ complaintNumber });
-            // customerNo will be the same as userCode for this customer's view
             queryParams.set('customerNo', customerNoFromUrl); 
             if (type) queryParams.set('type', type);
             const url = `${BASE_URL}/Complaint/get-complaint?${queryParams.toString()}`;
@@ -519,7 +527,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         fetchPolicyDetails: async (policyNo) => {
             if (!policyNo) return null;
-            // customerNo will be the same as userCode for this customer's view
             const url = `${BASE_URL}/policy/policy-details?policyNo=${policyNo}&customerNo=${customerNoFromUrl}`; 
             try {
                 const response = await fetch(url, { headers: { 'userCode': userCode } });
@@ -539,7 +546,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         'userCode': userCode,
                         'Content-Type': 'application/json' 
                     }, 
-                    // customerNo in body will be the same as userCode
                     body: JSON.stringify({ ...data, action: 'create', customerNo: customerNoFromUrl }) 
                 });
                 if (!response.ok) { 
@@ -579,7 +585,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         deleteComplaints: async (ids) => {
             const deletePromises = Array.from(ids).map(id => {
-                // customerNo in query will be the same as userCode
                 const url = `${BASE_URL}/Complaint/delete-complaint?complaintId=${id}&customerNo=${customerNoFromUrl}`; 
                 return fetch(url, { method: 'DELETE', headers: { 'userCode': userCode } });
             });
@@ -747,7 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateStatusCounts = () => {
         const counts = {
             'All': allComplaints.length,
-            'Open': 0, 'Pending': 0, 'Rejected': 0, 'Reopen': 0, 'Closed': 0, 'Resolved': 0, 'Canceled': 0 // Added Canceled
+            'Open': 0, 'Pending': 0, 'Rejected': 0, 'Reopen': 0, 'Closed': 0, 'Resolved': 0, 'Canceled': 0 
         };
         allComplaints.forEach(complaint => {
             if (counts[complaint.status]) {
@@ -758,7 +763,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const countElement = document.getElementById(`count-${status}`);
             if (countElement) {
                 countElement.textContent = counts[status];
-                countElement.classList.remove('hidden'); // Always show the circle
+                countElement.classList.remove('hidden'); 
             }
         }
     };
@@ -1051,29 +1056,23 @@ document.addEventListener('DOMContentLoaded', () => {
             modalTitle.textContent = mode === 'create' ? 'Create New Complaint' : `Edit Complaint: ${data.complaintNumber || ''}`;
             complaintIdInput.value = data.complaintId || '';
 
-            // Determine if the form should be editable based on status
             const isEditableStatus = mode === 'create' || (data.status === 'Open' || data.status === 'Pending');
 
-            // Define editable fields that are not always readonly
-            const editableFieldsOnEdit = ['category', 'subCategory', 'description', 'assignedTo', 'customerFeedback', 'tags', 'reason', 'policyNumber', 'policyType', 'totalClaimableAmount', 'sourceChannel', 'severity', 'departmentId', 'escalationLevel', 'priority', 'slaDueDate', 'relatedComplaintId', 'resolutionNotes'];
-
-
-            // Determine status options and initial state
             let statusOptions = [];
-            let statusReadonly = true; // Default to readonly for create mode and non-editable statuses
+            let statusReadonly = true; 
             let statusValue = mode === 'create' ? 'Open' : (data.status || 'Open');
 
             if (mode === 'create') {
                 statusOptions = ['Open'];
-            } else { // mode === 'edit'
+            } else { 
                 if (data.status === 'Open') {
                     statusOptions = ['Open', 'Canceled'];
-                    statusReadonly = false; // Allow changing status from Open to Canceled
+                    statusReadonly = false; 
                 } else if (data.status === 'Pending') {
                     statusOptions = ['Pending'];
-                    statusReadonly = true; // Status remains Pending, not editable by user
+                    statusReadonly = true; 
                 } else {
-                    statusOptions = [data.status]; // Show current status, but disable
+                    statusOptions = [data.status]; 
                     statusReadonly = true;
                 }
             }
@@ -1084,7 +1083,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     { id: 'complaintNumberDisplay', label: 'Complaint Number', type: 'text', readonly: true, value: data.complaintNumber || 'Auto-generated' },
                     { id: 'customerNo', label: 'Customer Number', type: 'text', value: customerNoFromUrl || '', readonly: true, required: true },
                     { id: 'customerName', label: 'Customer Name', type: 'text', value: data.customerName || '', readonly: !isEditableStatus },
-                    { id: 'policyNumber', label: 'Policy Number', type: 'text', value: data.policyNumber || '', required: mode === 'create', readonly: !isEditableStatus },
+                    { 
+                        id: 'policyNumber', 
+                        label: 'Policy Number', 
+                        type: 'select', 
+                        options: allPolicyNumbers, // Populated from sessionStorage
+                        value: data.policyNumber || '', 
+                        required: mode === 'create', 
+                        readonly: !isEditableStatus 
+                    },
                     { id: 'policyType', label: 'Policy Type', type: 'select', options: ['Health', 'Life', 'Auto', 'Home'], value: data.policyType || '', readonly: !isEditableStatus },
                     { id: 'totalClaimableAmount', label: 'Total Claimable Amount', type: 'number', value: data.totalClaimableAmount || '', readonly: !isEditableStatus },
                     { id: 'category', label: 'Category', type: 'select', options: ['Policy', 'Bank Customer', 'Payments Service', 'Other'], value: data.category || '', required: mode === 'create', readonly: !isEditableStatus },
@@ -1093,10 +1100,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         id: 'status',
                         label: 'Status',
                         type: 'select',
-                        options: statusOptions, // Dynamically set based on mode/status
+                        options: statusOptions, 
                         value: statusValue,
-                        readonly: statusReadonly, // Dynamically set based on mode/status
-                        required: true // Status is always required
+                        readonly: statusReadonly, 
+                        required: true 
                     },
                     { id: 'description', label: 'Description', type: 'textarea', value: data.description || '', required: mode === 'create', readonly: !isEditableStatus },
                     { id: 'dateFiled', label: 'Date Filed', type: 'date', value: data.dateFiled || new Date().toISOString().split('T')[0], readonly: !isEditableStatus },
@@ -1113,9 +1120,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     { id: 'relatedComplaintId', label: 'Related Complaint ID', type: 'text', value: data.relatedComplaintId || '', readonly: !isEditableStatus },
                 ],
                 notes: [
-                    { id: 'resolutionNotes', label: 'Resolution Notes', type: 'textarea', value: data.resolutionNotes || '', disabled: !isEditableStatus }, // Disabled if not editable status
+                    { id: 'resolutionNotes', label: 'Resolution Notes', type: 'textarea', value: data.resolutionNotes || '', disabled: !isEditableStatus }, 
                     { id: 'customerFeedback', label: 'Customer Feedback', type: 'textarea', value: data.customerFeedback || '', readonly: !isEditableStatus },
-                    { id: 'isReopened', label: 'Is Reopened?', type: 'checkbox', checked: data.isReopened === 'Yes', disabled: !isEditableStatus }, // Disabled if not editable status
+                    { id: 'isReopened', label: 'Is Reopened?', type: 'checkbox', checked: data.isReopened === 'Yes', disabled: !isEditableStatus }, 
                     { id: 'tags', label: 'Tags (comma-separated)', type: 'text', value: data.tags || '', readonly: !isEditableStatus },
                     { id: 'reason', label: 'Reason', type: 'textarea', value: data.reason || '', readonly: !isEditableStatus },
                     { id: 'reopenComplaintId', label: 'Old Complaint ID', type: 'text', value: '', hidden: true },
@@ -1142,21 +1149,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 div.appendChild(label);
 
                 let inputElement;
-                // Determine if the field should be readonly/disabled based on its own property AND the overall form editability
                 let shouldBeReadonly = field.readonly || (!isEditableStatus && field.id !== 'complaintNumberDisplay' && field.id !== 'workitemNumberDisplay');
-                let shouldBeDisabled = field.disabled || (!isEditableStatus && field.type === 'checkbox'); // Checkboxes use disabled, others use readonly
+                let shouldBeDisabled = field.disabled || (!isEditableStatus && field.type === 'checkbox'); 
 
                 if (field.type === 'select') {
                     inputElement = document.createElement('select');
-                    field.options.forEach(optionText => {
-                        const option = document.createElement('option');
-                        option.value = optionText;
-                        option.textContent = optionText;
-                        if (field.value === optionText) {
-                            option.selected = true;
-                        }
-                        inputElement.appendChild(option);
-                    });
+                    if (field.id === 'policyNumber' && allPolicyNumbers.length > 0) {
+                        // Add a default option
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = "";
+                        defaultOption.textContent = "Select Policy Number";
+                        defaultOption.disabled = true;
+                        defaultOption.selected = true;
+                        inputElement.appendChild(defaultOption);
+
+                        field.options.forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText;
+                            option.textContent = optionText;
+                            if (field.value === optionText) {
+                                option.selected = true;
+                            }
+                            inputElement.appendChild(option);
+                        });
+                    } else { // For other select fields
+                        field.options.forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText;
+                            option.textContent = optionText;
+                            if (field.value === optionText) {
+                                option.selected = true;
+                            }
+                            inputElement.appendChild(option);
+                        });
+                    }
+
                     if (shouldBeReadonly || shouldBeDisabled) {
                         inputElement.disabled = true;
                         inputElement.classList.add('bg-slate-100', 'cursor-not-allowed');
@@ -1242,9 +1269,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            const policyNumberInput = document.getElementById('policyNumber');
-            if (policyNumberInput) {
-                policyNumberInput.addEventListener('change', async (e) => {
+            const policyNumberSelect = document.getElementById('policyNumber');
+            if (policyNumberSelect) {
+                // Populate policy numbers when the modal opens or a new complaint is created
+                policyNumberSelect.innerHTML = '<option value="" disabled selected>Select Policy Number</option>';
+                allPolicyNumbers.forEach(policyNo => {
+                    const option = document.createElement('option');
+                    option.value = policyNo;
+                    option.textContent = policyNo;
+                    policyNumberSelect.appendChild(option);
+                });
+
+                // Set initial value for edit mode
+                if (mode === 'edit' && data.policyNumber) {
+                    policyNumberSelect.value = data.policyNumber;
+                }
+
+                policyNumberSelect.addEventListener('change', async (e) => {
                     const policyNo = e.target.value;
                     if (policyNo) {
                         const policyDetails = await api.fetchPolicyDetails(policyNo);
@@ -1337,17 +1378,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                 fieldDiv.style.display = show ? 'flex' : 'none';
                             }
                         });
-                        // Only modify statusSelect if it's currently editable (Open status)
                         if (show && statusSelect && data.status === 'Open') {
                             statusSelect.value = 'Reopen';
                             statusSelect.disabled = true;
                             statusSelect.classList.add('bg-slate-100', 'cursor-not-allowed');
-                        } else if (statusSelect && data.status === 'Open') { // If unchecked and status is Open
-                            statusSelect.value = 'Open'; // Revert to Open
+                        } else if (statusSelect && data.status === 'Open') { 
+                            statusSelect.value = 'Open'; 
                             statusSelect.disabled = false;
                             statusSelect.classList.remove('bg-slate-100', 'cursor-not-allowed');
                         } else if (statusSelect && mode === 'create') {
-                            statusSelect.value = 'Open'; // Always Open for create
+                            statusSelect.value = 'Open'; 
                             statusSelect.disabled = true;
                             statusSelect.classList.add('bg-slate-100', 'cursor-not-allowed');
                         }
@@ -1386,7 +1426,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             modalTabsNav.querySelector('.tab-button[data-tab="details"]').click();
 
-            // Conditional Save Button for Edit Mode based on isEditableStatus
             if (isEditableStatus) {
                 saveComplaintBtn.disabled = false;
                 saveComplaintBtn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -1495,9 +1534,9 @@ document.addEventListener('DOMContentLoaded', () => {
             complaintId: complaintId || null,
             complaintNumber: document.getElementById('complaintNumberDisplay').value === 'Auto-generated' ? null : document.getElementById('complaintNumberDisplay').value,
             userCode: userCode,
-            customerNo: userCode,
+            customerNo: customerNoFromUrl, // Ensure customerNo is passed from URL param
             customerName: document.getElementById('customerName').value,
-            policyNumber: document.getElementById('policyNumber').value,
+            policyNumber: document.getElementById('policyNumber').value, // Now a select
             policyType: document.getElementById('policyType').value,
             totalClaimableAmount: parseFloat(document.getElementById('totalClaimableAmount').value) || 0,
             category: document.getElementById('category').value,
@@ -1632,19 +1671,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const initialize = async () => {
-        // Check if userCode is null or empty
         if (!userCode || userCode.trim() === '' || userCode.trim().toLowerCase() === 'na') {
             showErrorToast('No userCode found. Redirecting to login page.', 'bg-red-600');
             setTimeout(() => window.location.href = 'login', 1500);
-            return; // Stop further execution
+            return; 
         }
 
-        // Check if customerNoFromUrl is null or empty
         if (!customerNoFromUrl || customerNoFromUrl.trim() === '' || customerNoFromUrl.trim().toLowerCase() === 'na') {
             showErrorToast('No customerNo found. Redirecting to login page.', 'bg-red-600');
             setTimeout(() => window.location.href = 'login', 1500);
-            return; // Stop further execution
+            return; 
         }
+
+        // Check for pre-filled message for payment issue
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefillMessage = urlParams.get('message');
+        const initialPolicyNo = urlParams.get('policyNo');
 
         createModals();
         const teamDetails = await api.fetchTeamDetails();
@@ -1656,6 +1698,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         userNameDisplay.textContent = `User: ${currentUser.fullName} (${userCode})`;
         await performSearch({ inputType: 'All' });
+
+        // If a pre-fill message exists, open the create complaint modal and populate fields
+        if (prefillMessage) {
+            openModal('complaintModal', 'create');
+            document.getElementById('description').value = decodeURIComponent(prefillMessage);
+            if (initialPolicyNo) {
+                const policySelect = document.getElementById('policyNumber');
+                if (policySelect) {
+                    policySelect.value = initialPolicyNo;
+                    // Trigger change event to populate customer/policy details
+                    policySelect.dispatchEvent(new Event('change'));
+                }
+            }
+        }
     };
 
     sidebarToggle.addEventListener('click', () => {

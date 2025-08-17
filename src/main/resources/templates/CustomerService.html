@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard - Secure Access</title>
+    <title>Service Dashboard - Customer Service Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,58 +16,10 @@
             min-height: 100vh;
             color: #334155;
         }
-        body.dark-mode {
-            background-color: #1a202c;
-            color: #e2e8f0;
+        /* Prevent scrolling on body when modal is open */
+        body.no-scroll {
+            overflow: hidden;
         }
-        body.dark-mode .sidebar {
-            background-color: #2d3748;
-            border-right-color: #4a5568;
-        }
-        body.dark-mode .sidebar-item:hover {
-            background-color: #4a5568;
-        }
-        body.dark-mode .sidebar-item.active {
-            background-color: #4c51bf;
-        }
-        body.dark-mode .header {
-            background-color: #2d3748;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-        }
-        body.dark-mode .card {
-            background-color: #2d3748;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-        }
-        body.dark-mode .modal-content {
-            background-color: #2d3748;
-        }
-        body.dark-mode .modal-header {
-            background-color: #1a202c;
-        }
-        body.dark-mode .modal-body {
-            background: #2d3748;
-        }
-        body.dark-mode .modal-footer {
-            background-color: #1a202c;
-        }
-        body.dark-mode .btn-secondary {
-            background-color: #4a5568;
-            color: #e2e8f0;
-        }
-        body.dark-mode .btn-secondary:hover {
-            background-color: #64748b;
-        }
-        body.dark-mode .text-gray-800 { color: #e2e8f0; }
-        body.dark-mode .text-gray-900 { color: #edf2f7; }
-        body.dark-mode .text-gray-500 { color: #a0aec0; }
-        body.dark-mode .text-gray-600 { color: #cbd5e0; }
-        body.dark-mode .text-blue-600 { color: #63b3ed; }
-        body.dark-mode .text-purple-600 { color: #a78bfa; }
-        body.dark-mode .text-green-600 { color: #68d391; }
-        body.dark-mode .text-yellow-600 { color: #ecc94b; }
-        body.dark-mode .text-red-600 { color: #fc8181; }
-        body.dark-mode .text-indigo-600 { color: #81e6d9; }
-        body.dark-mode .text-pink-600 { color: #ed64a6; }
 
         .sidebar {
             width: 250px;
@@ -102,7 +54,7 @@
             padding: 0 0.5rem 1.5rem;
         }
         .sidebar-header .logo-text {
-            font-size: 1rem; /* Smaller font size */
+            font-size: 1rem; 
             font-weight: 800;
             color: #3b82f6;
             transition: opacity 0.3s ease;
@@ -143,7 +95,7 @@
         }
         .sidebar.collapsed .sidebar-item {
             justify-content: center;
-            padding: 0.75rem 0.75rem; /* Adjusted padding for better icon spacing */
+            padding: 0.75rem 0.75rem; 
         }
         .sidebar.collapsed .sidebar-item span {
             display: none;
@@ -200,7 +152,7 @@
         .header {
             background-color: #ffffff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 1.5rem 2rem;
+            padding: 0.75rem 1.5rem; /* Reduced padding further */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -208,7 +160,7 @@
             border-radius: 12px;
         }
         .header-greeting {
-            font-size: 1.8rem;
+            font-size: 1.4rem; /* Reduced font size further */
             font-weight: 700;
             color: #1a202c;
         }
@@ -218,22 +170,19 @@
             gap: 1rem;
         }
         .header-info span {
-            font-size: 0.9rem;
+            font-size: 0.8rem; /* Reduced font size */
             color: #64748b;
         }
-        .header-info button {
-            background: none;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+        .universal-search-input {
+            width: 180px; /* Initial width */
+            transition: width 0.3s ease-in-out, padding-left 0.3s ease-in-out;
         }
-        .header-info button:hover {
-            background-color: #e2e8f0;
-            color: #3b82f6;
+        .universal-search-input:focus,
+        .universal-search-input:hover {
+            width: 250px; /* Expanded width on focus/hover */
+            padding-left: 2.5rem; /* Adjust padding for icon */
         }
+
         .card {
             background-color: white;
             border-radius: 16px;
@@ -325,7 +274,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.8); 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -344,39 +293,55 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             width: 90%;
             max-width: 450px;
-            max-height: 80vh;
+            max-height: 80vh; 
             padding: 2rem;
             transform: translateY(-20px);
             transition: transform 0.3s ease-out, opacity 0.3s ease-out;
             opacity: 0;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; 
         }
         .modal-overlay.open .modal-content {
             transform: translateY(0);
             opacity: 1;
         }
-        .modal-content-fullscreen {
-            width: 95vw;
-            height: 95vh;
-            max-width: none;
-            max-height: none;
-            border-radius: 16px;
+        /* Adjusted Policy Detail Modal Styling */
+        #policy-detail-modal .modal-content {
+            position: fixed; /* Changed to fixed for explicit positioning */
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%); /* Centering */
+            width: 80vw; /* Increased width */
+            max-width: 900px; /* Increased max width */
+            height: 80vh; /* Increased height */
+            max-height: 900px; /* Increased max height */
+            min-height: 500px; /* Increased min height */
+            min-width: 600px; /* Increased min width */
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: auto; 
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.3s ease-out;
         }
-        .modal-header {
+        #policy-detail-modal.open .modal-content {
+            opacity: 1;
+        }
+
+        #policy-detail-modal .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem; /* Reduced margin */
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 1rem;
+            padding-bottom: 0.5rem; /* Reduced padding */
+            flex-shrink: 0; 
         }
-        .modal-title {
-            font-size: 1.75rem;
+        #policy-detail-modal .modal-title {
+            font-size: 1.25rem; /* Reduced font size */
             font-weight: 700;
             color: #1a202c;
         }
@@ -395,18 +360,28 @@
             font-size: 1rem;
             line-height: 1.6;
             color: #4a5568;
-            margin-bottom: 2rem;
-            flex-grow: 1;
-            overflow-y: auto;
-            padding-right: 1rem;
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding-right: 1rem; 
         }
-        .modal-footer {
+        #policy-detail-modal .modal-footer {
             display: flex;
             justify-content: flex-end;
-            gap: 1rem;
-            padding-top: 1rem;
+            gap: 0.5rem; /* Reduced gap */
+            padding-top: 0.5rem; /* Reduced padding */
             border-top: 1px solid #e2e8f0;
+            flex-shrink: 0; 
         }
+        /* Smaller buttons for policy detail modal */
+        #policy-detail-modal .btn-primary,
+        #policy-detail-modal .btn-secondary,
+        #policy-detail-modal .btn-danger {
+            padding: 0.5rem 0.8rem; /* Smaller padding */
+            font-size: 0.75rem; /* Smaller font size */
+            border-radius: 8px; /* Slightly smaller border-radius */
+        }
+
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -422,268 +397,6 @@
             from { transform: translateY(0); opacity: 1; }
             to { transform: translateY(100%); opacity: 0; }
         }
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: -250px;
-                height: 100vh;
-                top: 0;
-                z-index: 900;
-            }
-            .sidebar.open {
-                left: 0;
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .sidebar-toggle-btn {
-                display: block;
-                position: absolute;
-                left: auto;
-                right: 0.75rem;
-                top: 0.75rem;
-                z-index: 50;
-                background-color: transparent;
-                box-shadow: none;
-            }
-            .sidebar.collapsed .sidebar-toggle-btn {
-                right: 0.75rem;
-                left: auto;
-            }
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 1rem;
-            }
-            .header-info {
-                margin-top: 1rem;
-                width: 100%;
-                justify-content: space-between;
-            }
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            .lg\:col-span-2 {
-                grid-column: auto;
-            }
-            .modal-content-fullscreen {
-                width: 100vw;
-                height: 100vh;
-                border-radius: 0;
-            }
-        }
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .status-active, .status-approved, .status-pass, .status-paid { background-color: #dcfce7; color: #166534; }
-        .status-pending, .status-in_review, .status-unpaid { background-color: #fef3c7; color: #92400e; }
-        .status-rejected, .status-fail, .status-lapsed { background-color: #fee2e2; color: #991b1b; }
-        .status-open { background-color: #e0f2fe; color: #0c4a6e; }
-        .status-closed { background-color: #f1f5f9; color: #475569; }
-        .status-in_progress { background-color: #fef3c7; color: #92400e; }
-        .status-completed { background-color: #dcfce7; color: #166534; }
-        .status-pend_external { background-color: #f3e8ff; color: #6b21a8; }
-        .status-pend_internal { background-color: #d1fae5; color: #065f46; }
-        .status-passed { background-color: #e0e7ff; color: #3730a3; }
-        .account-card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem;
-        }
-        @media (min-width: 640px) {
-            .account-card-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-        @media (min-width: 768px) {
-            .account-card-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-        }
-        @media (min-width: 1024px) {
-            .account-card-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-        }
-        .account-card {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 1.25rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-        }
-        .account-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-        }
-        .account-card .title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-        .account-card .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 0.25rem;
-            border-bottom: 1px dashed #e5e7eb;
-            margin-bottom: 0.25rem;
-        }
-        .account-card .detail-row:last-of-type {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        .account-card .label {
-            font-weight: 500;
-            color: #4b5563;
-            font-size: 0.875rem;
-        }
-        .account-card .value {
-            font-size: 0.875rem;
-            color: #374151;
-            text-align: right;
-        }
-        .account-card .ref-link {
-            color: #3b82f6;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .account-card .ref-link:hover {
-            text-decoration: underline;
-        }
-        .account-list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .account-list-item {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 1rem 1.25rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-            transition: all 0.2s ease-in-out;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.75rem 1.5rem;
-            cursor: pointer;
-        }
-        .account-list-item:hover {
-            background-color: #f9fafb;
-        }
-        .account-list-item .info-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem 1.5rem;
-            flex-grow: 1;
-        }
-        .account-list-item .info-item {
-            display: flex;
-            flex-direction: column;
-            font-size: 0.875rem;
-        }
-        .account-list-item .info-item .label {
-            font-weight: 500;
-            color: #4b5563;
-        }
-        .account-list-item .info-item .value {
-            color: #1f2937;
-        }
-        .account-list-item .ref-link {
-            color: #3b82f6;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .account-list-item .ref-link:hover {
-            text-decoration: underline;
-        }
-        .table-view-container {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-        }
-        .table-view-container table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .table-view-container th, .table-view-container td {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            text-align: left;
-            font-size: 0.875rem;
-        }
-        .table-view-container th {
-            background-color: #f9fafb;
-            font-weight: 600;
-            color: #4b5563;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .table-view-container tbody tr:last-child td {
-            border-bottom: none;
-        }
-        .table-view-container tbody tr:hover {
-            background-color: #f9fafb;
-        }
-        .form-input {
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 10px 14px;
-            width: 100%;
-            box-sizing: border-box;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-        .form-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-        }
-        .form-label {
-            font-weight: 600;
-            color: #1a2c50;
-        }
-        .form-label.required::after {
-            content: '*';
-            color: #ef4444;
-            margin-left: 4px;
-        }
-        .loader {
-            position: fixed;
-            inset: 0;
-            background: rgba(17, 24, 39, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            display: none;
-        }
-        .loader.active {
-            display: flex;
-        }
-        .spinner {
-            width: 36px;
-            height: 36px;
-            border: 4px solid #e5e7eb;
-            border-top: 4px solid #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
         .toast {
             position: fixed;
             bottom: 24px;
@@ -691,7 +404,7 @@
             padding: 12px 24px;
             border-radius: 8px;
             color: white;
-            z-index: 1001; /* Changed from 110 to 1001 for higher priority than modals */
+            z-index: 1001; 
             font-weight: 500;
             animation: slide-up 0.3s ease-out, slide-down 0.0s ease-in 2.7s forwards;
         }
@@ -719,56 +432,22 @@
         .pagination-input { width: 50px; text-align: center; }
         .app-footer {
             width: 100%;
-            padding: 1rem;
+            padding: 0.25rem 0.5rem; /* Further reduced padding */
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.7rem; /* Further reduced font size */
             color: #64748b;
             background-color: #ffffff;
             border-top: 1px solid #e2e8f0;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.03);
             margin-top: auto;
         }
-        body.dark-mode .app-footer {
-            background-color: #2d3748;
-            border-top-color: #4a5568;
-            color: #a0aec0;
-        }
 
-        /* Dashboard View Specific Styles */
         #dashboard-section .dashboard-cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
-        #dashboard-section.list-view .dashboard-cards-grid {
-            grid-template-columns: 1fr; /* Single column for list view */
-        }
-        #dashboard-section.list-view .card {
-            flex-direction: row; /* Horizontal layout for list items */
-            align-items: center;
-            min-height: auto; /* Remove min-height constraint */
-            padding: 1rem 1.5rem;
-        }
-        #dashboard-section.list-view .card .card-header-content {
-            margin-bottom: 0;
-            flex-grow: 0;
-            flex-shrink: 0;
-            width: 150px; /* Fixed width for icon/title in list view */
-        }
-        #dashboard-section.list-view .card .card-description {
-            margin-bottom: 0;
-            flex-grow: 1;
-            padding-left: 1rem;
-            border-left: 1px solid #e2e8f0;
-            margin-left: 1rem;
-        }
-        #dashboard-section.list-view .card .btn-primary {
-            width: auto;
-            margin-left: auto; /* Push button to the right */
-            flex-shrink: 0;
-        }
 
-        /* Workitem Status Cards */
         .status-card {
             background-color: #ffffff;
             border-radius: 0.75rem;
@@ -796,6 +475,60 @@
             border: 2px solid #3b82f6;
             background-color: #e0e7ff;
         }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            line-height: 1;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .status-active { background-color: #d1fae5; color: #059669; } 
+        .status-lapsed { background-color: #fee2e2; color: #ef4444; } 
+        .status-pending { background-color: #fef3c7; color: #f59e0b; } 
+        .status-paid { background-color: #dbeafe; color: #2563eb; } 
+        .status-due { background-color: #fce7f3; color: #db2777; } 
+        .status-overdue { background-color: #ffe4e6; color: #dc2626; } 
+        .status-inprogress { background-color: #e0e7ff; color: #4f46e5; } 
+        .status-completed { background-color: #d1fae5; color: #065f46; } 
+        .status-open { background-color: #e0f2fe; color: #0c4a6e; } 
+        .status-rejected { background-color: #fee2e2; color: #991b1b; } 
+        .status-passed { background-color: #dcfce7; color: #166534; } 
+        .status-pend_external { background-color: #eef2ff; color: #4338ca; } 
+        .status-pend_internal { background-color: #f0f9ff; color: #075985; } 
+        .status-default { background-color: #e2e8f0; color: #475569; } 
+
+        .tab-button-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .tab-button {
+            padding: 0.75rem 1.25rem;
+            background-color: transparent;
+            border: none;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        .tab-content-section {
+            display: none;
+        }
+        .tab-content-section.active {
+            display: block;
+        }
+
     </style>
 </head>
 <body class="text-gray-800">
@@ -803,7 +536,7 @@
         <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
                 <button id="sidebar-toggle-btn" class="sidebar-toggle-btn">
-                    <i class="fas fa-bars fa-lg"></i> <!-- Changed to hamburger icon -->
+                    <i class="fas fa-bars fa-lg"></i> 
                 </button>
                 <i class="fas fa-shield-alt text-blue-600 fa-2x"></i>
                 <span class="logo-text">Customer Services Secure access V2</span>
@@ -851,10 +584,6 @@
                 </a>
             </nav>
             <div class="sidebar-bottom-actions">
-                <button id="dark-mode-toggle" class="btn-secondary w-full flex items-center justify-center gap-2">
-                    <i class="fas fa-moon"></i>
-                    <span>Dark Mode</span>
-                </button>
                 <button id="logout-btn-sidebar" class="btn-danger w-full flex items-center justify-center gap-2">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
@@ -866,30 +595,17 @@
                 <h1 class="header-greeting">Welcome, <span id="customer-name" class="font-semibold text-blue-600">Customer</span>.</h1>
                 <div class="flex items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
                     <div class="relative flex-grow">
-                        <input type="text" id="universal-search-input" placeholder="Search..." class="w-full p-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="text" id="universal-search-input" placeholder="Search..." class="universal-search-input w-full p-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     </div>
                     <div class="header-info flex-shrink-0">
-                        <span id="user-id-display">User ID: N/A</span>
-                        <button id="notifications-btn" title="Notifications">
-                            <i class="fas fa-bell fa-lg"></i>
-                        </button>
-                        <button id="settings-btn" title="Settings">
-                            <i class="fas fa-cog fa-lg"></i>
-                        </button>
+                        <span id="user-id-display">User ID: N/A</span> | <span id="customer-no-display">Cust No: N/A</span>
+                        <span id="email-display">Email: N/A</span>
                     </div>
                 </div>
             </header>
             <section id="dashboard-section" class="content-section fade-in">
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Overview</h2>
-                <div class="flex justify-end mb-4 gap-2">
-                    <button id="card-view-btn" class="btn-secondary active">
-                        <i class="fas fa-th-large mr-2"></i>Card View
-                    </button>
-                    <button id="list-view-btn" class="btn-secondary">
-                        <i class="fas fa-list mr-2"></i>List View
-                    </button>
-                </div>
                 <div id="dashboard-cards-container" class="dashboard-cards-grid">
                     <div class="card">
                         <div class="card-header-content">
@@ -950,18 +666,12 @@
                     <div class="card">
                         <div class="card-header-content">
                             <div class="card-icon bg-orange-100 text-orange-600"><i class="fas fa-file-invoice-dollar fa-2x"></i></div>
-                            <div><h3 class="card-title">Claim for Policy</h3></div>
+                            <div><h3 class="card-title">Surrender & Claim Module</h3></div>
                         </div>
-                        <p class="card-description">Initiate a claim for your active policy.</p>
-                        <button class="btn-primary w-full" onclick="navigateToComplaintsForClaim()">File a Claim</button>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-teal-100 text-teal-600"><i class="fas fa-handshake-slash fa-2x"></i></div>
-                            <div><h3 class="card-title">Surrender Policy</h3></div>
+                        <p class="card-description">Request to surrender an existing policy or initiate a claim for your active policy.</p>
+                        <div class="flex flex-col space-y-2 mt-4">
+                            <button class="btn-primary w-full" onclick="navigateToSurrender()">Surrender Or Claim</button>
                         </div>
-                        <p class="card-description">Request to surrender an existing policy.</p>
-                        <button class="btn-primary w-full" onclick="navigateToSurrenderForPolicy()">Surrender Policy</button>
                     </div>
                     <div class="card">
                         <div class="card-header-content">
@@ -1020,8 +730,8 @@
                         <button class="btn-primary" onclick="openModal('apply-policy-modal')">Apply for Policy</button>
                     </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                <div class="overflow-x-auto rounded-lg shadow-md">
+                    <table class="min-w-full bg-white">
                         <thead>
                             <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                                 <th class="py-3 px-6 text-left">Policy No.</th>
@@ -1030,60 +740,78 @@
                                 <th class="py-3 px-6 text-left">Company</th>
                                 <th class="py-3 px-6 text-left">Premium</th>
                                 <th class="py-3 px-6 text-left">Due Date</th>
-                                <th class="py-3 px-6 text-left">Status</th>
-                                <th class="py-3 px-6 text-left">Renewal Date</th>
-                                <th class="py-3 px-6 text-left">Beneficiary</th>
-                                <th class="py-3 px-6 text-left">FCU Flag</th>
+                                <th class="py-3 px-6 text-left">Status</th>                           
                                 <th class="py-3 px-6 text-left">Claimable Amt.</th>
-                                <th class="py-3 px-6 text-center">Actions</th>
+                                <th class="py-3 px-6 text-left">Outstanding Balance</th> 
                             </tr>
                         </thead>
                         <tbody class="text-gray-600 text-sm font-light" id="policy-list-table-body">
-                            <tr><td colspan="12" class="py-4 text-center text-gray-500">Loading policies...</td></tr>
+                            <tr><td colspan="11" class="py-4 text-center text-gray-500">Loading policies...</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <div id="policy-pagination" class="p-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6"></div>
+                
                 <div id="policy-detail-modal" class="modal-overlay">
-                    <div class="modal-content modal-content-fullscreen">
-                        <div class="modal-header">
+                    <div class="modal-content">
+                        <div class="modal-header" id="policy-detail-modal-header">
                             <h3 class="modal-title">Policy Details - <span id="modal-policy-number"></span></h3>
                             <button class="modal-close-btn" onclick="closeModal('policy-detail-modal')">&times;</button>
                         </div>
-                        <div class="modal-body flex flex-col lg:flex-row gap-6">
-                            <div class="flex-1">
+                        <div class="tab-button-group px-8">
+                            <button class="tab-button active" data-tab="policy-info-section">Policy Information</button>
+                            <button class="tab-button" data-tab="payment-info-section">Payment Installments</button>
+                        </div>
+                        <div class="modal-body px-8 py-4">
+                            <div id="policy-info-section" class="tab-content-section active">
                                 <h4 class="text-xl font-bold text-gray-800 mb-4">Policy Information</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 mb-6">
-                                    <p><span class="font-semibold text-gray-700">Policy Name:</span> <span id="policy-name-detail"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Company:</span> <span id="pol-company-name-detail"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Product Code:</span> <span id="product-code-detail"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Policy Type:</span> <span id="policy-type-detail"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Policy Status:</span> <span id="policy-status-detail"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Premium:</span> <span id="policy-premium-detail"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Coverage Amount:</span> <span id="coverage-amount-detail"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Renewal Date:</p><p id="renewal-date-detail"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Payment Frequency:</span> <span id="payment-frequency-detail"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Start Date:</span> <span id="start-date-detail"></span></p>
-                                    <p><span class="font-semibold text-gray-700">End Date:</span> <span id="end-date-detail"></span></p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
+                                    <p><span class="font-semibold text-gray-700">Policy Name:</span> <span id="policy-name-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Company:</span> <span id="pol-company-name-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Product Code:</span> <span id="product-code-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Policy Type:</span> <span id="policy-type-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Policy Status:</span> <span id="policy-status-detail" class="status-badge status-default"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Premium:</span> <span id="policy-premium-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Coverage Amount:</span> <span id="coverage-amount-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Renewal Date:</span> <span id="renewal-date-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Payment Frequency:</span> <span id="payment-frequency-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Start Date:</span> <span id="start-date-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">End Date:</span> <span id="end-date-detail" class="text-gray-900"></span></p>                                   
+                                     <p><span class="font-semibold text-gray-700">Total Paid Installment:</span> <span id="totalInstallmentPaid-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Total UnPaid Installment:</span> <span id="totalInstallmentUnPaid-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">TotalPaidAmount:</span> <span id="totalInstallmentPaidAmount-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Outstanding Balance:</span> <span id="policy-outstanding-balance" class="text-red-600 font-bold"></span></p>
                                 </div>
-                                <button id="make-payments-button" class="btn-primary w-full mt-4">Make Payments for this Policy</button>
-                                <button class="btn-secondary w-full mt-2" onclick="navigateToComplaintsForPolicyIssue(document.getElementById('modal-policy-number').textContent)">Report Policy Name/Amount Issue</button>
-                                <button class="btn-secondary w-full mt-2" onclick="navigateToComplaintsForPaymentIssue(document.getElementById('modal-policy-number').textContent)">Report Payment Issue</button>
+                                <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                                    <button class="btn-primary flex-1" id="make-payments-button"><i class="fas fa-money-bill-wave mr-2"></i> Make Payment for Outstanding</button>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-3 mt-4">
+                                    <button class="btn-primary flex-1" onclick="sendPolicyEmail(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-envelope mr-2"></i> Send Policy Email</button>
+                                    <button class="btn-primary flex-1" onclick="generatePolicyPdf(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-file-pdf mr-2"></i> Generate Policy PDF</button>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-3 mt-4">
+                                    <button class="btn-primary w-full" onclick="navigateToSurrender(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-hand-holding-usd mr-2"></i> Surrender Or Claim Policy</button>
+                                </div>
+                                <div class="flex flex-col gap-2 mt-4">
+                                    <button class="btn-secondary w-full" onclick="navigateToComplaintsForPolicyIssue(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-exclamation-circle mr-2"></i> Report Policy Name/Amount Issue</button>
+                                    <button class="btn-secondary w-full" onclick="navigateToComplaintsForPaymentIssue(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-receipt mr-2"></i> Report Payment Issue</button>
+                                </div>
                             </div>
-                            <div class="flex-1 mt-6 lg:mt-0">
+
+                            <div id="payment-info-section" class="tab-content-section">
                                 <h4 class="text-xl font-bold text-gray-800 mb-4">Payment Installments</h4>
-                                <div id="payment-installments-list" class="table-view-container">
+                                <div id="payment-installments-list" class="overflow-x-auto rounded-lg border border-gray-200">
                                     <table class="min-w-full divide-y divide-gray-200">
-                                        <thead class="bg-gray-50">
+                                        <thead class="bg-gray-100">
                                             <tr>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Installment No.</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Date</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
-                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Installment No.</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Amount</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Due Date</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Payment Date</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Status</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Method</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Transaction ID</th>
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody id="installments-table-body" class="bg-white divide-y divide-gray-200">
@@ -1095,7 +823,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer px-8 pb-4">
                             <button class="btn-secondary" onclick="closeModal('policy-detail-modal')">Close</button>
                         </div>
                     </div>
@@ -1103,6 +831,12 @@
             </section>
             <section id="bank-accounts-section" class="content-section hidden">
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Bank Accounts</h2>
+                <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <input type="text" id="bank-account-search" placeholder="Search bank accounts by number, name or IFSC..." class="w-full md:w-2/3 p-2 border border-gray-300 rounded-md shadow-sm">
+                    <div class="w-full md:w-auto flex justify-end">
+                        <button class="btn-primary" onclick="openModal('add-bank-account-modal')">Add New Bank Account</button>
+                    </div>
+                </div>
                 <div class="bg-white p-6 rounded-xl shadow-lg">
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white rounded-lg shadow-md">
@@ -1114,20 +848,9 @@
                                     <th class="py-3 px-6 text-left">Account Type</th>
                                     <th class="py-3 px-6 text-left">Status</th>
                                     <th class="py-3 px-6 text-left">Customer Name</th>
-                                    <th class="py-3 px-6 text-left">Policy No.</th>
-                                    <th class="py-3 px-6 text-left">Policy Status</th>
-                                    <th class="py-3 px-6 text-left">Last Verification Date</th>
-                                    <th class="py-3 px-6 text-left">Created By</th>
-                                    <th class="py-3 px-6 text-left">Created Date</th>
-                                    <th class="py-3 px-6 text-left">Notes</th>
-                                    <th class="py-3 px-6 text-left">Account Holder Type</th>
-                                    <th class="py-3 px-6 text-left">Branch Code</th>
-                                    <th class="py-3 px-6 text-left">Swift Code</th>
-                                    <th class="py-3 px-6 text-left">Payment Method Status</th>
-                                    <th class="py-3 px-6 text-left">Last Payment Date</th>
-                                    <th class="py-3 px-6 text-left">Active Status</th>
-                                    <th class="py-3 px-6 text-left">Verification Attempts</th>
-                                    <th class="py-3 px-6 text-left">Comment</th>                              
+                                    <th class="py-3 px-6 text-left">Branch Code</th>                                   
+                                    <th class="py-3 px-6 text-left">Active Status</th>                                     
+                                    <th class="py-3 px-6 text-center">Actions</th>                      
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 text-sm font-light" id="bank-accounts-table-body">
@@ -1137,9 +860,6 @@
                     </div>
                 </div>
                 <div id="bank-account-pagination" class="p-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6"></div>
-                <div class="mt-8 flex justify-end">
-                    <button class="btn-primary" onclick="openModal('add-bank-account-modal')">Add New Bank Account</button>
-                </div>
             </section>
             <div id="add-bank-account-modal" class="modal-overlay">
                 <div class="modal-content modal-content-fullscreen">
@@ -1299,7 +1019,6 @@
                     <button class="btn-primary" onclick="navigateToPayments()">Click here if you are not redirected</button>
                 </div>
             </section>
-            <!-- Track Workflow Section - Now redirects to activity -->
             <section id="track-workflow-section" class="content-section hidden">
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Workflows</h2>
                 <p class="text-gray-600">Redirecting to the workflow tracking page...</p>
@@ -1507,15 +1226,15 @@
                         <textarea id="workitem-comment" rows="4" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Status (Optional)</label>
-                        <div class="mt-2 flex flex-wrap gap-4">
-                            <label class="flex items-center"><input type="radio" name="workitem-status" value="PEND_EXTERNAL" class="mr-2 text-blue-600 focus:ring-blue-500"> Pend External</label>
-                            <label class="flex items-center"><input type="radio" name="workitem-status" value="PEND_INTERNAL" class="mr-2 text-blue-600 focus:ring-blue-500"> Pend Internal</label>
-                            <label class="flex items-center"><input type="radio" name="workitem-status" value="CLOSED" class="mr-2 text-blue-600 focus:ring-blue-500"> Closed</label>
-                            <label class="flex items-center"><input type="radio" name="workitem-status" value="PASSED" class="mr-2 text-blue-600 focus:ring-blue-500"> Passed</label>
-                            <label class="flex items-center"><input type="radio" name="workitem-status" value="REJECTED" class="mr-2 text-blue-600 focus:ring-blue-500"> Rejected</label>
+                            <label class="block text-sm font-medium text-gray-700">Status (Optional)</label>
+                            <div class="mt-2 flex flex-wrap gap-4">
+                                <label class="flex items-center"><input type="radio" name="workitem-status" value="PEND_EXTERNAL" class="mr-2 text-blue-600 focus:ring-blue-500"> Pend External</label>
+                                <label class="flex items-center"><input type="radio" name="workitem-status" value="PEND_INTERNAL" class="mr-2 text-blue-600 focus:ring-blue-500"> Pend Internal</label>
+                                <label class="flex items-center"><input type="radio" name="workitem-status" value="CLOSED" class="mr-2 text-blue-600 focus:ring-blue-500"> Closed</label>
+                                <label class="flex items-center"><input type="radio" name="workitem-status" value="PASSED" class="mr-2 text-blue-600 focus:ring-blue-500"> Passed</label>
+                                <label class="flex items-center"><input type="radio" name="workitem-status" value="REJECTED" class="mr-2 text-blue-600 focus:ring-blue-500"> Rejected</label>
+                            </div>
                         </div>
-                    </div>
                     <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
                         <button type="button" id="clear-workitem-status-btn" class="btn-secondary flex items-center"><i class="fas fa-times mr-2"></i>Clear Status</button>
                         <button id="submit-workitem-btn" class="btn-primary flex items-center"><i class="fas fa-check mr-2"></i>Create</button>
@@ -1535,14 +1254,14 @@
             userCode: sessionStorage.getItem('userCode'),
             customerName: sessionStorage.getItem('customerName'),
             customerNo: sessionStorage.getItem('customerNo'),
-            customerEmail: '', // New: To store customer email
-            customerDob: '',   // New: To store customer DOB
+            customerEmail: '', 
+            customerDob: '',   
             loginUrl: 'login',
             apiBaseUrl: 'http://localhost:8081/bankService',
             policyUrl: 'http://localhost:8081/policy',
             workitemApiUrl: 'http://localhost:8081/workItem_Service',
             workTypeApiUrl: 'http://localhost:8081/workItem_Service/workType',
-            itemsPerPage: 20
+            itemsPerPage: 8
         };
         let currentOpenModalId = null;
         let allPolicies = [];
@@ -1556,34 +1275,37 @@
         let totalWorkItemPages = 1;
         let currentWorkItemPage = 1;
         let currentWorkItemFilters = {};
-        // Removed track workflow specific global variables as it now redirects
-        let currentSection = 'dashboard'; // Track current active section
-        let currentDashboardView = 'card'; // 'card' or 'list'
-        let bankDetailsLookup = {}; // Stores parsed bank data: { "Bank Name": [{ ifsc: "...", branch: "..." }, ...] }
+        let currentSection = 'dashboard'; 
+        let bankDetailsLookup = {}; 
 
 
         const sidebar = document.getElementById('sidebar');
         const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
         const logoutBtnSidebar = document.getElementById('logout-btn-sidebar');
         const customerNameDisplay = document.getElementById('customer-name');
         const userIdDisplay = document.getElementById('user-id-display');
+        const emailDisplay = document.getElementById('email-display');
+        const customerNoDisplay = document.getElementById('customer-no-display'); /* New */
         const sidebarItems = document.querySelectorAll('.sidebar-item');
         const contentSections = document.querySelectorAll('.content-section');
         const universalSearchInput = document.getElementById('universal-search-input');
         const dashboardCardsContainer = document.getElementById('dashboard-cards-container');
-        const cardViewBtn = document.getElementById('card-view-btn');
-        const listViewBtn = document.getElementById('list-view-btn');
         const workitemStatusCardsContainer = document.getElementById('workitem-status-cards');
+        const bankAccountSearchInput = document.getElementById('bank-account-search');
 
 
         customerNameDisplay.textContent = config.customerName;
-        userIdDisplay.textContent = `User ID: ${config.userCode}`;
+        emailDisplay.textContent = `Email: ${config.customerEmail}`;
+        userIdDisplay.textContent = `User ID: ${config.userCode}`; /* Updated to only show code */
+        customerNoDisplay.textContent = `Cust No: ${config.customerNo || 'N/A'}`; /* New: Display customer No */
+
         function showLoader() {
             document.getElementById('loader').classList.add('active');
+            document.body.classList.add('no-scroll'); 
         }
         function hideLoader() {
             document.getElementById('loader').classList.remove('active');
+            document.body.classList.remove('no-scroll'); 
         }
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
@@ -1597,19 +1319,14 @@
             if (sidebar.classList.contains('collapsed')) {
                 sidebarToggleBtn.innerHTML = '<i class="fas fa-bars fa-lg"></i>';
             } else {
-                sidebarToggleBtn.innerHTML = '<i class="fas fa-bars fa-lg"></i>'; // Always show bars
+                sidebarToggleBtn.innerHTML = '<i class="fas fa-bars fa-lg"></i>'; 
             }
-        });
-        darkModeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i> <span>Light Mode</span>' : '<i class="fas fa-moon"></i> <span>Dark Mode</span>';
         });
         logoutBtnSidebar.addEventListener('click', () => {
             sessionStorage.removeItem('userCode');
             sessionStorage.removeItem('customerName');
             sessionStorage.removeItem('customerNo');
-            sessionStorage.removeItem('allPolicyNumbers'); // Clear stored policy numbers on logout
+            sessionStorage.removeItem('allPolicyNumbers'); 
             showToast('Logged out successfully!', 'success');
             setTimeout(() => {
                 window.location.href = config.loginUrl;
@@ -1631,27 +1348,25 @@
                 activeSidebarItem.classList.add('active');
             }
 
-            currentSection = sectionName; // Update current section tracker
-            universalSearchInput.value = ''; // Clear search bar on section change
+            currentSection = sectionName; 
+            universalSearchInput.value = ''; 
+            bankAccountSearchInput.value = ''; 
 
-            // Re-fetch and populate data for sections with dynamic content
             if (sectionName === 'personal-details') {
-                // Only fetch if details are not already populated or if a refresh is explicitly needed
                 if (document.getElementById('detail-customer-no').textContent === 'N/A' || !config.customerNo) {
                     await fetchCustomerDetails();
                 }
             } else if (sectionName === 'policy-details') {
-                await fetchAndPopulatePolicies(1); // Fetch first page
-                document.getElementById('policy-search').value = ''; // Clear local search
+                await fetchAndPopulatePolicies(1); 
+                document.getElementById('policy-search').value = ''; 
             } else if (sectionName === 'bank-accounts') {
-                await fetchAndPopulateBankAccounts(1); // Fetch first page
+                await fetchAndPopulateBankAccounts(1); 
             } else if (sectionName === 'manage-workitems') {
-                await fetchAndPopulateWorkItems(1, {}); // Fetch first page with no filters
-                await fetchWorkItemStatusCounts(); // Fetch and update status counts
+                await fetchAndPopulateWorkItems(1, {}); 
+                await fetchWorkItemStatusCounts(); 
             } else if (sectionName === 'track-workflow') {
-                // Redirect to activity directly
                 window.location.href = 'activity';
-                return; // Prevent further execution in this function
+                return; 
             }
             if (window.innerWidth <= 768) {
                 sidebar.classList.remove('open');
@@ -1667,7 +1382,7 @@
                     navigateToComplaints();
                 } else if (targetSection === 'feedback-nav') {
                     navigateToFeedback();
-                } else if (targetSection === 'track-workflow') { // Handle track-workflow redirect
+                } else if (targetSection === 'track-workflow') { 
                     window.location.href = 'activity';
                 }
                 else {
@@ -1681,11 +1396,16 @@
         async function openModal(modalId) {
             if (currentOpenModalId && document.getElementById(currentOpenModalId)) {
                 document.getElementById(currentOpenModalId).classList.remove('open');
+                // If closing policy-detail-modal specifically, show sidebar
+                if (currentOpenModalId === 'policy-detail-modal' && sidebar) {
+                    sidebar.style.display = 'flex'; // Restore sidebar display
+                }
             }
             const modal = document.getElementById(modalId);
             if (modal) {
                 currentOpenModalId = modalId;
                 modal.classList.add('open');
+                document.body.classList.add('no-scroll'); 
                 if (modalId === 'add-bank-account-modal') {
                     await initializeAddBankAccountModal();
                 } else if (modalId === 'apply-policy-modal') {
@@ -1693,20 +1413,46 @@
                 } else if (modalId === 'create-workitem-modal') {
                     await initializeCreateWorkItemModal();
                 }
+                if (modalId === 'policy-detail-modal') {
+                    // When policy detail modal opens, hide sidebar
+                    if (sidebar) {
+                        sidebar.style.display = 'none';
+                    }
+                    // Initialize tabs
+                    showPolicySubSection('policy-info-section');
+                }
             }
         }
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) {
                 modal.classList.remove('open');
+                document.body.classList.remove('no-scroll'); 
                 currentOpenModalId = null;
+                // If closing policy-detail-modal specifically, show sidebar
+                if (modalId === 'policy-detail-modal' && sidebar) {
+                    sidebar.style.display = 'flex'; // Restore sidebar display
+                }
             }
         }
+        
+        /* New: Function to handle tab switching in Policy Details Modal */
+        function showPolicySubSection(sectionId) {
+            document.querySelectorAll('#policy-detail-modal .tab-content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            document.querySelectorAll('#policy-detail-modal .tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelector(`#policy-detail-modal .tab-button[data-tab="${sectionId}"]`).classList.add('active');
+        }
+
         async function fetchCustomerDetails() {
             const userCode = config.userCode;
             if (!userCode) {
                 console.error("UserCode not found in session storage. Cannot fetch customer details.");
-                // Populate with N/A values if userCode is missing
                 document.getElementById('detail-customer-no').textContent = 'N/A';
                 document.getElementById('detail-customer-name').textContent = 'N/A';
                 document.getElementById('detail-phone-number').textContent = 'N/A';
@@ -1748,12 +1494,14 @@
                     const fullName = `${customerData.name || ''} ${customerData.middleName || ''} ${customerData.surname || ''}`.trim();
                     sessionStorage.setItem('customerName', fullName);
                     config.customerName = fullName;
-                    config.customerEmail = customerData.email || ''; // Store email in config
-                    config.customerDob = customerData.dateOfBirth || ''; // Store DOB in config
+                    config.customerEmail = customerData.email || ''; 
+                    config.customerDob = customerData.dateOfBirth || ''; 
 
-                    // Populate UI elements
                     customerNameDisplay.textContent = config.customerName;
                     userIdDisplay.textContent = `User ID: ${config.userCode}`;
+                    emailDisplay.textContent=`Email: ${config.customerEmail}`;
+                    customerNoDisplay.textContent = `Cust No: ${config.customerNo || 'N/A'}`; /* Updated */
+
                     document.getElementById('detail-customer-no').textContent = customerData.customerNo || 'N/A';
                     document.getElementById('detail-customer-name').textContent = fullName || 'N/A';
                     document.getElementById('detail-phone-number').textContent = customerData.phoneNumber || 'N/A';
@@ -1802,12 +1550,12 @@
 
         async function fetchAndPopulatePolicies(page = 1) {
             const tableBody = document.getElementById('policy-list-table-body');
-            tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-blue-500">Loading policies...</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-blue-500">Loading policies...</td></tr>`;
             const userCode = config.userCode;
             const customerNo = config.customerNo;
             if (!userCode || !customerNo) {
                 console.error("UserCode or CustomerNo not found in session storage. Cannot fetch policies.");
-                tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-red-500">User or customer information missing. Please ensure you have logged in and your details are loaded.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-red-500">User or customer information missing. Please ensure you have logged in and your details are loaded.</td></tr>`;
                 return;
             }
             currentPolicyPage = page;
@@ -1825,8 +1573,8 @@
                     throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
                 }
                 if (result.data && result.data.content && result.data.content.length > 0) {
-                    allPolicies = []; // Reset allPolicies to ensure no old data persists
-                    const uniquePolicyNumbers = new Set(); // Use a Set to store unique policy numbers
+                    allPolicies = []; 
+                    const uniquePolicyNumbers = new Set(); 
                     result.data.content.forEach(customerEntry => {
                         if (customerEntry.policyList && customerEntry.policyList.length > 0) {
                             allPolicies = allPolicies.concat(customerEntry.policyList);
@@ -1837,23 +1585,21 @@
                             });
                         }
                     });
-                    // Store unique policy numbers in session storage
                     sessionStorage.setItem('allPolicyNumbers', JSON.stringify(Array.from(uniquePolicyNumbers)));
                     
                     totalPolicyPages = result.data.totalPages; 
                     populatePolicyTable();
-                    // Use the generic renderPagination
                     renderPagination('policy-pagination', currentPolicyPage, totalPolicyPages, fetchAndPopulatePolicies);
                 } else {
-                    tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-gray-500">No policies found for this customer.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-gray-500">No policies found for this customer.</td></tr>`;
                     allPolicies = [];
                     totalPolicyPages = 0;
-                    sessionStorage.removeItem('allPolicyNumbers'); // Clear if no policies found
+                    sessionStorage.removeItem('allPolicyNumbers'); 
                     renderPagination('policy-pagination', currentPolicyPage, totalPolicyPages, fetchAndPopulatePolicies);
                 }
             } catch (error) {
                 console.error('Error fetching policy details:', error);
-                tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-red-500">An error occurred while loading policies.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-red-500">An error occurred while loading policies.</td></tr>`;
                 showToast('Error fetching policy details: ' + error.message, 'error');
             } finally {
                 hideLoader();
@@ -1869,12 +1615,20 @@
                        (policy.polCompanyName && policy.polCompanyName.toLowerCase().includes(lowerCaseQuery));
             });
             if (filteredPolicies.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="12" class="py-4 text-center text-gray-500">No matching policies found.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-gray-500">No matching policies found.</td></tr>`;
                 return;
             }
             filteredPolicies.forEach(policy => {
+                let outstandingBalance = 0;
+                if (policy.paymentListDTO && policy.paymentListDTO.length > 0) {
+                    outstandingBalance = policy.paymentListDTO.reduce((sum, payment) => {
+                        return sum + (payment.status === 'DUE' || payment.status === 'OVERDUE' ? (payment.installmentAmount || 0) : 0);
+                    }, 0);
+                }
+
                 const row = document.createElement('tr');
-                row.className = 'border-b border-gray-200 hover:bg-gray-100';
+                row.className = 'border-b border-gray-200 hover:bg-gray-100 cursor-pointer'; 
+                row.onclick = () => viewPolicyDetailsModal(policy.policyNumber); /* Entire row clickable */
                 row.innerHTML = `
                     <td class="py-3 px-6 text-left whitespace-nowrap">${policy.policyNumber || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${policy.policyName || 'N/A'}</td>
@@ -1883,25 +1637,19 @@
                     <td class="py-3 px-6 text-left">$${(policy.policyPremium || 0).toFixed(2)}</td>
                     <td class="py-3 px-6 text-left">${policy.premiumDueDate || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">
-                        <span class="py-1 px-3 rounded-full text-xs font-semibold ${
-                            policy.policyStatus === 'Active' ? 'bg-green-200 text-green-600' :
-                            policy.policyStatus === 'LAPSED' ? 'bg-red-200 text-red-600' :
-                            'bg-gray-200 text-gray-600'
+                        <span class="status-badge ${
+                            policy.policyStatus === 'Active' ? 'status-active' :
+                            policy.policyStatus === 'LAPSED' ? 'status-lapsed' :
+                            'status-default'
                         }">${policy.policyStatus || 'N/A'}</span>
-                    </td>
-                    <td class="py-3 px-6 text-left">${policy.renewalDate || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${policy.beneficiaryName || 'N/A'} (${policy.beneficiaryRelationship || 'N/A'})</td>
-                    <td class="py-3 px-6 text-left">${policy.fcuFlag || 'N/A'}</td>
+                    </td>                
                     <td class="py-3 px-6 text-left">$${(policy.totalClaimableAmount || 0).toFixed(2)}</td>
-                    <td class="py-3 px-6 text-center">
-                        <button class="text-blue-500 hover:text-blue-700 font-semibold" onclick="viewPolicyDetailsModal('${policy.policyNumber}')">View</button>
-                    </td>
+                    <td class="py-3 px-6 text-left text-red-600 font-bold">$${policy.totalAmtUnPaidByInstallemt}</td> 
                 `;
                 tableBody.appendChild(row);
             });
         }
 
-        // Renamed and made generic
         function renderPagination(paginationElementId, currentPage, totalPages, fetchFunction, filters = {}) {
             const pagination = document.getElementById(paginationElementId);
             pagination.innerHTML = '';
@@ -1960,37 +1708,66 @@
                 document.getElementById('policy-name-detail').textContent = policy.policyName || 'N/A';
                 document.getElementById('pol-company-name-detail').textContent = policy.polCompanyName || 'N/A';
                 document.getElementById('product-code-detail').textContent = policy.productCode || 'N/A';
+                
+                const policyStatusElement = document.getElementById('policy-status-detail');
+                const statusText = policy.policyStatus || 'N/A';
+                policyStatusElement.textContent = statusText;
+                policyStatusElement.className = `status-badge ${
+                    statusText === 'Active' ? 'status-active' :
+                    statusText === 'LAPSED' ? 'status-lapsed' :
+                    'status-default'
+                }`;
+
                 document.getElementById('policy-type-detail').textContent = policy.policyType || 'N/A';
-                document.getElementById('policy-status-detail').textContent = policy.policyStatus || 'N/A';
                 document.getElementById('policy-premium-detail').textContent = `$${(policy.policyPremium || 0).toFixed(2)}`;
                 document.getElementById('coverage-amount-detail').textContent = `$${(policy.coverageAmount || 0).toFixed(2)}`;
                 document.getElementById('renewal-date-detail').textContent = policy.renewalDate || 'N/A';
                 document.getElementById('payment-frequency-detail').textContent = policy.paymentFrequency || 'N/A';
                 document.getElementById('start-date-detail').textContent = policy.startDate || 'N/A';
                 document.getElementById('end-date-detail').textContent = policy.endDate || 'N/A';
+                document.getElementById('totalInstallmentPaid-detail').textContent = policy.totalInstallmentsPaid || 'N/A';
+                document.getElementById('totalInstallmentUnPaid-detail').textContent = policy.totalInstallmentsUnPaid || 'N/A';
+                document.getElementById('totalInstallmentPaidAmount-detail').textContent = policy.totalAmtPaidByInstallemt || 'N/A';
+                document.getElementById('policy-outstanding-balance').textContent = `$${policy.totalAmtUnPaidByInstallemt}`;
+
                 const installmentsTableBody = document.getElementById('installments-table-body');
                 installmentsTableBody.innerHTML = '';
-                if (policy.paymentListDTO && policy.paymentListDTO.length > 0) {
-                    policy.paymentListDTO.forEach((payment, index) => {
+                if (policy.paymentListDTO && policy.paymentListDTO.length > 0) { /* Corrected: Used paymentListDTO */
+                    policy.paymentListDTO.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)).forEach((payment, index) => {
+                        // Determine button color based on payment status
+                        const buttonColorClass = (payment.status === 'PAID') ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700';
+
                         const paymentRow = document.createElement('tr');
-                        paymentRow.className = 'border-b border-gray-200 hover:bg-gray-100';
+                        paymentRow.className = 'border-b border-gray-100 hover:bg-gray-50'; 
                         paymentRow.innerHTML = `
                             <td class="py-3 px-6 text-left whitespace-nowrap">${payment.installmentCount || (index + 1)}</td>
                             <td class="py-3 px-6 text-left">$${(payment.installmentAmount || 0).toFixed(2)}</td>
                             <td class="py-3 px-6 text-left">${payment.dueDate || 'N/A'}</td>
                             <td class="py-3 px-6 text-left">${payment.paymentDate || 'N/A'}</td>
                             <td class="py-3 px-6 text-left">
-                                <span class="status-badge ${
-                                    payment.status === 'Paid' ? 'status-paid' :
-                                    payment.status === 'Unpaid' ? 'status-unpaid' :
-                                    'bg-gray-200 text-gray-600'
-                                }">${payment.status || 'N/A'}</span>
+                                <span class="status-badge status-${payment.status?.toLowerCase().replace(/ /g, '_') || 'default'}">
+                                    ${payment.status || 'N/A'}</span>
                             </td>
                             <td class="py-3 px-6 text-left">${payment.paymentMethod || 'N/A'}</td>
-                            <td class="py-3 px-6 text-left">${payment.transactionId || 'N/A'}</td>
+                            <td class="py-3 px-6 text-left text-xs">${payment.transactionId || 'N/A'}</td>
                             <td class="py-3 px-6 text-center">
-                                <button class="btn-primary py-1 px-3 text-xs" onclick="navigateToPayments('${policy.policyNumber}', '${payment.paymentId}')">Make Payment</button>
-                            </td>
+                                ${payment.status === 'DUE' || payment.status === 'OVERDUE' ? 
+                                `<button class="btn-primary py-1 px-3 text-xs" onclick="navigateToPayments('${policy.policyNumber}', '${payment.paymentId}')">Pay Now</button>` :
+                                `<button class="btn-secondary py-1 px-3 text-xs opacity-50 cursor-not-allowed" disabled>Paid</button>`
+                                }
+                                <!-- Container for compact payment installment buttons with dynamic color -->
+                                <div class="flex items-center space-x-1 mt-2 justify-center">
+                                    <button class="${buttonColorClass} text-white font-semibold py-1 px-2 rounded-lg shadow-sm transition-colors text-xs" onclick="sendInstallmentEmail('${policy.policyNumber}', '${payment.paymentId}')">
+                                        <i class="fas fa-envelope mr-1"></i>Email
+                                    </button>
+                                    <button class="${buttonColorClass} text-white font-semibold py-1 px-2 rounded-lg shadow-sm transition-colors text-xs" onclick="generateInstallmentPdf('${policy.policyNumber}', '${payment.paymentId}')">
+                                        <i class="fas fa-file-pdf mr-1"></i>PDF
+                                    </button>
+                                    <button class="${buttonColorClass} text-white font-semibold py-1 px-2 rounded-lg shadow-sm transition-colors text-xs" onclick="reportPaymentIssue('${policy.policyNumber}', '${payment.paymentId}')">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Report
+                                    </button>
+                                </div>
+                                </td>
                         `;
                         installmentsTableBody.appendChild(paymentRow);
                     });
@@ -2031,8 +1808,7 @@
                 if (result.data && result.data.content) {
                     allBankAccounts = result.data.content;
                     totalBankAccountPages = result.data.totalPages || 1;
-                    populateBankAccountsTable();
-                    // Use the generic renderPagination
+                    populateBankAccountsTable(bankAccountSearchInput.value); 
                     renderPagination('bank-account-pagination', currentBankAccountPage, totalBankAccountPages, fetchAndPopulateBankAccounts);
                 } else {
                     tableBody.innerHTML = `<tr><td colspan="21" class="py-4 text-center text-gray-500">No bank accounts found for this customer.</td></tr>`;
@@ -2074,23 +1850,52 @@
                     <td class="py-3 px-6 text-left">${account.accountType || 'N/A'}</td>
                     <td class="py-3 px-6 text-left"><span class="status-badge status-${account.status?.toLowerCase().replace(/ /g, '_')}">${account.status || 'N/A'}</span></td>
                     <td class="py-3 px-6 text-left">${account.customerName || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.policyNumber || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.policyStatus || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.lastVerificationDate ? new Date(account.lastVerificationDate).toLocaleDateString() : 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.createdBy || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.createdDate ? new Date(account.createdDate).toLocaleDateString() : 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.notes || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.accountHolderType || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${account.branchCode || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.swiftCode || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.paymentMethodStatus || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.lastPaymentDate ? new Date(account.lastPaymentDate).toLocaleDateString() : 'N/A'}</td>
                     <td class="py-3 px-6 text-left"><span class="status-badge status-${account.amlStatus?.toLowerCase().replace(/ /g, '_')}">${account.amlStatus || 'N/A'}</span></td>
-                    <td class="py-3 px-6 text-left">${account.verificationAttempts || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">${account.comment || 'N/A'}</td>
+                    <td class="py-3 px-6 text-center">
+                        <button class="btn-danger py-1 px-2 text-xs" onclick="removeBankAccount('${account.accountNumber}')">Remove</button>
+                    </td>
                 `;
                 tableBody.appendChild(row);
             });
+        }
+
+        async function removeBankAccount(accountNumber) {
+            if (!config.customerNo || !accountNumber) {
+                showToast('Customer number or account number missing for removal.', 'error');
+                return;
+            }
+
+            showLoader();
+            try {
+                const response = await fetch(`${config.apiBaseUrl}/updateBankStatus`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'userCode': config.userCode 
+                    },
+                    body: JSON.stringify({
+                        bankAccountNo: accountNumber,
+                        customerNo: config.customerNo,
+                        DeletedFlag: "Y"
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || result.status !== 'Success') {
+                    throw new Error(result.errorMessage || `Failed to remove bank account. Status: ${response.status}`);
+                }
+
+                showToast(`Bank account ${accountNumber} removed successfully!`, 'success');
+                await fetchAndPopulateBankAccounts(currentBankAccountPage);
+
+            } catch (error) {
+                console.error('Error removing bank account:', error);
+                showToast(`Error removing bank account: ${error.message}`, 'error');
+            } finally {
+                hideLoader();
+            }
         }
 
         async function initializeAddBankAccountModal() {
@@ -2103,14 +1908,12 @@
                 resultDiv.classList.add('hidden');
                 resultDiv.innerHTML = '';
             }
-            // Populate fields from config (already fetched on page load)
             document.getElementById('add-customer-number').value = config.customerNo || '';
             document.getElementById('add-cust-name').value = config.customerName || '';
-            document.getElementById('add-email').value = config.customerEmail || ''; // Use from config
-            document.getElementById('add-date-of-birth').value = config.customerDob || ''; // Use from config
+            document.getElementById('add-email').value = config.customerEmail || ''; 
+            document.getElementById('add-date-of-birth').value = config.customerDob || ''; 
             document.getElementById('add-user-code').value = config.userCode || '';
 
-            // Populate policy number dropdown
             const policyNumberSelect = document.getElementById('add-policy-number');
             policyNumberSelect.innerHTML = '<option value="" disabled selected>Select policy number</option>';
             const storedPolicyNumbers = sessionStorage.getItem('allPolicyNumbers');
@@ -2126,12 +1929,10 @@
                 policyNumberSelect.innerHTML += '<option value="" disabled>No policies found. Please view Policy Details first.</option>';
             }
 
-            // Fetch and populate bank names and then IFSC codes
             showLoader();
             try {
-                await fetchBankNames(); // This now populates bankDetailsLookup
+                await fetchBankNames(); 
                 populateBankNameDropdown();
-                // Clear IFSC and Branch when modal opens
                 document.getElementById('add-ifsc-code').innerHTML = '<option value="" disabled selected>Select IFSC code</option>';
                 document.getElementById('add-branch-code').value = '';
             } catch (error) {
@@ -2157,8 +1958,7 @@
                     throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
                 }
                 
-                // Parse the new, more detailed response format
-                bankDetailsLookup = {}; // Reset lookup
+                bankDetailsLookup = {}; 
                 if (result.data && Array.isArray(result.data)) {
                     let currentBank = '';
                     result.data.forEach(line => {
@@ -2175,8 +1975,8 @@
                 }
                 return result;
             } catch (error) {
-                console.error('Error fetching bank names:', error);
-                showToast('Error fetching bank names: ' + error.message, 'error');
+                    console.error('Error fetching bank names:', error);
+                    showToast('Error fetching bank names: ' + error.message, 'error');
                 throw error;
             } finally {
                 hideLoader();
@@ -2204,7 +2004,7 @@
             const ifscSelect = document.getElementById('add-ifsc-code');
             if (!ifscSelect) return;
             ifscSelect.innerHTML = '<option value="" disabled selected>Select IFSC code</option>';
-            document.getElementById('add-branch-code').value = ''; // Clear branch code when bank changes
+            document.getElementById('add-branch-code').value = ''; 
 
             if (selectedBankName && bankDetailsLookup[selectedBankName]) {
                 const ifscDetails = bankDetailsLookup[selectedBankName];
@@ -2221,7 +2021,7 @@
 
         function autoPopulateBranchCode(selectedBankName, selectedIfscCode) {
             const branchCodeInput = document.getElementById('add-branch-code');
-            branchCodeInput.value = ''; // Clear current value
+            branchCodeInput.value = ''; 
             if (selectedBankName && selectedIfscCode && bankDetailsLookup[selectedBankName]) {
                 const ifscDetails = bankDetailsLookup[selectedBankName];
                 const found = ifscDetails.find(detail => detail.ifsc === selectedIfscCode);
@@ -2508,7 +2308,6 @@
                     allWorkItems = result.data.content;
                     totalWorkItemPages = result.data.totalPages;
                     populateWorkItemTable();
-                    // Use the generic renderPagination
                     renderPagination('workitem-pagination', currentWorkItemPage, totalWorkItemPages, fetchAndPopulateWorkItems, currentWorkItemFilters);
                 } else {
                     tableBody.innerHTML = `<tr><td colspan="9" class="py-4 text-center text-gray-500">No work items found for this customer.</td></tr>`;
@@ -2548,7 +2347,7 @@
                     <td class="py-3 px-6 text-left">${item.workItemName || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${item.workType || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">
-                        <span class="py-1 px-3 rounded-full text-xs font-semibold status-${item.status?.toLowerCase().replace(/ /g, '_')}">
+                        <span class="status-badge status-${item.status?.toLowerCase().replace(/ /g, '_') || 'default'}">
                             ${item.status || 'N/A'}
                         </span>
                     </td>
@@ -2564,8 +2363,6 @@
             });
         }
         function filterWorkItemTable() {
-            // This function is currently empty and not used.
-            // The filtering logic is handled within handleWorkItemFilter and populateWorkItemTable.
         }
         async function fetchWorkItemStatusCounts() {
             const userCode = config.userCode;
@@ -2662,15 +2459,10 @@
             currentWorkItemFilters = {};
             fetchAndPopulateWorkItems(1, currentWorkItemFilters);
             filterPopup.classList.remove('active');
-            // Reset active status card to "All"
             workitemStatusCardsContainer.querySelectorAll('.status-card').forEach(c => c.classList.remove('active'));
             const allCard = workitemStatusCardsContainer.querySelector('.status-card[data-status="ALL"]');
             if (allCard) allCard.classList.add('active');
         }
-
-        // Removed fetchAndPopulateTrackWorkflows and populateTrackWorkflowTable as it now redirects
-        // async function fetchAndPopulateTrackWorkflows(page = 1) { ... }
-        // function populateTrackWorkflowTable(searchQuery = '') { ... }
 
         async function initializeCreateWorkItemModal() {
             const form = document.getElementById('create-workitem-form');
@@ -2747,7 +2539,6 @@
                     fetchAndPopulateWorkItems(currentWorkItemPage, currentWorkItemFilters);
                     fetchWorkItemStatusCounts();
                 }
-                // Track workflow now redirects, so no need to refresh it here.
             } catch (error) {
                 console.error('Error creating work item:', error);
                 showToast('Failed to create work item: ' + error.message, 'error');
@@ -2765,13 +2556,18 @@
             }
             window.location.href = url;
         }
-        function navigateToSurrender(message = '') {
+        
+        function navigateToSurrender(policyNumber = '', type = '') {
             let url = `SurrenderPolicyForCustomer?customerNo=${config.customerNo || ''}`;
-            if (message) {
-                url += `&message=${encodeURIComponent(message)}`;
+            if (policyNumber) {
+                url += `&policyNo=${policyNumber}`;
+            }
+            if (type) { 
+                url += `&type=${type}`;
             }
             window.location.href = url;
         }
+
         function navigateToComplaints(message = '') {
             let url = `ComplaintsForCustomer?customerNo=${config.customerNo || ''}`;
             if (message) {
@@ -2801,16 +2597,33 @@
             const message = `I am reporting an issue with the policy name or amount for policy number ${policyNumber || 'N/A'}. My customer number is ${config.customerNo || 'N/A'}. Please describe the issue in detail.`;
             navigateToComplaints(message);
         }
-        function navigateToComplaintsForClaim() {
-            const message = `I would like to file a claim for my policy. My customer number is ${config.customerNo || 'N/A'}. Please provide details about your policy and the nature of the claim.`;
-            navigateToComplaints(message);
-        }
-        function navigateToSurrenderForPolicy() {
-            const message = `I would like to surrender my policy. My customer number is ${config.customerNo || 'N/A'}. Please provide your policy number and the reason for surrender.`;
-            navigateToSurrender(message);
+
+        // New functions for policy and installment actions
+        function sendPolicyEmail(policyNumber) {
+            showToast(`Sending email for policy ${policyNumber}... (Functionality to be implemented)`, 'info');
+            // Implement actual email sending logic here
         }
 
-        // Universal Search Logic
+        function generatePolicyPdf(policyNumber) {
+            showToast(`Generating PDF for policy ${policyNumber}... (Functionality to be implemented)`, 'info');
+            // Implement actual PDF generation logic here
+        }
+
+        function sendInstallmentEmail(policyNumber, paymentId) {
+            showToast(`Sending email for installment ${paymentId} of policy ${policyNumber}... (Functionality to be implemented)`, 'info');
+            // Implement actual email sending logic here
+        }
+
+        function generateInstallmentPdf(policyNumber, paymentId) {
+            showToast(`Generating PDF for installment ${paymentId} of policy ${policyNumber}... (Functionality to be implemented)`, 'info');
+            // Implement actual PDF generation logic here
+        }
+
+        function reportPaymentIssue(policyNumber, paymentId) {
+            const message = `I am reporting an issue with payment ID ${paymentId} for policy number ${policyNumber}. My customer number is ${config.customerNo || 'N/A'}. Please describe the issue in detail.`;
+            navigateToComplaints(message);
+        }
+        
         universalSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
             handleUniversalSearch(query);
@@ -2826,11 +2639,6 @@
             } else if (currentSection === 'manage-workitems') {
                 populateWorkItemTable(query);
             }
-            // Removed track-workflow from universal search as it now redirects
-            // else if (currentSection === 'track-workflow') {
-            //     populateTrackWorkflowTable(query);
-            // }
-            // Add other sections as needed
         }
 
         function filterDashboardCards(query) {
@@ -2840,47 +2648,24 @@
                 const title = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
                 const description = card.querySelector('.card-description')?.textContent.toLowerCase() || '';
                 if (title.includes(lowerCaseQuery) || description.includes(lowerCaseQuery)) {
-                    card.style.display = 'flex'; // Use flex as per card's default display
+                    card.style.display = 'flex'; 
                 } else {
                     card.style.display = 'none';
                 }
             });
         }
 
-        // Dashboard View Toggle Logic
-        function toggleDashboardView(viewType) {
-            currentDashboardView = viewType;
-            if (viewType === 'card') {
-                dashboardCardsContainer.classList.remove('list-view');
-                cardViewBtn.classList.add('active');
-                listViewBtn.classList.remove('active');
-            } else {
-                dashboardCardsContainer.classList.add('list-view');
-                cardViewBtn.classList.remove('active');
-                listViewBtn.classList.add('active');
-            }
-            // Re-filter to ensure correct display after view change
-            filterDashboardCards(universalSearchInput.value.trim());
-        }
-
-        cardViewBtn.addEventListener('click', () => toggleDashboardView('card'));
-        listViewBtn.addEventListener('click', () => toggleDashboardView('list'));
-
-
         document.addEventListener('DOMContentLoaded', async () => {
-            // Check for userCode in session storage and redirect if not found
             if (!config.userCode) {
                 console.warn("User code not found in session storage. Redirecting to login page.");
                 window.location.href = config.loginUrl;
-                return; // Stop further execution
+                return; 
             }
 
-            // Call customer details API when page load only
-            await fetchCustomerDetails(); // Ensure this completes before populating other sections
+            await fetchCustomerDetails(); 
 
-            showSection('dashboard'); // Default to dashboard on load
+            showSection('dashboard'); 
 
-            // Event listener for policy number dropdown in Add Bank Account modal
             const addPolicyNumberSelect = document.getElementById('add-policy-number');
             if (addPolicyNumberSelect) {
                 addPolicyNumberSelect.addEventListener('change', async () => {
@@ -3011,6 +2796,20 @@
                 if (filterPopup && filterBtn && !filterPopup.contains(e.target) && !filterBtn.contains(e.target)) {
                     filterPopup.classList.remove('active');
                 }
+            });
+
+            if (bankAccountSearchInput) {
+                bankAccountSearchInput.addEventListener('input', (e) => {
+                    populateBankAccountsTable(e.target.value.trim());
+                });
+            }
+
+            /* New: Event listeners for Policy Details Modal tabs */
+            document.querySelectorAll('#policy-detail-modal .tab-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const targetTab = e.target.dataset.tab;
+                    showPolicySubSection(targetTab);
+                });
             });
         });
     </script>
