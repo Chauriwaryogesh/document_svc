@@ -35,8 +35,8 @@ public interface ComplaintRepo extends JpaRepository<Complaint, String> {
 
 	Page<Complaint> findAll(Specification<Complaint> spec, Pageable pageable);
 
-	@Query("SELECT c FROM Complaint c where c.customer.customerNo= :customerNo")
-	List<Complaint> findByCustomerNo(String customerNo);
+	@Query("SELECT c FROM Complaint c where c.customer.customerNo= :customerNo AND c.deletedFlag= :deletedFlag")
+	List<Complaint> findByCustomerNo(String customerNo, String deletedFlag);
 
 	@Query("SELECT c FROM Complaint c where c.complaintNumber= :complaintNumber AND c.deletedFlag= :deletedFlag")
 	Complaint findByComplaintNo(String complaintNumber, String deletedFlag);

@@ -229,11 +229,15 @@ public class CustomerService {
 					response.setErrorMessage("Invalid CustomerNo");
 					return response;
 				}
-				policy = policyRepository.findByCustomerNoNew(number, "N");
+				try {
+				policy = policyRepository.findByCustomerNoNew(number,CommonConstant.N);
 				workitems = workItemRepository.findByCustomerNo(number);
-				complaints = complaintRepository.findByCustomerNo(number);
-				bankAccountList = bankRepository.findByCustomerNo(number);
+				complaints = complaintRepository.findByCustomerNo(number,CommonConstant.N);
+				bankAccountList = bankRepository.findByCustomerNo(number,CommonConstant.N);
 				payments = paymentRepository.findByCustomerNo(number);
+				}catch(Exception e) {
+					e.getMessage();
+				}
 			}
 			customerDTO = customerMapper.mapCustomerDetails(customer, policy, workitems, complaints,bankAccountList, payments,userCode);	
 		}
