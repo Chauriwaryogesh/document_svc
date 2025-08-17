@@ -124,7 +124,7 @@ public class ComplaintService {
 		DashboardStats stats = new DashboardStats();
 		List<Complaint> complaintList = new ArrayList<Complaint>();
 		if (customerNo != null) {
-			complaintList = complaintRepository.findByCustomerNo(customerNo);
+			complaintList = complaintRepository.findByCustomerNo(customerNo,CommonConstant.N);
 		} else {
 			complaintList = complaintRepository.findAll();
 		}

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -114,6 +115,17 @@ public class PaymentService {
 		payment.setPaymentId(request.getPaymentId());
 		if (request.getPolicyNumber() != null) {
 			byPolicyNum = policyRepository.findByPolicyNum(request.getPolicyNumber(), CommonConstant.N);
+			if(byPolicyNum != null) {
+				byPolicyNum.setUpdatedBy(request.getUserCode());
+				byPolicyNum.setUpdatedTime(LocalDateTime.now());
+				if (request.getPaymentId().contains("SURR")) {
+					byPolicyNum.setPolicyStatus(CommonConstant.SURRENDERED);
+				}
+				if(	request.getPaymentId().contains("CLAIM")) {
+					byPolicyNum.setPolicyStatus(CommonConstant.CLAIMED);
+				}
+				byPolicyNum=policyRepository.save(byPolicyNum);
+			}
 			payment.setPolicy(byPolicyNum);
 			payment.setCustomer(byPolicyNum.getCustomer());
 			payment.setProductCode(byPolicyNum.getProductCode());
@@ -190,7 +202,7 @@ public class PaymentService {
 
 	public Page<Payments> findHistoryOfPayments(String policyNumber, String customerNumber, String paymentId,
 			String transactionId, int page, int size, String status, String userCode) {
-		Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size,Sort.by("createdTime").descending());
 		if (policyNumber != null && !policyNumber.isEmpty()) {
 			return paymentsRepository.findByPolicyPolicyNumber(policyNumber, pageable);
 		} else if (customerNumber != null && !customerNumber.isEmpty()) {

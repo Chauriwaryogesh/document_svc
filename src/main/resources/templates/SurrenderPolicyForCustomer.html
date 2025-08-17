@@ -1223,13 +1223,16 @@ function initializeModals() {
 }
 
 function getStatusInfo(status) {
+console.log("Status ",status);
     switch ((status || '').toLowerCase()) { 
         case 'pending': return { text: 'Pending', iconClass: 'fas fa-clock', bgClass: 'bg-yellow-100', textClass: 'text-yellow-800' };
         case 'approved': return { text: 'Approved', iconClass: 'fas fa-check-circle', bgClass: 'bg-green-100', textClass: 'text-green-800' };
+        case 'payment processed': return { text: 'Payment Processed', iconClass: 'fas fa-check-circle', bgClass: 'bg-green-100', textClass: 'text-green-800' };
         case 'canceled': 
         case 'cancel': return { text: 'Canceled', iconClass: 'fas fa-times-circle', bgClass: 'bg-red-100', textClass: 'text-red-800' };
         case 'rejected': return { text: 'Rejected', iconClass: 'fas fa-exclamation-triangle', bgClass: 'bg-red-100', textClass: 'text-red-800' };
         case 'claimed': return { text: 'Claimed', iconClass: 'fas fa-dollar-sign', bgClass: 'bg-blue-100', textClass: 'text-blue-800'};
+        case 'surrender': return { text: 'Surrender', iconClass: 'fas fa-dollar-sign', bgClass: 'bg-blue-100', textClass: 'text-blue-800'};
         case 'lapsed': return { text: 'Lapsed', iconClass: 'fas fa-exclamation-circle', bgClass: 'bg-orange-100', textClass: 'text-orange-800' };
         case 'active': return { text: 'Active', iconClass: 'fas fa-check-circle', bgClass: 'bg-green-100', textClass: 'text-green-800' };
         case 'surrender_requested':
@@ -1249,10 +1252,12 @@ function getStatusInfo(status) {
 }
 
 function getAccountStatusInfo(status) {
+	console.log(status);
     switch ((status || '').toLowerCase()) {
         case 'approved': return { text: 'Approved', bgClass: 'bg-green-100', textClass: 'text-green-800' };
         case 'pending': return { text: 'Pending', bgClass: 'bg-orange-100', textClass: 'text-orange-800' };
         case 'rejected': return { text: 'Rejected', bgClass: 'bg-red-100', textClass: 'text-red-800' };
+        case 'payment processed':return { text: 'Payment Processed', className: 'status-badge Payment Processed' };    
         default: return { text: 'Unknown', bgClass: 'bg-gray-100', textClass: 'text-gray-800' };
     }
 }
@@ -1721,6 +1726,8 @@ function renderClaimsList() {
     }
 
     currentClaimWorkflowData.forEach((item, index) => {
+console.log(status);
+console.log(getStatusInfo(item.claimStatus));
         const statusInfo = getStatusInfo(item.claimStatus);
         const card = document.createElement('div');
         card.className = `clickable-card fade-in-up status-${(item.claimStatus || '').toLowerCase().replace(/\s/g, '_')}`;
