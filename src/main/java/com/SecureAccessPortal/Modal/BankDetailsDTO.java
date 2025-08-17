@@ -34,8 +34,16 @@ public class BankDetailsDTO {
 	private Integer verificationAttempts;
 	private String comment;
 	private String verificationStatus;
-	
+	private String deletedFlag;
 	private String updatedBy;
+
+	public String getDeletedFlag() {
+		return deletedFlag;
+	}
+
+	public void setDeletedFlag(String deletedFlag) {
+		this.deletedFlag = deletedFlag;
+	}
 
 	public String getUpdatedBy() {
 		return updatedBy;

@@ -603,8 +603,14 @@ public class BankDetailsService {
 		ResponseEntity<BankDetailsDTO> response = new ResponseEntity<BankDetailsDTO>();
 		BankDetailsDTO bankDetails= new BankDetailsDTO();
 		BankAccount bankAccount = bankAccountRepository.findByAccountNo(bankDetailsDTO.getAccountNumber(), "N");
-		bankAccount.setStatus(bankDetailsDTO.getStatus());
-		bankAccount.setComment(CommonConstant.APPROVED);
+		if(CommonConstant.Y.equalsIgnoreCase(bankDetailsDTO.getDeletedFlag())) {
+			bankAccount.setDeletedFlag(CommonConstant.Y);
+			bankAccount.setStatus(CommonConstant.REJECTED);
+			bankAccount.setComment(CommonConstant.REJECTED);
+		}else {
+			bankAccount.setStatus(bankDetailsDTO.getStatus());
+			bankAccount.setComment(CommonConstant.APPROVED);
+		}
 		bankAccount.setUpdatedBy(bankDetailsDTO.getUpdatedBy());
 		bankAccount.setUpdatedTime(LocalDateTime.now());
 		BankAccount save = bankAccountRepository.save(bankAccount);
