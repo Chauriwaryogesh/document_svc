@@ -69,6 +69,10 @@ public class CommonConstant {
 	
 	public static final String CLAIMED = "claimed";
 	public static final String SURRENDERED = "surrender";
+	public static final String DELETE = "DELETE";
+	public static final String UPDATE_STATUS = "UPDATE_STATUS";
+	public static final String RESTORE = "RESTORE";
+	public static final String PERMANENT_DELETE = "PERMANENT_DELETE";
 	
 	
 

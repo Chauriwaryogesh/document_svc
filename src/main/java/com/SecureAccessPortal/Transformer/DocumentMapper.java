@@ -7,21 +7,20 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.SecureAccessPortal.Entity.CapturePhoto;
-import com.SecureAccessPortal.Modal.AddDocument;
-import com.SecureAccessPortal.Modal.PhotoDTO;
+import com.SecureAccessPortal.Entity.DocumentEntity;
+import com.SecureAccessPortal.Modal.DocumentDTO;
 
 @Component
 public class DocumentMapper {
 
-	public List<PhotoDTO> mapDOcumentDtls(Optional<CapturePhoto> documentOpt) {
-		List<PhotoDTO> documentList = new ArrayList<>();
-		CapturePhoto document = documentOpt.get();
+	public List<DocumentDTO> mapDOcumentDtls(Optional<DocumentEntity> documentOpt) {
+		List<DocumentDTO> documentList = new ArrayList<>();
+		DocumentEntity document = documentOpt.get();
 		return documentList.stream().map(list -> {
-			PhotoDTO documentDTO = new PhotoDTO();
-			documentDTO.setId(document.getDocId());
-			documentDTO.setDocName(document.getDocName());
-			documentDTO.setDocType(document.getDocType());
+			DocumentDTO documentDTO = new DocumentDTO();
+			documentDTO.setId(document.getDocumentId());
+			documentDTO.setDocName(document.getDocumentName());
+			documentDTO.setDocType(document.getType());
 			documentDTO.setCreatedBy(document.getCreatedBy());
 			documentDTO.setUpdatedBy(document.getUpdatedBy());
 			return documentDTO;
@@ -29,9 +28,23 @@ public class DocumentMapper {
 
 	}
 
-	public List<CapturePhoto> uploadDoc(List<AddDocument> documentList) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<DocumentDTO> mapAllDocuments(List<DocumentEntity> documents) {
+		List<DocumentDTO> collect = documents.stream().map(document -> {
+			DocumentDTO documentDTO = new DocumentDTO();
+			documentDTO.setDocumentId(document.getDocumentId());
+			documentDTO.setDocumentName(document.getDocumentName());
+			documentDTO.setType(document.getType());
+			documentDTO.setPolicyNumber(document.getPolicyNumber());
+			documentDTO.setCustomerNumber(document.getCustomerNumber());
+			documentDTO.setBankAccountNumber(document.getBankAccountNumber());
+			documentDTO.setStatus(document.getStatus());
+			documentDTO.setCreatedBy(document.getCreatedBy());
+			documentDTO.setUpdatedBy(document.getUpdatedBy());
+			documentDTO.setCreatedTime(String.valueOf(document.getCreatedTime()));
+			documentDTO.setEndTime(String.valueOf(document.getEndTime()));
+			documentDTO.setData(document.getData());
+			return documentDTO;
+		}).collect(Collectors.toList());
+		return collect;
 	}
-
 }

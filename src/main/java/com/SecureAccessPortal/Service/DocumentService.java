@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -24,20 +23,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
-import com.SecureAccessPortal.Entity.CapturePhoto;
+import com.SecureAccessPortal.CommonConstants.ErrorConstants;
+import com.SecureAccessPortal.Entity.DocumentEntity;
 import com.SecureAccessPortal.Entity.Note;
 import com.SecureAccessPortal.Entity.Photo;
-import com.SecureAccessPortal.Modal.AddDocument;
+import com.SecureAccessPortal.Modal.DocumentDTO;
 import com.SecureAccessPortal.Modal.NotesDTO;
-import com.SecureAccessPortal.Modal.PhotoDTO;
 import com.SecureAccessPortal.Repo.CustomerRepo;
-import com.SecureAccessPortal.Repo.ICapturePhtoRepo;
+import com.SecureAccessPortal.Repo.DocumentDtlsRepo;
 import com.SecureAccessPortal.Repo.IPhoto;
 import com.SecureAccessPortal.Repo.NotesRepo;
 import com.SecureAccessPortal.Transformer.DocumentMapper;
 
 import jakarta.persistence.criteria.Predicate;
-import jakarta.transaction.Transactional;
 
 @Service
 public class DocumentService implements IDocumentService {
@@ -45,7 +43,7 @@ public class DocumentService implements IDocumentService {
 	private static final Logger logger = LoggerFactory.getLogger(DocumentService.class);
 
 	@Autowired
-	private ICapturePhtoRepo docRepo;
+	private DocumentDtlsRepo docRepo;
 
 	@Autowired
 	private DocumentMapper documentMapper;
@@ -60,10 +58,10 @@ public class DocumentService implements IDocumentService {
 	private CustomerRepo customerRepository;
 
 	@Override
-	public CapturePhoto getDocumentdtls(String id, String docName, String userCode) {
+	public DocumentEntity getDocumentdtls(String id, String docName, String userCode) {
 		// List<DocumentDTO> documentDto = new ArrayList<>();
-		Optional<CapturePhoto> documents = docRepo.findById(Long.valueOf(id));
-		CapturePhoto document = null;
+		Optional<DocumentEntity> documents = docRepo.findById(Long.valueOf(id));
+		DocumentEntity document = null;
 		if (documents.isPresent()) {
 			document = documents.get();
 			// documentDto = documentMapper.mapDOcumentDtls(documents);
@@ -71,41 +69,18 @@ public class DocumentService implements IDocumentService {
 		return document;
 	}
 
-	@Override
-	public String uploadDocService(List<AddDocument> documentList, String userCode) {
-
-		List<CapturePhoto> document = documentMapper.uploadDoc(documentList);
-
-		docRepo.save(document.get(0));
-
-		String str = "Document uplaod successfully";
-
-		return str;
-	}
-
-	public CapturePhoto uploadDocument(MultipartFile file, String docName, String userCode) throws IOException {
-		CapturePhoto document = new CapturePhoto();
-		document.setDocId(String.valueOf(UUID.randomUUID()));
-		document.setDocName(docName);
-		document.setDocType(file.getContentType());
-		document.setCreatedBy(userCode);
-		document.setUpdatedBy(userCode);
-		document.setData(file.getBytes());
-
-		return docRepo.save(document);
-	}
 
 	@Override
-	public List<PhotoDTO> getAllDocuments(String userCode) {
-		List<CapturePhoto> documents = docRepo.findAll();
+	public List<DocumentDTO> getAllDocuments(String userCode) {
+		List<DocumentEntity> documents = docRepo.findAll();
 		return documents.stream().map(file -> {
-			PhotoDTO document = new PhotoDTO();
-			document.setId(String.valueOf(file.getId()));
-			document.setDocName(file.getDocName());
-			document.setDocType(file.getDocType());
-			document.setCreatedBy(file.getCreatedBy());
-			document.setUpdatedBy(file.getUpdatedBy());
-			document.setData(file.getData());
+			DocumentDTO document = new DocumentDTO();
+//			document.setId(String.valueOf(file.getId()));
+//			document.setDocName(file.getDocName());
+//			document.setDocType(file.getDocType());
+//			document.setCreatedBy(file.getCreatedBy());
+//			document.setUpdatedBy(file.getUpdatedBy());
+//			document.setData(file.getData());
 			return document;
 		}).collect(Collectors.toList());
 	}
@@ -193,10 +168,10 @@ public class DocumentService implements IDocumentService {
 	}
 
 	@Override
-	public List<PhotoDTO> getCaptureAllDocuments(String userCode) {
+	public List<DocumentDTO> getCaptureAllDocuments(String userCode) {
 		List<Photo> documents = photoRepository.findAll();
 		return documents.stream().map(file -> {
-			PhotoDTO document = new PhotoDTO();
+			DocumentDTO document = new DocumentDTO();
 			document.setId(String.valueOf(file.getId()));
 			document.setDocName(file.getName());
 			document.setDocType(file.getContentType());
@@ -208,9 +183,9 @@ public class DocumentService implements IDocumentService {
 	}
 
 	@Override
-	public PhotoDTO getCaptureDocumentdtls(String id, String docName, String userCode) {
+	public DocumentDTO getCaptureDocumentdtls(String id, String docName, String userCode) {
 		Optional<Photo> documents = photoRepository.findById(Long.valueOf(id));
-		PhotoDTO document = new PhotoDTO();
+		DocumentDTO document = new DocumentDTO();
 		if (documents.isPresent()) {
 			Photo file = documents.get();
 			document.setId(String.valueOf(file.getId()));
@@ -348,4 +323,170 @@ public class DocumentService implements IDocumentService {
 		return String.format("%s%06d/%d", prefix, nextNumber, currentYear);
 	}
 
+	@Override
+	public Page<DocumentDTO> myDocuments(String documentId, String documentName, String policyNumber, String type,
+			String customerNumber, String startDate, String endDate, int page, int size, String bankAccountNumber, String status, boolean deleted) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by("createdTime").descending());
+		Specification<DocumentEntity> spec = (root, query, cb) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			if (documentId != null && !documentId.isEmpty()) {
+				predicates.add(cb.equal(root.get("documentId"), documentId));
+			}
+			if (documentName != null && !documentName.isEmpty()) {
+				predicates.add(cb.equal(root.get("documentName"), documentName));
+			}
+			if (policyNumber != null && !policyNumber.isEmpty()) {
+				predicates.add(cb.equal(root.get("policyNumber"), policyNumber));
+			}
+			if (type != null && !type.isEmpty()) {
+				predicates.add(cb.equal(root.get("type"), type));
+			}
+			if (customerNumber != null && !customerNumber.isEmpty()) {
+				predicates.add(cb.equal(root.get("customerNumber"), customerNumber));
+			}
+			
+			if (bankAccountNumber != null && !bankAccountNumber.isEmpty()) {
+				predicates.add(cb.equal(root.get("bankAccountNumber"), bankAccountNumber));
+			}
+			if (status != null && !status.isEmpty()) {
+				predicates.add(cb.equal(root.get("status"), status));
+			}
+			if (Boolean.TRUE.equals(deleted)) {
+				predicates.add(cb.equal(root.get("deletedFlag"), CommonConstant.Y));
+			}else {
+				predicates.add(cb.equal(root.get("deletedFlag"), CommonConstant.N));
+			}
+			
+			if (startDate != null && !startDate.isEmpty()) {
+				try {
+					LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
+							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					predicates.add(cb.greaterThanOrEqualTo(root.get("createdTime"), startDateTime));
+				} catch (DateTimeParseException e) {
+					System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
+				}
+			}
+			if (endDate != null && !endDate.isEmpty()) {
+				try {
+					LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
+							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					predicates.add(cb.lessThanOrEqualTo(root.get("endTime"), endDateTime));
+				} catch (DateTimeParseException e) {
+					System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
+				}
+			}
+			return cb.and(predicates.toArray(new Predicate[0]));
+
+		};
+		Page<DocumentEntity> documents = docRepo.findAll(spec, pageable);
+		try {
+			return documents.map(document -> {
+				DocumentDTO documentDTO = new DocumentDTO();
+				documentDTO.setDocumentId(document.getDocumentId());
+				documentDTO.setDocumentName(document.getDocumentName());
+				documentDTO.setType(document.getType());
+				documentDTO.setPolicyNumber(document.getPolicyNumber());
+				documentDTO.setBankAccountNumber(document.getBankAccountNumber());
+				documentDTO.setStatus(document.getStatus());
+				documentDTO.setCustomerNumber(document.getCustomerNumber());
+				documentDTO.setCreatedBy(document.getCreatedBy());
+				documentDTO.setUpdatedBy(document.getUpdatedBy());
+				documentDTO.setCreatedTime(String.valueOf(document.getCreatedTime()));
+				documentDTO.setEndTime(String.valueOf(document.getEndTime()));
+				documentDTO.setData(document.getData());
+				return documentDTO;
+			});
+		} catch (Exception e) {
+			return Page.empty(pageable);
+		}
+
+	}
+	
+	public String generateDocumentId() {
+		String prefix = "DOC/";
+		int currentYear = LocalDate.now().getYear();
+		String latestComplaintNumber = docRepo.findLatestDocumentId();
+		int nextNumber = 1;
+		if (latestComplaintNumber != null && latestComplaintNumber.startsWith(prefix)
+				&& latestComplaintNumber.endsWith("/" + currentYear)) {
+			String numberPart = latestComplaintNumber.replace(prefix, "").replace("/" + currentYear, "");
+			try {
+				nextNumber = Integer.parseInt(numberPart) + 1;
+			} catch (NumberFormatException e) {
+				// Fallback to 1 if parsing fails
+			}
+		}
+		return String.format("%s%06d/%d", prefix, nextNumber, currentYear);
+	}
+
+
+	@Override
+	public ResponseEntity<List<DocumentDTO>> uploadDocument(List<DocumentDTO> documents, String userCode) {
+		List<DocumentEntity> documentList = new ArrayList<DocumentEntity>();
+		List<DocumentDTO> listOfDocuments = new ArrayList<DocumentDTO>();
+		ResponseEntity<List<DocumentDTO>>  response= new ResponseEntity<>();
+		try {
+			documentList = documents.stream().map(document -> {
+				DocumentEntity documentDTO = new DocumentEntity();
+				documentDTO.setDocumentId(generateDocumentId());
+				documentDTO.setDocumentName(document.getDocumentName());
+				documentDTO.setType(document.getType());
+				documentDTO.setPolicyNumber(document.getPolicyNumber());
+				documentDTO.setCustomerNumber(document.getCustomerNumber());
+				documentDTO.setBankAccountNumber(document.getBankAccountNumber());
+				documentDTO.setStatus(CommonConstant.IN_PROGRESS);
+				documentDTO.setCreatedBy(document.getCreatedBy());
+				documentDTO.setUpdatedBy(document.getUpdatedBy());
+				documentDTO.setDeletedFlag(CommonConstant.N);
+				documentDTO.setCreatedTime(LocalDateTime.now());
+				documentDTO.setEndTime(LocalDateTime.now());
+				documentDTO.setData(document.getData());
+
+				DocumentEntity save = docRepo.save(documentDTO);
+				return save;
+			}).collect(Collectors.toList());
+			listOfDocuments = documentMapper.mapAllDocuments(documentList);
+			response.setData(listOfDocuments);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setErrorMessage(ErrorConstants.FAILURE);
+		}
+		return  response;
+	}
+
+
+	@Override
+	public ResponseEntity<DocumentDTO> updateStatusOfDocument(DocumentDTO documentDTO, String userCode) {
+		ResponseEntity<DocumentDTO> response = new ResponseEntity<DocumentDTO>();
+		DocumentDTO document = new DocumentDTO();
+		try {
+			DocumentEntity documentEntity = docRepo.findbyDocumentId(documentDTO.getDocumentId());
+			documentEntity.setUpdatedBy(userCode);
+			documentEntity.setEndTime(LocalDateTime.now());
+			switch (documentDTO.getAction()) {
+			case CommonConstant.DELETE -> {
+				documentEntity.setDeletedFlag(CommonConstant.Y);
+			}
+			case CommonConstant.UPDATE_STATUS -> {
+				documentEntity.setStatus(documentDTO.getStatus());
+			}
+			case CommonConstant.RESTORE -> {
+				documentEntity.setDeletedFlag(CommonConstant.N);
+			}
+			case CommonConstant.PERMANENT_DELETE -> {
+				docRepo.deleteByDocumentId(documentDTO.getDocumentId());
+				break;
+			}
+			}
+			docRepo.save(documentEntity);
+			document.setDocumentId(documentDTO.getDocumentId());
+			document.setStatus(documentDTO.getStatus());
+			response.setData(document);
+			response.setStatus(CommonConstant.SUCCESS);
+		} catch (Exception e) {
+			response.setErrorMessage(ErrorConstants.FAILURE);
+			e.printStackTrace();
+		}
+		return response;
+	}
 }

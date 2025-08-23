@@ -1101,7 +1101,7 @@
 
         async function fetchNotes(isRecycleBin = false) {
             showLoader();
-            const apiUrl = new URL('http://localhost:8081/DocumentService/notes/List');
+            const apiUrl = new URL('http://localhost:8081/documentService/notes/List');
 
             // Set Query Parameters as per backend API
             apiUrl.searchParams.append('page', isRecycleBin ? 0 : currentPage);
@@ -1362,7 +1362,7 @@
 
             if (noteId) {
                 showLoader();
-                const apiUrl = new URL('http://localhost:8081/DocumentService/notes/List');
+                const apiUrl = new URL('http://localhost:8081/documentService/notes/List');
                 
                 // Set Query Parameters for single note fetch as per backend API
                 apiUrl.searchParams.append('id', noteId);
@@ -1520,7 +1520,7 @@
             }
 
             const isNewNote = !noteId;
-            const apiUrl = 'http://localhost:8081/DocumentService/notes';
+            const apiUrl = 'http://localhost:8081/documentService/notes';
             const currentTime = new Date().toISOString();
             const userCode = config.userCode || 'anonymous';
             const customerNo = config.customerNo || '';
@@ -1620,7 +1620,7 @@
             if (confirmed) {
                 showLoader();
                 try {
-                    const apiUrl = 'http://localhost:8081/DocumentService/recycleBin';
+                    const apiUrl = 'http://localhost:8081/documentService/recycleBin';
                     const payload = {
                         id: noteId,
                         deleted: true
@@ -1707,7 +1707,7 @@
 
             showLoader();
             try {
-                const apiUrl = 'http://localhost:8081/DocumentService/recycleBin';
+                const apiUrl = 'http://localhost:8081/documentService/recycleBin';
                 const payload = {
                     id: noteId,
                     deleted: false

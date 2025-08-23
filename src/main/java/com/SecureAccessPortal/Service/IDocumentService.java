@@ -6,29 +6,31 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.SecureAccessPortal.Entity.CapturePhoto;
-import com.SecureAccessPortal.Modal.AddDocument;
+import com.SecureAccessPortal.Entity.DocumentEntity;
+import com.SecureAccessPortal.Modal.DocumentDTO;
 import com.SecureAccessPortal.Modal.NotesDTO;
-import com.SecureAccessPortal.Modal.PhotoDTO;
 
 public interface IDocumentService {
-	public CapturePhoto getDocumentdtls(String id, String docName, String userCode);
+	public DocumentEntity getDocumentdtls(String id, String docName, String userCode);
 
-	public String uploadDocService(List<AddDocument> document, String userCode);
-
-	public CapturePhoto uploadDocument(MultipartFile file, String docName, String userCode) throws IOException;
-
-	public List<PhotoDTO> getAllDocuments(String userCode);
+	public List<DocumentDTO> getAllDocuments(String userCode);
 
 	public void savePhoto(String name, MultipartFile image) throws IOException;
 
-	public List<PhotoDTO> getCaptureAllDocuments(String userCode);
+	public List<DocumentDTO> getCaptureAllDocuments(String userCode);
 
-	public PhotoDTO getCaptureDocumentdtls(String id, String docName, String userCode);
+	public DocumentDTO getCaptureDocumentdtls(String id, String docName, String userCode);
 
 	public String addNotes(NotesDTO note, String userCode);
 
-	public Page<NotesDTO> getList(String customerNo, String priority, String userCode, String startDate, String endDate,boolean deleted, String id, int page, int size);
+	public Page<NotesDTO> getList(String customerNo, String priority, String userCode, String startDate, String endDate,
+			boolean deleted, String id, int page, int size);
 
 	public String updateStatus(NotesDTO note, String userCode);
+
+	public Page<DocumentDTO> myDocuments(String documentId, String documentName, String policyNumber, String type,
+			String customerNumber, String startDate, String endDate, int page, int size, String bankAccountNumber, String status, boolean deleted);
+
+	public ResponseEntity<List<DocumentDTO>> uploadDocument(List<DocumentDTO> documentDTO, String userCode);
+	public ResponseEntity<DocumentDTO> updateStatusOfDocument(DocumentDTO documentDTO, String userCode);
 }

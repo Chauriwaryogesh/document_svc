@@ -19,13 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
-import com.SecureAccessPortal.Entity.CapturePhoto;
+import com.SecureAccessPortal.CommonConstants.ErrorConstants;
+import com.SecureAccessPortal.Entity.DocumentEntity;
+import com.SecureAccessPortal.Modal.DocumentDTO;
 import com.SecureAccessPortal.Modal.NotesDTO;
-import com.SecureAccessPortal.Modal.PhotoDTO;
 import com.SecureAccessPortal.Service.IDocumentService;
 
 @RestController
-@RequestMapping("/DocumentService")
+@RequestMapping("/documentService")
 public class DocumentServiceController {
 
 	@Autowired
@@ -37,11 +38,11 @@ public class DocumentServiceController {
 			@RequestParam(value = "docName", required = false) String docName,
 			@RequestHeader(value = "userCode", required = false) String userCode) {
 
-		CapturePhoto document = docmentSrvice.getDocumentdtls(id, docName, userCode);
+		DocumentEntity document = docmentSrvice.getDocumentdtls(id, docName, userCode);
 		if (document != null) {
 			return ResponseEntity.ok()
-					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocName() + "\"")
-					.header(HttpHeaders.CONTENT_TYPE, document.getDocType()) // Set correct MIME type (image/png,
+					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocumentName() + "\"")
+					.header(HttpHeaders.CONTENT_TYPE, document.getType()) // Set correct MIME type (image/png,
 																				// image/jpeg, etc.)
 					.body(document.getData());
 		} else {
@@ -49,24 +50,14 @@ public class DocumentServiceController {
 		}
 	}
 
-	@PostMapping(value = "/uploadDocument", consumes = "multipart/form-data")
-	public ResponseEntity<String> uploadDocument(@RequestParam("file") MultipartFile file,
-			@RequestParam("Doc Name") String docName, @RequestHeader String userCode) {
-		try {
-			CapturePhoto document = docmentSrvice.uploadDocument(file, docName, userCode);
-			return ResponseEntity.ok("Document uploaded successfully. ID: " + document.getId());
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Failed to upload document: " + e.getMessage());
-		}
-	}
+	
 
 	@RequestMapping(value = "upload-getAllDocuments", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public com.SecureAccessPortal.Service.ResponseEntity<List<PhotoDTO>> getDocument(
+	public com.SecureAccessPortal.Service.ResponseEntity<List<DocumentDTO>> getDocument(
 			@RequestHeader(value = "userCode", required = false) String userCode) {
 
-		com.SecureAccessPortal.Service.ResponseEntity<List<PhotoDTO>> docslist = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<PhotoDTO> document = docmentSrvice.getAllDocuments(userCode);
+		com.SecureAccessPortal.Service.ResponseEntity<List<DocumentDTO>> docslist = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		List<DocumentDTO> document = docmentSrvice.getAllDocuments(userCode);
 		if (document != null) {
 			docslist.setData(document);
 		} else {
@@ -89,11 +80,11 @@ public class DocumentServiceController {
 	}
 
 	@GetMapping("/capture-getAllDocument")
-	public com.SecureAccessPortal.Service.ResponseEntity<List<PhotoDTO>> getCaptureAllDocument(
+	public com.SecureAccessPortal.Service.ResponseEntity<List<DocumentDTO>> getCaptureAllDocument(
 			@RequestHeader(value = "userCode", required = false) String userCode) {
 
-		com.SecureAccessPortal.Service.ResponseEntity<List<PhotoDTO>> docslist = new com.SecureAccessPortal.Service.ResponseEntity<>();
-		List<PhotoDTO> document = docmentSrvice.getCaptureAllDocuments(userCode);
+		com.SecureAccessPortal.Service.ResponseEntity<List<DocumentDTO>> docslist = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		List<DocumentDTO> document = docmentSrvice.getCaptureAllDocuments(userCode);
 		if (document != null) {
 			docslist.setData(document);
 		} else {
@@ -109,7 +100,7 @@ public class DocumentServiceController {
 			@RequestParam(value = "docName", required = false) String docName,
 			@RequestHeader(value = "userCode", required = false) String userCode) {
 
-		PhotoDTO document = docmentSrvice.getCaptureDocumentdtls(id, docName, userCode);
+		DocumentDTO document = docmentSrvice.getCaptureDocumentdtls(id, docName, userCode);
 		if (document != null) {
 			return ResponseEntity.ok()
 					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocName() + "\"")
@@ -177,5 +168,65 @@ public class DocumentServiceController {
 		
 		return response;
 	}
+	
+	@RequestMapping(value = "myDocumentsNew", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public com.SecureAccessPortal.Service.ResponseEntity<Page<DocumentDTO>> myDocuments(
+			@RequestParam(required= false) String documentId,
+			@RequestParam(required= false) String documentName,
+			@RequestParam(required= false) String policyNumber,
+			@RequestParam(required= false) String customerNumber,
+			@RequestParam(required= false) String bankAccountNumber,
+			@RequestParam(required= false) String status,
+			@RequestParam(required= false) boolean deleted,
+			@RequestParam(required= false) String type,
+			@RequestParam(required= false) String startDate,
+			@RequestParam(required= false) String endDate,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestHeader(value = "userCode", required = false) String userCode) {
+		com.SecureAccessPortal.Service.ResponseEntity<Page<DocumentDTO>> docslist = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		Page<DocumentDTO> document = docmentSrvice.myDocuments(documentId, documentName, policyNumber, type,
+				customerNumber,startDate,endDate, page, size,bankAccountNumber,status,deleted);
+		if (document != null) {
+			docslist.setData(document);
+			docslist.setStatus(CommonConstant.SUCCESS);
+		} else {
+			docslist.setStatus(ErrorConstants.FAILURE);
+			docslist.setErrorMessage("document List is Empty");
+		}
+		return docslist;
+	}
+	
+	@PostMapping(value = "/uploadDocument", consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public com.SecureAccessPortal.Service.ResponseEntity<List<DocumentDTO>> uploadDocument(@RequestBody List<DocumentDTO>  documentDTO,
+			@RequestHeader String userCode) {
+		com.SecureAccessPortal.Service.ResponseEntity<List<DocumentDTO>> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		try {
+			response = docmentSrvice.uploadDocument(documentDTO, userCode);
+			if (response != null) {
+				response.setStatus(CommonConstant.SUCCESS);
+			}
+		} catch (Exception e) {
+			response.setErrorMessage(ErrorConstants.FAILURE);
+		}
+		return response;
+	}
+	
+	
+	@PostMapping(value = "/updateStatus", consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public com.SecureAccessPortal.Service.ResponseEntity<DocumentDTO> updateStatus(@RequestBody DocumentDTO  documentDTO,
+			@RequestHeader String userCode) {
+		com.SecureAccessPortal.Service.ResponseEntity<DocumentDTO> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		try {
+			response = docmentSrvice.updateStatusOfDocument(documentDTO, userCode);
+			if (response != null) {
+				response.setStatus(CommonConstant.SUCCESS);
+			}
+		} catch (Exception e) {
+			response.setErrorMessage(ErrorConstants.FAILURE);
+		}
+		return response;
+	}
+	
 
 }
