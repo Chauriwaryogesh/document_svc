@@ -3,55 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Service</title>
+    <title>Email Service - My Mailbox</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome CDN for fallback icons and loader -->
+    <!-- Font Awesome CDN for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Custom styles for Gmail-like UI and animations */
-        .email-list-item:hover {
-            background-color: #f1f5f9;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background for the whole page */
+        }
+        .header {
+            background-color: #ffffff; /* White header */
+            color: #3c4043; /* Dark gray text */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Subtle shadow */
+            padding: 0.75rem 1.5rem; /* Adjusted padding */
+        }
+        .search-input {
+            background-color: #e8f0fe; /* Light blue background for search */
+            border-radius: 9999px; /* Pill-shaped search bar */
+            padding: 0.6rem 1rem;
+            width: 100%;
+            border: none;
+            color: #3c4043;
+        }
+        .search-input::placeholder {
+            color: #5f6368;
+        }
+        .sidebar {
+            background-color: #ffffff; /* White sidebar */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Subtle shadow */
+            width: 18rem; /* Wider sidebar */
+            flex-shrink: 0;
+            padding: 1rem;
+        }
+        .compose-btn {
+            background-color: #a8d5e5; /* Light blue compose button */
+            color: #1a73e8; /* Google blue text */
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease-in-out;
+        }
+        .compose-btn:hover {
+            background-color: #92c0d1; /* Darker blue on hover */
+            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0 9999px 9999px 0; /* Rounded right edge */
+            font-weight: 500;
+            color: #3c4043;
+            transition: background-color 0.2s ease;
+            margin-right: -1rem; /* Extend to the edge */
             cursor: pointer;
-            transform: scale(1.02);
-            transition: transform 0.2s ease, background-color 0.2s ease;
         }
         .sidebar-item:hover {
-            background-color: #e8f0fe;
-            transform: translateX(5px);
-            transition: transform 0.2s ease, background-color 0.2s ease;
+            background-color: #f1f3f4; /* Light gray on hover */
         }
         .sidebar-item.active {
-            background-color: #dbeafe;
-            font-weight: bold;
+            background-color: #e8f0fe; /* Google blue light */
+            color: #1a73e8; /* Google blue */
+            font-weight: 700;
         }
-        .compose-window, .image-view-modal, .success-modal {
-            transition: all 0.3s ease;
+        .email-list-container {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            margin: 1.5rem;
         }
-        .compose-window.show, .image-view-modal.show, .success-modal.show {
-            animation: fadeIn 0.3s ease forwards;
+        .email-list-header {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0.75rem 1.5rem;
         }
-        /* Button pulse animation */
-        .btn-pulse:hover {
-            animation: pulse 0.5s ease infinite;
-            transform: scale(1.05);
-            transition: transform 0.2s ease;
+        .email-list-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-            100% { transform: scale(1); }
+        .email-list-item:hover {
+            background-color: #f5f5f5; /* Lighter gray on hover */
         }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        .email-list-item.read {
+            font-weight: 400; /* Read emails are normal font weight */
         }
+        .email-list-item.unread {
+            font-weight: 700; /* Unread emails are bold */
+        }
+        .email-meta {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            margin-left: 0.5rem;
+        }
+        .email-sender {
+            font-size: 0.95rem;
+            color: #202124;
+        }
+        .email-subject {
+            font-size: 0.875rem;
+            color: #5f6368;
+        }
+        .email-date {
+            font-size: 0.75rem;
+            color: #70757a;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .email-actions {
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.2s ease;
+        }
+        .email-list-item:hover .email-actions {
+            opacity: 1; /* Show on hover */
+        }
+        .action-icon {
+            color: #5f6368;
+            transition: color 0.2s ease;
+        }
+        .action-icon:hover {
+            color: #202124;
+        }
+
+        /* Compose Window */
+        .compose-window {
+            position: fixed;
+            bottom: 0;
+            right: 1.5rem; /* Positioned to the bottom right */
+            width: 90%;
+            max-width: 36rem; /* Standard Gmail compose width */
+            background-color: #ffffff;
+            border-radius: 0.5rem 0.5rem 0 0; /* Rounded top corners */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+        .compose-header {
+            background-color: #4285f4; /* Google blue header */
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+        .compose-body {
+            padding: 1rem;
+            flex-grow: 1;
+        }
+        .compose-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: none;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #3c4043;
+        }
+        .compose-textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: none;
+            min-height: 10rem; /* Taller textarea */
+            resize: vertical;
+            font-size: 0.875rem;
+            color: #3c4043;
+        }
+        .compose-footer {
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+        }
+        .compose-send-btn {
+            background-color: #1a73e8; /* Google blue */
+            color: white;
+            padding: 0.6rem 1.25rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+        .compose-send-btn:hover {
+            background-color: #1565c0; /* Darker blue on hover */
+        }
+
+        /* Email Detail Modal */
+        .email-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1500;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .email-detail-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .email-detail-content {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-width: 900px; /* Wider for email content */
+            width: 90%;
+            height: 90%;
+            display: flex;
+            flex-direction: column;
+        }
+        .email-detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+        .email-detail-subject {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #202124;
+            flex-grow: 1;
+        }
+        .email-detail-close-btn {
+            font-size: 1.5rem;
+            color: #5f6368;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .email-detail-close-btn:hover {
+            color: #202124;
+        }
+        .email-detail-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .email-detail-sender {
+            font-weight: 600;
+            color: #202124;
+            font-size: 1rem;
+        }
+        .email-detail-date {
+            font-size: 0.85rem;
+            color: #5f6368;
+        }
+        .email-detail-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            padding-right: 0.5rem; /* For scrollbar padding */
+            line-height: 1.6;
+            color: #3c4043;
+        }
+        .email-detail-attachments {
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+        }
+        .email-detail-attachments h4 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #202124;
+        }
+        .email-detail-attachment-item {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e8f0fe;
+            border-radius: 9999px;
+            padding: 0.3rem 0.8rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            color: #1a73e8;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .email-detail-attachment-item:hover {
+            background-color: #d2e3fc;
+        }
+        .email-detail-actions-bottom {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+            justify-content: flex-end; /* Align actions to the right */
+        }
+        .email-detail-action-btn {
+            background-color: #f1f3f4;
+            color: #5f6368;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .email-detail-action-btn:hover {
+            background-color: #e8eaed;
+            color: #202124;
+        }
+
+
+        /* Image View Modal */
+        .image-view-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .image-view-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .image-view-content {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            flex-direction: column;
+        }
+        .image-view-content img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            margin-bottom: 1rem;
+        }
+
+        /* Success Modal */
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .success-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .success-content {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
         /* Loader spinner */
         .loader {
             border: 2px solid #f3f3f3;
@@ -66,116 +402,64 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        @media (max-width: 640px) {
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
             .sidebar {
-                width: 100%;
                 position: fixed;
                 top: 0;
-                left: -100%;
-                transition: left 0.3s ease;
+                left: -18rem; /* Hidden off-screen */
+                height: 100%;
+                z-index: 100;
+                transition: left 0.3s ease-in-out;
             }
             .sidebar.open {
-                left: 0;
+                left: 0; /* Slide in */
             }
-            .header-nav {
-                flex-wrap: wrap;
+            .compose-window {
+                right: 0.5rem;
+                bottom: 0.5rem;
+                width: calc(100% - 1rem);
             }
-            .compose-window .modal-content, .image-view-modal .modal-content, .success-modal .modal-content {
-                width: 90%;
+            .email-detail-content {
+                width: 95%;
+                height: 95%;
+                padding: 1rem;
             }
-        }
-                .custom-alert-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-
-        .custom-alert-overlay.active {
-            display: flex;
-        }
-
-        .custom-alert-box {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            min-width: 300px;
-            max-width: 80%;
-        }
-
-        .custom-alert-header {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .custom-alert-header.error {
-            color: #f44336;
-        }
-
-        .custom-alert-message {
-            color: #555;
-            margin-bottom: 15px;
-        }
-
-        .custom-alert-message.error {
-            color: #f44336;
-        }
-
-        .custom-alert-buttons button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .custom-alert-buttons button:hover {
-            background-color: #0056b3;
+            .email-detail-subject {
+                font-size: 1.25rem;
+            }
+            .email-detail-meta-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-100 font-sans flex flex-col min-h-screen">
-<!-- Move customErrorOverlay here -->
-    <div id="customErrorOverlay" class="custom-alert-overlay error">
-        <div id="customErrorBox" class="custom-alert-box">
-            <div id="customErrorHeader" class="custom-alert-header error">Error</div>
-            <div id="customErrorMessage" class="custom-alert-message error"></div>
-            <div class="custom-alert-buttons">
-                <button id="customErrorOkBtn">OK</button>
-            </div>
-        </div>
-    </div>
     <!-- Header -->
-    <header class="bg-blue-600 text-white shadow p-4 flex items-center justify-between">
+    <header class="header text-gray-700 shadow p-4 flex items-center justify-between">
         <div class="flex items-center space-x-4">
-            <button id="menu-toggle" class="sm:hidden text-white text-2xl">☰</button>
-            <img src="/images/email-logo.png" alt="Email Service Logo" class="h-8" onerror="this.src=''; this.outerHTML='<i class="fas fa-envelope fa-2x text-white\"></i>'">
+            <button id="menu-toggle" class="lg:hidden text-gray-600 text-2xl">☰</button>
+            <i class="fas fa-envelope fa-2x text-red-600"></i> <!-- Gmail-like red envelope icon -->
+            <span class="text-2xl font-bold text-gray-800 hidden lg:block">Mail Services</span>
         </div>
-        <div class="flex-1 max-w-2xl mx-4">
-            <input type="text" placeholder="Search mail" class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300">
+        <div class="flex-1 max-w-2xl mx-4 relative">
+            <input type="text" placeholder="Search mail" class="search-input pl-10">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
         </div>
         <div class="header-nav flex items-center space-x-4">
-            <a href="/contact" class="hover:underline">Contact Us</a>
-            <button id="notification-btn" class="relative btn-pulse">
-                <i class="fas fa-bell"></i>
-                <span id="notification-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+            <button id="notification-btn" class="relative p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <i class="fas fa-bell text-gray-600"></i>
+                <span id="notification-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
             </button>
             <div class="relative group">
-                <button class="flex items-center space-x-2">
-                    <span id="user-id">Loading...</span>
-                    <img src="/images/user-avatar.png" alt="User Avatar" class="h-8 w-8 rounded-full" onerror="this.src=''; this.outerHTML='<i class=\"fas fa-user-circle fa-2x text-white\"></i>'">
+                <button class="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <span id="user-id" class="text-gray-700">Loading...</span>
+                    <i class="fas fa-user-circle fa-2x text-gray-500"></i>
                 </button>
-                <div class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden group-hover:block z-50">
+                <div class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden group-hover:block z-50 py-1">
                     <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
                     <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
                     <a href="#" id="logout-btn" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
@@ -187,100 +471,156 @@
     <!-- Main Content -->
     <div class="flex flex-1">
         <!-- Sidebar -->
-        <div class="sidebar w-64 bg-white shadow-md flex flex-col p-4">
-            <button id="compose-btn" class="mb-4 bg-blue-600 text-white px-4 py-2 rounded-lg btn-pulse">Compose</button>
-            <div class="flex-1 space-y-2">
-                <div class="sidebar-item px-4 py-2 text-gray-700 font-semibold bg-blue-100 rounded-lg border-b border-gray-200 active" data-folder="inbox">Inbox</div>
-                <div class="sidebar-item px-4 py-2 text-gray-700 border-b border-gray-200" data-folder="sent">Sent</div>
-                <div class="sidebar-item px-4 py-2 text-gray-700 border-b border-gray-200" data-folder="drafts">Drafts</div>
-                <div class="sidebar-item px-4 py-2 text-gray-700 border-b border-gray-200" data-folder="trash">Trash</div>
+        <div class="sidebar flex flex-col p-4 h-full">
+            <button id="compose-btn" class="compose-btn mb-6 flex items-center justify-center space-x-2">
+                <i class="fas fa-plus"></i>
+                <span>Compose</span>
+            </button>
+            <div class="flex-1 space-y-1">
+                <div class="sidebar-item active" data-folder="inbox">
+                    <i class="fas fa-inbox mr-3"></i>Inbox
+                </div>
+                <div class="sidebar-item" data-folder="sent">
+                    <i class="fas fa-paper-plane mr-3"></i>Sent
+                </div>
+                <div class="sidebar-item" data-folder="drafts">
+                    <i class="fas fa-file-alt mr-3"></i>Drafts
+                </div>
+                <div class="sidebar-item" data-folder="trash">
+                    <i class="fas fa-trash-alt mr-3"></i>Trash
+                </div>
             </div>
         </div>
 
         <!-- Email List -->
-        <div class="flex-1 flex flex-col">
-            <div id="email-list" class="flex-1 overflow-y-auto p-4 bg-white">
-                <div class="email-list-item flex items-center p-3 border-b" data-email-id="1" data-folder="inbox">
-                    <input type="checkbox" class="mr-3">
-                    <div class="flex-1">
-                        <div class="font-semibold">Sender Name</div>
-                        <div class="text-gray-600">Subject: Welcome to our service</div>
-                        <div class="text-gray-500 text-sm">May 10, 2025</div>
-                        <div class="mt-1">
-                            <span class="text-blue-600 cursor-pointer view-attachment" data-attachment-id="1" data-filename="sample.png" data-type="image/png">sample.png</span>
+        <div class="flex-1 flex flex-col p-4">
+            <div class="email-list-container flex-1 overflow-y-auto">
+                <div class="email-list-header flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <input type="checkbox" id="select-all-checkbox" class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
+                        <div id="header-bulk-actions" class="flex items-center space-x-2 hidden">
+                            <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100" title="Archive" id="bulk-archive-btn"><i class="fas fa-archive"></i></button>
+                            <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100" title="Delete" id="bulk-delete-btn"><i class="fas fa-trash-alt"></i></button>
+                            <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100" title="Mark as Read" id="bulk-mark-read-btn"><i class="fas fa-envelope-open"></i></button>
+                            <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100" title="Mark as Unread" id="bulk-mark-unread-btn"><i class="fas fa-envelope"></i></button>
                         </div>
+                        <h2 class="text-xl font-semibold text-gray-800" id="current-folder-title">Inbox</h2>
                     </div>
-                    <div class="flex space-x-2">
-                        <button class="delete-btn text-red-600 hover:text-red-800" title="Delete"><i class="fas fa-trash"></i></button>
+                    <div class="flex items-center space-x-4">
+                        <button class="text-gray-500 hover:text-gray-700"><i class="fas fa-sync-alt"></i></button>
+                        <button class="text-gray-500 hover:text-gray-700"><i class="fas fa-ellipsis-v"></i></button>
                     </div>
                 </div>
-                <!-- More email items will be populated dynamically -->
+                <div id="email-list">
+                    <!-- Mocked Email Item (now dynamically loaded) -->
+                </div>
             </div>
         </div>
 
         <!-- Compose Window (Centered Modal) -->
-        <div id="compose-window" class="compose-window hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="modal-content bg-white shadow-lg rounded-lg w-full max-w-lg p-4">
-                <div class="bg-gray-200 p-2 flex justify-between">
-                    <span>New Message</span>
-                    <button id="close-compose" class="text-gray-700">✕</button>
+        <div id="compose-window" class="compose-window hidden">
+            <div class="compose-header">
+                <span id="compose-title">New Message</span>
+                <button id="close-compose" class="text-white text-xl">✕</button>
+            </div>
+            <form id="email-form" class="compose-body flex flex-col">
+                <input type="email" id="to" placeholder="To" class="compose-input" required>
+                <input type="text" id="subject" placeholder="Subject" class="compose-input">
+                <textarea id="body" placeholder="Message" class="compose-textarea flex-grow"></textarea>
+                <div class="compose-footer">
+                    <button type="submit" id="send-btn" class="compose-send-btn flex items-center space-x-2">
+                        <span id="send-text">Send</span>
+                        <span id="send-loader" class="loader hidden"></span>
+                    </button>
+                    <button type="button" id="save-draft-btn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 transition-colors flex items-center space-x-2">
+                        <i class="fas fa-save"></i>
+                        <span id="draft-text">Save Draft</span>
+                        <span id="draft-loader" class="loader hidden"></span>
+                    </button>
+                    <input type="file" id="attachment" class="text-sm text-gray-700 w-auto">
                 </div>
-                <form id="email-form" class="p-4">
-                    <input type="email" id="to" placeholder="To" class="w-full p-2 mb-2 border rounded" required>
-                    <input type="text" id="subject" placeholder="Subject" class="w-full p-2 mb-2 border rounded">
-                    <textarea id="body" placeholder="Message" class="w-full p-2 mb-2 border rounded h-40"></textarea>
-                    <div class="flex items-center space-x-2 mb-2">
-                        <input type="file" id="attachment" class="text-sm text-gray-700">
-                        <button type="submit" id="send-btn" class="bg-blue-600 text-white px-4 py-2 rounded btn-pulse flex items-center">
-                            <span id="send-text">Send</span>
-                            <span id="send-loader" class="loader hidden ml-2"></span>
-                        </button>
-                        <button type="button" id="save-draft-btn" class="bg-gray-600 text-white px-4 py-2 rounded btn-pulse flex items-center">
-                            <span id="draft-text">Save as Draft</span>
-                            <span id="draft-loader" class="loader hidden ml-2"></span>
-                        </button>
+            </form>
+        </div>
+
+        <!-- Email Detail Modal (New) -->
+        <div id="email-detail-modal" class="email-detail-modal">
+            <div class="email-detail-content">
+                <div class="email-detail-header">
+                    <div class="flex items-center gap-4">
+                         <button id="detail-back-btn" class="text-gray-600 hover:text-gray-800 text-xl"><i class="fas fa-arrow-left"></i></button>
+                        <h2 id="email-detail-subject" class="email-detail-subject"></h2>
                     </div>
-                </form>
+                    <button id="close-email-detail" class="email-detail-close-btn">✕</button>
+                </div>
+
+                <div class="email-detail-meta-row">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-user-circle text-gray-400 text-2xl"></i>
+                        <div>
+                            <span id="email-detail-sender" class="email-detail-sender"></span>
+                            <div class="text-sm text-gray-500">to <span id="email-detail-to"></span></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span id="email-detail-date" class="email-detail-date"></span>
+                        <button id="email-detail-star-btn" class="text-gray-400 hover:text-yellow-500 text-lg"><i class="far fa-star"></i></button>
+                        <button id="email-detail-more-actions" class="text-gray-500 hover:text-gray-700 text-lg"><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+
+                <div id="email-detail-body" class="email-detail-body">
+                    <!-- Email body content goes here -->
+                </div>
+
+                <div id="email-detail-attachments" class="email-detail-attachments hidden">
+                    <h4>Attachments:</h4>
+                    <div id="email-detail-attachment-list">
+                        <!-- Attachment items go here -->
+                    </div>
+                </div>
+
+                <div class="email-detail-actions-bottom">
+                    <button id="detail-reply-btn" class="email-detail-action-btn"><i class="fas fa-reply mr-2"></i>Reply</button>
+                    <button id="detail-reply-all-btn" class="email-detail-action-btn"><i class="fas fa-reply-all mr-2"></i>Reply All</button>
+                    <button id="detail-forward-btn" class="email-detail-action-btn"><i class="fas fa-share mr-2"></i>Forward</button>
+                    <button id="detail-delete-btn" class="email-detail-action-btn"><i class="fas fa-trash-alt mr-2"></i>Delete</button>
+                    <button id="detail-archive-btn" class="email-detail-action-btn"><i class="fas fa-archive mr-2"></i>Archive</button>
+                </div>
             </div>
         </div>
 
         <!-- Image View Popup (Hidden by default) -->
-        <div id="image-view-modal" class="image-view-modal hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div class="modal-content bg-white rounded-lg p-4 max-w-3xl w-full">
+        <div id="image-view-modal" class="image-view-modal hidden">
+            <div class="image-view-content">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">View Image</h3>
+                    <h3 class="text-lg font-semibold text-gray-800">View Image</h3>
                     <button id="close-image-modal" class="text-gray-700 text-xl">✕</button>
                 </div>
                 <p id="image-error" class="text-red-500 text-sm hidden">Failed to load image.</p>
-                <img id="view-image" src="" alt="Attachment Image" class="max-w-full max-h-[60vh] rounded-lg mb-4 object-contain hidden">
-                <div class="flex justify-center space-x-4">
-                    <button id="download-button" class="bg-blue-600 text-white px-4 py-2 rounded btn-pulse" disabled>Download</button>
-                    <button id="full-size-button" class="bg-gray-600 text-white px-4 py-2 rounded btn-pulse" disabled>View Full Size</button>
+                <img id="view-image" src="" alt="Attachment Image" class="flex-grow object-contain hidden">
+                <div class="flex justify-center space-x-4 mt-4">
+                    <button id="download-button" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors" disabled>Download</button>
+                    <button id="full-size-button" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors" disabled>View Full Size</button>
                 </div>
             </div>
         </div>
 
         <!-- Success Popup (Hidden by default) -->
-        <div id="success-modal" class="success-modal hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div class="modal-content bg-white rounded-lg p-6 max-w-sm w-full">
+        <div id="success-modal" class="success-modal hidden">
+            <div class="success-content">
                 <h3 class="text-lg font-semibold mb-4" id="success-title">Email Sent Successfully</h3>
                 <p class="text-gray-600 mb-4" id="success-message">Your email has been sent.</p>
                 <div class="flex justify-center">
-                    <button id="success-ok-btn" class="bg-blue-600 text-white px-4 py-2 rounded btn-pulse">OK</button>
+                    <button id="success-ok-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">OK</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="bg-blue-800 text-white p-4 mt-auto">
-        <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center">
-            <div class="mb-2 sm:mb-0">Mail Services © 2025. Powered by xAI.</div>
-            <div class="flex space-x-4">
-                <a href="/help" class="hover:underline">Help</a>
-                <a href="/support" class="hover:underline">Support</a>
-                <a href="/about" class="hover:underline">About</a>
-            </div>
+    <footer class="bg-gray-800 text-white p-4 mt-auto text-center text-sm">
+        <div class="container mx-auto">
+            Mail Services © 2025. Powered by xAI.
         </div>
     </footer>
 
@@ -289,17 +629,11 @@
         function getuserCode() {
             const userCode = sessionStorage.getItem('userCode');
             if (!userCode) {
-            	 showErrorAlert('User ID not found. Please log in again.');
+                alert('User ID not found. Please log in again.');
                 window.location.href = 'login';
                 return null;
             }
             return userCode;
-        }
-        function showErrorAlert(message) {
-            const overlay = document.getElementById('customErrorOverlay');
-            document.getElementById('customErrorMessage').textContent = message;
-            overlay.classList.add('active');
-            document.getElementById('customErrorOkBtn').onclick = () => overlay.classList.remove('active');
         }
 
         // Logout function
@@ -309,43 +643,11 @@
             window.location.href = 'login';
         }
 
-        // Fetch notification count
+        // Mock fetch notification count - always returns 1 for demonstration
         async function fetchNotificationCount() {
-            try {
-                console.log('Fetching notification count');
-                const userCode = getuserCode();       
-                if (!userCode) return;
-
-                const response = await fetch(`/Security/get-notifications?userCode=${encodeURIComponent(userCode)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `userCode`,
-                    },
-                });
-
-                if (response.status === 401) {
-                    console.warn('Unauthorized, redirecting to login');
-                    logout();
-                    return;
-                }
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log('Notification count:', data.unreadCount);
-                const countSpan = document.getElementById('notification-count');
-                if (data.unreadCount > 0) {
-                    countSpan.textContent = data.unreadCount;
-                    countSpan.classList.remove('hidden');
-                } else {
-                    countSpan.classList.add('hidden');
-                }
-            } catch (error) {
-                console.error('Error fetching notification count:', error);
-                document.getElementById('notification-count').classList.add('hidden');
-            }
+            const countSpan = document.getElementById('notification-count');
+            countSpan.textContent = '1'; // Mock value
+            countSpan.classList.remove('hidden');
         }
 
         // Toggle sidebar on mobile
@@ -357,160 +659,107 @@
         const composeBtn = document.getElementById('compose-btn');
         const composeWindow = document.getElementById('compose-window');
         const closeCompose = document.getElementById('close-compose');
+        const composeTitle = document.getElementById('compose-title');
 
-        composeBtn.addEventListener('click', () => {
-            console.log('Toggling compose window');
-            if (composeWindow.classList.contains('hidden')) {
-                composeWindow.classList.remove('hidden');
-                composeWindow.classList.add('show');
-                document.getElementById('email-form').dataset.emailId = '';
-            } else {
-                composeWindow.classList.remove('show');
-                composeWindow.classList.add('hidden');
+        function openComposeWindow(mode = 'new', email = null) {
+            document.getElementById('email-form').reset();
+            document.getElementById('email-form').dataset.emailId = ''; // Clear for new compose
+            composeTitle.textContent = 'New Message';
+            
+            if (email) {
+                document.getElementById('email-form').dataset.emailId = email.id;
+                switch (mode) {
+                    case 'reply':
+                        document.getElementById('to').value = email.sender || email.to;
+                        document.getElementById('subject').value = `Re: ${email.subject || 'No Subject'}`;
+                        document.getElementById('body').value = `\n\n--- Original Message ---\nFrom: ${email.sender}\nTo: ${email.to}\nDate: ${email.date}\nSubject: ${email.subject}\n\n${email.body.replace(/<\/?[^>]+(>|$)/g, "")}`;
+                        composeTitle.textContent = 'Reply';
+                        break;
+                    case 'replyAll':
+                        // For mock, just reply to sender for simplicity. In real app, include all recipients.
+                        document.getElementById('to').value = `${email.sender || email.to}`; 
+                        document.getElementById('subject').value = `Re: ${email.subject || 'No Subject'}`;
+                        document.getElementById('body').value = `\n\n--- Original Message ---\nFrom: ${email.sender}\nTo: ${email.to}\nDate: ${email.date}\nSubject: ${email.subject}\n\n${email.body.replace(/<\/?[^>]+(>|$)/g, "")}`;
+                        composeTitle.textContent = 'Reply All';
+                        break;
+                    case 'forward':
+                        document.getElementById('subject').value = `Fwd: ${email.subject || 'No Subject'}`;
+                        document.getElementById('body').value = `\n\n--- Forwarded Message ---\nFrom: ${email.sender}\nTo: ${email.to}\nDate: ${email.date}\nSubject: ${email.subject}\n\n${email.body.replace(/<\/?[^>]+(>|$)/g, "")}`;
+                        composeTitle.textContent = 'Forward';
+                        break;
+                    case 'editDraft':
+                        document.getElementById('to').value = email.to || '';
+                        document.getElementById('subject').value = email.subject || '';
+                        document.getElementById('body').value = email.body || '';
+                        composeTitle.textContent = 'Edit Draft';
+                        break;
+                }
             }
-        });
+
+            composeWindow.classList.remove('hidden');
+            composeWindow.style.display = 'flex'; // Use flex for layout
+        }
+
+        composeBtn.addEventListener('click', () => openComposeWindow('new'));
 
         closeCompose.addEventListener('click', () => {
             console.log('Closing compose window');
-            composeWindow.classList.remove('show');
+            composeWindow.style.display = 'none';
             composeWindow.classList.add('hidden');
             document.getElementById('email-form').reset();
             document.getElementById('email-form').dataset.emailId = '';
         });
 
-        // Handle email sending with loader
+        // Handle email sending with loader (mocked)
         document.getElementById('email-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const sendBtn = document.getElementById('send-btn');
             const sendText = document.getElementById('send-text');
             const sendLoader = document.getElementById('send-loader');
-            const to = document.getElementById('to').value;
-            const subject = document.getElementById('subject').value;
-            const body = document.getElementById('body').value;
-            const attachment = document.getElementById('attachment').files[0];
-            const userCode = getuserCode();
-          
-            if (!userCode) return;
-
+            
             // Show loader
             sendBtn.disabled = true;
             sendText.classList.add('hidden');
             sendLoader.classList.remove('hidden');
-            console.log('Sending email to:', to);
+            console.log('Mocking email sending...');
 
-            const formData = new FormData();
-            formData.append('to', to);
-            formData.append('subject', subject);
-            formData.append('body', body);
-            formData.append('userCode', userCode);
-            if (attachment) {
-                formData.append('attachment', attachment);
-            }
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-            try {
-                const response = await fetch('/Security/send-email', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': ` ${userCode}`,
-                    },
-                    body: formData,
-                });
+            sendBtn.disabled = false;
+            sendText.classList.remove('hidden');
+            sendLoader.classList.add('hidden');
 
-                sendBtn.disabled = false;
-                sendText.classList.remove('hidden');
-                sendLoader.classList.add('hidden');
-
-                if (response.status === 401) {
-                    console.warn('Unauthorized, redirecting to login');
-                    logout();
-                    return;
-                }
-
-                if (response.ok) {
-                    console.log('Email sent successfully');
-                    const successModal = document.getElementById('success-modal');
-                    document.getElementById('success-title').textContent = 'Email Sent Successfully';
-                    document.getElementById('success-message').textContent = 'Your email has been sent.';
-                    successModal.classList.remove('hidden');
-                    successModal.classList.add('show');
-                } else {
-                    alert('Failed to send email. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error sending email:', error);
-                sendBtn.disabled = false;
-                sendText.classList.remove('hidden');
-                sendLoader.classList.add('hidden');
-                alert('An error occurred. Please try again.');
-            }
+            const successModal = document.getElementById('success-modal');
+            document.getElementById('success-title').textContent = 'Email Sent Successfully';
+            document.getElementById('success-message').textContent = 'Your email has been sent.';
+            successModal.classList.add('show');
+            console.log('Mock email sent successfully');
         });
 
-        // Handle save as draft
+        // Handle save as draft (mocked)
         document.getElementById('save-draft-btn').addEventListener('click', async () => {
             const draftBtn = document.getElementById('save-draft-btn');
             const draftText = document.getElementById('draft-text');
             const draftLoader = document.getElementById('draft-loader');
-            const to = document.getElementById('to').value;
-            const subject = document.getElementById('subject').value;
-            const body = document.getElementById('body').value;
-            const attachment = document.getElementById('attachment').files[0];
-            const emailId = document.getElementById('email-form').dataset.emailId;
-            const userCode = getuserCode();
-            if (!userCode) return;
-
+           
             draftBtn.disabled = true;
             draftText.classList.add('hidden');
             draftLoader.classList.remove('hidden');
-            console.log('Saving draft for emailId:', emailId || 'new');
+            console.log('Mocking draft saving...');
 
-            const formData = new FormData();
-            formData.append('to', to);
-            formData.append('subject', subject);
-            formData.append('body', body);
-            formData.append('userCode', userCode);
-            if (attachment) {
-                formData.append('attachment', attachment);
-            }
-            if (emailId) {
-                formData.append('emailId', emailId);
-            }
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
-            try {
-                const response = await fetch('/Security/save-draft', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `${userCode}`,
-                    },
-                    body: formData,
-                });
+            draftBtn.disabled = false;
+            draftText.classList.remove('hidden');
+            draftLoader.classList.add('hidden');
 
-                draftBtn.disabled = false;
-                draftText.classList.remove('hidden');
-                draftLoader.classList.add('hidden');
-
-                if (response.status === 401) {
-                    console.warn('Unauthorized, redirecting to login');
-                    logout();
-                    return;
-                }
-
-                if (response.ok) {
-                    console.log('Draft saved successfully');
-                    const successModal = document.getElementById('success-modal');
-                    document.getElementById('success-title').textContent = 'Draft Saved Successfully';
-                    document.getElementById('success-message').textContent = 'Your draft has been saved.';
-                    successModal.classList.remove('hidden');
-                    successModal.classList.add('show');
-                } else {
-                    alert('Failed to save draft. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error saving draft:', error);
-                draftBtn.disabled = false;
-                draftText.classList.remove('hidden');
-                draftLoader.classList.add('hidden');
-                alert('An error occurred. Please try again.');
-            }
+            const successModal = document.getElementById('success-modal');
+            document.getElementById('success-title').textContent = 'Draft Saved Successfully';
+            document.getElementById('success-message').textContent = 'Your draft has been saved.';
+            successModal.classList.add('show');
+            console.log('Mock draft saved successfully');
         });
 
         // Handle success popup OK button
@@ -518,12 +767,12 @@
             console.log('Closing success popup');
             const successModal = document.getElementById('success-modal');
             successModal.classList.remove('show');
-            successModal.classList.add('hidden');
             // Close compose window and reset form
-            composeWindow.classList.remove('show');
+            composeWindow.style.display = 'none';
             composeWindow.classList.add('hidden');
             document.getElementById('email-form').reset();
             document.getElementById('email-form').dataset.emailId = '';
+            // For now, reload emails (will be replaced with actual fetch later)
             fetchEmails(document.querySelector('.sidebar-item.active').dataset.folder);
         });
 
@@ -533,7 +782,7 @@
             alert('Notifications panel (to be implemented)');
         });
 
-        // Image view modal functions
+        // Image view modal functions (mocked)
         function openImageViewModal(imageUrl, attachmentId, filename) {
             console.log('Opening image view modal for attachmentId:', attachmentId, 'filename:', filename, 'imageUrl:', imageUrl);
             const modal = document.getElementById('image-view-modal');
@@ -547,20 +796,20 @@
             downloadButton.disabled = true;
             fullSizeButton.disabled = true;
 
-            image.src = imageUrl;
+            // Mock image loading
+            image.src = imageUrl || 'https://placehold.co/800x600/FF0000/FFFFFF?text=Mock+Image'; // Placeholder
             image.onerror = () => {
-                console.error('Failed to load image for attachmentId:', attachmentId);
+                console.error('Failed to load mock image for attachmentId:', attachmentId);
                 errorMessage.textContent = 'Failed to load image.';
                 errorMessage.classList.remove('hidden');
             };
             image.onload = () => {
-                console.log('Image loaded successfully for attachmentId:', attachmentId);
+                console.log('Mock image loaded successfully for attachmentId:', attachmentId);
                 image.classList.remove('hidden');
                 downloadButton.disabled = false;
                 fullSizeButton.disabled = false;
             };
 
-            modal.classList.remove('hidden');
             modal.classList.add('show');
             modal.dataset.attachmentId = attachmentId;
             modal.dataset.filename = filename || `attachment_${attachmentId}`;
@@ -570,25 +819,20 @@
             console.log('Closing image view modal');
             const modal = document.getElementById('image-view-modal');
             const image = document.getElementById('view-image');
-            if (image.src) {
-                URL.revokeObjectURL(image.src);
-            }
             image.src = '';
             image.classList.add('hidden');
             document.getElementById('image-error').classList.add('hidden');
             modal.classList.remove('show');
-            modal.classList.add('hidden');
             modal.dataset.attachmentId = '';
             modal.dataset.filename = '';
         }
 
         function downloadImage() {
             const modal = document.getElementById('image-view-modal');
-            const attachmentId = modal.dataset.attachmentId;
             const filename = modal.dataset.filename;
             const imageUrl = document.getElementById('view-image').src;
 
-            console.log('Downloading image for attachmentId:', attachmentId, 'filename:', filename);
+            console.log('Downloading mock image:', filename);
             const link = document.createElement('a');
             link.href = imageUrl;
             link.download = filename;
@@ -598,307 +842,603 @@
         }
 
         function viewFullSize() {
-            const modal = document.getElementById('image-view-modal');
-            const attachmentId = modal.dataset.attachmentId;
-            console.log('Viewing full size for attachmentId:', attachmentId);
-            viewAttachmentInNewTab(attachmentId);
+            const imageUrl = document.getElementById('view-image').src;
+            console.log('Viewing full size mock image:', imageUrl);
+            window.open(imageUrl, '_blank');
         }
 
-        // Fetch emails and populate the email list
-        async function fetchEmails(folder = 'inbox') {
-            try {
-                console.log(`Fetching emails for folder: ${folder}`);
-                const userCode = getuserCode();
-               
-                if (!userCode) return;
+        // --- New Email Detail View Functions ---
+        const emailDetailModal = document.getElementById('email-detail-modal');
+        const closeEmailDetailBtn = document.getElementById('close-email-detail');
+        const detailBackBtn = document.getElementById('detail-back-btn');
+        const detailSubject = document.getElementById('email-detail-subject');
+        const detailSender = document.getElementById('email-detail-sender');
+        const detailTo = document.getElementById('email-detail-to');
+        const detailDate = document.getElementById('email-detail-date');
+        const detailBody = document.getElementById('email-detail-body');
+        const detailAttachmentsContainer = document.getElementById('email-detail-attachments');
+        const detailAttachmentList = document.getElementById('email-detail-attachment-list');
+        const detailStarBtn = document.getElementById('email-detail-star-btn');
+        const currentFolderTitle = document.getElementById('current-folder-title');
 
-                const endpoint = folder === 'trash' ? '/Security/get-deleted' : '/Security/get-emails';
-                const response = await fetch(`${endpoint}?userCode=${encodeURIComponent(userCode)}&folder=${folder}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `${userCode}`,
-                    },
+        // Mock functions for detail actions
+        function mockReply() {
+            const emailId = emailDetailModal.dataset.emailId;
+            const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+            const email = mockEmails[currentFolder].find(e => e.id === emailId);
+            if (email) {
+                closeEmailDetailModal();
+                openComposeWindow('reply', email);
+            }
+        }
+        function mockReplyAll() {
+            const emailId = emailDetailModal.dataset.emailId;
+            const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+            const email = mockEmails[currentFolder].find(e => e.id === emailId);
+            if (email) {
+                closeEmailDetailModal();
+                openComposeWindow('replyAll', email);
+            }
+        }
+        function mockForward() {
+            const emailId = emailDetailModal.dataset.emailId;
+            const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+            const email = mockEmails[currentFolder].find(e => e.id === emailId);
+            if (email) {
+                closeEmailDetailModal();
+                openComposeWindow('forward', email);
+            }
+        }
+        function mockDeleteDetail(emailId) { 
+            const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+            // Find email in mock data and move to trash, then re-render
+            let emailIndex = mockEmails[currentFolder].findIndex(e => e.id === emailId);
+            if (emailIndex !== -1) {
+                const [deletedEmail] = mockEmails[currentFolder].splice(emailIndex, 1);
+                deletedEmail.folder = 'trash'; // Mark its original folder
+                deletedEmail.read = true; // Typically marked as read when deleted
+                if (!mockEmails.trash) mockEmails.trash = [];
+                mockEmails.trash.push(deletedEmail);
+                alert(`Mock: Email ID: ${emailId} moved to Trash.`);
+                closeEmailDetailModal();
+                fetchEmails(currentFolder); // Re-render current folder
+            } else {
+                alert(`Mock: Email ID: ${emailId} not found for deletion.`);
+            }
+        }
+        function mockArchive(emailId) { 
+            const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+            let emailIndex = mockEmails[currentFolder].findIndex(e => e.id === emailId);
+            if (emailIndex !== -1) {
+                const [archivedEmail] = mockEmails[currentFolder].splice(emailIndex, 1);
+                archivedEmail.read = true; // Typically marked as read when archived
+                if (!mockEmails.archive) mockEmails.archive = []; // Create a mock archive folder
+                mockEmails.archive.push(archivedEmail);
+                alert(`Mock: Email ID: ${emailId} archived.`);
+                closeEmailDetailModal();
+                fetchEmails(currentFolder); // Re-render current folder
+            } else {
+                alert(`Mock: Email ID: ${emailId} not found for archiving.`);
+            }
+        }
+        function toggleStar(emailId) {
+            const starIcon = detailStarBtn.querySelector('i');
+            const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+            const email = mockEmails[currentFolder].find(e => e.id === emailId);
+
+            if (email) {
+                email.starred = !email.starred;
+                if (email.starred) {
+                    starIcon.classList.remove('far', 'text-gray-400');
+                    starIcon.classList.add('fas', 'text-yellow-500');
+                    alert(`Starred email ID: ${emailId} (mocked)`);
+                } else {
+                    starIcon.classList.remove('fas', 'text-yellow-500');
+                    starIcon.classList.add('far', 'text-gray-400');
+                    alert(`Unstarred email ID: ${emailId} (mocked)`);
+                }
+                fetchEmails(currentFolder); // Re-render list to update star in list view
+            }
+        }
+        
+        document.getElementById('detail-reply-btn').addEventListener('click', mockReply);
+        document.getElementById('detail-reply-all-btn').addEventListener('click', mockReplyAll);
+        document.getElementById('detail-forward-btn').addEventListener('click', mockForward);
+        document.getElementById('detail-archive-btn').addEventListener('click', () => mockArchive(emailDetailModal.dataset.emailId));
+        document.getElementById('email-detail-star-btn').addEventListener('click', () => toggleStar(emailDetailModal.dataset.emailId));
+        document.getElementById('detail-delete-btn').addEventListener('click', () => mockDeleteDetail(emailDetailModal.dataset.emailId));
+
+
+        function openEmailDetailModal(email) {
+            console.log('Opening email detail modal for:', email.id);
+            detailSubject.textContent = email.subject || 'No Subject';
+            detailSender.textContent = email.sender || 'Unknown Sender';
+            detailTo.textContent = email.to || getuserCode(); // Default to logged-in user for 'To'
+            detailDate.textContent = email.date || 'N/A';
+            detailBody.innerHTML = email.body || 'No content.'; // Use innerHTML for rich text/newlines
+
+            // Set email ID for action buttons
+            emailDetailModal.dataset.emailId = email.id;
+
+            // Update star icon based on email status
+            const starIcon = detailStarBtn.querySelector('i');
+            if (email.starred) {
+                starIcon.classList.remove('far', 'text-gray-400');
+                starIcon.classList.add('fas', 'text-yellow-500');
+            } else {
+                starIcon.classList.remove('fas', 'text-yellow-500');
+                starIcon.classList.add('far', 'text-gray-400');
+            }
+            
+            // Clear previous attachments
+            detailAttachmentList.innerHTML = '';
+            if (email.attachments && email.attachments.length > 0) {
+                detailAttachmentsContainer.classList.remove('hidden');
+                email.attachments.forEach(att => {
+                    const attachmentItem = document.createElement('span');
+                    attachmentItem.className = 'email-detail-attachment-item';
+                    attachmentItem.innerHTML = `<i class="fas fa-paperclip mr-2"></i><span>${att.filename}</span>`;
+                    attachmentItem.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        openImageViewModal('https://placehold.co/800x600/FF0000/FFFFFF?text=Mock+Image', att.id, att.filename);
+                    });
+                    detailAttachmentList.appendChild(attachmentItem);
                 });
+            } else {
+                detailAttachmentsContainer.classList.add('hidden');
+            }
 
-                if (response.status === 401) {
-                    console.warn('Unauthorized, redirecting to login');
-                    logout();
+            emailDetailModal.style.display = 'flex';
+            emailDetailModal.classList.add('show');
+        }
+
+        function closeEmailDetailModal() {
+            emailDetailModal.classList.remove('show');
+            emailDetailModal.style.display = 'none';
+        }
+
+        closeEmailDetailBtn.addEventListener('click', closeEmailDetailModal);
+        detailBackBtn.addEventListener('click', closeEmailDetailModal);
+
+
+        // Mock email data (now a global object)
+        const mockEmails = {
+            inbox: [
+                { 
+                    id: 'mock-1', 
+                    sender: 'John Doe', 
+                    subject: 'Important Update: New Features!', 
+                    body: `
+                        <p>Hi there,</p>
+                        <p>We're excited to announce brand new features rolled out to our service this week!</p>
+                        <ul>
+                            <li><strong>Enhanced Security:</strong> Two-factor authentication is now available.</li>
+                            <li><strong>New Dashboard:</strong> A redesigned, more intuitive user interface.</li>
+                            <li><strong>Customizable Reports:</strong> Generate reports tailored to your needs.</li>
+                        </ul>
+                        <p>Check out the attached overview for more details. We believe these updates will significantly improve your experience.</p>
+                        <p>Best regards,<br>The Service Team</p>
+                    `, 
+                    date: 'Aug 23', 
+                    read: false,
+                    starred: false,
+                    selected: false, // New property for selection
+                    to: 'currentuser@example.com',
+                    attachments: [{ id: 'att-1', filename: 'feature_overview.png', type: 'image/png' }]
+                },
+                { 
+                    id: 'mock-2', 
+                    sender: 'Service Notifications', 
+                    subject: 'Your monthly statement is ready', 
+                    body: 'Dear customer, your monthly statement for July is now available. Please log in to your account to view it.', 
+                    date: 'Aug 22', 
+                    read: true,
+                    starred: true,
+                    selected: false,
+                    to: 'currentuser@example.com',
+                    attachments: []
+                }
+            ],
+            sent: [
+                { 
+                    id: 'mock-sent-1', 
+                    sender: 'Me', 
+                    to: 'recipient@example.com', 
+                    subject: 'Re: Project Update', 
+                    body: 'Acknowledged, will proceed as discussed. Let me know if you need anything else.', 
+                    date: 'Aug 23', 
+                    read: true,
+                    starred: false,
+                    selected: false,
+                    attachments: []
+                }
+            ],
+            drafts: [
+                { 
+                    id: 'mock-draft-1', 
+                    to: 'ideas@example.com', 
+                    subject: 'Idea for new campaign', 
+                    body: 'I was thinking about a new marketing campaign focusing on user engagement...', 
+                    date: 'Aug 21', 
+                    read: false,
+                    starred: false,
+                    selected: false,
+                    attachments: []
+                }
+            ],
+            trash: [
+                { 
+                    id: 'mock-trash-1', 
+                    sender: 'Spam Sender', 
+                    subject: 'Urgent: Claim your prize!', 
+                    body: 'You have won a grand prize! Click here to claim your reward (definitely not spam).', 
+                    date: 'Aug 19', 
+                    read: true,
+                    starred: false,
+                    selected: false,
+                    attachments: []
+                }
+            ],
+            archive: [] // New mock archive folder
+        };
+
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        const headerBulkActions = document.getElementById('header-bulk-actions');
+        const bulkArchiveBtn = document.getElementById('bulk-archive-btn');
+        const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+        const bulkMarkReadBtn = document.getElementById('bulk-mark-read-btn');
+        const bulkMarkUnreadBtn = document.getElementById('bulk-mark-unread-btn');
+
+        function updateHeaderActionsVisibility() {
+            const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+            const selectedEmailsCount = mockEmails[currentFolder].filter(email => email.selected).length;
+            if (selectedEmailsCount > 0) {
+                headerBulkActions.classList.remove('hidden');
+            } else {
+                headerBulkActions.classList.add('hidden');
+            }
+
+            const allCheckboxes = document.querySelectorAll('#email-list .email-item-checkbox');
+            const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = allChecked && allCheckboxes.length > 0;
+                selectAllCheckbox.indeterminate = !allChecked && selectedEmailsCount > 0;
+            }
+        }
+
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', (event) => {
+                const isChecked = event.target.checked;
+                const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+                
+                mockEmails[currentFolder].forEach(email => {
+                    email.selected = isChecked;
+                });
+                
+                document.querySelectorAll('#email-list .email-item-checkbox').forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+                updateHeaderActionsVisibility();
+            });
+        }
+        
+        // Bulk Delete
+        if (bulkDeleteBtn) {
+            bulkDeleteBtn.addEventListener('click', () => {
+                const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+                const selectedEmailIds = mockEmails[currentFolder].filter(email => email.selected).map(email => email.id);
+
+                if (selectedEmailIds.length === 0) {
+                    alert('No emails selected for deletion.');
                     return;
                 }
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                alert(`Mock: Deleting selected emails: ${selectedEmailIds.join(', ')}`);
+                // Move selected emails to trash
+                mockEmails[currentFolder] = mockEmails[currentFolder].filter(email => {
+                    if (selectedEmailIds.includes(email.id)) {
+                        email.folder = 'trash';
+                        email.read = true;
+                        email.selected = false;
+                        if (!mockEmails.trash) mockEmails.trash = [];
+                        mockEmails.trash.push(email);
+                        return false; // Remove from current folder
+                    }
+                    return true;
+                });
+                fetchEmails(currentFolder); // Re-render the list
+            });
+        }
+
+        // Bulk Archive
+        if (bulkArchiveBtn) {
+            bulkArchiveBtn.addEventListener('click', () => {
+                const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+                const selectedEmailIds = mockEmails[currentFolder].filter(email => email.selected).map(email => email.id);
+
+                if (selectedEmailIds.length === 0) {
+                    alert('No emails selected for archiving.');
+                    return;
                 }
 
-                const emails = await response.json();
-                console.log(`Emails fetched for ${folder}:`, emails);
-                const emailList = document.getElementById('email-list');
-                emailList.innerHTML = '';
-
-                emails.forEach(email => {
-                    const emailItem = document.createElement('div');
-                    emailItem.className = 'email-list-item flex items-center p-3 border-b';
-                    emailItem.dataset.emailId = email.id;
-                    emailItem.dataset.folder = email.folder || folder;
-                    emailItem.innerHTML = `
-                        <input type="checkbox" class="mr-3">
-                        <div class="flex-1">
-                            <div class="font-semibold">${email.sender || 'Unknown Sender'}</div>
-                            <div class="text-gray-600">Subject: ${email.subject || 'No Subject'}</div>
-                            <div class="text-gray-500 text-sm">${email.date || 'Unknown Date'}</div>
-                            <div class="mt-1">
-                                ${email.attachments ? email.attachments.map(att => `
-                                    <span class="text-blue-600 cursor-pointer view-attachment" 
-                                          data-attachment-id="${att.id}" 
-                                          data-filename="${att.filename}" 
-                                          data-type="${att.type}">${att.filename}</span>
-                                `).join(', ') : ''}
-                            </div>
-                        </div>
-                        <div class="flex space-x-2">
-                            ${folder === 'trash' ? `
-                                <button class="recover-btn text-green-600 hover:text-green-800" title="Recover"><i class="fas fa-undo"></i></button>
-                            ` : `
-                                <button class="delete-btn text-red-600 hover:text-red-800" title="Delete"><i class="fas fa-trash"></i></button>
-                            `}
-                        </div>
-                    `;
-                    emailList.appendChild(emailItem);
+                alert(`Mock: Archiving selected emails: ${selectedEmailIds.join(', ')}`);
+                // Move selected emails to archive
+                mockEmails[currentFolder] = mockEmails[currentFolder].filter(email => {
+                    if (selectedEmailIds.includes(email.id)) {
+                        email.read = true;
+                        email.selected = false;
+                        if (!mockEmails.archive) mockEmails.archive = [];
+                        mockEmails.archive.push(email);
+                        return false; // Remove from current folder
+                    }
+                    return true;
                 });
+                fetchEmails(currentFolder); // Re-render the list
+            });
+        }
 
-                // Add event listeners
-                document.querySelectorAll('.view-attachment').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const attachmentId = button.dataset.attachmentId;
-                        const filename = button.dataset.filename;
-                        const type = button.dataset.type;
-                        viewAttachment(attachmentId, filename, type);
-                    });
-                });
-
-                document.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const emailId = button.closest('.email-list-item').dataset.emailId;
-                        deleteEmail(emailId, folder);
-                    });
-                });
-
-                document.querySelectorAll('.recover-btn').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const emailId = button.closest('.email-list-item').dataset.emailId;
-                        const originalFolder = button.closest('.email-list-item').dataset.folder;
-                        recoverEmail(emailId, originalFolder);
-                    });
-                });
-
-                document.querySelectorAll('.email-list-item').forEach(item => {
-                    if (item.dataset.folder === 'drafts') {
-                        item.addEventListener('click', (e) => {
-                            if (!e.target.classList.contains('view-attachment') && !e.target.classList.contains('delete-btn')) {
-                                editDraft(item.dataset.emailId);
-                            }
-                        });
+        // Bulk Mark as Read
+        if (bulkMarkReadBtn) {
+            bulkMarkReadBtn.addEventListener('click', () => {
+                const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+                mockEmails[currentFolder].forEach(email => {
+                    if (email.selected) {
+                        email.read = true;
+                        email.selected = false; // Deselect after action
                     }
                 });
-            } catch (error) {
-                console.error(`Error fetching emails for ${folder}:`, error);
-                document.getElementById('email-list').innerHTML = `<p class="p-4 text-red-500">Failed to load ${folder} emails.</p>`;
-            }
+                alert('Mock: Selected emails marked as read.');
+                fetchEmails(currentFolder);
+            });
         }
 
-        // Delete email
-        async function deleteEmail(emailId, folder) {
-            try {
-                console.log(`Deleting email ${emailId} from ${folder}`);
-                const userCode = getuserCode();
-               
-                if (!userCode ) return;
-
-                const response = await fetch(`/Security/delete-email?emailId=${emailId}&userCode=${encodeURIComponent(userCode)}&folder=${folder}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `${userCode}`,
-                    },
+        // Bulk Mark as Unread
+        if (bulkMarkUnreadBtn) {
+            bulkMarkUnreadBtn.addEventListener('click', () => {
+                const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+                mockEmails[currentFolder].forEach(email => {
+                    if (email.selected) {
+                        email.read = false;
+                        email.selected = false; // Deselect after action
+                    }
                 });
-
-                if (response.status === 401) {
-                    console.warn('Unauthorized, redirecting to login');
-                    logout();
-                    return;
-                }
-
-                if (response.ok) {
-                    console.log(`Email ${emailId} deleted successfully`);
-                    fetchEmails(folder);
-                } else {
-                    alert('Failed to delete email. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error deleting email:', error);
-                alert('An error occurred. Please try again.');
-            }
+                alert('Mock: Selected emails marked as unread.');
+                fetchEmails(currentFolder);
+            });
         }
 
-        // Recover email
-        async function recoverEmail(emailId, originalFolder) {
-            try {
-                console.log(`Recovering email ${emailId} to ${originalFolder}`);
-                const userCode = getuserCode();
-              
-                if (!userCode ) return;
 
-                const response = await fetch(`/Security/recover-email?emailId=${emailId}&userCode=${encodeURIComponent(userCode)}&folder=${originalFolder}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `${userCode}`,
-                    },
+        // Fetch emails and populate the email list (mocked for now)
+        async function fetchEmails(folder = 'inbox') {
+            console.log(`Fetching mock emails for folder: ${folder}`);
+            const emailList = document.getElementById('email-list');
+            emailList.innerHTML = '';
+            currentFolderTitle.textContent = folder.charAt(0).toUpperCase() + folder.slice(1); // Update folder title
+
+            const emailsToDisplay = mockEmails[folder] || [];
+
+            if (emailsToDisplay.length === 0) {
+                emailList.innerHTML = `<p class="p-4 text-gray-500">No emails in ${folder}.</p>`;
+                if (selectAllCheckbox) selectAllCheckbox.checked = false;
+                if (selectAllCheckbox) selectAllCheckbox.indeterminate = false;
+                headerBulkActions.classList.add('hidden');
+                return;
+            }
+
+            emailsToDisplay.forEach(email => {
+                const emailItem = document.createElement('div');
+                emailItem.className = `email-list-item flex items-center p-3 border-b ${email.read ? 'read' : 'unread'}`;
+                emailItem.dataset.emailId = email.id;
+                emailItem.dataset.folder = folder; // Assign the current folder
+
+                let attachmentsHtml = '';
+                if (email.attachments && email.attachments.length > 0) {
+                    attachmentsHtml = email.attachments.map(att => `
+                        <span class="text-blue-600 cursor-pointer view-attachment" 
+                              data-attachment-id="${att.id}" 
+                              data-filename="${att.filename}" 
+                              data-type="${att.type}">${att.filename}</span>
+                    `).join(', ');
+                }
+
+                let senderOrTo = email.sender || email.to || 'Unknown';
+                let subjectDisplay = email.subject || 'No Subject';
+                let bodySnippet = email.body ? email.body.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 70) + '...' : ''; // Remove HTML for snippet
+
+                emailItem.innerHTML = `
+                    <input type="checkbox" class="mr-4 email-item-checkbox" ${email.selected ? 'checked' : ''} data-email-id="${email.id}">
+                    <i class="fas ${email.starred ? 'fa-star text-yellow-500' : 'far fa-star text-gray-400'} mr-4 email-list-star-btn" data-email-id="${email.id}"></i>
+                    <div class="email-meta">
+                        <div class="email-sender">${senderOrTo}</div>
+                        <div class="email-subject">
+                            <span class="text-gray-800 ${email.read ? '' : 'font-semibold'}">${subjectDisplay}</span> - ${bodySnippet}
+                            ${attachmentsHtml ? `<br><small class="text-gray-500">Attachments: ${attachmentsHtml}</small>` : ''}
+                        </div>
+                    </div>
+                    <div class="email-actions mr-4">
+                        <button class="action-icon archive-btn" title="Archive" data-email-id="${email.id}"><i class="fas fa-archive"></i></button>
+                        <button class="action-icon delete-btn" title="Delete" data-email-id="${email.id}"><i class="fas fa-trash-alt"></i></button>
+                        <button class="action-icon mark-read-unread-btn" title="${email.read ? 'Mark as Unread' : 'Mark as Read'}" data-email-id="${email.id}"><i class="fas ${email.read ? 'fa-envelope-open' : 'fa-envelope'}"></i></button>
+                    </div>
+                    <div class="email-date">${email.date || 'N/A'}</div>
+                `;
+                emailList.appendChild(emailItem);
+            });
+
+            // Re-attach event listeners for dynamically added elements
+            document.querySelectorAll('.view-attachment').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent opening email details if clicking attachment
+                    const attachmentId = button.dataset.attachmentId;
+                    const filename = button.dataset.filename;
+                    const type = button.dataset.type;
+                    openImageViewModal('https://placehold.co/800x600/FF0000/FFFFFF?text=Mock+Image', attachmentId, filename); // Use mock image for now
                 });
+            });
 
-                if (response.status === 401) {
-                    console.warn('Unauthorized, redirecting to login');
-                    logout();
-                    return;
-                }
+            document.querySelectorAll('.email-list-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    // Prevent opening email details if checkbox, star, or action button is clicked
+                    if (e.target.type === 'checkbox' || e.target.classList.contains('email-list-star-btn') || e.target.closest('.email-actions')) {
+                        return;
+                    }
 
-                if (response.ok) {
-                    console.log(`Email ${emailId} recovered successfully`);
-                    fetchEmails('trash');
-                } else {
-                    alert('Failed to recover email. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error recovering email:', error);
-                alert('An error occurred. Please try again.');
-            }
-        }
+                    const emailId = item.dataset.emailId;
+                    const folder = item.dataset.folder;
+                    const email = mockEmails[folder].find(e => e.id === emailId);
 
-        // Edit draft
-        async function editDraft(emailId) {
-            try {
-                console.log(`Fetching draft ${emailId} for editing`);
-                const userCode = getuserCode();
-            
-                if (!userCode) return;
+                    if (!email) {
+                        console.error('Email not found in mock data:', emailId, folder);
+                        alert('Email details not found.');
+                        return;
+                    }
+                    console.log('Email item clicked:', emailId, 'in folder:', folder);
 
-                const response = await fetch(`/Security/get-draft?emailId=${emailId}&userCode=${encodeURIComponent(userCode)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `${userCode}`,
-                    },
+                    // For drafts, open compose window for editing
+                    if (folder === 'drafts') {
+                        openComposeWindow('editDraft', email);
+                    } else {
+                        // Open new detail modal
+                        openEmailDetailModal(email);
+                        // Mark email as read in UI and mock data
+                        item.classList.remove('unread');
+                        item.classList.add('read');
+                        item.querySelector('.email-subject .font-semibold')?.classList.remove('font-semibold');
+                        if (email) email.read = true; // Update mock data
+                        // Update mark as read/unread button in list
+                        const markBtn = item.querySelector('.mark-read-unread-btn i');
+                        if (markBtn) {
+                            markBtn.classList.remove('fa-envelope');
+                            markBtn.classList.add('fa-envelope-open');
+                            markBtn.closest('button').title = 'Mark as Unread';
+                        }
+                    }
                 });
+            });
 
-                if (response.status === 401) {
-                    console.warn('Unauthorized, redirecting to login');
-                    logout();
-                    return;
-                }
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const draft = await response.json();
-                console.log('Draft fetched:', draft);
-                document.getElementById('to').value = draft.to || '';
-                document.getElementById('subject').value = draft.subject || '';
-                document.getElementById('body').value = draft.body || '';
-                document.getElementById('email-form').dataset.emailId = emailId;
-                composeWindow.classList.remove('hidden');
-                composeWindow.classList.add('show');
-            } catch (error) {
-                console.error('Error fetching draft:', error);
-                alert('Failed to load draft. Please try again.');
-            }
-        }
-
-        // View attachment
-        async function viewAttachment(attachmentId, filename, type) {
-            console.log('viewAttachment called with attachmentId:', attachmentId, 'filename:', filename, 'type:', type);
-            try {
-                const userCode = getuserCode();
-                
-                if (!userCode ) return;
-
-                const response = await fetch(`/Security/get-attachment?id=${attachmentId}&userCode=${encodeURIComponent(userCode)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `${userCode}`,
-                    },
+            // Individual checkbox change listener
+            document.querySelectorAll('.email-item-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (event) => {
+                    const emailId = event.target.dataset.emailId;
+                    const isChecked = event.target.checked;
+                    const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+                    const email = mockEmails[currentFolder].find(e => e.id === emailId);
+                    if (email) email.selected = isChecked;
+                    updateHeaderActionsVisibility();
                 });
+            });
 
-                if (response.status === 401) {
-                    console.warn('Unauthorized, redirecting to login');
-                    logout();
-                    return;
-                }
 
-                if (!response.ok) {
-                    console.error('Fetch attachment failed with status:', response.status);
-                    alert('Failed to fetch attachment.');
-                    return;
-                }
-
-                const contentType = response.headers.get('Content-Type');
-                console.log('Content-Type:', contentType);
-                const blob = await response.blob();
-
-                const isImageContentType = contentType && contentType.startsWith('image/');
-                const isImageExtension = filename && /\.(png|jpg|jpeg)$/i.test(filename);
-
-                if (isImageContentType || isImageExtension) {
-                    console.log('Attachment is an image, opening modal');
-                    const imageUrl = URL.createObjectURL(blob);
-                    openImageViewModal(imageUrl, attachmentId, filename);
-                } else {
-                    console.log('Attachment is not an image, opening in new tab');
-                    const url = URL.createObjectURL(blob);
-                    window.open(url, '_blank');
-                }
-            } catch (error) {
-                console.error('Error viewing attachment:', error);
-                alert('An error occurred while viewing the attachment: ' + error.message);
-            }
-        }
-
-        // View attachment in new tab
-        async function viewAttachmentInNewTab(attachmentId) {
-            try {
-                console.log('Fetching attachment for new tab, attachmentId:', attachmentId);
-                const userCode = getuserCode();
-               
-                if (!userCode ) return;
-
-                const response = await fetch(`/Security/get-attachment?id=${attachmentId}&userCode=${encodeURIComponent(userCode)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `${userCode}`,
-                    },
+            // Delete button (individual email)
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent email item click
+                    const emailId = button.dataset.emailId;
+                    const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+                    
+                    let emailIndex = mockEmails[currentFolder].findIndex(e => e.id === emailId);
+                    if (emailIndex !== -1) {
+                        const [deletedEmail] = mockEmails[currentFolder].splice(emailIndex, 1);
+                        deletedEmail.folder = 'trash';
+                        deletedEmail.read = true;
+                        deletedEmail.selected = false;
+                        if (!mockEmails.trash) mockEmails.trash = [];
+                        mockEmails.trash.push(deletedEmail);
+                        alert(`Mock: Email ID: ${emailId} moved to Trash.`);
+                        fetchEmails(currentFolder);
+                    } else {
+                        alert(`Mock: Email ID: ${emailId} not found for deletion.`);
+                    }
                 });
+            });
 
-                if (response.status === 401) {
-                    console.warn('Unauthorized, redirecting to login');
-                    logout();
-                    return;
-                }
+            // Archive button (individual email)
+            document.querySelectorAll('.archive-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent email item click
+                    const emailId = button.dataset.emailId;
+                    const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                    let emailIndex = mockEmails[currentFolder].findIndex(e => e.id === emailId);
+                    if (emailIndex !== -1) {
+                        const [archivedEmail] = mockEmails[currentFolder].splice(emailIndex, 1);
+                        archivedEmail.read = true;
+                        archivedEmail.selected = false;
+                        if (!mockEmails.archive) mockEmails.archive = [];
+                        mockEmails.archive.push(archivedEmail);
+                        alert(`Mock: Email ID: ${emailId} archived.`);
+                        fetchEmails(currentFolder);
+                    } else {
+                        alert(`Mock: Email ID: ${emailId} not found for archiving.`);
+                    }
+                });
+            });
 
-                const blob = await response.blob();
-                const url = URL.createObjectURL(blob);
-                window.open(url, '_blank');
-            } catch (error) {
-                console.error('Error viewing attachment in new tab:', error);
-                alert('An error occurred while viewing the attachment.');
-            }
+            // Mark as Read/Unread button (mocked)
+            document.querySelectorAll('.mark-read-unread-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent email item click
+                    const emailItem = button.closest('.email-list-item');
+                    const emailId = button.dataset.emailId;
+                    const icon = button.querySelector('i');
+                    const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+                    const email = mockEmails[currentFolder].find(e => e.id === emailId);
+
+                    if (email) {
+                        email.read = !email.read; // Toggle read state
+                        if (email.read) {
+                            emailItem.classList.remove('unread');
+                            emailItem.classList.add('read');
+                            emailItem.querySelector('.email-subject span:first-child')?.classList.remove('font-semibold');
+                            icon.classList.remove('fa-envelope');
+                            icon.classList.add('fa-envelope-open');
+                            button.title = 'Mark as Unread';
+                            alert(`Mock mark as read for email ID: ${emailId}`);
+                        } else {
+                            emailItem.classList.remove('read');
+                            emailItem.classList.add('unread');
+                            emailItem.querySelector('.email-subject span:first-child')?.classList.add('font-semibold');
+                            icon.classList.remove('fa-envelope-open');
+                            icon.classList.add('fa-envelope');
+                            button.title = 'Mark as Read';
+                            alert(`Mock mark as unread for email ID: ${emailId}`);
+                        }
+                    }
+                });
+            });
+
+            // Star button in list (mocked)
+            document.querySelectorAll('.email-list-star-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent email item click
+                    const emailId = button.dataset.emailId;
+                    const icon = button.querySelector('i') || button; // If icon itself is the button
+                    const currentFolder = document.querySelector('.sidebar-item.active').dataset.folder;
+                    const email = mockEmails[currentFolder].find(e => e.id === emailId);
+
+                    if (email) {
+                        email.starred = !email.starred; // Toggle starred state
+                        if (email.starred) {
+                            icon.classList.remove('far', 'text-gray-400');
+                            icon.classList.add('fas', 'text-yellow-500');
+                            alert(`Starred email ID: ${emailId} (mocked)`);
+                        } else {
+                            icon.classList.remove('fas', 'text-yellow-500');
+                            icon.classList.add('far', 'text-gray-400');
+                            alert(`Unstarred email ID: ${emailId} (mocked)`);
+                        }
+                    }
+                });
+            });
+
+            updateHeaderActionsVisibility(); // Initial call to set visibility
         }
+        
+        // Initialize event listeners
+        document.getElementById('close-image-modal').addEventListener('click', closeImageViewModal);
+        document.getElementById('download-button').addEventListener('click', downloadImage);
+        document.getElementById('full-size-button').addEventListener('click', viewFullSize);
+        document.getElementById('logout-btn').addEventListener('click', logout);
 
         // Sidebar navigation
         document.querySelectorAll('.sidebar-item').forEach(item => {
@@ -910,20 +1450,13 @@
             });
         });
 
-        // Initialize event listeners
-        document.getElementById('close-image-modal').addEventListener('click', closeImageViewModal);
-        document.getElementById('download-button').addEventListener('click', downloadImage);
-        document.getElementById('full-size-button').addEventListener('click', viewFullSize);
-        document.getElementById('logout-btn').addEventListener('click', logout);
-
         // Initialize page
         window.onload = async () => {
-            const userCode = getuserCode();
-            if (userCode) {
-                document.getElementById('user-id').textContent = userCode;
-                fetchNotificationCount();
-                fetchEmails('inbox');
-            }
+            const userCode = sessionStorage.getItem('userCode') || 'mockUser'; // Use a mock userCode
+            sessionStorage.setItem('userCode', userCode); // Ensure it's set for mock purposes
+            document.getElementById('user-id').textContent = userCode;
+            fetchNotificationCount();
+            fetchEmails('inbox');
         };
     </script>
 </body>
