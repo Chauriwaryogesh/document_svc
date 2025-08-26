@@ -1083,14 +1083,10 @@
                         <div class="input-group">
                             <select id="policy-status" required>
                                 <option value="">Select status</option>
-                                <option value="ACTIVE">ACTIVE</option>
-                                <option value="PENDING">PENDING</option>
-                                <option value="CANCELLED">CANCELLED</option>
-                                <option value="EXPIRED">EXPIRED</option>
-                                <option value="LAPSED">LAPSED</option>
-                                <option value="GRACE PERIOD">GRACE PERIOD</option>
-                                <option value="CLAIMED">CLAIMED</option>
-                                <option value="IN_PROGRESS">IN PROGRESS</option>
+                                <option value="ACTIVE">Active</option>
+                                <option value="CLOSED">Closed</option>
+                                <option value="SURRENDER">Surrender</option>
+                                <option value="CLAIMED">Claimed</option>
                             </select>
                             <label for="policy-status" class="mandatory">Policy Status</label>
                         </div>
@@ -1186,7 +1182,7 @@
                             <label for="edit-policy-customerNo" class="mandatory">Customer Number</label>
                         </div>
                         <div class="input-group">
-                            <input type="text" id="edit-policy-custName" required>
+                            <input type="text" id="edit-policy-custName" readonly>
                             <label for="edit-policy-custName" class="mandatory">Customer Name</label>
                         </div>
                         <div class="input-group">
@@ -1209,7 +1205,7 @@
                             <label for="edit-policy-phoneNum" class="mandatory">Phone Number</label>
                         </div>
                         <div class="input-group">
-                            <input type="email" id="edit-policy-email" required>
+                            <input type="email" id="edit-policy-email" readonly>
                             <label for="edit-policy-email" class="mandatory">Email</label>
                         </div>
                         <div class="input-group">
@@ -1260,14 +1256,10 @@
                         <div class="input-group">
                             <select id="edit-policy-status" required>
                                 <option value="">Select status</option>
-                                <option value="ACTIVE">ACTIVE</option>
-                                <option value="PENDING">PENDING</option>
-                                <option value="CANCELLED">CANCELLED</option>
-                                <option value="EXPIRED">EXPIRED</option>
-                                <option value="LAPSED">LAPSED</option>
-                                <option value="GRACE PERIOD">GRACE PERIOD</option>
-                                <option value="CLAIMED">CLAIMED</option>
-                                <option value="IN_PROGRESS">IN PROGRESS</option>
+                                <option value="ACTIVE">Active</option>
+                                <option value="CLOSED">Closed</option>
+                                <option value="SURRENDER">Surrender</option>
+                                <option value="CLAIMED">Claimed</option>
                             </select>
                             <label for="edit-policy-status" class="mandatory">Policy Status</label>
                         </div>
@@ -1303,6 +1295,7 @@
                                 <option value="Parent">Parent</option>
                                 <option value="Child">Child</option>
                                 <option value="Sibling">Sibling</option>
+                                <option value="Son">Son</option>
                                 <option value="Other">Other</option>
                             </select>
                             <label for="edit-policy-beneficiaryRelationship" class="mandatory">Beneficiary Relationship</label>
@@ -1603,7 +1596,7 @@
     </div>
 <script>
     const POLICY_DETAILS_NEW_URL = 'http://localhost:8081/policy/policy-detailsNew';
-    const CUSTOMER_DETAILS_URL = 'http://localhost:8081/customer/getCustomerDetails';
+    const CUSTOMER_DETAILS_URL = 'http://localhost:8081/Security/customer-details';
     const POLICY_DOMAIN_URL = 'http://localhost:8081/policy/policy-domain';
     const POLICY_CREATE_URL = 'http://localhost:8081/policy/policy-create';
     const POLICY_UPDATE_URL = 'http://localhost:8081/policy/update';
@@ -1943,7 +1936,13 @@
         document.getElementById('policy-fcuFlag').value = 'N';
         document.getElementById('policy-fcuFlag').disabled = true; // FCU Flag is default to N and disabled for creation
         document.getElementById('policy-smokerStatus').value = 'N';
-        document.getElementById('policy-premiumDueDate').value = '';
+        
+        
+        const todays = new Date();  // <-- keep as Date
+        
+        let dueDate = new Date(todays.getFullYear(), todays.getMonth() + 2, 0).toISOString().split('T')[0];
+        console.log(todays.getMonth()+2);
+        document.getElementById('policy-premiumDueDate').value = dueDate;;
         document.getElementById('policy-type').value = '';
         document.getElementById('policy-type').disabled = true; // Policy Type is set by product code and disabled
         
@@ -2324,7 +2323,7 @@
                     });
                 }
             });
-            ['MONTHLY', 'QUATERLY', 'YEARLY', 'DAILY', 'SINGLE'].forEach(term => uniquePolicyTerms.add(term)); // Added 'SINGLE' as per general policy terms
+            ['MONTHLY', 'QUATERLY', 'YEARLY', 'DAILY'].forEach(term => uniquePolicyTerms.add(term));
             config.allAvailablePolicyTerms = Array.from(uniquePolicyTerms).sort();
             config.isDomainDataLoaded = true;
             populateCreatePolicyDropdowns();
@@ -2426,10 +2425,6 @@
         const policyName = document.getElementById('policy-policyName').value;
         const productCode = document.getElementById('policy-productCode').value;
         if (!policyName || !productCode) return;
-        
-        // Removed the re-fetch logic, relying on config.policyDomainData being pre-loaded
-        // if (!config.isDomainDataLoaded) await fetchAvailablePolicyProducts();
-        
         const domainEntry = config.policyDomainData.find(entry => entry.policyName === policyName && entry.productCode === productCode);
         const policyDetails = (domainEntry && domainEntry.policies && domainEntry.policies.length > 0) ? domainEntry.policies[0] : null;
         if (policyDetails) {
@@ -2451,15 +2446,14 @@
         document.getElementById('policy-status').value = 'ACTIVE';
         document.getElementById('policy-fcuFlag').value = 'N';
         document.getElementById('policy-beneficiaryVerificationStatus').value = '';
-        document.getElementById('beneficiary-aadhar-feedback').textContent = ''; // Reset feedback
-        document.getElementById('nominee-contact-feedback').textContent = ''; // Reset feedback
+        document.getElementById('beneficiary-aadhar-feedback').textContent = ''; 
+        document.getElementById('nominee-contact-feedback').textContent = '';
         document.getElementById('policy-beneficiaryAadharNumber').classList.remove('border-red-500', 'border-green-500');
         document.getElementById('policy-nomineeContactNumber').classList.remove('border-red-500', 'border-green-500');
 
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('policy-startDate').value = today;
         document.getElementById('policy-premiumDueDate').value = '';
-        // Always repopulate dropdowns from already loaded domain data
         if (config.isDomainDataLoaded) {
             populateCreatePolicyDropdowns();
         }
@@ -2474,9 +2468,8 @@
         document.getElementById('policy-totalAmount').value = '';
         document.getElementById('policy-installmentAmount').value = '';
         document.getElementById('policy-reason').value = '';
-        document.getElementById('policy-reason').removeAttribute('readonly'); // Ensure reason is enabled
+        document.getElementById('policy-reason').removeAttribute('readonly'); 
         document.getElementById('policy-reason').classList.remove('bg-gray-100', 'cursor-not-allowed');
-
         document.getElementById('policy-beneficiaryName').value = '';
         document.getElementById('policy-beneficiaryAadharNumber').value = '';
         document.getElementById('policy-nomineeContactNumber').value = '';
@@ -2502,7 +2495,6 @@
             case 'MONTHLY': calculatedInstallment = totalAmount / 12; break;
             case 'QUATERLY': calculatedInstallment = totalAmount / 4; break;
             case 'YEARLY': calculatedInstallment = totalAmount; break;
-            case 'SINGLE': calculatedInstallment = totalAmount; break; // Added 'SINGLE' term
             default: calculatedInstallment = totalAmount; break;
         }
         installmentAmountInput.value = calculatedInstallment.toFixed(2);
@@ -2521,7 +2513,6 @@
             case 'MONTHLY': calculatedInstallment = totalAmount / 12; break;
             case 'QUATERLY': calculatedInstallment = totalAmount / 4; break;
             case 'YEARLY': calculatedInstallment = totalAmount; break;
-            case 'SINGLE': calculatedInstallment = totalAmount; break;
             default: calculatedInstallment = totalAmount; break;
         }
         installmentAmountInput.value = calculatedInstallment.toFixed(2);
@@ -2540,9 +2531,9 @@
             });
             if (response.ok) {
                 const  data  = await response.json();
-                console.log(data.data);
+                console.log(data.data[0]);
                 if (data && data.data) {
-                    const customer = data.data;
+                    const customer = data.data[0];
                     config.customerValidated = true;
                     document.getElementById('policy-custName').value = customer.name || '';
                     document.getElementById('policy-middleName').value = customer.middleName || '';
@@ -3376,7 +3367,7 @@
             const listItem = document.createElement('div');
             listItem.className = 'detail-box';
             listItem.innerHTML = `
-                <strong>Work Item Ref No.:</strong>
+                <strong>WorkItem Details:</strong>
                 <span class="text-blue-700 hover:text-blue-900 cursor-pointer font-medium" onclick="redirectToWorkItemDetails('${workItem}')">${workItem}</span>
             `;
             elements.detailWorkItemsList.appendChild(listItem);
