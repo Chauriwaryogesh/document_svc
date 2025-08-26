@@ -741,36 +741,44 @@
         </button>
         <div class="p-4 flex items-center justify-center border-b border-gray-200">
             <img src="https://placehold.co/32x32/3b82f6/FFFFFF?text=SA" alt="Logo" class="w-8 h-8 rounded-full">
-            <span class="text-xl font-bold text-gray-800 ml-3 text">Secure Access</span>
+            <span class="text-xl font-bold text-gray-800 ml-3 text">Policy Admin</span>
         </div>
         <nav class="flex-1 px-2 py-4 space-y-2">
-            <a href="ServicePage.html" class="sidebar-link">
+            <a href="ServicePage" class="sidebar-link">
                 <i class="icon fas fa-home"></i>
                 <span class="text">Dashboard</span>
             </a>
-            <a href="CustomerService.html" class="sidebar-link">
-                <i class="icon fas fa-user-friends"></i>
-                <span class="text">Customer Service</span>
-            </a>
-            <a href="DocumentService.html" class="sidebar-link">
+            <a href="DocumentService" class="sidebar-link">
                 <i class="icon fas fa-folder-open"></i>
                 <span class="text">Document Service</span>
             </a>
-            <a href="verification.html" class="sidebar-link">
-                <i class="icon fas fa-user-check"></i>
-                <span class="text">Verification</span>
-            </a>
-            <a href="ComplaintsForCustomer.html" class="sidebar-link">
+            <a href="Complaints" class="sidebar-link">
                 <i class="icon fas fa-exclamation-circle"></i>
                 <span class="text">Complaints</span>
             </a>
-            <a href="AddNotes.html" class="sidebar-link">
+            <a href="AddNotes" class="sidebar-link">
                 <i class="icon fas fa-clipboard-list"></i>
                 <span class="text">Admin Notes</span>
             </a>
-            <a href="PolicyAdmin.html" class="sidebar-link active">
+            <a href="bankAccount" class="sidebar-link">
+                <i class="icon fas fa-clipboard-list"></i>
+                <span class="text">Bank Account</span>
+            </a>
+            <a href="payment" class="sidebar-link">
+                <i class="icon fas fa-clipboard-list"></i>
+                <span class="text">Policy Payments</span>
+            </a>
+            <a href="PolicyAdmin" class="sidebar-link active">
                 <i class="icon fas fa-file-contract"></i>
                 <span class="text">Policy Admin</span>
+            </a>
+            <a href="PolicyClaimAdmin" class="sidebar-link">
+                <i class="icon fas fa-clipboard-list"></i>
+                <span class="text">Claim Policy</span>
+            </a>
+            <a href="PolicySurrenderAdmin" class="sidebar-link">
+                <i class="icon fas fa-clipboard-list"></i>
+                <span class="text">Surrender Policy</span>
             </a>
         </nav>
         <div class="p-4 border-t border-gray-200">
@@ -2167,11 +2175,14 @@
         }
         const pageUrls = {
             dashboard: 'ServicePage',
-            workitems: 'CustomerService',
+            workitems: 'workItemServices',
+            bankAccount: 'bankAccount',
+            payment: 'payment',
             policyadmin: 'PolicyAdmin',
             notes: 'AddNotes',
-            verification: 'verification',
-            complaints: 'ComplaintsForCustomer',
+            complaints: 'Complaints',
+            claimPolicy: 'PolicyClaimAdmin',
+            surrenderPolicy: 'PolicySurrenderAdmin',
             logout: 'login'
         };
         const url = pageUrls[page];
@@ -3381,17 +3392,6 @@
             // Mock data for upcoming requests (replace with actual API call if available)
             const mockRequests = [
                 { id: 'REQ001', policyNumber: 'POL98765', customerName: 'Alice Smith', type: 'Surrender', amount: 1500.00, date: '2024-08-01', status: 'Pending', details: 'Full surrender request' },
-                { id: 'REQ002', policyNumber: 'POL12345', customerName: 'Bob Johnson', type: 'Claim', amount: 5000.00, date: '2024-07-25', status: 'In Progress', details: 'Accidental death claim' },
-                { id: 'REQ003', policyNumber: 'POL24680', customerName: 'Charlie Brown', type: 'Review', amount: 0.00, date: '2024-08-10', status: 'New', details: 'Annual policy review' },
-                { id: 'REQ004', policyNumber: 'POL13579', customerName: 'Diana Prince', type: 'Update Contact', amount: 0.00, date: '2024-08-05', status: 'Approved', details: 'Updated phone number' },
-                { id: 'REQ005', policyNumber: 'POL11223', customerName: 'Eve Adams', type: 'Surrender', amount: 750.00, date: '2024-07-30', status: 'Rejected', details: 'Partial surrender denied' },
-                { id: 'REQ006', policyNumber: 'POL33445', customerName: 'Frank White', type: 'Claim', amount: 2000.00, date: '2024-08-02', status: 'Open', details: 'Medical claim for surgery' },
-                { id: 'REQ007', policyNumber: 'POL55667', customerName: 'Grace Lee', type: 'Review', amount: 0.00, date: '2024-08-15', status: 'Pending', details: 'Coverage adjustment request' },
-                { id: 'REQ008', policyNumber: 'POL77889', customerName: 'Henry Wilson', type: 'Update Contact', amount: 0.00, date: '2024-07-20', status: 'In Progress', details: 'Email address change' },
-                { id: 'REQ009', policyNumber: 'POL99001', customerName: 'Ivy King', type: 'Claim', amount: 1000.00, date: '2024-08-03', status: 'Approved', details: 'Dental claim' },
-                { id: 'REQ010', policyNumber: 'POL10112', customerName: 'Jack Green', type: 'Surrender', amount: 200.00, date: '2024-08-08', status: 'New', details: 'Minor surrender request' },
-                { id: 'REQ011', policyNumber: 'POL12131', customerName: 'Karen Black', type: 'Review', amount: 0.00, date: '2024-07-18', status: 'Pending', details: 'Beneficiary update' },
-                { id: 'REQ012', policyNumber: 'POL14151', customerName: 'Liam Blue', type: 'Claim', amount: 3000.00, date: '2024-08-06', status: 'Open', details: 'Critical illness claim' },
             ];
             config.upcomingRequests = mockRequests; // Assign mock data
             config.upcomingRequestsFiltered = config.upcomingRequests;
