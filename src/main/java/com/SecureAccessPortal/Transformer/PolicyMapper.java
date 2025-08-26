@@ -1,12 +1,8 @@
 package com.SecureAccessPortal.Transformer;
 
-import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,19 +13,12 @@ import org.springframework.stereotype.Component;
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.BankAccount;
 import com.SecureAccessPortal.Entity.ClaimEntity;
-import com.SecureAccessPortal.Entity.Customer;
-import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.SurrenderEntity;
-import com.SecureAccessPortal.Entity.Workitem;
 import com.SecureAccessPortal.Modal.BankAccountDTO;
 import com.SecureAccessPortal.Modal.BankDetailsDTO;
-import com.SecureAccessPortal.Modal.PolicyDTO;
-import com.SecureAccessPortal.Modal.PolicyList;
 import com.SecureAccessPortal.Modal.SurrenderClaimDTO;
 import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Service.BankDetailsService;
-import com.SecureAccessPortal.Service.PolicyService;
-import com.SecureAccessPortal.Service.ResponseEntity;
 
 @Component
 public class PolicyMapper {
@@ -41,89 +30,6 @@ public class PolicyMapper {
 	
 	@Autowired
 	private BankDetailsService bankDetailsService;
-
-	public ResponseEntity<List<PolicyDTO>> mapAllPolicies(List<Customer> customer, List<Policy> policies) {
-
-		ResponseEntity<List<PolicyDTO>> reponse = new ResponseEntity<>();
-		List<PolicyDTO> policyListResp = customer.stream().map(cust -> {
-			PolicyDTO policyDTO = new PolicyDTO();
-			policyDTO.setCustomerNo(cust.getCustomerNo());
-			policyDTO.setCustomerName(cust.getName() + "" + cust.getSurname());
-			List<PolicyList> policyList = new ArrayList<>();
-			policies.stream()
-					.filter(policy -> policy.getCustomer().getCustomerNo().equalsIgnoreCase(cust.getCustomerNo()))
-					.forEach(policy -> {
-						PolicyList pol = new PolicyList();
-						pol.setPolicyNumber(policy.getPolicyNumber());
-						pol.setPolicyType(policy.getPolicyType());
-						pol.setId(policy.getId());
-						pol.setFcuFlag(policy.getFcuFlag() != null ? policy.getFcuFlag() : "");
-						pol.setPolicyNumber(policy.getPolicyNumber() != null ? policy.getPolicyNumber() : "");
-						pol.setPolCompanyName(policy.getPolCompanyName() != null ? policy.getPolCompanyName() : "");
-						pol.setPolicyName(policy.getPolicyName() != null ? policy.getPolicyName() : "");
-						pol.setProductCode(policy.getProductCode() != null ? policy.getProductCode() : "");
-						pol.setCreatedBy(policy.getCreatedBy() != null ? policy.getCreatedBy() : "");
-						pol.setCreatedDate(String.valueOf(policy.getCreatedTime()));
-						pol.setWorkItemRefNo(policy.getWorkitems() != null ? policy.getWorkitems().stream()
-								.map(Workitem::getWorkItemRefNumber).collect(Collectors.toList()) : new ArrayList<>());
-						pol.setUpdatedBy(policy.getUpdatedBy() != null ? policy.getUpdatedBy() : "");
-						pol.setUserCode(policy.getUserCode() != null ? policy.getUserCode() : "");
-						pol.setDeletedFlag(policy.getDeletedFlag() != null ? policy.getDeletedFlag() : "");
-						pol.setPolicyType(policy.getPolicyType() != null ? policy.getPolicyType() : "");
-						pol.setPolicyPremium(
-								policy.getPolicyPremium() != null ? policy.getPolicyPremium() : BigDecimal.ZERO);
-						pol.setPremium(policy.getPolicyPremium() != null ? policy.getPolicyPremium() : BigDecimal.ZERO); // Added
-																															// for
-																															// frontend
-						pol.setPolicyStatus(policy.getPolicyStatus() != null ? policy.getPolicyStatus() : "");
-						pol.setCoverageAmount(
-								policy.getCoverageAmount() != null ? policy.getCoverageAmount() : BigDecimal.ZERO);
-						pol.setCustomerNo(policy.getCustomer() != null ? policy.getCustomer().getCustomerNo() : "");
-						pol.setBeneficiaryName(policy.getBeneficiaryName() != null ? policy.getBeneficiaryName() : "");
-						pol.setBeneficiaryRelationship(
-								policy.getBeneficiaryRelationship() != null ? policy.getBeneficiaryRelationship() : "");
-						pol.setComplianceFlag(policy.getComplianceFlag() != null ? policy.getComplianceFlag() : "");
-						pol.setPaymentFrequency(
-								policy.getPaymentFrequency() != null ? policy.getPaymentFrequency() : "");
-						pol.setSmokerStatus(policy.getSmokerStatus() != null ? policy.getSmokerStatus() : "");
-						pol.setPolicyAmount(String.valueOf(
-								policy.getPolicyPremium() != null ? policy.getPolicyPremium() : BigDecimal.ZERO));
-						pol.setInstallmentCount(
-								String.valueOf(policy.getPolicyfrequency() != null ? policy.getPolicyfrequency() : ""));
-						pol.setFrequency(policy.getPolicyfrequency() != null ? policy.getPolicyfrequency() : "");
-						pol.setPolicyTerm(policy.getPolicyTerm() != null ? policy.getPolicyTerm() : "");
-						pol.setTerm(policy.getPolicyTerm() != null ? policy.getPolicyTerm() : "");
-						pol.setTotalAmount(policy.getTotalAmount());
-						pol.setMonthlyInstallment(policy.getMonthlyInstallment());
-						pol.setTotalClaimableAmount(policy.getTotalClaimableAmount());
-						pol.setBeneficiaryAadharNumber(
-								policy.getBeneficiaryIdentityNumber() != null ? policy.getBeneficiaryIdentityNumber()
-										: "");
-						pol.setNomineeContactNumber(
-								policy.getBeneficiaryContactNumber() != null ? policy.getBeneficiaryContactNumber()
-										: "");
-						pol.setStatus(policy.getPolicyStatus() != null ? policy.getPolicyStatus() : "");
-						pol.setType(policy.getPolicyType() != null ? policy.getPolicyType() : "");
-						pol.setPremiumDueDate(String.valueOf(policy.getPremiumDueDate()));
-						pol.setRenewalDate(String.valueOf(policy.getRenewalDate()));
-						pol.setStartDate(String.valueOf(policy.getPolicyStartDate()));
-						pol.setEndDate(String.valueOf(policy.getPolicyEndDate()));
-						pol.setPolicyDate(String.valueOf(policy.getPolicyStartDate()));
-						pol.setDueDate(String.valueOf(policy.getPremiumDueDate()));
-
-						List<BankAccount> bankAccounts = bankAccountRepository
-								.findByPolicyNumber(policy.getPolicyNumber(), CommonConstant.N);
-						pol.setBankAccounts(bankAccounts != null
-								? bankAccounts.stream().map(this::mapToBankAccountDTO).collect(Collectors.toList())
-								: new ArrayList<>());
-						policyList.add(pol);
-					});
-			policyDTO.setPolicyList(policyList);
-			return policyDTO;
-		}).collect(Collectors.toList());
-		reponse.setData(policyListResp);
-		return reponse;
-	}
 
 	private BankAccountDTO mapToBankAccountDTO(BankAccount bankAccount) {
 		BankAccountDTO dto = new BankAccountDTO();

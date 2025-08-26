@@ -74,6 +74,11 @@ public class CommonConstant {
 	public static final String RESTORE = "RESTORE";
 	public static final String PERMANENT_DELETE = "PERMANENT_DELETE";
 	
+	public static final String 	COMPLAINT_TEAM = "Complaints Team";
+	public static final String BANCS_TEAM = "Bancs Team";
+	public static final String ADMIN_TEAM = "Admin Team";
+	public static final String ESCALATION_TEAM = "Escalation Team";
+	
 	
 
 }

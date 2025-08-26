@@ -1,7 +1,7 @@
 package com.SecureAccessPortal.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -90,14 +90,14 @@ public class PaymentService {
 			if (paymentSuccess) {
 				payment.setStatus("Paid");
 				payment.setTransactionId(generateTransactionId());
-				payment.setPaymentDate(LocalDate.now());
+				payment.setPaymentDate(LocalDateTime.now());
 				payment.setPaymentMethod(paymentMethod);
 				payment.setPaymentType(CommonConstant.POL_INSTLMNT);
 				payment.setEmailStatus("Service Not Available Now");
 				sendPaymentConfirmationEmail(payment);
 			} else {
 				payment.setStatus("Failed");
-				payment.setPaymentDate(LocalDate.now());
+				payment.setPaymentDate(LocalDateTime.now());
 				payment.setEmailStatus("NotSent");
 			}
 
@@ -117,7 +117,7 @@ public class PaymentService {
 			byPolicyNum = policyRepository.findByPolicyNum(request.getPolicyNumber(), CommonConstant.N);
 			if(byPolicyNum != null) {
 				byPolicyNum.setUpdatedBy(request.getUserCode());
-				byPolicyNum.setUpdatedTime(LocalDateTime.now());
+				byPolicyNum.setUpdatedDate(LocalDateTime.now());
 				if (request.getPaymentId().contains("SURR")) {
 					byPolicyNum.setPolicyStatus(CommonConstant.SURRENDERED);
 				}
@@ -130,8 +130,8 @@ public class PaymentService {
 			payment.setCustomer(byPolicyNum.getCustomer());
 			payment.setProductCode(byPolicyNum.getProductCode());
 			payment.setPolicyName(byPolicyNum.getPolicyName());
-			payment.setInstallmentAmount(BigDecimal.valueOf(byPolicyNum.getTotalAmount()));
-			payment.setDueDate(LocalDate.now());
+			payment.setInstallmentAmount(byPolicyNum.getMonthlyInstallment());
+			payment.setDueDate(LocalDateTime.now());
 		}
 
 		if (request.getPaymentDetails().getBankaccount() != null) {
@@ -154,13 +154,13 @@ public class PaymentService {
 		if (paymentSuccess) {
 			payment.setStatus(CommonConstant.PAID);
 			payment.setTransactionId(generateTransactionId());
-			payment.setPaymentDate(LocalDate.now());
+			payment.setPaymentDate(LocalDateTime.now());
 			payment.setPaymentMethod(request.getPaymentMethod());
 			payment.setEmailStatus("Service Not Available Now");
 			sendPaymentConfirmationEmail(payment);
 		} else {
 			payment.setStatus(CommonConstant.FAILED);
-			payment.setPaymentDate(LocalDate.now());
+			payment.setPaymentDate(LocalDateTime.now());
 			payment.setEmailStatus("NotSent");
 		}
 		payment.setCreatedBy(request.getUserCode());

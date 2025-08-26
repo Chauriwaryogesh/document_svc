@@ -1364,7 +1364,7 @@ body.dark-mode #welcome-message {
                       <button onclick="navigateTo('policyClaimAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-invoice-dollar text-3xl text-cyan-500 mb-4"></i><h3 class="text-lg font-bold">Policy Claim Admin</h3></button>
                       <button onclick="navigateTo('policySurrenderAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-hand-holding-usd text-3xl text-fuchsia-500 mb-4"></i><h3 class="text-lg font-bold">Policy Surrender Admin</h3></button>
                       <button onclick="navigateTo('addNotes')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-note-sticky text-3xl text-blue-400 mb-4"></i><h3 class="text-lg font-bold">Add Notes</h3></button>
-                      <button onclick="navigateTo('newBusinessDocCreate')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-circle-plus text-3xl text-indigo-600 mb-4"></i><h3 class="text-lg font-bold">New Business Doc Create</h3></button>
+                      <button onclick="navigateTo('pensionManagementAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-circle-plus text-3xl text-indigo-600 mb-4"></i><h3 class="text-lg font-bold">Pension Management</h3></button>
                       <button onclick="navigateTo('docVerificationManagement')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-circle-check text-3xl text-green-600 mb-4"></i><h3 class="text-lg font-bold">Document Services</h3></button>
                       <button onclick="navigateTo('mailServices')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-envelope-open-text text-3xl text-red-500 mb-4"></i><h3 class="text-lg font-bold">Mail Services</h3></button>
                   </div>
@@ -1665,7 +1665,7 @@ body.dark-mode #welcome-message {
             policySurrenderAdmin: 'PolicySurrenderAdmin',
             activityLog: 'activity',
             addNotes: 'AddNotes',
-            newBusinessDocCreate: 'NewBusinessDocumentCreate',
+            pensionManagementAdmin: 'PensionManagementAdmin',
             docVerificationManagement: 'DocumentService',
             mailServices: 'MailServices',
             Policy: 'policy', Workitem: 'workitems', 'Create Customer': 'customerService',
@@ -1697,7 +1697,7 @@ body.dark-mode #welcome-message {
         
         let url = targetFileName;
         const pagesWithCustomerNo = ['feedback', 'activityLog', 'addNotes'];
-        const adminPages = ['newBusinessDocCreate', 'docVerificationManagement', 'mailServices'];
+        const adminPages = ['pensionManagementAdmin', 'docVerificationManagement', 'mailServices'];
 
         if (pagesWithCustomerNo.includes(page)) {
             const customerNo = sessionStorage.getItem('customerNo');

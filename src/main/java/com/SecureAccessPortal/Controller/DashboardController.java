@@ -30,9 +30,8 @@ public class DashboardController {
 
 	@GetMapping("/dashboard")
 	public String dashboard(Model model) {
-		// Optionally, you can pass some data to the dashboard page here
 		model.addAttribute("message", "Welcome to the Dashboard!");
-		return "dashboard"; // Make sure this matches the actual name of your dashboard HTML page
+		return "dashboard";
 	}
 
 	@GetMapping("/DocumentService")
@@ -100,27 +99,33 @@ public class DashboardController {
 	public String PolicyAdmin(String userCode) {
 		return "PolicyAdmin";
 	}
-	
+
 	@GetMapping("/PolicySurrenderAdmin")
 	public String SurrenderPolicy(@RequestParam(required = false) String customerNo,
-			@RequestParam(required = false) String policyNo,String userCode) {
+			@RequestParam(required = false) String policyNo, String userCode) {
 		return "PolicySurrenderAdmin";
 	}
-	
+
 	@GetMapping("/PolicyClaimAdmin")
 	public String policyClaimAdmin(@RequestParam(required = false) String customerNo,
-			@RequestParam(required = false) String policyNo,String userCode) {
+			@RequestParam(required = false) String policyNo, String userCode) {
 		return "PolicyClaimAdmin";
 	}
+
 	@GetMapping("/AddNotes")
 	public String AddNotes(@RequestParam(required = false) String customerNo,
-			@RequestParam(required = false) String policyNo,String userCode) {
+			@RequestParam(required = false) String policyNo, String userCode) {
 		return "AddNotes";
 	}
 
 	@GetMapping("/Complaints")
 	public String Complaints(String userCode) {
 		return "Complaints";
+	}
+
+	@GetMapping("/PensionManagementAdmin")
+	public String PensionManagementAdmin(String userCode) {
+		return "PensionManagementAdmin";
 	}
 
 	@GetMapping("/Feedback")
@@ -145,9 +150,16 @@ public class DashboardController {
 			String userCode) {
 		return "PaymentForCustomer";
 	}
+
 	@GetMapping("/SurrenderPolicyForCustomer")
 	public String SurrenderPolicyForCustomer(@RequestParam(required = false) String customerNo,
-			@RequestParam(required = false) String policyNo,String userCode) {
+			@RequestParam(required = false) String policyNo, String userCode) {
 		return "SurrenderPolicyForCustomer";
+	}
+
+	@GetMapping("/PensionManForCust")
+	public String PensionManForCust(@RequestParam(required = false) String customerNo,
+			@RequestParam(required = false) String policyNo, String userCode) {
+		return "PensionManForCust";
 	}
 }

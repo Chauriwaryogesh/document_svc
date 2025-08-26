@@ -67,8 +67,6 @@ public class ComplaintService {
 				: null);
 		dto.setPolicyNumber(complaint.getPolicy() != null ? complaint.getPolicy().getPolicyNumber() : null);
 		dto.setPolicyType(complaint.getPolicy() != null ? complaint.getPolicy().getPolicyType() : null);
-		dto.setTotalClaimableAmount(
-				complaint.getPolicy() != null ? complaint.getPolicy().getTotalClaimableAmount() : null);
 		dto.setCategory(complaint.getCategory());
 		dto.setStatus(complaint.getStatus());
 		dto.setPriority(complaint.getPriority());
@@ -128,13 +126,12 @@ public class ComplaintService {
 		} else {
 			complaintList = complaintRepository.findAll();
 		}
-		long complaintteam = complaintList.stream()
-				.filter(list -> list.getAssignedTo().equalsIgnoreCase("Complaints Team")).count();
-		long bancsTeam = complaintList.stream().filter(list -> list.getAssignedTo().equalsIgnoreCase("Bancs Team"))
+  long complaintteam = complaintList.stream().filter(list -> CommonConstant.COMPLAINT_TEAM.equalsIgnoreCase(list.getAssignedTo())).count();
+		long bancsTeam = complaintList.stream().filter(list -> CommonConstant.BANCS_TEAM.equalsIgnoreCase(list.getAssignedTo()))
 				.count();
-		long adminteam = complaintList.stream().filter(list -> list.getAssignedTo().equalsIgnoreCase("Admin Team"))
+		long adminteam = complaintList.stream().filter(list -> CommonConstant.ADMIN_TEAM.equalsIgnoreCase(list.getAssignedTo()))
 				.count();
-		long escTeam = complaintList.stream().filter(list -> list.getAssignedTo().equalsIgnoreCase("Escalation Team"))
+		long escTeam = complaintList.stream().filter(list -> CommonConstant.ESCALATION_TEAM.equalsIgnoreCase(list.getAssignedTo()))
 				.count();
 
 		stats.setComplaintsTeam(complaintteam);

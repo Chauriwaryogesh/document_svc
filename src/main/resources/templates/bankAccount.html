@@ -727,7 +727,7 @@
           <div id="verification-view" class="view-section hidden">
               <div class="bg-white p-4 rounded-xl shadow-sm">
                   <div class="flex items-center border-b border-gray-200 mb-4">
-                      <button data-status="PENDING" class="verification-tab active">Pending</button>
+                      <button data-status="IN_PROGRESS" class="verification-tab active">In Progress</button>
                       <button data-status="APPROVED" class="verification-tab">Approved</button>
                       <button data-status="REJECTED" class="verification-tab">Rejected</button>
                   </div>
@@ -1626,7 +1626,7 @@
                             <i class="fas fa-check"></i> Verify Account Number
                         </button>
                         <select class="status-dropdown form-input w-40" ${acc.verificationStatus === 'PASS' ? '' : 'disabled'}>
-                            <option value="PENDING" ${acc.status === 'PENDING' ? 'selected' : ''}>Pending</option>
+                            <option value="IN_PROGRESS" ${acc.status === 'IN_PROGRESS' ? 'selected' : ''}>In Progress</option>
                             <option value="APPROVED" ${acc.status === 'APPROVED' ? 'selected' : ''}>Approved</option>
                             <option value="REJECTED" ${acc.status === 'REJECTED' ? 'selected' : ''}>Rejected</option>
                         </select>

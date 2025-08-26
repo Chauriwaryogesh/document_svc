@@ -286,7 +286,7 @@ public class BankDetailsService {
 			if (policyNum != null) {
 				Customer byCustomerNoNew = customerRepo.findByCustomerNoNew(policyNum.getCustomer().getCustomerNo(),
 						"N");
-				customer.setCustName(byCustomerNoNew.getName() + " " + byCustomerNoNew.getSurname());
+				customer.setCustomerName(byCustomerNoNew.getName() + " " + byCustomerNoNew.getSurname());
 				customer.setCustomerNo(byCustomerNoNew.getCustomerNo());
 				customer.setDateOfBirth(byCustomerNoNew.getDateOfBirth());
 				customer.setEmail(byCustomerNoNew.getEmail());

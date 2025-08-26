@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -132,16 +130,6 @@ public class PolicyController {
 
 	}
 
-	@GetMapping("policy/fetchAllPolicies")
-	public ResponseEntity<List<PolicyDTO>> fetchAllPolicies(
-			@RequestParam(value = "email", required = false) String email,
-			@RequestParam(value = "userCode", required = false) String userCode) {
-		ResponseEntity<List<PolicyDTO>> response = new ResponseEntity<>();
-		response = policyService.fetchAllPolicies(email, userCode);
-		return response;
-
-	}
-
 	@PostMapping(value = "/update/delete", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseDTO> updateDeletePolicy(@RequestParam String PolicyNumber,
 			@RequestParam String reason, @RequestHeader String userCode) {
@@ -164,17 +152,18 @@ public class PolicyController {
 			@RequestParam(value = "allpolSearch", required = false) String allPol,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
 			@RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
+			@RequestParam(value = "status", required = false) String status,
+			@RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "startDate", required = false) String startDate,
+			@RequestParam(value = "endDate", required = false) String endDate,
+			@RequestParam(value = "bankAccountNo", required = false) String bankAccountNo,
 			@RequestHeader(required = false) String userCode,
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size) {
 
-		if (allPol == null) {
-			allPol = "N";
-		}
-
-		Pageable pageable = PageRequest.of(page, size);
+		
 		com.SecureAccessPortal.Service.ResponseEntity<Page<PolicyDTO>> emailResp = policyService
-				.getPolicyDetailsNew(policyNo, customerNo, allPol, workItemRefNo, userCode, pageable);
+				.getPolicyDetailsNew(policyNo, customerNo, allPol, workItemRefNo,status,type,startDate,endDate,bankAccountNo, userCode, page,size);
 
 		return emailResp;
 	}

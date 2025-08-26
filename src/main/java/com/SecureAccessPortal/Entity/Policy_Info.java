@@ -1,18 +1,13 @@
 package com.SecureAccessPortal.Entity;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -29,198 +24,171 @@ import lombok.ToString;
 @AllArgsConstructor
 @Table(name = "POLICY_INFO")
 public class Policy_Info {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "policy_id")
-	private Long policy_id;
-	@Column
-	private String policy_name;
-	@Column
-	private String product_code;
-	@Column
-	private String policy_company_name;
-	@Column
-	private String supported_terms;
-	@Column
-	private String frequency;
-	@Column
-	private BigDecimal min_total_amount;
-	@Column
-	private BigDecimal max_total_amount;
-	@Column
-	private BigDecimal coverage_amount;
-	@Column
-	private int default_duration_months;
-	@Column
-	private LocalDate policy_start_date;
-	@Column
-	private LocalDate policy_end_date;
-	@Column
-	private LocalDate policy_renewal_date;
-	@Column
-	private LocalDate policy_expiry_date;
-	@Column
-	private String policy_type;
-	@Column
-	private String status;
-	@Column
-	private Timestamp created_at;
-	@Column
-	private Timestamp updated_at;
+	@Column(name = "policyId")
+	private int policyId;
 
-	@PrePersist
-	protected void onCreate() {
-		created_at = Timestamp.valueOf(LocalDateTime.now());
+	@NotNull
+	@Column(name = "policy_name", nullable = false)
+	private String policyName;
 
+	@NotNull
+	@Column(name = "product_code", nullable = false)
+	private String productCode;
+
+	@NotNull
+	@Column(name = "policy_type", nullable = false)
+	private String policyType;
+
+	@NotNull
+	@Column(name = "policy_status", nullable = false)
+	private String policyStatus;
+
+	@NotNull
+	@Column(name = "policy_company_name")
+	private String polCompanyName;
+
+	@NotNull
+	@Column(name = "policy_term")
+	private String policyTerm;
+
+	@NotNull
+	@Column(name = "total_amount")
+	private BigDecimal totalAmount;
+
+	// 🔹 Audit Info
+	@NotNull
+	@Column(name = "created_by", nullable = false)
+	private String createdBy;
+
+	@NotNull
+	@Column(name = "created_Date", nullable = false)
+	private LocalDateTime createdDate;
+
+	@Column(name = "updated_by")
+	private String updatedBy;
+
+	@Column(name = "updated_Date")
+	private LocalDateTime updatedDate;
+
+	@NotNull
+	@Column(name = "deleted_flag", nullable = false, length = 1)
+	private String deletedFlag;
+
+	@Column(name = "userCode")
+	private String userCode;
+
+	public int getPolicyId() {
+		return policyId;
 	}
 
-	@PreUpdate
-	protected void onUpdate() {
-		updated_at = Timestamp.valueOf(LocalDateTime.now());
+	public void setPolicyId(int policyId) {
+		this.policyId = policyId;
 	}
 
-	public Long getPolicy_id() {
-		return policy_id;
+	public String getPolicyName() {
+		return policyName;
 	}
 
-	public void setPolicy_id(Long policy_id) {
-		this.policy_id = policy_id;
+	public void setPolicyName(String policyName) {
+		this.policyName = policyName;
 	}
 
-	public String getPolicy_name() {
-		return policy_name;
+	public String getProductCode() {
+		return productCode;
 	}
 
-	public void setPolicy_name(String policy_name) {
-		this.policy_name = policy_name;
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
 
-	public String getProduct_code() {
-		return product_code;
+	public String getPolicyType() {
+		return policyType;
 	}
 
-	public void setProduct_code(String product_code) {
-		this.product_code = product_code;
+	public void setPolicyType(String policyType) {
+		this.policyType = policyType;
 	}
 
-	public String getPolicy_company_name() {
-		return policy_company_name;
+	public String getPolicyStatus() {
+		return policyStatus;
 	}
 
-	public void setPolicy_company_name(String policy_company_name) {
-		this.policy_company_name = policy_company_name;
+	public void setPolicyStatus(String policyStatus) {
+		this.policyStatus = policyStatus;
 	}
 
-	public String getSupported_terms() {
-		return supported_terms;
+	public String getPolCompanyName() {
+		return polCompanyName;
 	}
 
-	public void setSupported_terms(String supported_terms) {
-		this.supported_terms = supported_terms;
+	public void setPolCompanyName(String polCompanyName) {
+		this.polCompanyName = polCompanyName;
 	}
 
-	public String getFrequency() {
-		return frequency;
+	public String getPolicyTerm() {
+		return policyTerm;
 	}
 
-	public void setFrequency(String frequency) {
-		this.frequency = frequency;
+	public void setPolicyTerm(String policyTerm) {
+		this.policyTerm = policyTerm;
 	}
 
-	public BigDecimal getMin_total_amount() {
-		return min_total_amount;
+	public BigDecimal getTotalAmount() {
+		return totalAmount;
 	}
 
-	public void setMin_total_amount(BigDecimal min_total_amount) {
-		this.min_total_amount = min_total_amount;
+	public void setTotalAmount(BigDecimal totalAmount) {
+		this.totalAmount = totalAmount;
 	}
 
-	public BigDecimal getMax_total_amount() {
-		return max_total_amount;
+	public String getCreatedBy() {
+		return createdBy;
 	}
 
-	public void setMax_total_amount(BigDecimal max_total_amount) {
-		this.max_total_amount = max_total_amount;
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 
-	public BigDecimal getCoverage_amount() {
-		return coverage_amount;
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
 	}
 
-	public void setCoverage_amount(BigDecimal coverage_amount) {
-		this.coverage_amount = coverage_amount;
+	public void setCreatedDate(LocalDateTime createdDate) {
+		this.createdDate = createdDate;
 	}
 
-	public int getDefault_duration_months() {
-		return default_duration_months;
+	public String getUpdatedBy() {
+		return updatedBy;
 	}
 
-	public void setDefault_duration_months(int default_duration_months) {
-		this.default_duration_months = default_duration_months;
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
 	}
 
-	public LocalDate getPolicy_start_date() {
-		return policy_start_date;
+	public LocalDateTime getUpdatedDate() {
+		return updatedDate;
 	}
 
-	public void setPolicy_start_date(LocalDate policy_start_date) {
-		this.policy_start_date = policy_start_date;
+	public void setUpdatedDate(LocalDateTime updatedDate) {
+		this.updatedDate = updatedDate;
 	}
 
-	public LocalDate getPolicy_end_date() {
-		return policy_end_date;
+	public String getDeletedFlag() {
+		return deletedFlag;
 	}
 
-	public void setPolicy_end_date(LocalDate policy_end_date) {
-		this.policy_end_date = policy_end_date;
+	public void setDeletedFlag(String deletedFlag) {
+		this.deletedFlag = deletedFlag;
 	}
 
-	public LocalDate getPolicy_renewal_date() {
-		return policy_renewal_date;
+	public String getUserCode() {
+		return userCode;
 	}
 
-	public void setPolicy_renewal_date(LocalDate policy_renewal_date) {
-		this.policy_renewal_date = policy_renewal_date;
-	}
-
-	public LocalDate getPolicy_expiry_date() {
-		return policy_expiry_date;
-	}
-
-	public void setPolicy_expiry_date(LocalDate policy_expiry_date) {
-		this.policy_expiry_date = policy_expiry_date;
-	}
-
-	public String getPolicy_type() {
-		return policy_type;
-	}
-
-	public void setPolicy_type(String policy_type) {
-		this.policy_type = policy_type;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public Timestamp getCreated_at() {
-		return created_at;
-	}
-
-	public void setCreated_at(Timestamp created_at) {
-		this.created_at = created_at;
-	}
-
-	public Timestamp getUpdated_at() {
-		return updated_at;
-	}
-
-	public void setUpdated_at(Timestamp updated_at) {
-		this.updated_at = updated_at;
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
 	}
 
 }

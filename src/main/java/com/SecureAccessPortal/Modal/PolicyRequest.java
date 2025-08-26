@@ -1,42 +1,89 @@
 package com.SecureAccessPortal.Modal;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 public class PolicyRequest {
-	private String policyNumber;
-	private String productCode;
-	private String polCompanyName;
-	private String policyName;
-	private String fcuFlag;
-	private String associatedpolicyCount;
+	private String policyNumber; // maps to entity: policyNumber
+	private String policyName; // maps to entity: policyName
+	private String productCode; // maps to entity: productCode
+	private String polCompanyName; // maps to entity: polCompanyName
+
+	private String createdBy; // maps to entity: createdBy
+	private String updatedBy; // maps to entity: updatedBy
+	private String deletedFlag; // maps to entity: deletedFlag
+	private String policyType; // maps to entity: policyType
+	private String policyStatus;
+
+	private LocalDateTime createdDate; // maps to entity: createdBy
+	private LocalDateTime updatedDate;
+
+	private LocalDateTime premiumDueDate; // maps to entity: premiumDueDate
+	private String beneficiaryName; // maps to entity: beneficiaryName
+	private String beneficiaryRelationship; // maps to entity: beneficiaryRelationship
+	private String policyTerm; // maps to entity: policyTerm
+	private String smokerStatus; // maps to entity: smokerStatus
+
+	private int totalInstallments; // maps to entity: totalInstallments
+	private BigDecimal totalAmount; // maps to entity: totalAmount
+	private BigDecimal monthlyInstallment; // maps to entity: monthlyInstallmen
+	private BigDecimal totalPaidAmount; // maps to entity: totalAmount
+	private BigDecimal totalUnPaidAmount;
+	private int  totalPaidInstallments; // maps to entity: totalAmount
+	private int  totalUnPaidInstallments;
+
+	private LocalDateTime policyStartDate; // maps to entity: policyStartDate
+	private LocalDateTime policyEndDate; // maps to entity: policyEndDate
+
+	private String beneficiaryIdentityNumber; // maps to entity: beneficiaryIdentityNumber
+	private String beneficiaryStatus; // maps to entity: beneficiaryStatus
+	private String beneficiaryContactNumber; // maps to entity: beneficiaryContactNumber
+
+	private String reason; // maps to entity: reson
+
 	private String userCode;
 	private String customerNo;
-	private String custName;
-	private String middleName;
-	private String surname;
-	private String phoneNum;
-	private String email;
-	private String dateOfBirth;
+	// ---------------- Extra Fields (Not in Entity) ----------------
+	private String fcuStatus; // extra field
+	private String associatedpolicyCount; // extra field
+	// extra field
+	private String customerName; // extra field
+	private String phoneNumber; // extra field
+	private String email; // extra field
+	private String dateOfBirth; // extra field
 	private String gender;
-	private String smokerStatus;
-	private String policyAmount;
-	private String policyDate;
-	private int installmentCount;
-	private String dueDate;
-	// new fields added
-	private String term;
-	private String frequency;
-	private int premium;
-	private int totalAmount;
-	private int monthlyInstallment;
-	private int totalClaimableAmount;
-	private String startDate;
-	private String endDate;
-	private String renewalDate;
-	private String beneficiaryName;
-	private String beneficiaryAadharNumber;
-	private String beneficiaryRelationship;
-	private String nomineeContactNumber;
-	private String status;
-	private String type;
+
+	public BigDecimal getTotalPaidAmount() {
+		return totalPaidAmount;
+	}
+
+	public void setTotalPaidAmount(BigDecimal totalPaidAmount) {
+		this.totalPaidAmount = totalPaidAmount;
+	}
+
+	public BigDecimal getTotalUnPaidAmount() {
+		return totalUnPaidAmount;
+	}
+
+	public void setTotalUnPaidAmount(BigDecimal totalUnPaidAmount) {
+		this.totalUnPaidAmount = totalUnPaidAmount;
+	}
+
+	public int getTotalPaidInstallments() {
+		return totalPaidInstallments;
+	}
+
+	public void setTotalPaidInstallments(int totalPaidInstallments) {
+		this.totalPaidInstallments = totalPaidInstallments;
+	}
+
+	public int getTotalUnPaidInstallments() {
+		return totalUnPaidInstallments;
+	}
+
+	public void setTotalUnPaidInstallments(int totalUnPaidInstallments) {
+		this.totalUnPaidInstallments = totalUnPaidInstallments;
+	}
 
 	public String getUserCode() {
 		return userCode;
@@ -46,76 +93,100 @@ public class PolicyRequest {
 		this.userCode = userCode;
 	}
 
-	public String getTerm() {
-		return term;
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
 	}
 
-	public void setTerm(String term) {
-		this.term = term;
+	public void setCreatedDate(LocalDateTime createdDate) {
+		this.createdDate = createdDate;
 	}
 
-	public String getFrequency() {
-		return frequency;
+	public LocalDateTime getUpdatedDate() {
+		return updatedDate;
 	}
 
-	public void setFrequency(String frequency) {
-		this.frequency = frequency;
+	public void setUpdatedDate(LocalDateTime updatedDate) {
+		this.updatedDate = updatedDate;
 	}
 
-	public int getPremium() {
-		return premium;
+	public String getPolicyNumber() {
+		return policyNumber;
 	}
 
-	public void setPremium(int premium) {
-		this.premium = premium;
+	public void setPolicyNumber(String policyNumber) {
+		this.policyNumber = policyNumber;
 	}
 
-	public int getTotalAmount() {
-		return totalAmount;
+	public String getPolicyName() {
+		return policyName;
 	}
 
-	public void setTotalAmount(int totalAmount) {
-		this.totalAmount = totalAmount;
+	public void setPolicyName(String policyName) {
+		this.policyName = policyName;
 	}
 
-	public int getMonthlyInstallment() {
-		return monthlyInstallment;
+	public String getProductCode() {
+		return productCode;
 	}
 
-	public void setMonthlyInstallment(int monthlyInstallment) {
-		this.monthlyInstallment = monthlyInstallment;
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
 
-	public int getTotalClaimableAmount() {
-		return totalClaimableAmount;
+	public String getPolCompanyName() {
+		return polCompanyName;
 	}
 
-	public void setTotalClaimableAmount(int totalClaimableAmount) {
-		this.totalClaimableAmount = totalClaimableAmount;
+	public void setPolCompanyName(String polCompanyName) {
+		this.polCompanyName = polCompanyName;
 	}
 
-	public String getStartDate() {
-		return startDate;
+	public String getCreatedBy() {
+		return createdBy;
 	}
 
-	public void setStartDate(String startDate) {
-		this.startDate = startDate;
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 
-	public String getEndDate() {
-		return endDate;
+	public String getUpdatedBy() {
+		return updatedBy;
 	}
 
-	public void setEndDate(String endDate) {
-		this.endDate = endDate;
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
 	}
 
-	public String getRenewalDate() {
-		return renewalDate;
+	public String getDeletedFlag() {
+		return deletedFlag;
 	}
 
-	public void setRenewalDate(String renewalDate) {
-		this.renewalDate = renewalDate;
+	public void setDeletedFlag(String deletedFlag) {
+		this.deletedFlag = deletedFlag;
+	}
+
+	public String getPolicyType() {
+		return policyType;
+	}
+
+	public void setPolicyType(String policyType) {
+		this.policyType = policyType;
+	}
+
+	public String getPolicyStatus() {
+		return policyStatus;
+	}
+
+	public void setPolicyStatus(String policyStatus) {
+		this.policyStatus = policyStatus;
+	}
+
+	public LocalDateTime getPremiumDueDate() {
+		return premiumDueDate;
+	}
+
+	public void setPremiumDueDate(LocalDateTime premiumDueDate) {
+		this.premiumDueDate = premiumDueDate;
 	}
 
 	public String getBeneficiaryName() {
@@ -126,14 +197,6 @@ public class PolicyRequest {
 		this.beneficiaryName = beneficiaryName;
 	}
 
-	public String getBeneficiaryAadharNumber() {
-		return beneficiaryAadharNumber;
-	}
-
-	public void setBeneficiaryAadharNumber(String beneficiaryAadharNumber) {
-		this.beneficiaryAadharNumber = beneficiaryAadharNumber;
-	}
-
 	public String getBeneficiaryRelationship() {
 		return beneficiaryRelationship;
 	}
@@ -142,270 +205,156 @@ public class PolicyRequest {
 		this.beneficiaryRelationship = beneficiaryRelationship;
 	}
 
-	public String getNomineeContactNumber() {
-		return nomineeContactNumber;
+	public String getPolicyTerm() {
+		return policyTerm;
 	}
 
-	public void setNomineeContactNumber(String nomineeContactNumber) {
-		this.nomineeContactNumber = nomineeContactNumber;
+	public void setPolicyTerm(String policyTerm) {
+		this.policyTerm = policyTerm;
 	}
 
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getPolicyAmount() {
-		return policyAmount;
-	}
-
-	public void setPolicyAmount(String policyAmount) {
-		this.policyAmount = policyAmount;
-	}
-
-	public String getPolicyDate() {
-		return policyDate;
-	}
-
-	public void setPolicyDate(String policyDate) {
-		this.policyDate = policyDate;
-	}
-
-	public int getInstallmentCount() {
-		return installmentCount;
-	}
-
-	public void setInstallmentCount(int installmentCount) {
-		this.installmentCount = installmentCount;
-	}
-
-	public String getDueDate() {
-		return dueDate;
-	}
-
-	public void setDueDate(String dueDate) {
-		this.dueDate = dueDate;
-	}
-
-	/**
-	 * @return the policyNumber
-	 */
-	public String getPolicyNumber() {
-		return policyNumber;
-	}
-
-	/**
-	 * @param policyNumber the policyNumber to set
-	 */
-	public void setPolicyNumber(String policyNumber) {
-		this.policyNumber = policyNumber;
-	}
-
-	/**
-	 * @return the productCode
-	 */
-	public String getProductCode() {
-		return productCode;
-	}
-
-	/**
-	 * @param productCode the productCode to set
-	 */
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
-	}
-
-	/**
-	 * @return the polCompanyName
-	 */
-	public String getPolCompanyName() {
-		return polCompanyName;
-	}
-
-	/**
-	 * @param polCompanyName the polCompanyName to set
-	 */
-	public void setPolCompanyName(String polCompanyName) {
-		this.polCompanyName = polCompanyName;
-	}
-
-	/**
-	 * @return the policyName
-	 */
-	public String getPolicyName() {
-		return policyName;
-	}
-
-	/**
-	 * @param policyName the policyName to set
-	 */
-	public void setPolicyName(String policyName) {
-		this.policyName = policyName;
-	}
-
-	/**
-	 * @return the fcuFlag
-	 */
-	public String getFcuFlag() {
-		return fcuFlag;
-	}
-
-	/**
-	 * @param fcuFlag the fcuFlag to set
-	 */
-	public void setFcuFlag(String fcuFlag) {
-		this.fcuFlag = fcuFlag;
-	}
-
-	/**
-	 * @return the associatedpolicyCount
-	 */
-	public String getAssociatedpolicyCount() {
-		return associatedpolicyCount;
-	}
-
-	/**
-	 * @param associatedpolicyCount the associatedpolicyCount to set
-	 */
-	public void setAssociatedpolicyCount(String associatedpolicyCount) {
-		this.associatedpolicyCount = associatedpolicyCount;
-	}
-
-	/**
-	 * @return the customerNo
-	 */
-	public String getCustomerNo() {
-		return customerNo;
-	}
-
-	/**
-	 * @param customerNo the customerNo to set
-	 */
-	public void setCustomerNo(String customerNo) {
-		this.customerNo = customerNo;
-	}
-
-	/**
-	 * @return the custName
-	 */
-	public String getCustName() {
-		return custName;
-	}
-
-	/**
-	 * @param custName the custName to set
-	 */
-	public void setCustName(String custName) {
-		this.custName = custName;
-	}
-
-	/**
-	 * @return the middleName
-	 */
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	/**
-	 * @param middleName the middleName to set
-	 */
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
-	/**
-	 * @return the surname
-	 */
-	public String getSurname() {
-		return surname;
-	}
-
-	/**
-	 * @param surname the surname to set
-	 */
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
-
-	/**
-	 * @return the phoneNum
-	 */
-	public String getPhoneNum() {
-		return phoneNum;
-	}
-
-	/**
-	 * @param phoneNum the phoneNum to set
-	 */
-	public void setPhoneNum(String phoneNum) {
-		this.phoneNum = phoneNum;
-	}
-
-	/**
-	 * @return the email
-	 */
-	public String getEmail() {
-		return email;
-	}
-
-	/**
-	 * @param email the email to set
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	/**
-	 * @return the dateOfBirth
-	 */
-	public String getDateOfBirth() {
-		return dateOfBirth;
-	}
-
-	/**
-	 * @param dateOfBirth the dateOfBirth to set
-	 */
-	public void setDateOfBirth(String dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
-	}
-
-	/**
-	 * @return the gender
-	 */
-	public String getGender() {
-		return gender;
-	}
-
-	/**
-	 * @param gender the gender to set
-	 */
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	/**
-	 * @return the smokerStatus
-	 */
 	public String getSmokerStatus() {
 		return smokerStatus;
 	}
 
-	/**
-	 * @param smokerStatus the smokerStatus to set
-	 */
 	public void setSmokerStatus(String smokerStatus) {
 		this.smokerStatus = smokerStatus;
+	}
+
+	public int getTotalInstallments() {
+		return totalInstallments;
+	}
+
+	public void setTotalInstallments(int totalInstallments) {
+		this.totalInstallments = totalInstallments;
+	}
+
+	public BigDecimal getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(BigDecimal totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public BigDecimal getMonthlyInstallment() {
+		return monthlyInstallment;
+	}
+
+	public void setMonthlyInstallment(BigDecimal monthlyInstallment) {
+		this.monthlyInstallment = monthlyInstallment;
+	}
+
+	public String getBeneficiaryIdentityNumber() {
+		return beneficiaryIdentityNumber;
+	}
+
+	public void setBeneficiaryIdentityNumber(String beneficiaryIdentityNumber) {
+		this.beneficiaryIdentityNumber = beneficiaryIdentityNumber;
+	}
+
+	public String getBeneficiaryStatus() {
+		return beneficiaryStatus;
+	}
+
+	public void setBeneficiaryStatus(String beneficiaryStatus) {
+		this.beneficiaryStatus = beneficiaryStatus;
+	}
+
+	public String getBeneficiaryContactNumber() {
+		return beneficiaryContactNumber;
+	}
+
+	public void setBeneficiaryContactNumber(String beneficiaryContactNumber) {
+		this.beneficiaryContactNumber = beneficiaryContactNumber;
+	}
+
+	public LocalDateTime getPolicyStartDate() {
+		return policyStartDate;
+	}
+
+	public void setPolicyStartDate(LocalDateTime policyStartDate) {
+		this.policyStartDate = policyStartDate;
+	}
+
+	public LocalDateTime getPolicyEndDate() {
+		return policyEndDate;
+	}
+
+	public void setPolicyEndDate(LocalDateTime policyEndDate) {
+		this.policyEndDate = policyEndDate;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getFcuStatus() {
+		return fcuStatus;
+	}
+
+	public void setFcuStatus(String fcuStatus) {
+		this.fcuStatus = fcuStatus;
+	}
+
+	public String getAssociatedpolicyCount() {
+		return associatedpolicyCount;
+	}
+
+	public void setAssociatedpolicyCount(String associatedpolicyCount) {
+		this.associatedpolicyCount = associatedpolicyCount;
+	}
+
+	public String getCustomerNo() {
+		return customerNo;
+	}
+
+	public void setCustomerNo(String customerNo) {
+		this.customerNo = customerNo;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 
 	public boolean isBlank() {

@@ -1,73 +1,79 @@
 package com.SecureAccessPortal.Modal;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.Data;
 
 @Data
 public class PolicyList {
-	private Long id;
+	private int policyId;
 	private String policyNumber;
-	private List<BankAccountDTO> bankAccounts;
-	private List<PaymentList> paymentListDTO;
-	private String createdDate; // ISO string (e.g., "2025-05-27T10:22:00")
+	private String policyName;
 	private String productCode;
 	private String polCompanyName;
 	private String createdBy;
 	private String updatedBy;
-	private String userCode;
 	private String deletedFlag;
-	private String policyName;
-	private String customerNo;
-	private List<String> workItemRefNo;
-	private String fcuFlag;
 	private String policyType;
-	private BigDecimal policyPremium;
 	private String policyStatus;
-	private String premiumDueDate; // ISO date string (e.g., "2025-05-27")
-	private BigDecimal coverageAmount;
-	private String renewalDate; // ISO date string
+
+	private LocalDateTime createdDate;
+	private LocalDateTime updatedDate;
+
+	private LocalDateTime premiumDueDate;
 	private String beneficiaryName;
 	private String beneficiaryRelationship;
+	private String beneficiaryIdentityNumber;
+	private String beneficiaryStatus;
+	private String beneficiaryContactNumber;
+	
 	private String policyTerm;
-	private String complianceFlag;
-	private String paymentFrequency;
 	private String smokerStatus;
-	private String policyAmount;
-	private String policyDate;
-	private String installmentCount;
-	private String dueDate;
-	private String term;
-	private String frequency;
-	private BigDecimal premium;
-	private int totalAmount;
-	private int monthlyInstallment;
-	private String startDate;
-	private String endDate;
-	private String beneficiaryAadharNumber;
-	private String nomineeContactNumber;
-	private String status;
-	private String type;
-	private String reson;
 
-	// for Surrener claim
+	
+
+	private LocalDateTime policyStartDate;
+	private LocalDateTime policyEndDate;
+
+	
+
+	private String reason;
+	private String fcuStatus;
+
+	private BigDecimal totalAmount;
+	private BigDecimal monthlyInstallment;
 	private int totalInstallments;
 	private int totalInstallmentsPaid;
 	private int totalInstallmentsUnPaid;
-	private int totalClaimableAmount;
-	private String totalAmtPaidByInstallemt;
-	private String totalAmtUnPaidByInstallemt;
+	private BigDecimal totalAmtPaidByInstallemt;
+	private BigDecimal totalAmtUnPaidByInstallemt;
 
+	// extra field
+
+	// ---------------- Optional/Extra Fields (UI only) ----------------
+	private String associatedPolicyCount; // extra
+	private String customerNo; // extra
+	private String customerName; // extra
+	private String phoneNumber; // extra
+	private String email; // extra
+	private String dateOfBirth; // extra
+	private String gender; // extra
+
+	// ---------------- Related Entities ----------------
+	private List<BankAccountDTO> bankAccounts;
+	private List<PaymentList> paymentListDTO;
 	private List<SurrenderClaimDTO> surrenderDTO;
 	private List<SurrenderClaimDTO> claimDTO;
+	private List<String> workItemRefNo;
 
-	public Long getId() {
-		return id;
+	public int getPolicyId() {
+		return policyId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setPolicyId(int policyId) {
+		this.policyId = policyId;
 	}
 
 	public String getPolicyNumber() {
@@ -78,28 +84,12 @@ public class PolicyList {
 		this.policyNumber = policyNumber;
 	}
 
-	public List<BankAccountDTO> getBankAccounts() {
-		return bankAccounts;
+	public String getPolicyName() {
+		return policyName;
 	}
 
-	public void setBankAccounts(List<BankAccountDTO> bankAccounts) {
-		this.bankAccounts = bankAccounts;
-	}
-
-	public List<PaymentList> getPaymentListDTO() {
-		return paymentListDTO;
-	}
-
-	public void setPaymentListDTO(List<PaymentList> paymentListDTO) {
-		this.paymentListDTO = paymentListDTO;
-	}
-
-	public String getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(String createdDate) {
-		this.createdDate = createdDate;
+	public void setPolicyName(String policyName) {
+		this.policyName = policyName;
 	}
 
 	public String getProductCode() {
@@ -134,52 +124,12 @@ public class PolicyList {
 		this.updatedBy = updatedBy;
 	}
 
-	public String getUserCode() {
-		return userCode;
-	}
-
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
-	}
-
 	public String getDeletedFlag() {
 		return deletedFlag;
 	}
 
 	public void setDeletedFlag(String deletedFlag) {
 		this.deletedFlag = deletedFlag;
-	}
-
-	public String getPolicyName() {
-		return policyName;
-	}
-
-	public void setPolicyName(String policyName) {
-		this.policyName = policyName;
-	}
-
-	public String getCustomerNo() {
-		return customerNo;
-	}
-
-	public void setCustomerNo(String customerNo) {
-		this.customerNo = customerNo;
-	}
-
-	public List<String> getWorkItemRefNo() {
-		return workItemRefNo;
-	}
-
-	public void setWorkItemRefNo(List<String> workItemRefNo) {
-		this.workItemRefNo = workItemRefNo;
-	}
-
-	public String getFcuFlag() {
-		return fcuFlag;
-	}
-
-	public void setFcuFlag(String fcuFlag) {
-		this.fcuFlag = fcuFlag;
 	}
 
 	public String getPolicyType() {
@@ -190,14 +140,6 @@ public class PolicyList {
 		this.policyType = policyType;
 	}
 
-	public BigDecimal getPolicyPremium() {
-		return policyPremium;
-	}
-
-	public void setPolicyPremium(BigDecimal policyPremium) {
-		this.policyPremium = policyPremium;
-	}
-
 	public String getPolicyStatus() {
 		return policyStatus;
 	}
@@ -206,28 +148,28 @@ public class PolicyList {
 		this.policyStatus = policyStatus;
 	}
 
-	public String getPremiumDueDate() {
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(LocalDateTime createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public LocalDateTime getUpdatedDate() {
+		return updatedDate;
+	}
+
+	public void setUpdatedDate(LocalDateTime updatedDate) {
+		this.updatedDate = updatedDate;
+	}
+
+	public LocalDateTime getPremiumDueDate() {
 		return premiumDueDate;
 	}
 
-	public void setPremiumDueDate(String premiumDueDate) {
+	public void setPremiumDueDate(LocalDateTime premiumDueDate) {
 		this.premiumDueDate = premiumDueDate;
-	}
-
-	public BigDecimal getCoverageAmount() {
-		return coverageAmount;
-	}
-
-	public void setCoverageAmount(BigDecimal coverageAmount) {
-		this.coverageAmount = coverageAmount;
-	}
-
-	public String getRenewalDate() {
-		return renewalDate;
-	}
-
-	public void setRenewalDate(String renewalDate) {
-		this.renewalDate = renewalDate;
 	}
 
 	public String getBeneficiaryName() {
@@ -254,22 +196,6 @@ public class PolicyList {
 		this.policyTerm = policyTerm;
 	}
 
-	public String getComplianceFlag() {
-		return complianceFlag;
-	}
-
-	public void setComplianceFlag(String complianceFlag) {
-		this.complianceFlag = complianceFlag;
-	}
-
-	public String getPaymentFrequency() {
-		return paymentFrequency;
-	}
-
-	public void setPaymentFrequency(String paymentFrequency) {
-		this.paymentFrequency = paymentFrequency;
-	}
-
 	public String getSmokerStatus() {
 		return smokerStatus;
 	}
@@ -278,132 +204,76 @@ public class PolicyList {
 		this.smokerStatus = smokerStatus;
 	}
 
-	public String getPolicyAmount() {
-		return policyAmount;
-	}
-
-	public void setPolicyAmount(String policyAmount) {
-		this.policyAmount = policyAmount;
-	}
-
-	public String getPolicyDate() {
-		return policyDate;
-	}
-
-	public void setPolicyDate(String policyDate) {
-		this.policyDate = policyDate;
-	}
-
-	public String getInstallmentCount() {
-		return installmentCount;
-	}
-
-	public void setInstallmentCount(String installmentCount) {
-		this.installmentCount = installmentCount;
-	}
-
-	public String getDueDate() {
-		return dueDate;
-	}
-
-	public void setDueDate(String dueDate) {
-		this.dueDate = dueDate;
-	}
-
-	public String getTerm() {
-		return term;
-	}
-
-	public void setTerm(String term) {
-		this.term = term;
-	}
-
-	public String getFrequency() {
-		return frequency;
-	}
-
-	public void setFrequency(String frequency) {
-		this.frequency = frequency;
-	}
-
-	public BigDecimal getPremium() {
-		return premium;
-	}
-
-	public void setPremium(BigDecimal premium) {
-		this.premium = premium;
-	}
-
-	public int getTotalAmount() {
+	public BigDecimal getTotalAmount() {
 		return totalAmount;
 	}
 
-	public void setTotalAmount(int totalAmount) {
+	public void setTotalAmount(BigDecimal totalAmount) {
 		this.totalAmount = totalAmount;
 	}
 
-	public int getMonthlyInstallment() {
+	public BigDecimal getMonthlyInstallment() {
 		return monthlyInstallment;
 	}
 
-	public void setMonthlyInstallment(int monthlyInstallment) {
+	public void setMonthlyInstallment(BigDecimal monthlyInstallment) {
 		this.monthlyInstallment = monthlyInstallment;
 	}
 
-	public String getStartDate() {
-		return startDate;
+	public LocalDateTime getPolicyStartDate() {
+		return policyStartDate;
 	}
 
-	public void setStartDate(String startDate) {
-		this.startDate = startDate;
+	public void setPolicyStartDate(LocalDateTime policyStartDate) {
+		this.policyStartDate = policyStartDate;
 	}
 
-	public String getEndDate() {
-		return endDate;
+	public LocalDateTime getPolicyEndDate() {
+		return policyEndDate;
 	}
 
-	public void setEndDate(String endDate) {
-		this.endDate = endDate;
+	public void setPolicyEndDate(LocalDateTime policyEndDate) {
+		this.policyEndDate = policyEndDate;
 	}
 
-	public String getBeneficiaryAadharNumber() {
-		return beneficiaryAadharNumber;
+	public String getBeneficiaryIdentityNumber() {
+		return beneficiaryIdentityNumber;
 	}
 
-	public void setBeneficiaryAadharNumber(String beneficiaryAadharNumber) {
-		this.beneficiaryAadharNumber = beneficiaryAadharNumber;
+	public void setBeneficiaryIdentityNumber(String beneficiaryIdentityNumber) {
+		this.beneficiaryIdentityNumber = beneficiaryIdentityNumber;
 	}
 
-	public String getNomineeContactNumber() {
-		return nomineeContactNumber;
+	public String getBeneficiaryStatus() {
+		return beneficiaryStatus;
 	}
 
-	public void setNomineeContactNumber(String nomineeContactNumber) {
-		this.nomineeContactNumber = nomineeContactNumber;
+	public void setBeneficiaryStatus(String beneficiaryStatus) {
+		this.beneficiaryStatus = beneficiaryStatus;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getBeneficiaryContactNumber() {
+		return beneficiaryContactNumber;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setBeneficiaryContactNumber(String beneficiaryContactNumber) {
+		this.beneficiaryContactNumber = beneficiaryContactNumber;
 	}
 
-	public String getType() {
-		return type;
+	public String getReason() {
+		return reason;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 
-	public String getReson() {
-		return reson;
+	public String getFcuStatus() {
+		return fcuStatus;
 	}
 
-	public void setReson(String reson) {
-		this.reson = reson;
+	public void setFcuStatus(String fcuStatus) {
+		this.fcuStatus = fcuStatus;
 	}
 
 	public int getTotalInstallments() {
@@ -430,28 +300,91 @@ public class PolicyList {
 		this.totalInstallmentsUnPaid = totalInstallmentsUnPaid;
 	}
 
-	public int getTotalClaimableAmount() {
-		return totalClaimableAmount;
-	}
-
-	public void setTotalClaimableAmount(int totalClaimableAmount) {
-		this.totalClaimableAmount = totalClaimableAmount;
-	}
-
-	public String getTotalAmtPaidByInstallemt() {
+	public BigDecimal getTotalAmtPaidByInstallemt() {
 		return totalAmtPaidByInstallemt;
 	}
 
-	public void setTotalAmtPaidByInstallemt(String totalAmtPaidByInstallemt) {
+	public void setTotalAmtPaidByInstallemt(BigDecimal totalAmtPaidByInstallemt) {
 		this.totalAmtPaidByInstallemt = totalAmtPaidByInstallemt;
 	}
 
-	public String getTotalAmtUnPaidByInstallemt() {
+	public BigDecimal getTotalAmtUnPaidByInstallemt() {
 		return totalAmtUnPaidByInstallemt;
 	}
 
-	public void setTotalAmtUnPaidByInstallemt(String totalAmtUnPaidByInstallemt) {
+	public void setTotalAmtUnPaidByInstallemt(BigDecimal totalAmtUnPaidByInstallemt) {
 		this.totalAmtUnPaidByInstallemt = totalAmtUnPaidByInstallemt;
+	}
+	public String getAssociatedPolicyCount() {
+		return associatedPolicyCount;
+	}
+
+	public void setAssociatedPolicyCount(String associatedPolicyCount) {
+		this.associatedPolicyCount = associatedPolicyCount;
+	}
+
+	public String getCustomerNo() {
+		return customerNo;
+	}
+
+	public void setCustomerNo(String customerNo) {
+		this.customerNo = customerNo;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public List<BankAccountDTO> getBankAccounts() {
+		return bankAccounts;
+	}
+
+	public void setBankAccounts(List<BankAccountDTO> bankAccounts) {
+		this.bankAccounts = bankAccounts;
+	}
+
+	public List<PaymentList> getPaymentListDTO() {
+		return paymentListDTO;
+	}
+
+	public void setPaymentListDTO(List<PaymentList> paymentListDTO) {
+		this.paymentListDTO = paymentListDTO;
 	}
 
 	public List<SurrenderClaimDTO> getSurrenderDTO() {
@@ -468,6 +401,14 @@ public class PolicyList {
 
 	public void setClaimDTO(List<SurrenderClaimDTO> claimDTO) {
 		this.claimDTO = claimDTO;
+	}
+
+	public List<String> getWorkItemRefNo() {
+		return workItemRefNo;
+	}
+
+	public void setWorkItemRefNo(List<String> workItemRefNo) {
+		this.workItemRefNo = workItemRefNo;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,13 +13,10 @@ import com.SecureAccessPortal.Entity.Policy;
 
 public interface IPolicyRepo extends JpaRepository<Policy, String> {
 
-	@Query("SELECT p.policyNumber FROM Policy p "
-			+ "WHERE SUBSTRING(p.policyNumber, LENGTH(p.policyNumber) - 1, 2) = :currentTwoDigitYear " + // Extracts
-																											// 'YY' part
-			"ORDER BY CAST(SUBSTRING(p.policyNumber, 5, 5) AS INTEGER) DESC " + // Extracts 'XXXXX' part and converts to
-																				// integer for correct numeric sort
-			"LIMIT 1")
-	String findTopPolicyNumberForCurrentYear(@Param("currentTwoDigitYear") String currentTwoDigitYear);
+	@Query(value = "SELECT p.policyNumber " + "FROM Policy p " + "WHERE RIGHT(p.policyNumber, 4) = :currentYear "
+			+ "ORDER BY CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(p.policyNumber, '/', 2), '/', -1) AS UNSIGNED) DESC "
+			+ "LIMIT 1", nativeQuery = true)
+	String findTopPolicyNumberForCurrentYear(@Param("currentYear") String currentYear);
 
 	@Query(value = "Select * from policy p where p.policyNumber=?1 and p.deleted_flag=?2", nativeQuery = true)
 	Policy findByPolicyNum(String policyNumber, String deletedFlag);
@@ -44,4 +42,9 @@ public interface IPolicyRepo extends JpaRepository<Policy, String> {
 
 	@Query(value = "Select * from policy p where p.policyNumber=?1 and p.deleted_flag=?2", nativeQuery = true)
 	List<Policy> findByPolicyNumber(String number, String deletedFlag);
+
+	List<Policy> findAll(Specification<Policy> spec);
+
+	@Query("SELECT p FROM Policy p WHERE p.customer.customerNo IN :customerNos AND p.deletedFlag=:deletedFlag")
+	List<Policy> findByCustomerCustomerNoIn(List<String> customerNos, String deletedFlag);
 }

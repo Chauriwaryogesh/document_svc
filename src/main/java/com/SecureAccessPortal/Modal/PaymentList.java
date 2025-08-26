@@ -2,13 +2,14 @@ package com.SecureAccessPortal.Modal;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class PaymentList {
 	private String paymentId;
 	private BigDecimal installmentAmount;
 	private int installmentCount;
-	private LocalDate dueDate;
-	private LocalDate paymentDate;
+	private LocalDateTime dueDate;
+	private LocalDateTime paymentDate;
 	private String status;
 	private String transactionId;
 	private String emailStatus;
@@ -66,19 +67,21 @@ public class PaymentList {
 		this.installmentCount = installmentCount;
 	}
 
-	public LocalDate getDueDate() {
+	
+
+	public LocalDateTime getDueDate() {
 		return dueDate;
 	}
 
-	public void setDueDate(LocalDate dueDate) {
+	public void setDueDate(LocalDateTime dueDate) {
 		this.dueDate = dueDate;
 	}
 
-	public LocalDate getPaymentDate() {
+	public LocalDateTime getPaymentDate() {
 		return paymentDate;
 	}
 
-	public void setPaymentDate(LocalDate paymentDate) {
+	public void setPaymentDate(LocalDateTime paymentDate) {
 		this.paymentDate = paymentDate;
 	}
 

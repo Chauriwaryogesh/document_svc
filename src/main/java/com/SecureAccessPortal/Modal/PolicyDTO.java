@@ -3,18 +3,21 @@ package com.SecureAccessPortal.Modal;
 import java.util.List;
 
 public class PolicyDTO {
+	
 	private String associatedPolicyCount;
-	private String userCode;
-	private String customerNo;
-	private String customerName; 
-	private String middleName;
-	private String surname;
-	private String phoneNumber;
-	private String email;
-	private String dateOfBirth;
-	private String gender;
-	private String smokerStatus;
-	private List<PolicyList> policyList;
+    private String userCode;
+    private String customerNo;
+    private String customerName; 
+    private String middleName;
+    private String surname;
+    private String phoneNumber;
+    private String email;
+    private String dateOfBirth;
+    private String gender;
+    private String smokerStatus;
+
+    // List of policy details
+    private List<PolicyList> policyList;
 
 	// new added
 	private String policyName;

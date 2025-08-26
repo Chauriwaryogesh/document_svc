@@ -34,8 +34,6 @@ public class ComplaintMapper {
 					: null);
 			dto.setPolicyNumber(complaint.getPolicy() != null ? complaint.getPolicy().getPolicyNumber() : null);
 			dto.setPolicyType(complaint.getPolicy() != null ? complaint.getPolicy().getPolicyType() : null);
-			dto.setTotalClaimableAmount(
-					complaint.getPolicy() != null ? complaint.getPolicy().getTotalClaimableAmount() : null);
 			dto.setCategory(complaint.getCategory());
 			dto.setStatus(complaint.getStatus());
 			dto.setPriority(complaint.getPriority());

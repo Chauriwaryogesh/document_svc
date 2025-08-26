@@ -1,7 +1,6 @@
 package com.SecureAccessPortal.Entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +52,10 @@ public class Payments {
 	private int installmentCount;
 
 	@Column(name = "due_date")
-	private LocalDate dueDate;
+	private LocalDateTime dueDate;
 
 	@Column(name = "payment_date")
-	private LocalDate paymentDate;
+	private LocalDateTime paymentDate;
 
 	@Column(name = "status")
 	private String status;
@@ -199,11 +198,11 @@ public class Payments {
 		this.policyName = policyName;
 	}
 
-	public LocalDate getPaymentDate() {
+	public LocalDateTime getPaymentDate() {
 		return paymentDate;
 	}
 
-	public void setPaymentDate(LocalDate paymentDate) {
+	public void setPaymentDate(LocalDateTime paymentDate) {
 		this.paymentDate = paymentDate;
 	}
 
@@ -263,11 +262,11 @@ public class Payments {
 		this.installmentAmount = installmentAmount;
 	}
 
-	public LocalDate getDueDate() {
+	public LocalDateTime getDueDate() {
 		return dueDate;
 	}
 
-	public void setDueDate(LocalDate dueDate) {
+	public void setDueDate(LocalDateTime dueDate) {
 		this.dueDate = dueDate;
 	}
 
