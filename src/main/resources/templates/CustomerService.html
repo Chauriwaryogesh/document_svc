@@ -710,7 +710,7 @@
                     <div class="card">
                         <div class="card-header-content">
                             <div class="card-icon bg-green-100 text-green-600"><i class="fas fa-university fa-2x"></i></div>
-                            <div><h3 class="card-title">Bank Accounts</h3></div>
+                            <div><h3 class="card-title">Bank Acco	unts</h3></div>
                         </div>
                         <p class="card-description">Manage your linked bank accounts for payments and claims.</p>
                         <button class="btn-primary w-full" onclick="showSection('bank-accounts')">Manage Accounts</button>
@@ -883,21 +883,32 @@
                             <div id="policy-info-section" class="tab-content-section active">
                                 <h4 class="text-xl font-bold text-gray-800 mb-4">Policy Information</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
-                                    <p><span class="font-semibold text-gray-700">Policy Name:</span> <span id="policy-name-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Company:</span> <span id="pol-company-name-detail" class="text-gray-900"></span></p>
+									<p><span class="font-semibold text-gray-700">Policy Name:</span> <span id="policy-name-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Company Name:</span> <span id="pol-company-name-detail" class="text-gray-900"></span></p>
                                     <p><span class="font-semibold text-gray-700">Product Code:</span> <span id="product-code-detail" class="text-gray-900"></span></p>
                                     <p><span class="font-semibold text-gray-700">Policy Type:</span> <span id="policy-type-detail" class="text-gray-900"></span></p>
                                     <p><span class="font-semibold text-gray-700">Policy Status:</span> <span id="policy-status-detail" class="status-badge status-default"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Premium:</span> <span id="policy-premium-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Coverage Amount:</span> <span id="coverage-amount-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Renewal Date:</span> <span id="renewal-date-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Payment Frequency:</span> <span id="payment-frequency-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Start Date:</span> <span id="start-date-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">End Date:</span> <span id="end-date-detail" class="text-gray-900"></span></p>                                   
-                                     <p><span class="font-semibold text-gray-700">Total Paid Installment:</span> <span id="totalInstallmentPaid-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Total UnPaid Installment:</span> <span id="totalInstallmentUnPaid-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">TotalPaidAmount:</span> <span id="totalInstallmentPaidAmount-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Outstanding Balance:</span> <span id="policy-outstanding-balance" class="text-red-600 font-bold"></span></p>
+									<p><span class="font-semibold text-gray-700">Policy Term:</span> <span id="policy-term-detail" class="text-gray-900"></span></p>
+									<p><span class="font-semibold text-gray-700">Smoker Status:</span> <span id="policy-smoker-status-detail" class="text-gray-900"></span></p>
+									<p><span class="font-semibold text-gray-700">FCU Status:</span> <span id="policy-fcu-status-detail" class="text-gray-900"></span></p>
+
+                                    <p><span class="font-semibold text-gray-700">Policy Start Date:</span> <span id="start-date-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Premium Due Date:</span> <span id="premium-due-date-detail" class="text-gray-900"></span></p>   
+									<p><span class="font-semibold text-gray-700">Policy End Date:</span> <span id="end-date-detail" class="text-gray-900"></span></p>                                   
+                                
+                                    <p><span class="font-semibold text-gray-700">Total Amount:</span> <span id="total-amount-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Monthly Installment:</span> <span id="monthly-installment-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Total Installments:</span> <span id="total-installments-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Total Installments Paid:</span> <span id="total-installments-paid-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Total Installments Unpaid:</span> <span id="total-installments-unpaid-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Total Amount Paid:</span> <span id="total-amt-paid-detail" class="text-gray-900"></span></p>
+                                    <p><span class="font-semibold text-gray-700">Total Amount Unpaid:</span> <span id="total-amt-unpaid-detail" class="text-red-600 font-bold"></span></p>
+
+									<p><span class="font-semibold text-gray-700">Beneficiary Name:</span> <span id="beneficiary-name-detail" class="text-gray-900"></span></p>
+									<p><span class="font-semibold text-gray-700">Beneficiary Relationship:</span> <span id="beneficiary-relationship-detail" class="text-gray-900"></span></p>
+									<p><span class="font-semibold text-gray-700">Beneficiary Identity Number:</span> <span id="beneficiary-identity-detail" class="text-gray-900"></span></p>
+									<p><span class="font-semibold text-gray-700">Beneficiary Status:</span> <span id="beneficiary-status-detail" class="text-gray-900"></span></p>
+									<p><span class="font-semibold text-gray-700">Beneficiary Contact Number:</span> <span id="beneficiary-contact-detail" class="text-gray-900"></span></p>
                                 </div>
                                 <div class="flex flex-col sm:flex-row gap-3 mt-6">
                                     <button class="btn-primary flex-1" id="make-payments-button"><i class="fas fa-money-bill-wave mr-2"></i> Make Payment for Outstanding</button>
@@ -1803,17 +1814,17 @@
                     <td class="py-3 px-6 text-left">${policy.policyName || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${policy.policyType || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${policy.polCompanyName || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">$${(policy.policyPremium || 0).toFixed(2)}</td>
-                    <td class="py-3 px-6 text-left">${policy.premiumDueDate || 'N/A'}</td>
+                    <td class="py-3 px-6 text-left">$${(policy.monthlyInstallment || 0).toFixed(2)}</td>
+                    <td class="py-3 px-6 text-left">${policy.premiumDueDate ? new Date(policy.premiumDueDate).toLocaleDateString() : 'N/A'}</td>
                     <td class="py-3 px-6 text-left">
                         <span class="status-badge ${
-                            policy.policyStatus === 'Active' ? 'status-active' :
+                            policy.policyStatus === 'ACTIVE' ? 'status-active' :
                             policy.policyStatus === 'LAPSED' ? 'status-lapsed' :
                             'status-default'
                         }">${policy.policyStatus || 'N/A'}</span>
                     </td>                
-                    <td class="py-3 px-6 text-left">$${(policy.totalClaimableAmount || 0).toFixed(2)}</td>
-                    <td class="py-3 px-6 text-left text-red-600 font-bold">$${policy.totalAmtUnPaidByInstallemt}</td> 
+                    <td class="py-3 px-6 text-left">$${(policy.totalAmount || 0).toFixed(2)}</td>
+                    <td class="py-3 px-6 text-left text-red-600 font-bold">$${(policy.totalAmtUnPaidByInstallemt || 0).toFixed(2)}</td> 
                 `;
                 tableBody.appendChild(row);
             });
@@ -1873,31 +1884,49 @@
         function viewPolicyDetailsModal(policyNumber) {
             const policy = allPolicies.find(p => p.policyNumber === policyNumber);
             if (policy) {
+                 // Basic Policy Info
                 document.getElementById('modal-policy-number').textContent = policy.policyNumber || 'N/A';
                 document.getElementById('policy-name-detail').textContent = policy.policyName || 'N/A';
                 document.getElementById('pol-company-name-detail').textContent = policy.polCompanyName || 'N/A';
                 document.getElementById('product-code-detail').textContent = policy.productCode || 'N/A';
-                
+                document.getElementById('policy-type-detail').textContent = policy.policyType || 'N/A';
+
+                // Status Badge
                 const policyStatusElement = document.getElementById('policy-status-detail');
                 const statusText = policy.policyStatus || 'N/A';
                 policyStatusElement.textContent = statusText;
                 policyStatusElement.className = `status-badge ${
-                    statusText === 'Active' ? 'status-active' :
-                    statusText === 'LAPSED' ? 'status-lapsed' :
+                    statusText.toLowerCase() === 'active' ? 'status-active' :
+                    statusText.toLowerCase() === 'lapsed' ? 'status-lapsed' :
                     'status-default'
                 }`;
+                
+                // Policy Details
+                document.getElementById('policy-term-detail').textContent = policy.policyTerm || 'N/A';
+                document.getElementById('policy-smoker-status-detail').textContent = policy.smokerStatus || 'N/A';
+                document.getElementById('policy-fcu-status-detail').textContent = policy.fcuStatus || 'N/A';
+                
+                // Dates
+                document.getElementById('start-date-detail').textContent = policy.policyStartDate ? new Date(policy.policyStartDate).toLocaleDateString() : 'N/A';
+                document.getElementById('premium-due-date-detail').textContent = policy.premiumDueDate ? new Date(policy.premiumDueDate).toLocaleDateString() : 'N/A';
+                document.getElementById('end-date-detail').textContent = policy.policyEndDate ? new Date(policy.policyEndDate).toLocaleDateString() : 'N/A';
 
-                document.getElementById('policy-type-detail').textContent = policy.policyType || 'N/A';
-                document.getElementById('policy-premium-detail').textContent = `$${(policy.policyPremium || 0).toFixed(2)}`;
-                document.getElementById('coverage-amount-detail').textContent = `$${(policy.coverageAmount || 0).toFixed(2)}`;
-                document.getElementById('renewal-date-detail').textContent = policy.renewalDate || 'N/A';
-                document.getElementById('payment-frequency-detail').textContent = policy.paymentFrequency || 'N/A';
-                document.getElementById('start-date-detail').textContent = policy.startDate || 'N/A';
-                document.getElementById('end-date-detail').textContent = policy.endDate || 'N/A';
-                document.getElementById('totalInstallmentPaid-detail').textContent = policy.totalInstallmentsPaid || 'N/A';
-                document.getElementById('totalInstallmentUnPaid-detail').textContent = policy.totalInstallmentsUnPaid || 'N/A';
-                document.getElementById('totalInstallmentPaidAmount-detail').textContent = policy.totalAmtPaidByInstallemt || 'N/A';
-                document.getElementById('policy-outstanding-balance').textContent = `$${policy.totalAmtUnPaidByInstallemt}`;
+                // Financials & Installments
+                document.getElementById('total-amount-detail').textContent = policy.totalAmount ? `$${policy.totalAmount.toFixed(2)}` : 'N/A';
+                document.getElementById('monthly-installment-detail').textContent = policy.monthlyInstallment ? `$${policy.monthlyInstallment.toFixed(2)}` : 'N/A';
+                document.getElementById('total-installments-detail').textContent = policy.totalInstallments || 'N/A';
+                document.getElementById('total-installments-paid-detail').textContent = policy.totalInstallmentsPaid || '0';
+                document.getElementById('total-installments-unpaid-detail').textContent = policy.totalInstallmentsUnPaid || 'N/A';
+                document.getElementById('total-amt-paid-detail').textContent = policy.totalAmtPaidByInstallemt ? `$${policy.totalAmtPaidByInstallemt.toFixed(2)}` : '$0.00';
+                document.getElementById('total-amt-unpaid-detail').textContent = policy.totalAmtUnPaidByInstallemt ? `$${policy.totalAmtUnPaidByInstallemt.toFixed(2)}` : '$0.00';
+
+                // Beneficiary Details
+                document.getElementById('beneficiary-name-detail').textContent = policy.beneficiaryName || 'N/A';
+                document.getElementById('beneficiary-relationship-detail').textContent = policy.beneficiaryRelationship || 'N/A';
+                document.getElementById('beneficiary-identity-detail').textContent = policy.beneficiaryIdentityNumber || 'N/A';
+                document.getElementById('beneficiary-status-detail').textContent = policy.beneficiaryStatus || 'N/A';
+                document.getElementById('beneficiary-contact-detail').textContent = policy.beneficiaryContactNumber || 'N/A';
+
 
                 const installmentsTableBody = document.getElementById('installments-table-body');
                 installmentsTableBody.innerHTML = '';
@@ -1911,8 +1940,8 @@
                         paymentRow.innerHTML = `
                             <td class="py-3 px-6 text-left whitespace-nowrap">${payment.installmentCount || (index + 1)}</td>
                             <td class="py-3 px-6 text-left">$${(payment.installmentAmount || 0).toFixed(2)}</td>
-                            <td class="py-3 px-6 text-left">${payment.dueDate || 'N/A'}</td>
-                            <td class="py-3 px-6 text-left">${payment.paymentDate || 'N/A'}</td>
+                            <td class="py-3 px-6 text-left">${payment.dueDate ? new Date(payment.dueDate).toLocaleDateString() : 'N/A'}</td>
+                            <td class="py-3 px-6 text-left">${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}</td>
                             <td class="py-3 px-6 text-left">
                                 <span class="status-badge status-${payment.status?.toLowerCase().replace(/ /g, '_') || 'default'}">
                                     ${payment.status || 'N/A'}</span>
@@ -1920,7 +1949,7 @@
                             <td class="py-3 px-6 text-left">${payment.paymentMethod || 'N/A'}</td>
                             <td class="py-3 px-6 text-left text-xs">${payment.transactionId || 'N/A'}</td>
                             <td class="py-3 px-6 text-center">
-                                ${payment.status === 'DUE' || payment.status === 'OVERDUE' ? 
+                                ${payment.status === 'DUE' || payment.status === 'OVERDUE' || payment.status === 'Unpaid' ? 
                                 `<button class="btn-primary py-1 px-3 text-xs" onclick="navigateToPayments('${policy.policyNumber}', '${payment.paymentId}')">Pay Now</button>` :
                                 `<button class="btn-secondary py-1 px-3 text-xs opacity-50 cursor-not-allowed" disabled>Paid</button>`
                                 }
