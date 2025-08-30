@@ -1,5 +1,7 @@
 package com.SecureAccessPortal.CommonConstants;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -79,6 +81,7 @@ public class CommonConstant {
 	public static final String ADMIN_TEAM = "Admin Team";
 	public static final String ESCALATION_TEAM = "Escalation Team";
 	public static final String BANK_TRANSFER = "BANK_TRANSFER";
+	public static final String END_DATE = "9999-01-01 00:00:00.0";
 	
 	
 

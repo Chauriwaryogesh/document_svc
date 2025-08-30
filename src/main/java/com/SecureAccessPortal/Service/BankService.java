@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -254,9 +255,14 @@ public class BankService {
 	        if (bankAccount.getIsDefaultAccount() != null) dto.setIsDefaultAccount(bankAccount.getIsDefaultAccount());
 	        if (bankAccount.getAccountHolderName() != null) dto.setAccountHolderName(bankAccount.getAccountHolderName());
 	        if (bankAccount.getAccountHolderType() != null) dto.setAccountHolderType(bankAccount.getAccountHolderType());
-	        if (bankAccount.getAccountOpeningDate() != null) dto.setAccountOpeningDate(bankAccount.getAccountOpeningDate());
-	        if (bankAccount.getAccountClosingDate() != null) dto.setAccountClosingDate(bankAccount.getAccountClosingDate());
-	        else dto.setAccountOpeningDate(LocalDateTime.now()); // default
+	         dto.setAccountOpeningDate(LocalDateTime.now());
+	         
+	         
+
+	         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+	         LocalDateTime closingDate = LocalDateTime.parse(CommonConstant.END_DATE, formatter);
+	         dto.setAccountClosingDate(closingDate);
+	        
 
 	        // Relations
 	        if (bankAccount.getPolicyNumber() != null) {
@@ -307,7 +313,6 @@ public class BankService {
 	        if (bankAccount.getAccountHolderType() != null) dto.setAccountHolderType(bankAccount.getAccountHolderType());
 	        if (bankAccount.getAccountOpeningDate() != null) dto.setAccountOpeningDate(bankAccount.getAccountOpeningDate());
 	        if (bankAccount.getAccountClosingDate() != null) dto.setAccountClosingDate(bankAccount.getAccountClosingDate());
-
 	        // Relations
 	        if (bankAccount.getPolicyNumber() != null) {
 	            policy = policyRepo.findByPolicyNum(bankAccount.getPolicyNumber(), "N");
@@ -316,7 +321,6 @@ public class BankService {
 	                dto.setCustomer(policy.getCustomer());
 	            }
 	        }
-
 	        // KYC
 	        try {
 	        if (bankAccount.getKycStatus() != null) dto.setKycStatus(bankAccount.getKycStatus());
@@ -324,7 +328,7 @@ public class BankService {
 	        if (bankAccount.getKycDocument() != null) {
 	            byte[] kycBytes = Base64.getDecoder().decode(bankAccount.getKycDocument());
 	            dto.setKycDocument(kycBytes);
-	            dto.setAmlStatus("Y");
+	            dto.setAmlStatus(CommonConstant.APPROVED);
 	            dto.setVerificationAttempts(1);
 		        dto.setLastVerificationDate(LocalDateTime.now());
 		        dto.setPaymentMethodStatus(CommonConstant.BANK_TRANSFER);
@@ -337,14 +341,12 @@ public class BankService {
 	        if (bankAccount.getLastPaymentDate() != null) dto.setLastPaymentDate(bankAccount.getLastPaymentDate());
 	        if (bankAccount.getVerifierComment() != null) dto.setVerifierComment(bankAccount.getVerifierComment());
 	        if (bankAccount.getCustomerComment() != null) dto.setCustomerComment(bankAccount.getCustomerComment());
-
 	        // Audit
 	        dto.setUpdatedBy(userCode);
 	        dto.setUpdatedDate(LocalDateTime.now());
 	        bankAccountRepository.save(dto);
 	        message = "Successfully updated bank account " + dto.getAccountNumber();
 	    }
-
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    message = "Error: " + e.getMessage();

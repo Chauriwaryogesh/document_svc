@@ -1135,11 +1135,10 @@ body.dark-mode #welcome-message {
             <div id="services-submenu" class="sidebar-submenu" role="region" aria-hidden="true">
                 <a href="#" class="sidebar-link" onclick="navigateTo('dashboard')" aria-label="Go to Dashboard">Dashboard</a>
                 <a href="#" class="sidebar-link" onclick="navigateTo('workitems')" aria-label="Go to Workitems">Workitems</a>
-                <a href="#" class="sidebar-link" onclick="navigateTo('policy')" aria-label="Go to Policy">Policy</a>
                 <a href="#" class="sidebar-link" onclick="navigateTo('bankAccount')" aria-label="Go to Banking">Banking</a>
                 <a href="#" class="sidebar-link" onclick="navigateTo('payment')" aria-label="Go to Payments">Payments</a>
                 <a href="#" class="sidebar-link" onclick="navigateTo('policyAdmin')" aria-label="Go to Policy Admin">Policy Admin</a>
-                <a href="#" class="sidebar-link" onclick="navigateTo('admin')" aria-label="Go to Admin Module">Admin Module</a>
+                <a href="#" class="sidebar-link" onclick="navigateTo('admin')" aria-label="Go to Admin Module for Access">Admin Module</a>
                 <a href="#" class="sidebar-link" onclick="navigateTo('complaints')" aria-label="Go to Complaints">Complaints</a>
                 <a href="#" class="sidebar-link" onclick="navigateTo('feedback')" aria-label="Go to Feedback">Feedback</a>
                 <a href="#" class="sidebar-link" onclick="navigateTo('customerService')" aria-label="Go to Customer Service">Customer Service</a>
@@ -1353,7 +1352,6 @@ body.dark-mode #welcome-message {
                        <button onclick="openModal('search-module-modal')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"><i class="fa-solid fa-magnifying-glass text-3xl text-orange-600 mb-4"></i><h3 class="text-lg font-bold text-gray-800">Search</h3></button>                                
                       <button onclick="navigateTo('dashboard')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-border-all text-3xl text-blue-500 mb-4"></i><h3 class="text-lg font-bold">Dashboard</h3></button>
                       <button onclick="navigateTo('workitems')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-briefcase text-3xl text-teal-500 mb-4"></i><h3 class="text-lg font-bold">Workitems</h3></button>
-                      <button onclick="navigateTo('policy')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-file-contract text-3xl text-purple-500 mb-4"></i><h3 class="text-lg font-bold">Policy</h3></button>
                       <button onclick="navigateTo('bankAccount')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-landmark text-3xl text-green-500 mb-4"></i><h3 class="text-lg font-bold">Banking</h3></button>
                       <button onclick="navigateTo('payment')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-credit-card text-3xl text-orange-500 mb-4"></i><h3 class="text-lg font-bold">Payments</h3></button>
                       <button onclick="navigateTo('policyAdmin')" class="service-card text-center bg-white p-6 rounded-xl shadow-sm"><i class="fa-solid fa-user-shield text-3xl text-indigo-500 mb-4"></i><h3 class="text-lg font-bold">Policy Admin</h3></button>
@@ -1405,9 +1403,6 @@ body.dark-mode #welcome-message {
                           </button>
                           <button onclick="navigateTo('bankAccount')" class="flex items-center p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-medium">
                               <i class="fa-solid fa-landmark mr-3"></i> Bank Module
-                          </button>
-                          <button onclick="navigateTo('policy')" class="flex items-center p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors font-medium">
-                              <i class="fa-solid fa-file-contract mr-3"></i> Policy Module
                           </button>
                       </div>
                   </div>
@@ -1668,7 +1663,7 @@ body.dark-mode #welcome-message {
             pensionManagementAdmin: 'PensionManagementAdmin',
             docVerificationManagement: 'DocumentService',
             mailServices: 'MailServices',
-            Policy: 'policy', Workitem: 'workitems', 'Create Customer': 'customerService',
+             Workitem: 'workitems', 'Create Customer': 'customerService',
             'Bank Account': 'bankAccount', Payments: 'payment'
         };
 
