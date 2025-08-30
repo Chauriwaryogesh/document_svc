@@ -2158,7 +2158,7 @@ console.log(searchType);
                     policyNumber: formData.get('policyNumber'),
                     kycDocument: kycBase64String,
                     kycStatus: 'IN_PROGRESS',
-                    kycDocumentStatus: kycBase64String ? 'IN_REVIEW' : 'N',
+                    kycDocumentStatus: kycBase64String ? 'IN_PROGRESS' : 'IN_PROGRESS',
                     customerComment: formData.get('customerComment')
                 };
                 const success = await createBankAccount(payload);

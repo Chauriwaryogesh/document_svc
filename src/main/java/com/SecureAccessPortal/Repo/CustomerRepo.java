@@ -35,4 +35,9 @@ public interface CustomerRepo extends JpaRepository<Customer, String> {
 
 	Page<Customer> findAll(Specification<Customer> customerSpec, Pageable pageable);
 
+	@Query(value = "SELECT p.customerNo " + "FROM Customer p " + "WHERE RIGHT(p.customerNo, 4) = :currentYear "
+			+ "ORDER BY CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(p.customerNo, '/', 2), '/', -1) AS UNSIGNED) DESC "
+			+ "LIMIT 1", nativeQuery = true)
+	String findTopCustomerForCurrentYear(String currentYear);
+
 }

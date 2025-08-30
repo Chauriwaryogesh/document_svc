@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -172,7 +173,7 @@ public class SecurityService implements ISecrityService {
 
 			}
 		} else {
-			String id = generateCustomerNumber();
+			String id = generateCustomerNo();
 			Employees employee = employeeMapper.mapEmployeeRequest(employeeRequest, id);
 			Employees empSave = employeeRepo.save(employee);
 			employeeDTO = employeeMapper.convertToDTO(empSave);
@@ -476,7 +477,7 @@ public class SecurityService implements ISecrityService {
 
 			// Create corresponding Customer record
 			customer = new Customer();
-			String customerNo = generateCustomerNumber();
+			String customerNo = generateCustomerNo();
 			customer.setCustomerNo(customerNo);
 			customer.setEmail(securityDTO.getEmail());
 			customer.setUserCode(securityDTO.getUserCode());
@@ -498,10 +499,23 @@ public class SecurityService implements ISecrityService {
 		return response;
 	}
 
-	public String generateCustomerNumber() {
-		PersonSequence seq = personSequenceRepository.save(new PersonSequence());
-		Long nextVal = seq.getId();
-		return "T" + String.format("%09d", nextVal);
+	@Transactional
+	public synchronized String generateCustomerNo() {
+	    String currentYear = String.valueOf(Year.now().getValue()); // e.g., "2025"
+	    String lastPolicyNo = customerRepo.findTopCustomerForCurrentYear(currentYear);
+	    int nextSequenceNumber = 1;
+	    if (lastPolicyNo != null && lastPolicyNo.contains("/")) {
+	        try {
+	            String numberPart = lastPolicyNo.split("/")[1]; 
+	            nextSequenceNumber = Integer.parseInt(numberPart) + 1;
+	        } catch (NumberFormatException e) {
+	            logger.warn("Could not parse sequence number from last policy number: {}. Resetting to 001.", lastPolicyNo, e);
+	            nextSequenceNumber = 1;
+	        }
+	    }
+	    String newPolicyNumber = String.format("CUSTOMER/%03d/%s", nextSequenceNumber, currentYear);
+	    logger.info("Generated new policy number: {}", newPolicyNumber);
+	    return newPolicyNumber;
 	}
 
 	@Transactional
@@ -575,7 +589,7 @@ public class SecurityService implements ISecrityService {
 
 		// Create corresponding Customer record
 		Customer customer = new Customer();
-		String customerNo = generateCustomerNumber();
+		String customerNo = generateCustomerNo();
 		customer.setCustomerNo(customerNo);
 		customer.setEmail(securityDTO.getEmail());
 		customer.setUserCode(securityDTO.getUserCode());
