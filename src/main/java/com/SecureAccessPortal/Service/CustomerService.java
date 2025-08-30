@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
-import com.SecureAccessPortal.Entity.BankAccount;
+import com.SecureAccessPortal.Entity.Bank;
 import com.SecureAccessPortal.Entity.Complaint;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.FeedbackEntity;
@@ -75,7 +75,7 @@ public class CustomerService {
 	private IWorkItemService workItemService;
 	
 	@Autowired
-	private BankDetailsService bankDetailsService;
+	private BankService bankDetailsService;
 
 	public ResponseEntity<FeedbackResponse> saveFeedback(FeedbackResponse feedbackResponse, String userCode) {
 		ResponseEntity<FeedbackResponse> response = new ResponseEntity<>();
@@ -204,7 +204,7 @@ public class CustomerService {
 		ResponseEntity<CustomerDTO> response = new ResponseEntity<>();
 		Customer customer = new Customer();
 		List<Payments> payments = new ArrayList<>();
-		List<BankAccount> bankAccountList = new ArrayList<>();
+		List<Bank> bankAccountList = new ArrayList<>();
 		List<Complaint> complaints = new ArrayList<>();
 		List<Workitem> workitems = new ArrayList<>();
 		List<Policy> policy = new ArrayList<>();
@@ -273,7 +273,7 @@ public class CustomerService {
 			customerDTO.setWorkitems(allWorkitems);
 		}
 		case CommonConstant.BANK -> {
-			BankAccount bankAccount = bankRepository.findByAccountNo(number, CommonConstant.N);
+			Bank bankAccount = bankRepository.findByAccountNo(number, CommonConstant.N);
 			if(bankAccount == null) {
 				response.setStatus(CommonConstant.FAILURE);	
 				response.setErrorMessage("Invalid BankAccount No");

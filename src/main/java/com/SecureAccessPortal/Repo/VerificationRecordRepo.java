@@ -11,28 +11,29 @@ import org.springframework.data.jpa.repository.Query;
 import com.SecureAccessPortal.Entity.VerificationRecord;
 
 public interface VerificationRecordRepo extends JpaRepository<VerificationRecord, Long> {
-	Page<VerificationRecord> findByBankAccountAccountNo(String accountNo, Pageable pageable);
+	
+	Page<VerificationRecord> findByBankAccountNumber(String accountNumber, Pageable pageable);
 
-	@Query("SELECT v FROM VerificationRecord v WHERE v.bankAccount.accountNo = :accountNo "
+	@Query("SELECT v FROM VerificationRecord v WHERE v.bank.accountNumber = :accountNumber "
 			+ "AND ((:action = 'SANCTIONS' AND v.sanctions IS NOT NULL) OR "
 			+ "(:action = 'ID' AND v.identity IS NOT NULL) OR " + "(:action = 'DEATH' AND v.death IS NOT NULL))")
-	Page<VerificationRecord> findByBankAccountAccountNoAndAction(String accountNo, String action, Pageable pageable);
+	Page<VerificationRecord> findByBankAccountNumberAndAction(String accountNo, String action, Pageable pageable);
 
-	@Query("SELECT v FROM VerificationRecord v WHERE v.bankAccount.accountNo = :accountNo "
+	@Query("SELECT v FROM VerificationRecord v WHERE v.bank.accountNumber = :accountNumber "
 			+ "AND ((:status = v.sancStatus AND v.sanctions IS NOT NULL) OR "
 			+ "(:status = v.identityStatus AND v.identity IS NOT NULL) OR "
 			+ "(:status = v.deathStatus AND v.death IS NOT NULL))")
-	Page<VerificationRecord> findByBankAccountAccountNoAndStatus(String accountNo, String status, Pageable pageable);
+	Page<VerificationRecord> findByBankAccountNumberAndStatus(String accountNumber, String status, Pageable pageable);
 
-	@Query("SELECT v FROM VerificationRecord v WHERE v.bankAccount.accountNo = :accountNo "
+	@Query("SELECT v FROM VerificationRecord v WHERE v.bank.accountNumber = :accountNumber "
 			+ "AND ((:action = 'SANCTIONS' AND v.sanctions IS NOT NULL AND v.sancStatus = :status) OR "
 			+ "(:action = 'ID' AND v.identity IS NOT NULL AND v.identityStatus = :status) OR "
 			+ "(:action = 'DEATH' AND v.death IS NOT NULL AND v.deathStatus = :status))")
-	Page<VerificationRecord> findByBankAccountAccountNoAndActionAndStatus(String accountNo, String action,
+	Page<VerificationRecord> findByBankAccountNumberAndActionAndStatus(String accountNumber, String action,
 			String status, Pageable pageable);
 
-	@Query(value = "SELECT * FROM Verification_Records v WHERE v.account_number = ?1", nativeQuery = true)
-	List<VerificationRecord> findByAccountNo(String accountNo);
+	@Query(value = "SELECT * FROM Verification_Records v WHERE v.bank.accountNumber = ?1", nativeQuery = true)
+	List<VerificationRecord> findByBankAccountNumber(String accountNo);
 
 	@Query("SELECT v.verId FROM VerificationRecord v WHERE v.verId LIKE 'REC_%' ORDER BY CAST(SUBSTRING(v.verId, 5) AS INTEGER) DESC LIMIT 1")
 	String findTopVerId();

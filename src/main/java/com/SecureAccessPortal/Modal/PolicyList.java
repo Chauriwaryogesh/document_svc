@@ -62,7 +62,7 @@ public class PolicyList {
 	private String gender; // extra
 
 	// ---------------- Related Entities ----------------
-	private List<BankAccountDTO> bankAccounts;
+	private List<BankDetailsDTO> bankAccounts;
 	private List<PaymentList> paymentListDTO;
 	private List<SurrenderClaimDTO> surrenderDTO;
 	private List<SurrenderClaimDTO> claimDTO;
@@ -371,11 +371,11 @@ public class PolicyList {
 		this.gender = gender;
 	}
 
-	public List<BankAccountDTO> getBankAccounts() {
+	public List<BankDetailsDTO> getBankAccounts() {
 		return bankAccounts;
 	}
 
-	public void setBankAccounts(List<BankAccountDTO> bankAccounts) {
+	public void setBankAccounts(List<BankDetailsDTO> bankAccounts) {
 		this.bankAccounts = bankAccounts;
 	}
 

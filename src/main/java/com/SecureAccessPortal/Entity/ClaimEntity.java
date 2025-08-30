@@ -62,8 +62,8 @@ public class ClaimEntity {
 	private Payments payment;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "accountNo", referencedColumnName = "accountNo")
-	private BankAccount bankAccount;
+	@JoinColumn(name = "accountNumber", referencedColumnName = "accountNumber")
+	private Bank bank;
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
 	private byte[] verificationDocument;
@@ -205,12 +205,12 @@ public class ClaimEntity {
 		this.payment = payment;
 	}
 
-	public BankAccount getBankAccount() {
-		return bankAccount;
+	public Bank getBank() {
+		return bank;
 	}
 
-	public void setBankAccount(BankAccount bankAccount) {
-		this.bankAccount = bankAccount;
+	public void setBank(Bank bank) {
+		this.bank = bank;
 	}
 
 	public String getVerificationComment() {

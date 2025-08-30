@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,37 +28,39 @@ import com.SecureAccessPortal.Modal.BankDetailsDTO;
 import com.SecureAccessPortal.Modal.DashboardStats;
 import com.SecureAccessPortal.Modal.PolicyRequest;
 import com.SecureAccessPortal.Modal.VerificationRecordDTO;
-import com.SecureAccessPortal.Service.BankDetailsService;
+import com.SecureAccessPortal.Service.BankService;
 import com.SecureAccessPortal.Service.ResponseEntity;
 
 @RestController
 @RequestMapping("/bankService")
-public class BankDetailsController {
+public class BankController {
 
-	private final BankDetailsService bankDetailsService;
+	private final BankService bankDetailsService;
 
-	public BankDetailsController(BankDetailsService bankDetailsService) {
+	public BankController(BankService bankDetailsService) {
 		this.bankDetailsService = bankDetailsService;
 	}
 
 	@GetMapping(value = "/bank-details")
 	public ResponseEntity<Page<BankDetailsDTO>> getBankDetails(
+			@RequestParam(value = "bankId", required = false) String bankId,
 			@RequestParam(value = "bankAccNo", required = false) String bankAccNo,
 			@RequestParam(value = "policyNo", required = false) String policyNo,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
 			@RequestParam(value = "holderName", required = false) String holderName,
 			@RequestParam(value = "bankName", required = false) String bankName,
 			@RequestParam(value = "accountType", required = false) String accountType,
+			@RequestParam(value = "deletedFlag", required = false) String deletedFlag,
 			@RequestParam(value = "status", required = false) String status, // e.g., "Active,Pending"
 			@RequestParam(value = "createdDateFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdDateFrom,
 			@RequestParam(value = "createdDateTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdDateTo,
 			@RequestParam(value = "search", required = false) String globalSearch, // For header search bar
-			@RequestHeader(value = "userCode", required = true) String userCode,
-			@PageableDefault(page = 0, size = 10, sort = "createdDate") Pageable pageable) {
+			@RequestHeader(value = "userCode", required = false) String userCode,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
 		com.SecureAccessPortal.Service.ResponseEntity<Page<BankDetailsDTO>> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
 		Page<BankDetailsDTO> bankDetails = bankDetailsService.getBankDetails(bankAccNo, policyNo, customerNo,
 				holderName, bankName, accountType, status, createdDateFrom, createdDateTo, globalSearch, userCode,
-				pageable);
+				page,size,deletedFlag,bankId);
 		if (bankDetails != null && !bankDetails.isEmpty()) {
 			response.setData(bankDetails);
 			response.setStatus(CommonConstant.SUCCESS);

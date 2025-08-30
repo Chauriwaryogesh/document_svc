@@ -28,7 +28,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
-import com.SecureAccessPortal.Entity.BankAccount;
+import com.SecureAccessPortal.Entity.Bank;
 import com.SecureAccessPortal.Entity.ClaimEntity;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.PaymentSequence;
@@ -37,7 +37,7 @@ import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.Policy_Info;
 import com.SecureAccessPortal.Entity.SurrenderEntity;
 import com.SecureAccessPortal.Entity.Workitem;
-import com.SecureAccessPortal.Modal.BankAccountDTO;
+import com.SecureAccessPortal.Modal.BankDetailsDTO;
 import com.SecureAccessPortal.Modal.DashboardStats;
 import com.SecureAccessPortal.Modal.GroupedPolicyDTO;
 import com.SecureAccessPortal.Modal.PaymentList;
@@ -481,7 +481,7 @@ public class PolicyService {
 		pol.setPolicyEndDate(policy.getPolicyEndDate());
 		pol.setReason(policy.getReason() != null ? policy.getReason() : "");
 
-		List<BankAccount> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber(),
+		List<Bank> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber(),
 				CommonConstant.N);
 		pol.setBankAccounts(
 				bankAccounts != null ? bankAccounts.stream().map(this::mapToBankAccountDTO).collect(Collectors.toList())
@@ -590,56 +590,70 @@ public class PolicyService {
 		return paymentL;
 	}
 
-	private BankAccountDTO mapToBankAccountDTO(BankAccount bankAccount) {
-		BankAccountDTO dto = new BankAccountDTO();
-		if (bankAccount == null) {
-			return dto;
-		}
-		dto.setId(bankAccount.getId());
-		dto.setAccountNumber(bankAccount.getAccountNo() != null ? bankAccount.getAccountNo() : "");
-		dto.setIfscCode(bankAccount.getIfscCode() != null ? bankAccount.getIfscCode() : "");
-		dto.setBankName(bankAccount.getBankName() != null ? bankAccount.getBankName() : "");
-		dto.setAccountType(bankAccount.getAccountType() != null ? bankAccount.getAccountType() : "");
-		dto.setStatus(bankAccount.getStatus() != null ? bankAccount.getStatus() : "");
-		if (bankAccount.getCustomer() != null) {
-			dto.setCustomerNumber(
-					bankAccount.getCustomer().getCustomerNo() != null ? bankAccount.getCustomer().getCustomerNo() : "");
-			dto.setHolderName(bankAccount.getCustomer().getName() != null ? bankAccount.getCustomer().getName() : "");
-		} else {
-			dto.setCustomerNumber("");
-			dto.setHolderName("");
-		}
-		if (bankAccount.getPolicy() != null) {
-			dto.setPolicyNumber(
-					bankAccount.getPolicy().getPolicyNumber() != null ? bankAccount.getPolicy().getPolicyNumber() : "");
-			dto.setPolicyStatus(
-					bankAccount.getPolicy().getPolicyStatus() != null ? bankAccount.getPolicy().getPolicyStatus() : "");
-		} else {
-			dto.setPolicyNumber("");
-			dto.setPolicyStatus("");
-		}
-		dto.setLastVerificationDate(bankAccount.getLastVerificationDate() != null
-				? bankAccount.getLastVerificationDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-				: "");
-		dto.setCreatedBy(bankAccount.getCreatedBy() != null ? bankAccount.getCreatedBy() : "");
-		dto.setCreatedDate(bankAccount.getCreatedDate() != null
-				? bankAccount.getCreatedDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-				: "");
-		dto.setNotes(bankAccount.getNotes() != null ? bankAccount.getNotes() : "");
-		dto.setAccountHolderType(bankAccount.getAccountHolderType() != null ? bankAccount.getAccountHolderType() : "");
-		dto.setBranchCode(bankAccount.getBranchCode() != null ? bankAccount.getBranchCode() : "");
-		dto.setSwiftCode(bankAccount.getSwiftCode() != null ? bankAccount.getSwiftCode() : "");
-		dto.setPaymentMethodStatus(
-				bankAccount.getPaymentMethodStatus() != null ? bankAccount.getPaymentMethodStatus() : "");
-		dto.setLastPaymentDate(bankAccount.getLastPaymentDate() != null
-				? bankAccount.getLastPaymentDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-				: "");
-		dto.setAmlStatus(bankAccount.getAmlStatus() != null ? bankAccount.getAmlStatus() : "");
-		dto.setAccountBalance(bankAccount.getAccountBalance());
-		dto.setLinkedPaymentMethod(
-				bankAccount.getLinkedPaymentMethod() != null ? bankAccount.getLinkedPaymentMethod() : "");
-		dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
-		return dto;
+	private BankDetailsDTO mapToBankAccountDTO(Bank bankAccount) {
+	    if (bankAccount == null) {
+	        return null;
+	    }
+
+	    BankDetailsDTO dto = new BankDetailsDTO();
+
+	    // Primary key
+	    dto.setBankId(bankAccount.getBankId());
+
+	    // Relations
+	    if (bankAccount.getCustomer() != null) {
+	        dto.setCustomerNumber(bankAccount.getCustomer().getCustomerNo());
+	        dto.setCustomerName(
+	                (bankAccount.getCustomer().getName() != null ? bankAccount.getCustomer().getName() : "") + " "
+	                        + (bankAccount.getCustomer().getMiddleName() != null ? bankAccount.getCustomer().getMiddleName()
+	                                : "")
+	                        + " "
+	                        + (bankAccount.getCustomer().getSurname() != null ? bankAccount.getCustomer().getSurname() : ""));
+	    }
+	    if (bankAccount.getPolicy() != null) {
+	        dto.setPolicyNumber(bankAccount.getPolicy().getPolicyNumber());
+	        dto.setPolicyStatus(bankAccount.getPolicy().getPolicyStatus());
+	    }
+	    dto.setAccountNumber(bankAccount.getAccountNumber());
+	    dto.setAccountHolderName(bankAccount.getAccountHolderName());
+	    dto.setAccountHolderType(bankAccount.getAccountHolderType());
+	    dto.setBankName(bankAccount.getBankName());
+	    dto.setBranchCode(bankAccount.getBranchCode());
+	    dto.setIfscCode(bankAccount.getIfscCode());
+	    dto.setSwiftCode(bankAccount.getSwiftCode());
+	    dto.setAccountType(bankAccount.getAccountType());
+	    dto.setCurrency(bankAccount.getCurrency());
+	    dto.setAccountBalance(bankAccount.getAccountBalance());
+	    dto.setIsDefaultAccount(bankAccount.getIsDefaultAccount());
+	    dto.setAccountOpeningDate(bankAccount.getAccountOpeningDate());
+	    dto.setAccountClosingDate(bankAccount.getAccountClosingDate());
+	    dto.setKycDocumentStatus(bankAccount.getKycDocumentStatus());
+	    dto.setKycStatus(bankAccount.getKycStatus());
+	    if (bankAccount.getKycDocument() != null) {
+	        dto.setKycDocument(Base64.getEncoder().encodeToString(bankAccount.getKycDocument())); // byte[] -> Base64 string
+	    }
+	    dto.setAmlStatus(bankAccount.getAmlStatus());
+
+	    // Payment & Verification
+	    dto.setPaymentMethodStatus(bankAccount.getPaymentMethodStatus());
+	    dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
+	    dto.setLastPaymentDate(bankAccount.getLastPaymentDate());
+	    dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
+	    dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
+	    dto.setVerifierComment(bankAccount.getVerifierComment());
+	    dto.setCustomerComment(bankAccount.getCustomerComment());
+
+	    // Status Flags
+	    dto.setStatus(bankAccount.getStatus());
+	    dto.setDeletedFlag(bankAccount.getDeletedFlag());
+
+	    // Audit
+	    dto.setCreatedBy(bankAccount.getCreatedBy());
+	    dto.setCreatedDate(bankAccount.getCreatedDate());
+	    dto.setUpdatedBy(bankAccount.getUpdatedBy());
+	    dto.setUpdatedDate(bankAccount.getUpdatedDate());
+
+	    return dto;
 	}
 
 	public List<GroupedPolicyDTO> getDomainData(String policyNo, String userCode) {
@@ -1017,9 +1031,9 @@ public class PolicyService {
 //			surrenderEntity.setUpdatedBy(userCode);
 //			surrenderEntity.setUpdatedDate(null);
 
-			BankAccount byAccountNo = bankAccountRepository.findByAccountNo(request.getBankAccNo(), CommonConstant.N);
+			Bank byAccountNo = bankAccountRepository.findByAccountNo(request.getBankAccNo(), CommonConstant.N);
 			if (byAccountNo != null) {
-				surrenderEntity.setBankAccount(byAccountNo);
+				surrenderEntity.setBank(byAccountNo);
 			}
 			Customer byCustomerNoNew = customerRepository.findByCustomerNoNew(request.getCustomerNo(),
 					CommonConstant.N);
@@ -1101,9 +1115,9 @@ public class PolicyService {
 //			surrenderEntity.setUpdatedBy(userCode);
 //			surrenderEntity.setUpdatedDate(null);
 
-			BankAccount byAccountNo = bankAccountRepository.findByAccountNo(request.getBankAccNo(), CommonConstant.N);
+			Bank byAccountNo = bankAccountRepository.findByAccountNo(request.getBankAccNo(), CommonConstant.N);
 			if (byAccountNo != null) {
-				surrenderEntity.setBankAccount(byAccountNo);
+				surrenderEntity.setBank(byAccountNo);
 			}
 			Customer byCustomerNoNew = customerRepository.findByCustomerNoNew(request.getCustomerNo(),
 					CommonConstant.N);

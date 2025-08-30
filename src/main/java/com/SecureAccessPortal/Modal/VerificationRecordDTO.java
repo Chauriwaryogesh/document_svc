@@ -15,9 +15,9 @@ public class VerificationRecordDTO {
 	private String status;
 	private String userCode;
 	private String createdBy;
-	private LocalDateTime createdTime;
+	private LocalDateTime createdDate;
 	private String updatedBy;
-	private LocalDateTime updatedTime;
+	private LocalDateTime updatedDate;
 	private String deathCertNo;
 	private String deathStatus;
 	private byte[] deathCertificate;
@@ -136,13 +136,7 @@ public class VerificationRecordDTO {
 		this.createdBy = createdBy;
 	}
 
-	public LocalDateTime getCreatedTime() {
-		return createdTime;
-	}
-
-	public void setCreatedTime(LocalDateTime createdTime) {
-		this.createdTime = createdTime;
-	}
+	
 
 	public String getUpdatedBy() {
 		return updatedBy;
@@ -152,12 +146,22 @@ public class VerificationRecordDTO {
 		this.updatedBy = updatedBy;
 	}
 
-	public LocalDateTime getUpdatedTime() {
-		return updatedTime;
+	
+
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
 	}
 
-	public void setUpdatedTime(LocalDateTime updatedTime) {
-		this.updatedTime = updatedTime;
+	public void setCreatedDate(LocalDateTime createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public LocalDateTime getUpdatedDate() {
+		return updatedDate;
+	}
+
+	public void setUpdatedDate(LocalDateTime updatedDate) {
+		this.updatedDate = updatedDate;
 	}
 
 	public String getDeathStatus() {

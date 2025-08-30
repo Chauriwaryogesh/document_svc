@@ -88,8 +88,8 @@ public class Payments {
 	private String paymentType;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "accountNo", referencedColumnName = "accountNo")
-	private BankAccount bankAccount;
+	@JoinColumn(name = "accountNumber", referencedColumnName = "accountNumber")
+	private Bank bank;
 	
 	@Column(name = "total_AmountPaid")
 	private BigDecimal totalAmountPaid;
@@ -118,12 +118,12 @@ public class Payments {
 		this.claimEntity = claimEntity;
 	}
 
-	public BankAccount getBankAccount() {
-		return bankAccount;
+	public Bank getBank() {
+		return bank;
 	}
 
-	public void setBankAccount(BankAccount bankAccount) {
-		this.bankAccount = bankAccount;
+	public void setBank(Bank bank) {
+		this.bank = bank;
 	}
 
 	public BigDecimal getTotalAmountPaid() {

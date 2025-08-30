@@ -15,10 +15,12 @@
             overflow-x: hidden;
             color: #1f2937;
         }
+        /* Custom Scrollbar Styles */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
         .sidebar {
             --sidebar-width-collapsed: 80px;
             --sidebar-width-expanded: 280px;
@@ -743,7 +745,8 @@
             <img src="https://placehold.co/32x32/3b82f6/FFFFFF?text=SA" alt="Logo" class="w-8 h-8 rounded-full">
             <span class="text-xl font-bold text-gray-800 ml-3 text">Policy Admin</span>
         </div>
-        <nav class="flex-1 px-2 py-4 space-y-2">
+        <!-- Added custom-scrollbar class for sidebar navigation -->
+        <nav class="flex-1 px-2 py-4 space-y-2 custom-scrollbar">
             <a href="ServicePage" class="sidebar-link">
                 <i class="icon fas fa-home"></i>
                 <span class="text">Dashboard</span>
@@ -782,19 +785,20 @@
             </a>
         </nav>
         <div class="p-4 border-t border-gray-200">
-            <a href="#" id="btn-logout-sidebar" class="sidebar-link text-red-500 hover:bg-red-50 hover:text-red-700">
+            <button id="btn-logout-sidebar" class="sidebar-link text-red-500 hover:bg-red-50 hover:text-red-700">
                 <i class="icon fas fa-sign-out-alt"></i>
                 <span class="text">Logout</span>
-            </a>
+            </button>
         </div>
     </aside>
     <div class="flex-1 flex flex-col">
         <header class="header">
             <h1 id="header-title" class="header-title">Policy Administration</h1>
             <nav class="header-nav">
+                <!-- Removed profile icon and added userCode and CustomerNo display -->
                 <div class="flex items-center gap-2 text-gray-700 text-sm mr-4">
-                    <i class="fas fa-user-circle"></i>
-                    <span id="header-user-info"></span>
+                    <span id="header-user-code" class="font-semibold"></span>
+                    <span id="header-customer-no" class="font-semibold ml-2"></span>
                 </div>
                 <div class="search-container" id="searchBarContainer">
                     <input type="text" id="policySearchInput" placeholder="Search by Policy/Customer No, Name..." class="focus:border-blue-500 focus:shadow-outline-blue">
@@ -1650,7 +1654,8 @@
             'upcoming-requests-modal': document.getElementById('upcoming-requests-modal'),
             loader: document.getElementById('loader')
         },
-        headerUserInfo: document.getElementById('header-user-info'),
+        headerUserCode: document.getElementById('header-user-code'), // New element for userCode
+        headerCustomerNo: document.getElementById('header-customer-no'), // New element for customerNo
         confirmActionBtn: document.getElementById('confirm-action-btn'),
         confirmCancelBtn: document.getElementById('confirm-cancel-btn'),
         policyListContainer: document.getElementById('policyListContainer'),
@@ -1894,7 +1899,7 @@
     function openModal(modalId) {
         // Handle specific initializations that *only* happen when a modal is opened *directly* via openModal
         if (modalId === 'create-party') {
-            initializeUserCode();
+            initializeUserCodeAndCustomerNoDisplay(); // Updated to call new function
             document.getElementById('party-userCode').value = config.userCode;
             resetPartyForm();
             switchPartyTab('personal');
@@ -1926,7 +1931,7 @@
     }
     async function openCreatePolicyModal() {
         config.policyBeingEdited = null;
-        await initializeUserCode(); // Made async call explicit
+        await initializeUserCodeAndCustomerNoDisplay(); // Updated to call new function
         elements.policyFormTitle.textContent = 'Create Policy';
         elements.submitPolicyBtn.classList.remove('hidden');
 
@@ -1977,7 +1982,7 @@
                 return;
             }
             config.policyBeingEdited = { customer, policy };
-            await initializeUserCode();
+            await initializeUserCodeAndCustomerNoDisplay(); // Updated to call new function
             // Ensure domain data is loaded before populating edit dropdowns
             if (!config.isDomainDataLoaded) {
                 await fetchAvailablePolicyProducts();
@@ -2150,19 +2155,27 @@
             elements.modals.loader.classList.add('hidden');
         }
     }
-    async function initializeUserCode() {
+    // Updated function to display userCode and customerNo in the header
+    async function initializeUserCodeAndCustomerNoDisplay() {
         config.userCode = sessionStorage.getItem('userCode');
-        config.email = sessionStorage.getItem('email');
+        config.loggedInCustomerNo = sessionStorage.getItem('customerNo'); // Assuming customerNo is also stored in sessionStorage
+
         if (!config.userCode) {
+            // If userCode is not found, redirect to login page
             showAlert('error', 'User ID not found. Please log in again.');
             window.location.href = config.loginUrl;
-            return null;
+            return null; // Stop further execution
         }
+        
+        elements.headerUserCode.textContent = `User: ${config.userCode}`;
+        elements.headerCustomerNo.textContent = `Customer No: ${config.loggedInCustomerNo || 'N/A'}`; // Display customerNo or 'N/A'
+
         return config.userCode;
     }
     function logout() {
         sessionStorage.removeItem('userCode');
         sessionStorage.removeItem('email');
+        sessionStorage.removeItem('customerNo'); // Clear customerNo on logout
         config.userCode = null;
         config.email = null;
         config.loggedInCustomerNo = null;
@@ -3474,13 +3487,13 @@
         populateUpcomingRequestsTable();
     };
     document.addEventListener('DOMContentLoaded', () => {
-        initializeUserCode();
+        initializeUserCodeAndCustomerNoDisplay(); // Changed to the new function
         initialLoad(0);
         elements.sidebarCollapseBtn.addEventListener('click', () => {
             elements.sidebar.classList.toggle('expanded');
         });
         document.getElementById("btn-create-policy").addEventListener("click", openCreatePolicyModal);
-        document.getElementById('btn-logout-sidebar').addEventListener('click', () => navigateTo('logout'));
+        document.getElementById('btn-logout-sidebar').addEventListener('click', () => logout()); // Changed to call logout function
         elements.policySearchInput.addEventListener('focus', () => elements.searchBarContainer.classList.add('focused'));
         elements.policySearchInput.addEventListener('blur', () => {
             if (!elements.policySearchInput.value.trim()) elements.searchBarContainer.classList.remove('focused');

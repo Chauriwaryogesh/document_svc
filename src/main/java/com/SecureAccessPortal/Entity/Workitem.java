@@ -31,8 +31,8 @@ public class Workitem {
 	private Policy policy;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "account_number", referencedColumnName = "accountNo")
-	private BankAccount bankAccount;
+	@JoinColumn(name = "accountNumber", referencedColumnName = "accountNumber")
+	private Bank bank;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "paymentId", referencedColumnName = "payment_id")
@@ -151,12 +151,13 @@ public class Workitem {
 		this.policy = policy;
 	}
 
-	public BankAccount getBankAccount() {
-		return bankAccount;
+	
+	public Bank getBank() {
+		return bank;
 	}
 
-	public void setBankAccount(BankAccount bankAccount) {
-		this.bankAccount = bankAccount;
+	public void setBank(Bank bank) {
+		this.bank = bank;
 	}
 
 	public VerificationRecord getVerificationRecord() {

@@ -42,8 +42,8 @@ public class PaymentController {
 					request.getUserCode());
 			PaymentList response = new PaymentList();
 			response.setPaymentDate(payment.getPaymentDate());
-			if(payment.getBankAccount() != null) {
-				response.setBankAccNo(payment.getBankAccount().getAccountNo());
+			if(payment.getBank() != null) {
+				response.setBankAccNo(payment.getBank().getAccountNumber());
 			}
 			response.setTotalAmount(String.valueOf(payment.getTotalAmountPaid()));
 			response.setPaymentMethod(payment.getPaymentMethod());
@@ -95,8 +95,8 @@ public class PaymentController {
 			List<PaymentList> paymentList = entry.getValue().stream().map(payment -> {
 				PaymentList pl = new PaymentList();
 				pl.setPaymentDate(payment.getPaymentDate());
-				if(payment.getBankAccount() != null) {
-					pl.setBankAccNo(payment.getBankAccount().getAccountNo());
+				if(payment.getBank() != null) {
+					pl.setBankAccNo(payment.getBank().getAccountNumber());
 				}	
 				pl.setTotalAmount(String.valueOf(payment.getTotalAmountPaid()));
 				pl.setPaymentMethod(payment.getPaymentMethod());

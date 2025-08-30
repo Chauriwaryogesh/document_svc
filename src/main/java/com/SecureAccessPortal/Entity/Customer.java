@@ -133,7 +133,7 @@ public class Customer {
 	private List<ClaimEntity> claimEntity = new ArrayList<>();
 
 	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<BankAccount> bankAccounts = new ArrayList<>();
+	private List<Bank> bankAccounts = new ArrayList<>();
 
 	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<VerificationRecord> verificationRecords = new ArrayList<>();
@@ -488,11 +488,11 @@ public class Customer {
 		this.policies = policies;
 	}
 
-	public List<BankAccount> getBankAccounts() {
+	public List<Bank> getBankAccounts() {
 		return bankAccounts;
 	}
 
-	public void setBankAccounts(List<BankAccount> bankAccounts) {
+	public void setBankAccounts(List<Bank> bankAccounts) {
 		this.bankAccounts = bankAccounts;
 	}
 
@@ -518,7 +518,7 @@ public class Customer {
 		policy.setCustomer(this);
 	}
 
-	public void addBankAccount(BankAccount bankAccount) {
+	public void addBankAccount(Bank bankAccount) {
 		bankAccounts.add(bankAccount);
 		bankAccount.setCustomer(this);
 	}

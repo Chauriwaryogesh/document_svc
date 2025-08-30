@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import com.SecureAccessPortal.Entity.BankAccount;
+import com.SecureAccessPortal.Entity.Bank;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.OtpStore;
 import com.SecureAccessPortal.Entity.Payments;
@@ -24,7 +24,7 @@ public interface IWorkItemService {
 	WorkItemCount workItemCount(String customerNo, String userCode);
 
 	Workitem mapRequetforWorkItem(String userCode, Policy policy, Customer customer, String workType,
-			String workItemName, String comment, BankAccount bankAccount, VerificationRecord verificationRecord,
+			String workItemName, String comment, Bank bankAccount, VerificationRecord verificationRecord,
 			Payments payments, String status);
 
 	Workitem mapRequetforWorkItemOtpService(String userCode, Customer customer, String workType, String workItemName,

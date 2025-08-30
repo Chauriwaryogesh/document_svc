@@ -39,8 +39,8 @@ public class VerificationRecord {
 	private Policy policy;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "account_number", referencedColumnName = "accountNo")
-	private BankAccount bankAccount;
+	@JoinColumn(name = "accountNumber", referencedColumnName = "accountNumber")
+	private Bank bank;
 
 	@OneToMany(mappedBy = "verificationRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Workitem> workitems = new ArrayList<>();
@@ -134,12 +134,13 @@ public class VerificationRecord {
 		this.policy = policy;
 	}
 
-	public BankAccount getBankAccount() {
-		return bankAccount;
+	
+	public Bank getBank() {
+		return bank;
 	}
 
-	public void setBankAccount(BankAccount bankAccount) {
-		this.bankAccount = bankAccount;
+	public void setBank(Bank bank) {
+		this.bank = bank;
 	}
 
 	public List<Workitem> getWorkitems() {

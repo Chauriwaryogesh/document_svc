@@ -78,6 +78,7 @@ public class CommonConstant {
 	public static final String BANCS_TEAM = "Bancs Team";
 	public static final String ADMIN_TEAM = "Admin Team";
 	public static final String ESCALATION_TEAM = "Escalation Team";
+	public static final String BANK_TRANSFER = "BANK_TRANSFER";
 	
 	
 

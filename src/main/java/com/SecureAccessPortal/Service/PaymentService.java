@@ -21,7 +21,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
-import com.SecureAccessPortal.Entity.BankAccount;
+import com.SecureAccessPortal.Entity.Bank;
 import com.SecureAccessPortal.Entity.Payments;
 import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Modal.DashboardStats;
@@ -135,9 +135,9 @@ public class PaymentService {
 		}
 
 		if (request.getPaymentDetails().getBankaccount() != null) {
-			BankAccount bankAccounts = bankAccountRepository
+			Bank bankAccounts = bankAccountRepository
 					.findByAccountNo(request.getPaymentDetails().getBankaccount(), CommonConstant.N);
-			payment.setBankAccount(bankAccounts);
+			payment.setBank(bankAccounts);
 		}
         payment.setPaymentType(request.getPaymentType());
 		payment.setInstallmentCount(0);

@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
-import com.SecureAccessPortal.Entity.BankAccount;
+import com.SecureAccessPortal.Entity.Bank;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.OtpStore;
 import com.SecureAccessPortal.Entity.Payments;
@@ -246,7 +246,7 @@ public class WorkItemService implements IWorkItemService {
 
 	@Override
 	public Workitem mapRequetforWorkItem(String userCode, Policy policy, Customer customer, String workType,
-			String workItemName, String comment, BankAccount bankAccount, VerificationRecord verificationRecord,
+			String workItemName, String comment, Bank bankAccount, VerificationRecord verificationRecord,
 			Payments payments, String status) {
 		com.SecureAccessPortal.Entity.Workitem workItem = new com.SecureAccessPortal.Entity.Workitem();
 		workItem.setWorkItemId(String.valueOf(UUID.randomUUID()));
@@ -268,7 +268,7 @@ public class WorkItemService implements IWorkItemService {
 			workItem.setPolicy(policy);
 		}
 		if (bankAccount != null) {
-			workItem.setBankAccount(bankAccount);
+			workItem.setBank(bankAccount);
 		}
 		if (verificationRecord != null) {
 			workItem.setVerificationRecord(verificationRecord);

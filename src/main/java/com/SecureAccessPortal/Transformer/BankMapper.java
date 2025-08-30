@@ -16,7 +16,7 @@ public class BankMapper {
 		listOfDocument = verRecords.parallelStream().map(record -> {
 			VerificationRecordDTO dto = new VerificationRecordDTO();
 			dto.setId(record.getVerId());
-			dto.setAccountNo(record.getBankAccount().getAccountNo());
+			dto.setAccountNo(record.getBank().getAccountNumber());
 			dto.setCustomerNo(record.getCustomer().getCustomerNo());
 			dto.setPolicyNumber(record.getPolicy().getPolicyNumber());
 			dto.setUserCode(record.getUserCode());
@@ -31,8 +31,8 @@ public class BankMapper {
 			dto.setSanctionsCertificate(record.getSanctionsDocs());
 			dto.setCreatedBy(record.getCreatedBy());
 			dto.setUpdatedBy(record.getUpdatedBy());
-			dto.setUpdatedTime(record.getUpdatedTime());
-			dto.setCreatedTime(record.getCreatedTime());
+			dto.setUpdatedDate(record.getUpdatedTime());
+			dto.setCreatedDate(record.getCreatedTime());
 			return dto;
 		}).collect(Collectors.toList());
 

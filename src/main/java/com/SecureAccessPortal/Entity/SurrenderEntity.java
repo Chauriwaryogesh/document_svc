@@ -52,8 +52,8 @@ public class SurrenderEntity {
 	private Payments payment;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "accountNo", referencedColumnName = "accountNo")
-	private BankAccount bankAccount;
+	@JoinColumn(name = "accountNumber", referencedColumnName = "accountNumber")
+	private Bank bank;
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
 	private byte[] verificationDocument;
@@ -105,10 +105,7 @@ public class SurrenderEntity {
 		this.bankDocumentStatus = bankDocumentStatus;
 	}
 
-	public BankAccount getBankAccount() {
-		return bankAccount;
-	}
-
+	
 	public Customer getCustomer() {
 		return customer;
 	}
@@ -117,8 +114,14 @@ public class SurrenderEntity {
 		this.customer = customer;
 	}
 
-	public void setBankAccount(BankAccount bankAccount) {
-		this.bankAccount = bankAccount;
+	
+
+	public Bank getBank() {
+		return bank;
+	}
+
+	public void setBank(Bank bank) {
+		this.bank = bank;
 	}
 
 	public byte[] getOtherSupportingDocument() {

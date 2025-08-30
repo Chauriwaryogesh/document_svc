@@ -1,60 +1,158 @@
-package com.SecureAccessPortal.Modal;
+package com.SecureAccessPortal.Entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import lombok.Data;
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
-@Data
-public class BankDetailsDTO {
+@Entity
+@Table(name = "Bank")
+public class Bank {
 
+	/* ---------------- Primary Key ---------------- */
+	@Id
+	@Column(name = "bankId")
 	private String bankId;
-	private String action;
-	// Relations
-	private String customerNumber;
-	private String customerName;
-	private String policyNumber;
-	private String policyStatus;
 
-	// Core Account Details
+	/* ---------------- Relations ---------------- */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "customerNo", referencedColumnName = "customerNo")
+	private Customer customer;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "policyNumber", referencedColumnName = "policyNumber")
+	private Policy policy;
+
+	/* ---------------- Core Account Details ---------------- */
+	@Column(name = "accountNumber")
 	private String accountNumber;
+
+	@Column(name = "accountHolderName")
 	private String accountHolderName;
+
+	@Column(name = "accountHolderType")
 	private String accountHolderType;
+
+	@Column(name = "bankName")
 	private String bankName;
+
+	@Column(name = "branchCode")
 	private String branchCode;
+
+	@Column(name = "ifscCode")
 	private String ifscCode;
+
+	@Column(name = "swiftCode")
 	private String swiftCode;
+
+	@Column(name = "accountType")
 	private String accountType;
-	private String currency; // e.g. INR, USD
+
+	@Column(name = "currency", length = 3) // e.g. INR, USD
+	private String currency;
+
+	@Column(name = "accountBalance")
 	private BigDecimal accountBalance;
-	private Boolean isDefaultAccount;
+
+	@Column(name = "isDefaultAccount")
+	private Boolean isDefaultAccount = Boolean.FALSE;
+
+	@Column(name = "accountOpeningDate")
 	private LocalDateTime accountOpeningDate;
+
+	@Column(name = "accountClosingDate")
 	private LocalDateTime accountClosingDate;
 
-	// KYC & Compliance
+	/* ---------------- KYC & Compliance ---------------- */
+	@Column(name = "kycDocumentStatus")
 	private String kycDocumentStatus; // PENDING, VERIFIED, REJECTED
-	private String kycStatus; // "Y" or "N"
-	private String kycDocument; // uploaded KYC document
-	private String amlStatus;
+	@Column(name = "kycStatus")
+	private String kycStatus;
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	@Column(name = "kycDocument", columnDefinition = "BLOB")
+	private byte[] kycDocument; // uploaded KYC document
 
-	// Payment & Verification
+	@Column(name = "amlStatus")
+	private String amlStatus; // AML compliance check
+
+	/* ---------------- Payment & Verification ---------------- */
+	@Column(name = "paymentMethodStatus")
 	private String paymentMethodStatus;
+
+	@Column(name = "linkedPaymentMethod")
 	private String linkedPaymentMethod;
+
+	@Column(name = "lastPaymentDate")
 	private LocalDateTime lastPaymentDate;
+
+	@Column(name = "lastVerificationDate")
 	private LocalDateTime lastVerificationDate;
+
+	@Column(name = "verificationAttempts")
 	private Integer verificationAttempts;
+
+	@Column(name = "verifierComment")
 	private String verifierComment;
+
+	@Column(name = "customerComment", columnDefinition = "TEXT")
 	private String customerComment;
 
-	// Status Flags
+	/* ---------------- Status Flags ---------------- */
+	@Column(name = "status")
 	private String status;
+
+	@Column(name = "deletedFlag")
 	private String deletedFlag;
 
-	// Audit
+	/* ---------------- Audit ---------------- */
+	@Column(name = "createdBy")
 	private String createdBy;
+
+	@Column(name = "createdDate")
 	private LocalDateTime createdDate;
+
+	@Column(name = "updatedBy")
 	private String updatedBy;
+
+	@Column(name = "updatedDate")
 	private LocalDateTime updatedDate;
+
+	/* ---------------- Child Entities ---------------- */
+	@OneToMany(mappedBy = "bank", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<SurrenderEntity> surrenderEntity = new ArrayList<>();
+
+	@OneToMany(mappedBy = "bank", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<ClaimEntity> claimEntity = new ArrayList<>();
+
+	@OneToMany(mappedBy = "bank", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<VerificationRecord> verificationRecords = new ArrayList<>();
+
+	@OneToMany(mappedBy = "bank", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Workitem> workitems = new ArrayList<>();
+
+	@OneToMany(mappedBy = "bank", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Payments> payments = new ArrayList<>();
+
+	public String getKycStatus() {
+		return kycStatus;
+	}
+
+	public void setKycStatus(String kycStatus) {
+		this.kycStatus = kycStatus;
+	}
 
 	public String getBankId() {
 		return bankId;
@@ -64,44 +162,20 @@ public class BankDetailsDTO {
 		this.bankId = bankId;
 	}
 
-	public String getAction() {
-		return action;
+	public Customer getCustomer() {
+		return customer;
 	}
 
-	public void setAction(String action) {
-		this.action = action;
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
-	public String getCustomerNumber() {
-		return customerNumber;
+	public Policy getPolicy() {
+		return policy;
 	}
 
-	public void setCustomerNumber(String customerNumber) {
-		this.customerNumber = customerNumber;
-	}
-
-	public String getCustomerName() {
-		return customerName;
-	}
-
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
-	}
-
-	public String getPolicyNumber() {
-		return policyNumber;
-	}
-
-	public void setPolicyNumber(String policyNumber) {
-		this.policyNumber = policyNumber;
-	}
-
-	public String getPolicyStatus() {
-		return policyStatus;
-	}
-
-	public void setPolicyStatus(String policyStatus) {
-		this.policyStatus = policyStatus;
+	public void setPolicy(Policy policy) {
+		this.policy = policy;
 	}
 
 	
@@ -218,19 +292,11 @@ public class BankDetailsDTO {
 		this.kycDocumentStatus = kycDocumentStatus;
 	}
 
-	public String getKycStatus() {
-		return kycStatus;
-	}
-
-	public void setKycStatus(String kycStatus) {
-		this.kycStatus = kycStatus;
-	}
-
-	public String getKycDocument() {
+	public byte[] getKycDocument() {
 		return kycDocument;
 	}
 
-	public void setKycDocument(String kycDocument) {
+	public void setKycDocument(byte[] kycDocument) {
 		this.kycDocument = kycDocument;
 	}
 
@@ -344,6 +410,46 @@ public class BankDetailsDTO {
 
 	public void setUpdatedDate(LocalDateTime updatedDate) {
 		this.updatedDate = updatedDate;
+	}
+
+	public List<SurrenderEntity> getSurrenderEntity() {
+		return surrenderEntity;
+	}
+
+	public void setSurrenderEntity(List<SurrenderEntity> surrenderEntity) {
+		this.surrenderEntity = surrenderEntity;
+	}
+
+	public List<ClaimEntity> getClaimEntity() {
+		return claimEntity;
+	}
+
+	public void setClaimEntity(List<ClaimEntity> claimEntity) {
+		this.claimEntity = claimEntity;
+	}
+
+	public List<VerificationRecord> getVerificationRecords() {
+		return verificationRecords;
+	}
+
+	public void setVerificationRecords(List<VerificationRecord> verificationRecords) {
+		this.verificationRecords = verificationRecords;
+	}
+
+	public List<Workitem> getWorkitems() {
+		return workitems;
+	}
+
+	public void setWorkitems(List<Workitem> workitems) {
+		this.workitems = workitems;
+	}
+
+	public List<Payments> getPayments() {
+		return payments;
+	}
+
+	public void setPayments(List<Payments> payments) {
+		this.payments = payments;
 	}
 
 }

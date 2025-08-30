@@ -60,7 +60,7 @@ public class Policy {
 	private List<Payments> payments = new ArrayList<>();
 
 	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<BankAccount> bankAccounts = new ArrayList<>();
+	private List<Bank> bankAccounts = new ArrayList<>();
 
 	@OneToMany(mappedBy = "policy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<VerificationRecord> verificationRecords = new ArrayList<>();
@@ -256,11 +256,11 @@ public class Policy {
 		this.payments = payments;
 	}
 
-	public List<BankAccount> getBankAccounts() {
+	public List<Bank> getBankAccounts() {
 		return bankAccounts;
 	}
 
-	public void setBankAccounts(List<BankAccount> bankAccounts) {
+	public void setBankAccounts(List<Bank> bankAccounts) {
 		this.bankAccounts = bankAccounts;
 	}
 
