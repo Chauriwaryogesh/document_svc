@@ -4,9 +4,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PolicyList {
 	private int policyId;
 	private String policyNumber;
@@ -60,6 +65,17 @@ public class PolicyList {
 	private String email; // extra
 	private String dateOfBirth; // extra
 	private String gender; // extra
+	private String requestNumber;
+	private String requestStatus;
+	private String verifierReason;
+
+	public String getVerifierReason() {
+		return verifierReason;
+	}
+
+	public void setVerifierReason(String verifierReason) {
+		this.verifierReason = verifierReason;
+	}
 
 	// ---------------- Related Entities ----------------
 	private List<BankDetailsDTO> bankAccounts;
@@ -67,6 +83,22 @@ public class PolicyList {
 	private List<SurrenderClaimDTO> surrenderDTO;
 	private List<SurrenderClaimDTO> claimDTO;
 	private List<String> workItemRefNo;
+
+	public String getRequestNumber() {
+		return requestNumber;
+	}
+
+	public void setRequestNumber(String requestNumber) {
+		this.requestNumber = requestNumber;
+	}
+
+	public String getRequestStatus() {
+		return requestStatus;
+	}
+
+	public void setRequestStatus(String requestStatus) {
+		this.requestStatus = requestStatus;
+	}
 
 	public int getPolicyId() {
 		return policyId;

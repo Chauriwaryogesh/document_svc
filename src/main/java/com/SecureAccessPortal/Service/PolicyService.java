@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,12 +29,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
+import com.SecureAccessPortal.CommonConstants.ErrorConstants;
 import com.SecureAccessPortal.Entity.Bank;
 import com.SecureAccessPortal.Entity.ClaimEntity;
 import com.SecureAccessPortal.Entity.Customer;
 import com.SecureAccessPortal.Entity.PaymentSequence;
 import com.SecureAccessPortal.Entity.Payments;
 import com.SecureAccessPortal.Entity.Policy;
+import com.SecureAccessPortal.Entity.PolicyRequestEntity;
 import com.SecureAccessPortal.Entity.Policy_Info;
 import com.SecureAccessPortal.Entity.SurrenderEntity;
 import com.SecureAccessPortal.Entity.Workitem;
@@ -54,6 +57,7 @@ import com.SecureAccessPortal.Repo.IPolicyRepo;
 import com.SecureAccessPortal.Repo.PaymentSequenceRepo;
 import com.SecureAccessPortal.Repo.PaymentsRepo;
 import com.SecureAccessPortal.Repo.PolicyInfoRepo;
+import com.SecureAccessPortal.Repo.PolicyRequestRepo;
 import com.SecureAccessPortal.Repo.SurrenderRepo;
 import com.SecureAccessPortal.Repo.WorkItemRepo;
 import com.SecureAccessPortal.Transformer.PolicyMapper;
@@ -103,13 +107,16 @@ public class PolicyService {
 	@Autowired
 	private ClaimRepo claimRepoSitory;
 
+	@Autowired
+	private PolicyRequestRepo policyRequestRepository;
+
 	@Transactional
 	public ResponseDTO createPolicy(PolicyRequest policyDTO, String userCode) {
 		ResponseDTO response = new ResponseDTO();
 		Customer customer = null;
 		// 🔹 Decide installment amount & total installments
-		BigDecimal installmentAmount= BigDecimal.ZERO;
-		int totalInstallments=0;
+		BigDecimal installmentAmount = BigDecimal.ZERO;
+		int totalInstallments = 0;
 
 		try {
 			Policy policy = new Policy();
@@ -242,11 +249,9 @@ public class PolicyService {
 
 	}
 
-
-
 	private void createPaymentEntries(Policy policy, String customerNo, String productCode, String policyName,
-			BigDecimal installmentAmount, int installmentCount, LocalDateTime policyStartDate, String term, String userCode,
-			Customer customer) {
+			BigDecimal installmentAmount, int installmentCount, LocalDateTime policyStartDate, String term,
+			String userCode, Customer customer) {
 		List<Payments> paymentsList = new ArrayList<>();
 		LocalDateTime baseDueDate = policyStartDate.withDayOfMonth(1).plusMonths(1); // Start from 1st of next month
 
@@ -284,7 +289,6 @@ public class PolicyService {
 				paymentList.get(0), status);
 	}
 
-
 	@Transactional
 	private synchronized String generatePaymentId() {
 		LocalDateTime now = LocalDateTime.now();
@@ -305,25 +309,24 @@ public class PolicyService {
 
 	@Transactional
 	public synchronized String generatePolicyNumber() {
-	    String currentYear = String.valueOf(Year.now().getValue()); // e.g., "2025"
-	    String lastPolicyNo = policyRepository.findTopPolicyNumberForCurrentYear(currentYear);
-	    int nextSequenceNumber = 1;
-	    if (lastPolicyNo != null && lastPolicyNo.contains("/")) {
-	        try {
-	            String numberPart = lastPolicyNo.split("/")[1]; 
-	            nextSequenceNumber = Integer.parseInt(numberPart) + 1;
-	        } catch (NumberFormatException e) {
-	            logger.warn("Could not parse sequence number from last policy number: {}. Resetting to 001.", lastPolicyNo, e);
-	            nextSequenceNumber = 1;
-	        }
-	    }
-	    String newPolicyNumber = String.format("POLICY/%03d/%s", nextSequenceNumber, currentYear);
-	    logger.info("Generated new policy number: {}", newPolicyNumber);
+		String currentYear = String.valueOf(Year.now().getValue()); // e.g., "2025"
+		String lastPolicyNo = policyRepository.findTopPolicyNumberForCurrentYear(currentYear);
+		int nextSequenceNumber = 1;
+		if (lastPolicyNo != null && lastPolicyNo.contains("/")) {
+			try {
+				String numberPart = lastPolicyNo.split("/")[1];
+				nextSequenceNumber = Integer.parseInt(numberPart) + 1;
+			} catch (NumberFormatException e) {
+				logger.warn("Could not parse sequence number from last policy number: {}. Resetting to 001.",
+						lastPolicyNo, e);
+				nextSequenceNumber = 1;
+			}
+		}
+		String newPolicyNumber = String.format("POLICY/%03d/%s", nextSequenceNumber, currentYear);
+		logger.info("Generated new policy number: {}", newPolicyNumber);
 
-	    return newPolicyNumber;
+		return newPolicyNumber;
 	}
-
-
 
 	public ResponseEntity<List<PolicyDTO>> getPolicyDetails(String policyNo, String customerNo, String allpol,
 			String workItemRefNo, String userCode) {
@@ -413,18 +416,17 @@ public class PolicyService {
 
 	public List<PolicyDTO> mapPolicyListDetails(List<Policy> policies, String userCode) {
 		AtomicInteger count = new AtomicInteger();
-		return policies.stream()
-				.collect(Collectors.groupingBy(policy -> policy.getCustomer().getCustomerNo()))
-				.entrySet().stream()
-				.map(entry -> {
+		return policies.stream().collect(Collectors.groupingBy(policy -> policy.getCustomer().getCustomerNo()))
+				.entrySet().stream().map(entry -> {
 					String customerNo = entry.getKey();
 					List<Policy> customerPolicies = entry.getValue();
 					Optional<Customer> customerOpt = customerRepository.findByCustomerNo(customerNo);
-					if (customerOpt.isEmpty()) return null;
+					if (customerOpt.isEmpty())
+						return null;
 					Customer customer = customerOpt.get();
 					PolicyDTO policyDTO = new PolicyDTO();
-					
-					customerPolicies.stream().forEach(policy -> count.getAndIncrement());				
+
+					customerPolicies.stream().forEach(policy -> count.getAndIncrement());
 					policyDTO.setAssociatedPolicyCount(String.valueOf(customerPolicies.size()));
 					policyDTO.setCustomerNo(customer.getCustomerNo());
 					policyDTO.setUserCode(customer.getUserCode() != null ? customer.getUserCode() : null);
@@ -434,15 +436,15 @@ public class PolicyService {
 					policyDTO.setSurname(customer.getSurname() != null ? customer.getSurname() : "");
 					policyDTO.setGender(customer.getGender() != null ? customer.getGender() : "");
 					policyDTO.setMiddleName(customer.getMiddleName() != null ? customer.getMiddleName() : "");
-					policyDTO.setDateOfBirth(customer.getDateOfBirth() != null ? customer.getDateOfBirth().toString() : "");
+					policyDTO.setDateOfBirth(
+							customer.getDateOfBirth() != null ? customer.getDateOfBirth().toString() : "");
 					policyDTO.setEmail(customer.getEmail() != null ? customer.getEmail() : "");
-					policyDTO.setPolicyList(customerPolicies.stream().map(this::mapPolicyToPolicyList).collect(Collectors.toList()));
+					policyDTO.setPolicyList(
+							customerPolicies.stream().map(this::mapPolicyToPolicyList).collect(Collectors.toList()));
 					return policyDTO;
-				})
-				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+				}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
-	
+
 	private PolicyList mapPolicyToPolicyList(Policy policy) {
 		PolicyList pol = new PolicyList();
 		pol.setPolicyId(policy.getPolicyId());
@@ -453,8 +455,9 @@ public class PolicyService {
 		pol.setProductCode(policy.getProductCode() != null ? policy.getProductCode() : "");
 		pol.setCreatedBy(policy.getCreatedBy() != null ? policy.getCreatedBy() : "");
 		pol.setCreatedDate(policy.getCreatedDate());
-		//workitem mapping
-		pol.setWorkItemRefNo(policy.getWorkitems() != null? policy.getWorkitems().stream().map(Workitem::getWorkItemRefNumber).collect(Collectors.toList())
+		// workitem mapping
+		pol.setWorkItemRefNo(policy.getWorkitems() != null
+				? policy.getWorkitems().stream().map(Workitem::getWorkItemRefNumber).collect(Collectors.toList())
 				: new ArrayList<>());
 		pol.setUpdatedDate(policy.getUpdatedDate());
 		pol.setUpdatedBy(policy.getUpdatedBy() != null ? policy.getUpdatedBy() : "");
@@ -466,8 +469,7 @@ public class PolicyService {
 		pol.setBeneficiaryRelationship(
 				policy.getBeneficiaryRelationship() != null ? policy.getBeneficiaryRelationship() : "");
 		pol.setSmokerStatus(policy.getSmokerStatus() != null ? policy.getSmokerStatus() : "");
-		pol.setTotalAmount(
-				(policy.getTotalAmount() != null ? policy.getTotalAmount() : BigDecimal.ZERO));
+		pol.setTotalAmount((policy.getTotalAmount() != null ? policy.getTotalAmount() : BigDecimal.ZERO));
 		pol.setTotalInstallments(policy.getTotalInstallments());
 		pol.setPolicyTerm(policy.getPolicyTerm() != null ? policy.getPolicyTerm() : "");
 		pol.setMonthlyInstallment(policy.getMonthlyInstallment());
@@ -481,14 +483,13 @@ public class PolicyService {
 		pol.setPolicyEndDate(policy.getPolicyEndDate());
 		pol.setReason(policy.getReason() != null ? policy.getReason() : "");
 
-		List<Bank> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber(),
-				CommonConstant.N);
+		List<Bank> bankAccounts = bankAccountRepository.findByPolicyNumber(policy.getPolicyNumber(), CommonConstant.N);
 		pol.setBankAccounts(
 				bankAccounts != null ? bankAccounts.stream().map(this::mapToBankAccountDTO).collect(Collectors.toList())
 						: new ArrayList<>());
 		pol.setPaymentListDTO(mapForPayments(policy.getPayments()));
 		pol.setTotalAmount(policy.getTotalAmount());
-		
+
 		List<Payments> payments = policy.getPayments();
 		if (payments != null) {
 			long paidCount = payments.stream().filter(Objects::nonNull)
@@ -591,69 +592,70 @@ public class PolicyService {
 	}
 
 	private BankDetailsDTO mapToBankAccountDTO(Bank bankAccount) {
-	    if (bankAccount == null) {
-	        return null;
-	    }
+		if (bankAccount == null) {
+			return null;
+		}
 
-	    BankDetailsDTO dto = new BankDetailsDTO();
+		BankDetailsDTO dto = new BankDetailsDTO();
 
-	    // Primary key
-	    dto.setBankId(bankAccount.getBankId());
+		// Primary key
+		dto.setBankId(bankAccount.getBankId());
 
-	    // Relations
-	    if (bankAccount.getCustomer() != null) {
-	        dto.setCustomerNumber(bankAccount.getCustomer().getCustomerNo());
-	        dto.setCustomerName(
-	                (bankAccount.getCustomer().getName() != null ? bankAccount.getCustomer().getName() : "") + " "
-	                        + (bankAccount.getCustomer().getMiddleName() != null ? bankAccount.getCustomer().getMiddleName()
-	                                : "")
-	                        + " "
-	                        + (bankAccount.getCustomer().getSurname() != null ? bankAccount.getCustomer().getSurname() : ""));
-	    }
-	    if (bankAccount.getPolicy() != null) {
-	        dto.setPolicyNumber(bankAccount.getPolicy().getPolicyNumber());
-	        dto.setPolicyStatus(bankAccount.getPolicy().getPolicyStatus());
-	    }
-	    dto.setAccountNumber(bankAccount.getAccountNumber());
-	    dto.setAccountHolderName(bankAccount.getAccountHolderName());
-	    dto.setAccountHolderType(bankAccount.getAccountHolderType());
-	    dto.setBankName(bankAccount.getBankName());
-	    dto.setBranchCode(bankAccount.getBranchCode());
-	    dto.setIfscCode(bankAccount.getIfscCode());
-	    dto.setSwiftCode(bankAccount.getSwiftCode());
-	    dto.setAccountType(bankAccount.getAccountType());
-	    dto.setCurrency(bankAccount.getCurrency());
-	    dto.setAccountBalance(bankAccount.getAccountBalance());
-	    dto.setIsDefaultAccount(bankAccount.getIsDefaultAccount());
-	    dto.setAccountOpeningDate(bankAccount.getAccountOpeningDate());
-	    dto.setAccountClosingDate(bankAccount.getAccountClosingDate());
-	    dto.setKycDocumentStatus(bankAccount.getKycDocumentStatus());
-	    dto.setKycStatus(bankAccount.getKycStatus());
-	    if (bankAccount.getKycDocument() != null) {
-	        dto.setKycDocument(Base64.getEncoder().encodeToString(bankAccount.getKycDocument())); // byte[] -> Base64 string
-	    }
-	    dto.setAmlStatus(bankAccount.getAmlStatus());
+		// Relations
+		if (bankAccount.getCustomer() != null) {
+			dto.setCustomerNumber(bankAccount.getCustomer().getCustomerNo());
+			dto.setCustomerName((bankAccount.getCustomer().getName() != null ? bankAccount.getCustomer().getName() : "")
+					+ " "
+					+ (bankAccount.getCustomer().getMiddleName() != null ? bankAccount.getCustomer().getMiddleName()
+							: "")
+					+ " "
+					+ (bankAccount.getCustomer().getSurname() != null ? bankAccount.getCustomer().getSurname() : ""));
+		}
+		if (bankAccount.getPolicy() != null) {
+			dto.setPolicyNumber(bankAccount.getPolicy().getPolicyNumber());
+			dto.setPolicyStatus(bankAccount.getPolicy().getPolicyStatus());
+		}
+		dto.setAccountNumber(bankAccount.getAccountNumber());
+		dto.setAccountHolderName(bankAccount.getAccountHolderName());
+		dto.setAccountHolderType(bankAccount.getAccountHolderType());
+		dto.setBankName(bankAccount.getBankName());
+		dto.setBranchCode(bankAccount.getBranchCode());
+		dto.setIfscCode(bankAccount.getIfscCode());
+		dto.setSwiftCode(bankAccount.getSwiftCode());
+		dto.setAccountType(bankAccount.getAccountType());
+		dto.setCurrency(bankAccount.getCurrency());
+		dto.setAccountBalance(bankAccount.getAccountBalance());
+		dto.setIsDefaultAccount(bankAccount.getIsDefaultAccount());
+		dto.setAccountOpeningDate(bankAccount.getAccountOpeningDate());
+		dto.setAccountClosingDate(bankAccount.getAccountClosingDate());
+		dto.setKycDocumentStatus(bankAccount.getKycDocumentStatus());
+		dto.setKycStatus(bankAccount.getKycStatus());
+		if (bankAccount.getKycDocument() != null) {
+			dto.setKycDocument(Base64.getEncoder().encodeToString(bankAccount.getKycDocument())); // byte[] -> Base64
+																									// string
+		}
+		dto.setAmlStatus(bankAccount.getAmlStatus());
 
-	    // Payment & Verification
-	    dto.setPaymentMethodStatus(bankAccount.getPaymentMethodStatus());
-	    dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
-	    dto.setLastPaymentDate(bankAccount.getLastPaymentDate());
-	    dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
-	    dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
-	    dto.setVerifierComment(bankAccount.getVerifierComment());
-	    dto.setCustomerComment(bankAccount.getCustomerComment());
+		// Payment & Verification
+		dto.setPaymentMethodStatus(bankAccount.getPaymentMethodStatus());
+		dto.setLinkedPaymentMethod(bankAccount.getLinkedPaymentMethod());
+		dto.setLastPaymentDate(bankAccount.getLastPaymentDate());
+		dto.setLastVerificationDate(bankAccount.getLastVerificationDate());
+		dto.setVerificationAttempts(bankAccount.getVerificationAttempts());
+		dto.setVerifierComment(bankAccount.getVerifierComment());
+		dto.setCustomerComment(bankAccount.getCustomerComment());
 
-	    // Status Flags
-	    dto.setStatus(bankAccount.getStatus());
-	    dto.setDeletedFlag(bankAccount.getDeletedFlag());
+		// Status Flags
+		dto.setStatus(bankAccount.getStatus());
+		dto.setDeletedFlag(bankAccount.getDeletedFlag());
 
-	    // Audit
-	    dto.setCreatedBy(bankAccount.getCreatedBy());
-	    dto.setCreatedDate(bankAccount.getCreatedDate());
-	    dto.setUpdatedBy(bankAccount.getUpdatedBy());
-	    dto.setUpdatedDate(bankAccount.getUpdatedDate());
+		// Audit
+		dto.setCreatedBy(bankAccount.getCreatedBy());
+		dto.setCreatedDate(bankAccount.getCreatedDate());
+		dto.setUpdatedBy(bankAccount.getUpdatedBy());
+		dto.setUpdatedDate(bankAccount.getUpdatedDate());
 
-	    return dto;
+		return dto;
 	}
 
 	public List<GroupedPolicyDTO> getDomainData(String policyNo, String userCode) {
@@ -675,19 +677,17 @@ public class PolicyService {
 
 	private PolicyInfoDTO mapToDTO(Policy_Info policy) {
 		PolicyInfoDTO dto = new PolicyInfoDTO();
-		    dto.setPolicyId(policy.getPolicyId());
-		    dto.setPolicyName(policy.getPolicyName());
-		    dto.setProductCode(policy.getProductCode());
-		    dto.setPolicyType(policy.getPolicyType());
-		    dto.setPolicyStatus(policy.getPolicyStatus());
-		    dto.setPolCompanyName(policy.getPolCompanyName());
-		    dto.setPolicyTerm(policy.getPolicyTerm());
-		    dto.setTotalAmount(policy.getTotalAmount());
-		    dto.setUserCode(policy.getUserCode());	
-	        return dto;
-		}
-
-	
+		dto.setPolicyId(policy.getPolicyId());
+		dto.setPolicyName(policy.getPolicyName());
+		dto.setProductCode(policy.getProductCode());
+		dto.setPolicyType(policy.getPolicyType());
+		dto.setPolicyStatus(policy.getPolicyStatus());
+		dto.setPolCompanyName(policy.getPolCompanyName());
+		dto.setPolicyTerm(policy.getPolicyTerm());
+		dto.setTotalAmount(policy.getTotalAmount());
+		dto.setUserCode(policy.getUserCode());
+		return dto;
+	}
 
 	public ResponseEntity<String> validateEmailUserCode(String email, String userCode) {
 		ResponseEntity<String> response = new ResponseEntity<String>();
@@ -735,30 +735,48 @@ public class PolicyService {
 			policy.setDeletedFlag("N");
 
 			// ✅ Conditional field updates
-			if (policyDTO.getPolicyName() != null) policy.setPolicyName(policyDTO.getPolicyName());
-			if (policyDTO.getProductCode() != null) policy.setProductCode(policyDTO.getProductCode());
-			if (policyDTO.getFcuStatus() != null) policy.setFcuStatus(policyDTO.getFcuStatus());
-			if (policyDTO.getBeneficiaryContactNumber() != null) policy.setBeneficiaryContactNumber(policyDTO.getBeneficiaryContactNumber());
-			if (policyDTO.getBeneficiaryIdentityNumber() != null) policy.setBeneficiaryIdentityNumber(policyDTO.getBeneficiaryIdentityNumber());
-			if (policyDTO.getBeneficiaryName() != null) policy.setBeneficiaryName(policyDTO.getBeneficiaryName());
-			if (policyDTO.getBeneficiaryRelationship() != null) policy.setBeneficiaryRelationship(policyDTO.getBeneficiaryRelationship());
-			if (policyDTO.getMonthlyInstallment() != null) policy.setMonthlyInstallment(policyDTO.getMonthlyInstallment());
-			if (policyDTO.getPolicyEndDate() != null) policy.setPolicyEndDate(policyDTO.getPolicyEndDate());
-			if (policyDTO.getPolicyStartDate() != null) policy.setPolicyStartDate(policyDTO.getPolicyStartDate());
-			if (policyDTO.getPolicyStatus() != null) policy.setPolicyStatus(policyDTO.getPolicyStatus());
-			if (policyDTO.getPolicyTerm() != null) policy.setPolicyTerm(policyDTO.getPolicyTerm());
-			if (policyDTO.getPolicyType() != null) policy.setPolicyType(policyDTO.getPolicyType());
-			if (policyDTO.getPremiumDueDate() != null) policy.setPremiumDueDate(policyDTO.getPremiumDueDate());
-			if (policyDTO.getSmokerStatus() != null) policy.setSmokerStatus(policyDTO.getSmokerStatus());
-			if (policyDTO.getTotalAmount() != null) policy.setTotalAmount(policyDTO.getTotalAmount());
+			if (policyDTO.getPolicyName() != null)
+				policy.setPolicyName(policyDTO.getPolicyName());
+			if (policyDTO.getProductCode() != null)
+				policy.setProductCode(policyDTO.getProductCode());
+			if (policyDTO.getFcuStatus() != null)
+				policy.setFcuStatus(policyDTO.getFcuStatus());
+			if (policyDTO.getBeneficiaryContactNumber() != null)
+				policy.setBeneficiaryContactNumber(policyDTO.getBeneficiaryContactNumber());
+			if (policyDTO.getBeneficiaryIdentityNumber() != null)
+				policy.setBeneficiaryIdentityNumber(policyDTO.getBeneficiaryIdentityNumber());
+			if (policyDTO.getBeneficiaryName() != null)
+				policy.setBeneficiaryName(policyDTO.getBeneficiaryName());
+			if (policyDTO.getBeneficiaryRelationship() != null)
+				policy.setBeneficiaryRelationship(policyDTO.getBeneficiaryRelationship());
+			if (policyDTO.getMonthlyInstallment() != null)
+				policy.setMonthlyInstallment(policyDTO.getMonthlyInstallment());
+			if (policyDTO.getPolicyEndDate() != null)
+				policy.setPolicyEndDate(policyDTO.getPolicyEndDate());
+			if (policyDTO.getPolicyStartDate() != null)
+				policy.setPolicyStartDate(policyDTO.getPolicyStartDate());
+			if (policyDTO.getPolicyStatus() != null)
+				policy.setPolicyStatus(policyDTO.getPolicyStatus());
+			if (policyDTO.getPolicyTerm() != null)
+				policy.setPolicyTerm(policyDTO.getPolicyTerm());
+			if (policyDTO.getPolicyType() != null)
+				policy.setPolicyType(policyDTO.getPolicyType());
+			if (policyDTO.getPremiumDueDate() != null)
+				policy.setPremiumDueDate(policyDTO.getPremiumDueDate());
+			if (policyDTO.getSmokerStatus() != null)
+				policy.setSmokerStatus(policyDTO.getSmokerStatus());
+			if (policyDTO.getTotalAmount() != null)
+				policy.setTotalAmount(policyDTO.getTotalAmount());
 
 			// Create work item
-			//			String workType = CommonConstant.UPDATE_POL_DETAIL;
-			//			String workItemName = CommonConstant.POLICY_UPDATE_DETAILS;
-			//			String status=CommonConstant.OPEN;
-			//			String comment = "Policy is created " + policy.getPolicyNumber() + " for the customer";
-			//			Workitem mapRequetforWorkItem = workItemService.mapRequetforWorkItem(userCode, policy, customer, workType,
-			//					workItemName, comment, null, null, null,status);
+			// String workType = CommonConstant.UPDATE_POL_DETAIL;
+			// String workItemName = CommonConstant.POLICY_UPDATE_DETAILS;
+			// String status=CommonConstant.OPEN;
+			// String comment = "Policy is created " + policy.getPolicyNumber() + " for the
+			// customer";
+			// Workitem mapRequetforWorkItem =
+			// workItemService.mapRequetforWorkItem(userCode, policy, customer, workType,
+			// workItemName, comment, null, null, null,status);
 			policy = policyRepository.save(policy);
 			response.setPolicyNo(policy.getPolicyNumber());
 			response.setStatus(CommonConstant.SUCCESS);
@@ -809,93 +827,159 @@ public class PolicyService {
 			String workItemRefNo, String status, String type, String startDate, String endDate, String bankAccountNo,
 			String userCode, int page, int size) {
 
-	    ResponseEntity<Page<PolicyDTO>> resp = new ResponseEntity<>();
+		ResponseEntity<Page<PolicyDTO>> resp = new ResponseEntity<>();
 
-	    // Step 1: Build Specification (same as before, but without pageable)
-	    Specification<Policy> spec = (root, query, cb) -> {
-	        List<Predicate> predicates = new ArrayList<>();
+		// Step 1: Build Specification (same as before, but without pageable)
+		Specification<Policy> spec = (root, query, cb) -> {
+			List<Predicate> predicates = new ArrayList<>();
 
-	        if (workItemRefNo != null && !workItemRefNo.isEmpty()) {
-	            predicates.add(cb.like(cb.lower(root.get("workitems").get("workItemRefNumber")),
-	                    "%" + workItemRefNo.toLowerCase() + "%"));
-	        }
-	        if (policyNo != null && !policyNo.isEmpty()) {
-	            predicates.add(cb.equal(root.get("policyNumber"), policyNo));
-	        }
-	        if (customerNo != null && !customerNo.isEmpty()) {
-	            predicates.add(cb.like(cb.lower(root.get("customer").get("customerNo")),
-	                    "%" + customerNo.toLowerCase() + "%"));
-	        }
-	        if (type != null && !type.isEmpty()) {
-	            predicates.add(cb.equal(root.get("policyType"), type));
-	        }
-	        if (bankAccountNo != null && !bankAccountNo.isEmpty()) {
-	            predicates.add(cb.like(cb.lower(root.get("bankAccounts").get("accountNo")),
-	                    "%" + bankAccountNo.toLowerCase() + "%"));
-	        }
-	        if (status != null && !status.isEmpty()) {
-	            predicates.add(cb.equal(root.get("policyStatus"), status));
-	        }
-	        predicates.add(cb.equal(root.get("deletedFlag"), "N"));
+			if (workItemRefNo != null && !workItemRefNo.isEmpty()) {
+				predicates.add(cb.like(cb.lower(root.get("workitems").get("workItemRefNumber")),
+						"%" + workItemRefNo.toLowerCase() + "%"));
+			}
+			if (policyNo != null && !policyNo.isEmpty()) {
+				predicates.add(cb.equal(root.get("policyNumber"), policyNo));
+			}
+			if (customerNo != null && !customerNo.isEmpty()) {
+				predicates.add(cb.like(cb.lower(root.get("customer").get("customerNo")),
+						"%" + customerNo.toLowerCase() + "%"));
+			}
+			if (type != null && !type.isEmpty()) {
+				predicates.add(cb.equal(root.get("policyType"), type));
+			}
+			if (bankAccountNo != null && !bankAccountNo.isEmpty()) {
+				predicates.add(cb.like(cb.lower(root.get("bankAccounts").get("accountNo")),
+						"%" + bankAccountNo.toLowerCase() + "%"));
+			}
+			if (status != null && !status.isEmpty()) {
+				predicates.add(cb.equal(root.get("policyStatus"), status));
+			}
+			predicates.add(cb.equal(root.get("deletedFlag"), "N"));
 
-	        if (startDate != null && !startDate.isEmpty()) {
-	            try {
-	                LocalDateTime startDateTime = LocalDateTime.parse(
-	                        startDate + " 00:00:00",
-	                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-	                predicates.add(cb.greaterThanOrEqualTo(root.get("createdTime"), startDateTime));
-	            } catch (DateTimeParseException e) {
-	                System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
-	            }
-	        }
+			if (startDate != null && !startDate.isEmpty()) {
+				try {
+					LocalDateTime startDateTime = LocalDateTime.parse(startDate + " 00:00:00",
+							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					predicates.add(cb.greaterThanOrEqualTo(root.get("createdTime"), startDateTime));
+				} catch (DateTimeParseException e) {
+					System.err.println("Invalid startDate format: " + startDate + ". Skipping date filter.");
+				}
+			}
 
-	        if (endDate != null && !endDate.isEmpty()) {
-	            try {
-	                LocalDateTime endDateTime = LocalDateTime.parse(
-	                        endDate + " 23:59:59",
-	                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-	                predicates.add(cb.lessThanOrEqualTo(root.get("createdTime"), endDateTime));
-	            } catch (DateTimeParseException e) {
-	                System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
-	            }
-	        }
+			if (endDate != null && !endDate.isEmpty()) {
+				try {
+					LocalDateTime endDateTime = LocalDateTime.parse(endDate + " 23:59:59",
+							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					predicates.add(cb.lessThanOrEqualTo(root.get("createdTime"), endDateTime));
+				} catch (DateTimeParseException e) {
+					System.err.println("Invalid endDate format: " + endDate + ". Skipping date filter.");
+				}
+			}
 
-	        return cb.and(predicates.toArray(new Predicate[0]));
-	    };
-	    List<Policy> allPolicies = policyRepository.findAll(spec);
-	    Map<String, List<Policy>> groupedByCustomer =
-	            allPolicies.stream().collect(Collectors.groupingBy(p -> p.getCustomer().getCustomerNo()));
+			return cb.and(predicates.toArray(new Predicate[0]));
+		};
+		List<Policy> allPolicies = policyRepository.findAll(spec);
+		Map<String, List<Policy>> groupedByCustomer = allPolicies.stream()
+				.collect(Collectors.groupingBy(p -> p.getCustomer().getCustomerNo()));
 
-	    List<String> allCustomerNos = new ArrayList<>(groupedByCustomer.keySet());
-	    int start = Math.min(page * size, allCustomerNos.size());
-	    int end = Math.min(start + size, allCustomerNos.size());
-	    List<String> pagedCustomerNos = allCustomerNos.subList(start, end);
+		List<String> allCustomerNos = new ArrayList<>(groupedByCustomer.keySet());
+		int start = Math.min(page * size, allCustomerNos.size());
+		int end = Math.min(start + size, allCustomerNos.size());
+		List<String> pagedCustomerNos = allCustomerNos.subList(start, end);
 
-	    List<PolicyDTO> policyDTOs = pagedCustomerNos.stream()
-	            .map(custNo -> {
-	                List<Policy> policiesOfCustomer = groupedByCustomer.get(custNo);
-	                // Map your policies -> PolicyDTO (you already have mapPolicyListDetails)
-	                return mapPolicyListDetails(policiesOfCustomer, userCode).get(0);
-	            })
-	            .collect(Collectors.toList());
+		List<PolicyDTO> policyDTOs = pagedCustomerNos.stream().map(custNo -> {
+			List<Policy> policiesOfCustomer = groupedByCustomer.get(custNo);
+			// Map your policies -> PolicyDTO (you already have mapPolicyListDetails)
+			return mapPolicyListDetails(policiesOfCustomer, userCode).get(0);
+		}).collect(Collectors.toList());
 
-	    // Step 6: Wrap result into Page
-	    Page<PolicyDTO> response = new PageImpl<>(policyDTOs, PageRequest.of(page, size), allCustomerNos.size());
+		// Step 6: Wrap result into Page
+		Page<PolicyDTO> response = new PageImpl<>(policyDTOs, PageRequest.of(page, size), allCustomerNos.size());
 
-	    resp.setData(response);
-	    resp.setStatus(CommonConstant.SUCCESS);
-	    return resp;
+		resp.setData(response);
+		resp.setStatus(CommonConstant.SUCCESS);
+		return resp;
 	}
-	
 
-	public ResponseEntity<String> applyForPolicy(PolicyDTO policyDTO, String userCode) {
+	@Transactional
+	public ResponseEntity<String> applyForPolicy(PolicyList policyDTO, String action, String userCode) {
 		ResponseEntity<String> response = new ResponseEntity<>();
-		policyDTO.getCustomerNo();
-		policyDTO.getPolicyName();
-		policyDTO.getPolicyType();
-		policyDTO.getUserCode();
-		response.setStatus(CommonConstant.SUCCESS);
+		PolicyRequestEntity policyRequest = new PolicyRequestEntity();
+		try {
+			Customer byCustomerNoNew = customerRepository.findByCustomerNoNew(policyDTO.getCustomerNo(),
+					CommonConstant.N);
+			if (byCustomerNoNew != null) {
+				policyRequest.setCustomer(byCustomerNoNew);
+			}
+			switch (action) {
+			case CommonConstant.APPLY -> {
+				policyRequest.setRequestNumber(generateRequestNumberforCust());
+				policyRequest.setPolicyName(policyDTO.getPolicyName());
+				policyRequest.setDeletedFlag(CommonConstant.N);
+				policyRequest.setPolicyStatus(policyDTO.getPolicyStatus());
+				policyRequest.setPolCompanyName(policyDTO.getPolCompanyName());
+				policyRequest.setPolicyTerm(policyDTO.getPolicyTerm());
+
+				policyRequest.setCreatedBy(userCode);
+				policyRequest.setCreatedDate(LocalDateTime.now());
+				policyRequest.setTotalAmount(policyDTO.getTotalAmount());
+				policyRequest.setPolicyType(policyDTO.getPolicyType());
+				policyRequest.setProductCode(policyDTO.getProductCode());
+				policyRequest.setReason(policyDTO.getReason());
+				policyRequest.setRequestedBy(userCode);
+				policyRequest.setStatus(CommonConstant.IN_PROGRESS);
+			}
+			case CommonConstant.UPDATE -> { 
+				policyRequest.setRequestNumber(policyDTO.getPolicyNumber());
+				policyRequest.setVerifier(userCode);
+				policyRequest.setVerifierReason(policyDTO.getReason());
+				policyRequest.setStatus(policyDTO.getPolicyStatus());
+				policyRequest.setUpdatedBy(userCode);
+				policyRequest.setUpdatedDate(LocalDateTime.now());
+			}
+			}
+			policyRequestRepository.save(policyRequest);
+			response.setStatus(CommonConstant.SUCCESS);
+		} catch (Exception e) {
+			response.setStatus(ErrorConstants.FAILURE);
+			response.setErrorMessage("Error occured" + e);
+		}
 		return response;
+	}
+
+	public ResponseEntity<List<PolicyList>> applyPolicyRequest(String customerNo, String userCode) {
+		ResponseEntity<List<PolicyList>> response = new ResponseEntity<>();
+		List<PolicyRequestEntity> policies = policyRequestRepository.findByCustomerNo(customerNo, CommonConstant.N);
+		if (policies != null) {
+			List<PolicyList> policyResponse = policyMapper.mapPolicyRequest(policies);
+			Collections.reverse(policies);
+			response.setData(policyResponse);
+			response.setStatus(CommonConstant.SUCCESS);
+		} else {
+			response.setStatus(ErrorConstants.FAILURE);
+			response.setErrorMessage("Policy List Empty");
+		}
+		return response;
+	}
+
+	@Transactional
+	public synchronized String generateRequestNumberforCust() {
+		String currentYear = String.valueOf(Year.now().getValue()); // e.g., "2025"
+		String lastPolicyNo = policyRequestRepository.findTopRequestNumberForCurrentYear(currentYear);
+		int nextSequenceNumber = 1;
+		if (lastPolicyNo != null && lastPolicyNo.contains("/")) {
+			try {
+				String numberPart = lastPolicyNo.split("/")[1];
+				nextSequenceNumber = Integer.parseInt(numberPart) + 1;
+			} catch (NumberFormatException e) {
+				logger.warn("Could not parse sequence number from last policy number: {}. Resetting to 001.",
+						lastPolicyNo, e);
+				nextSequenceNumber = 1;
+			}
+		}
+		String newPolicyNumber = String.format("RQST/%03d/%s", nextSequenceNumber, currentYear);
+		logger.info("Generated new policy number: {}", newPolicyNumber);
+		return newPolicyNumber;
 	}
 
 	public ResponseEntity<Page<SurrenderClaimDTO>> getSurrender(String action, String surrenderRefNo, String policyNo,
@@ -952,7 +1036,7 @@ public class PolicyService {
 		}
 		return response;
 	}
-	
+
 	public ResponseEntity<Page<SurrenderClaimDTO>> getClaim(String action, String claimRefNo, String policyNo,
 			String customerNo, String startDate, String endDate, String type, int page, int size, String userCode) {
 
@@ -1167,16 +1251,16 @@ public class PolicyService {
 			}
 
 		}
-		case CommonConstant.UPDATE ->{
+		case CommonConstant.UPDATE -> {
 			if (request.getSurrenderRefNo() != null) {
 				SurrenderEntity surrender = surrenderRepoSitory.findBySurrenderRefNo(request.getSurrenderRefNo(),
 						CommonConstant.N);
 				surrender.setSurrenderStatus(request.getSurrenderStatus());
 				surrender.setSurrenderReason(request.getSurrReason());
 				surrender.setUpdatedBy(request.getUpdatedBy());
-				if(request.getVerificationComment() != null) {
+				if (request.getVerificationComment() != null) {
 					surrender.setVerificationComment(request.getVerificationComment());
-				}else {
+				} else {
 					surrender.setVerificationComment(CommonConstant.APPROVED);
 				}
 				surrender.setUpdatedDate(LocalDateTime.now());
@@ -1190,14 +1274,14 @@ public class PolicyService {
 				} else {
 					response.setStatus(CommonConstant.FAILURE);
 				}
-			}else if(request.getClaimRefNo() != null){
-				ClaimEntity surrender = claimRepoSitory.findByClaimRefNo(request.getClaimRefNo(),CommonConstant.N);
+			} else if (request.getClaimRefNo() != null) {
+				ClaimEntity surrender = claimRepoSitory.findByClaimRefNo(request.getClaimRefNo(), CommonConstant.N);
 				surrender.setClaimStatus(request.getClaimStatus());
 				surrender.setClaimReason(request.getClaimReason());
 				surrender.setUpdatedBy(request.getUpdatedBy());
-				if(request.getVerificationComment() != null) {
+				if (request.getVerificationComment() != null) {
 					surrender.setVerificationComment(request.getVerificationComment());
-				}else {
+				} else {
 					surrender.setVerificationComment(CommonConstant.APPROVED);
 				}
 				surrender.setUpdatedDate(LocalDateTime.now());
@@ -1210,12 +1294,13 @@ public class PolicyService {
 					response.setStatus(CommonConstant.SUCCESS);
 				} else {
 					response.setStatus(CommonConstant.FAILURE);
-				}	
+				}
 			}
 		}
-		case CommonConstant.UPDATE_DOCUMENT_STATUS ->{
+		case CommonConstant.UPDATE_DOCUMENT_STATUS -> {
 			if (request.getSurrenderRefNo() != null) {
-				SurrenderEntity surrender = surrenderRepoSitory.findBySurrenderRefNo(request.getSurrenderRefNo(),CommonConstant.N);
+				SurrenderEntity surrender = surrenderRepoSitory.findBySurrenderRefNo(request.getSurrenderRefNo(),
+						CommonConstant.N);
 				switch (request.getDocumentType()) {
 				case CommonConstant.BANK_PROOF -> {
 					surrender.setBankDocumentStatus(request.getDocumentStatus());
@@ -1239,8 +1324,8 @@ public class PolicyService {
 				} else {
 					response.setStatus(CommonConstant.FAILURE);
 				}
-			}else if(request.getClaimRefNo() != null) {
-				ClaimEntity surrender = claimRepoSitory.findByClaimRefNo(request.getClaimRefNo(),CommonConstant.N);
+			} else if (request.getClaimRefNo() != null) {
+				ClaimEntity surrender = claimRepoSitory.findByClaimRefNo(request.getClaimRefNo(), CommonConstant.N);
 				switch (request.getDocumentType()) {
 				case CommonConstant.BANK_PROOF -> {
 					surrender.setBankDocumentStatus(request.getDocumentStatus());
@@ -1266,8 +1351,8 @@ public class PolicyService {
 					response.setStatus(CommonConstant.SUCCESS);
 				} else {
 					response.setStatus(CommonConstant.FAILURE);
-				}	
-			}		
+				}
+			}
 		}
 		}
 		return response;
@@ -1365,14 +1450,20 @@ public class PolicyService {
 		response.setStatus(CommonConstant.SUCCESS);
 		return response;
 	}
+
 	private LocalDate calculateNextDueDate(LocalDate startDate, String frequency, int installmentNumber) {
-	    switch (frequency.toUpperCase()) {
-	        case "DAILY": return startDate.plusDays(installmentNumber);
-	        case "MONTHLY": return startDate.plusMonths(installmentNumber);
-	        case "QUARTERLY": return startDate.plusMonths(3L * installmentNumber);
-	        case "YEARLY": return startDate.plusYears(installmentNumber);
-	        default: throw new IllegalArgumentException("Invalid frequency: " + frequency);
-	    }
+		switch (frequency.toUpperCase()) {
+		case "DAILY":
+			return startDate.plusDays(installmentNumber);
+		case "MONTHLY":
+			return startDate.plusMonths(installmentNumber);
+		case "QUARTERLY":
+			return startDate.plusMonths(3L * installmentNumber);
+		case "YEARLY":
+			return startDate.plusYears(installmentNumber);
+		default:
+			throw new IllegalArgumentException("Invalid frequency: " + frequency);
+		}
 	}
 
 }

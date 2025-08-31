@@ -119,6 +119,10 @@ public class Customer {
 
 	@Column
 	private LocalDate documentExpiryDate;
+	
+	//policy Request
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<PolicyRequestEntity> policyRequest = new ArrayList<>();
 
 	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Payments> payment = new ArrayList<>();
@@ -147,8 +151,15 @@ public class Customer {
 	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<FeedbackEntity> feedback;
 	
-//	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//	private List<Note> notes = new ArrayList<>();
+
+
+	public List<PolicyRequestEntity> getPolicyRequest() {
+		return policyRequest;
+	}
+
+	public void setPolicyRequest(List<PolicyRequestEntity> policyRequest) {
+		this.policyRequest = policyRequest;
+	}
 
 	public List<FeedbackEntity> getFeedback() {
 		return feedback;

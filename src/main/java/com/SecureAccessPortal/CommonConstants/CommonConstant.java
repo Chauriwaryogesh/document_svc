@@ -82,6 +82,7 @@ public class CommonConstant {
 	public static final String ESCALATION_TEAM = "Escalation Team";
 	public static final String BANK_TRANSFER = "BANK_TRANSFER";
 	public static final String END_DATE = "9999-01-01 00:00:00.0";
+	public static final String APPLY = "APPLY";
 	
 	
 

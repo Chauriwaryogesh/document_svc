@@ -19,6 +19,7 @@ import com.SecureAccessPortal.Modal.CustomerDTO;
 import com.SecureAccessPortal.Modal.DashboardStats;
 import com.SecureAccessPortal.Modal.GroupedPolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyDTO;
+import com.SecureAccessPortal.Modal.PolicyList;
 import com.SecureAccessPortal.Modal.PolicyRequest;
 import com.SecureAccessPortal.Modal.ResponseDTO;
 import com.SecureAccessPortal.Modal.SurrenderClaimDTO;
@@ -169,12 +170,19 @@ public class PolicyController {
 	}
 
 	@PostMapping(value = "/apply-policy", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> applyPolicy(@RequestBody PolicyDTO policyDTO,
-			@RequestHeader(required = false) String userCode) {
-		ResponseEntity<String> response = policyService.applyForPolicy(policyDTO, userCode);
+	public ResponseEntity<String> applyPolicy(@RequestBody PolicyList policyDTO, @RequestParam String action,
+			@RequestHeader(required = true) String userCode) {
+		ResponseEntity<String> response = policyService.applyForPolicy(policyDTO,action, userCode);
 		return response;
 	}
-	
+
+	@GetMapping(value = "/apply-policy/request", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<PolicyList>> applyPolicyRequest( @RequestParam String customerNo,
+			@RequestHeader(required = false) String userCode) {
+		ResponseEntity<List<PolicyList>> response = policyService.applyPolicyRequest(customerNo, userCode);
+		return response;
+	}
+
 	@RequestMapping(value="getSurrenderDtls" ,method= RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<SurrenderClaimDTO>> getSurrenderDtls(
 			@RequestParam(required = false) String action,
