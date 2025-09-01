@@ -16,12 +16,9 @@
             min-height: 100vh;
             color: #334155;
         }
-        /* Prevent scrolling on body when modal is open */
         body.no-scroll {
             overflow: hidden;
         }
-
-        /* Sidebar styles copied from AddNotes.html */
         .sidebar {
             --sidebar-width-collapsed: 80px;
             --sidebar-width-expanded: 280px;
@@ -36,14 +33,13 @@
             position: relative;
             height: 100vh;
             flex-shrink: 0;
-            overflow-y: auto; /* Ensure scrolling within sidebar if content exceeds height */
+            overflow-y: auto;
         }
         .sidebar:hover,
-        .sidebar.expanded { /* Renamed 'collapsed' to 'expanded' to match 'AddNotes' */
+        .sidebar.expanded {
             width: var(--sidebar-width-expanded);
             box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
         }
-        /* New collapse button for sidebar */
         .sidebar-collapse-btn {
             position: absolute;
             top: 20px;
@@ -69,21 +65,20 @@
         .sidebar.expanded .sidebar-collapse-btn {
             transform: rotate(180deg);
         }
-
         .sidebar-header {
             padding: 0 20px;
             justify-content: flex-start;
             flex-shrink: 0;
-            height: 80px; /* Adjust height to match AddNotes.html */
+            height: 80px;
             display: flex;
             align-items: center;
-            gap: 16px; /* Match gap from AddNotes.html */
-            border-bottom: 1px solid #e2e8f0; /* Keep the border */
-            margin-bottom: 16px; /* Add margin-bottom for spacing */
+            gap: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 16px;
         }
         .sidebar-header .logo-text {
-            font-size: 1.25rem; /* Adjusted font size for logo text */
-            font-weight: 700; /* Adjusted font weight for logo text */
+            font-size: 1.25rem;
+            font-weight: 700;
             color: #3b82f6;
             opacity: 0;
             width: 0;
@@ -91,35 +86,34 @@
             transition: opacity 0.3s ease-in-out 0.1s, width 0.3s ease-in-out 0.1s;
         }
         .sidebar:hover .logo-text,
-        .sidebar.expanded .logo-text { /* Renamed 'collapsed' to 'expanded' */
+        .sidebar.expanded .logo-text {
             display: block;
             opacity: 1;
             width: auto;
         }
         .sidebar-header .sidebar-icon-collapsed {
             display: block;
-            font-size: 2.2rem; /* Make icon larger when collapsed */
-            min-width: 40px; /* Ensure icon has enough space */
+            font-size: 2.2rem;
+            min-width: 40px;
             text-align: center;
         }
         .sidebar:hover .sidebar-icon-collapsed,
-        .sidebar.expanded .sidebar-icon-collapsed { /* Renamed 'collapsed' to 'expanded' */
+        .sidebar.expanded .sidebar-icon-collapsed {
             display: none;
         }
-
         .sidebar-nav {
             flex-grow: 1;
-            padding-top: 4px; /* Adjust spacing */
-            padding-bottom: 4px; /* Adjust spacing */
-            overflow-y: auto; /* For scrollability */
+            padding-top: 4px;
+            padding-bottom: 4px;
+            overflow-y: auto;
         }
-        .sidebar-item { /* Renamed to sidebar-link to match AddNotes.html */
+        .sidebar-item {
             display: flex;
             align-items: center;
-            gap: 16px; /* Match gap from AddNotes.html */
+            gap: 16px;
             padding: 14px 20px;
-            color: #4b5563; /* Adjusted text color */
-            font-weight: 500; /* Adjusted font weight */
+            color: #4b5563;
+            font-weight: 500;
             white-space: nowrap;
             overflow: hidden;
             transition: color 0.2s, background-color 0.2s, transform 0.2s ease;
@@ -128,48 +122,46 @@
             text-decoration: none;
         }
         .sidebar-item i {
-            font-size: 1.15rem; /* Icon size */
+            font-size: 1.15rem;
             min-width: 24px;
             text-align: center;
             transition: transform 0.3s ease;
         }
-        .sidebar-item span { /* Renamed to sidebar-link-text for consistency */
+        .sidebar-item span {
             opacity: 0;
             width: 0;
             overflow: hidden;
             transition: opacity 0.3s ease-in-out 0.1s, width 0.3s ease-in-out 0.1s;
         }
         .sidebar:hover .sidebar-item span,
-        .sidebar.expanded .sidebar-item span { /* Renamed 'collapsed' to 'expanded' */
+        .sidebar.expanded .sidebar-item span {
             opacity: 1;
             width: auto;
         }
-
         .sidebar-item:hover,
         .sidebar-item.active {
-            color: #2563eb; /* Active/hover text color */
-            background-color: #eff6ff; /* Active/hover background color */
-            transform: translateX(4px); /* Slight translateX on hover/active */
-            border-left: none; /* Remove left border from previous style */
+            color: #2563eb;
+            background-color: #eff6ff;
+            transform: translateX(4px);
+            border-left: none;
         }
-
         .sidebar-bottom-actions {
-            padding: 1rem; /* Adjust padding */
+            padding: 1rem;
             border-top: 1px solid #e2e8f0;
             margin-top: 1.5rem;
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            align-items: center; /* Center items on bottom */
+            align-items: center;
         }
         .sidebar-bottom-actions button {
-            width: calc(100% - 24px); /* Adjust width to account for sidebar margin */
+            width: calc(100% - 24px);
             padding: 0.75rem 1.5rem;
             justify-content: center;
-            border-radius: 9999px; /* Make buttons fully rounded */
+            border-radius: 9999px;
         }
         .sidebar-bottom-actions button span {
-            display: block; /* Ensure text is visible for bottom actions */
+            display: block;
             opacity: 1;
             width: auto;
         }
@@ -179,16 +171,15 @@
             width: auto;
         }
         .sidebar-bottom-actions button .fas {
-            margin-right: 8px; /* Add margin to icon */
+            margin-right: 8px;
         }
         .sidebar:not(.expanded):hover .sidebar-bottom-actions button span {
             display: none;
         }
         .sidebar:not(.expanded):hover .sidebar-bottom-actions button {
-            width: auto; /* Adjust width on hover when collapsed */
-            padding: 0.75rem; /* Adjust padding on hover when collapsed */
+            width: auto;
+            padding: 0.75rem;
         }
-
         @media (max-width: 1024px) {
             .sidebar {
                 position: fixed;
@@ -204,7 +195,6 @@
                 display: none;
             }
         }
-
         .main-content-wrapper {
             display: flex;
             flex-grow: 1;
@@ -219,7 +209,7 @@
         .header {
             background-color: #ffffff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 0.75rem 1.5rem; /* Reduced padding further */
+            padding: 0.75rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -227,7 +217,7 @@
             border-radius: 12px;
         }
         .header-greeting {
-            font-size: 1.4rem; /* Reduced font size further */
+            font-size: 1.4rem;
             font-weight: 700;
             color: #1a202c;
         }
@@ -237,19 +227,18 @@
             gap: 1rem;
         }
         .header-info span {
-            font-size: 0.8rem; /* Reduced font size */
+            font-size: 0.8rem;
             color: #64748b;
         }
         .universal-search-input {
-            width: 180px; /* Initial width */
+            width: 180px;
             transition: width 0.3s ease-in-out, padding-left 0.3s ease-in-out;
         }
         .universal-search-input:focus,
         .universal-search-input:hover {
-            width: 250px; /* Expanded width on focus/hover */
-            padding-left: 2.5rem; /* Adjust padding for icon */
+            width: 250px;
+            padding-left: 2.5rem;
         }
-
         .card {
             background-color: white;
             border-radius: 16px;
@@ -341,7 +330,8 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background-color: rgba(0, 0, 0, 0.8); 
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -354,7 +344,7 @@
             opacity: 1;
             visibility: visible;
         }
-        .modal-content {
+        .modal-content-standard {
             background-color: white;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -369,59 +359,58 @@
             flex-direction: column;
             overflow: hidden; 
         }
-        .modal-overlay.open .modal-content {
+        .modal-overlay.open .modal-content-standard {
             transform: translateY(0);
             opacity: 1;
         }
-        /* Adjusted Policy Detail Modal Styling */
-        #policy-detail-modal .modal-content {
-            position: fixed; /* Changed to fixed for explicit positioning */
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%); /* Centering */
-            width: 80vw; /* Increased width */
-            max-width: 900px; /* Increased max width */
-            height: 80vh; /* Increased height */
-            max-height: 900px; /* Increased max height */
-            min-height: 500px; /* Increased min height */
-            min-width: 600px; /* Increased min width */
+
+        .modal-content-fullscreen {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            max-height: 100vh;
+            border-radius: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            overflow: auto; 
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            padding: 2rem;
-            opacity: 0; /* Hidden by default */
-            transition: opacity 0.3s ease-out;
+            background-color: #f8fafc;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        #policy-detail-modal.open .modal-content {
-            opacity: 1;
+        .modal-overlay.open .modal-content-fullscreen {
+             transform: scale(1);
+             opacity: 1;
         }
-
-        #policy-detail-modal .modal-header {
+        .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.5rem; /* Reduced margin */
+            padding: 1rem 2rem;
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 0.5rem; /* Reduced padding */
-            flex-shrink: 0; 
+            flex-shrink: 0;
+            background-color: white;
         }
-        #policy-detail-modal .modal-title {
-            font-size: 1.25rem; /* Reduced font size */
-            font-weight: 700;
-            color: #1a202c;
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
         }
         .modal-close-btn {
-            background: none;
+            background-color: #f1f5f9;
             border: none;
-            font-size: 1.5rem;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 1rem;
             color: #64748b;
             cursor: pointer;
-            transition: color 0.2s ease;
+            transition: all 0.2s ease;
         }
         .modal-close-btn:hover {
-            color: #ef4444;
+            background-color: #ef4444;
+            color: white;
+            transform: rotate(90deg);
         }
         .modal-body {
             font-size: 1rem;
@@ -429,26 +418,71 @@
             color: #4a5568;
             flex-grow: 1; 
             overflow-y: auto; 
-            padding-right: 1rem; 
+            padding: 2rem; 
         }
-        #policy-detail-modal .modal-footer {
+        .modal-footer {
+            padding: 1rem 2rem;
+            border-top: 1px solid #e2e8f0;
+            background-color: white;
             display: flex;
             justify-content: flex-end;
-            gap: 0.5rem; /* Reduced gap */
-            padding-top: 0.5rem; /* Reduced padding */
-            border-top: 1px solid #e2e8f0;
-            flex-shrink: 0; 
+            gap: 0.75rem;
+            flex-shrink: 0;
         }
-        /* Smaller buttons for policy detail modal */
-        #policy-detail-modal .btn-primary,
-        #policy-detail-modal .btn-secondary,
-        #policy-detail-modal .btn-danger {
-            padding: 0.5rem 0.8rem; /* Smaller padding */
-            font-size: 0.75rem; /* Smaller font size */
-            border-radius: 8px; /* Slightly smaller border-radius */
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem 1.5rem;
         }
-
-
+        .detail-item p { margin-bottom: 0.25rem; font-size: 0.9rem; }
+        .detail-item .font-semibold { color: #475569; font-weight: 500; }
+        .detail-item .text-gray-900 { color: #1e293b; font-weight: 600; }
+        
+        .section-container {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e0e7ff;
+        }
+        
+        .btn-modal-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .btn-modal-primary {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        .btn-modal-primary:hover {
+            background-color: #2563eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .btn-modal-secondary {
+            background-color: white;
+            color: #475569;
+            border-color: #cbd5e1;
+        }
+        .btn-modal-secondary:hover {
+            background-color: #f8fafc;
+            border-color: #94a3b8;
+        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -499,22 +533,20 @@
         .pagination-input { width: 50px; text-align: center; }
         .app-footer {
             width: 100%;
-            padding: 0.25rem 0.5rem; /* Further reduced padding */
+            padding: 0.25rem 0.5rem;
             text-align: center;
-            font-size: 0.7rem; /* Further reduced font size */
+            font-size: 0.7rem;
             color: #64748b;
             background-color: #ffffff;
             border-top: 1px solid #e2e8f0;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.03);
             margin-top: auto;
         }
-
         #dashboard-section .dashboard-cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
-
         .status-card {
             background-color: #ffffff;
             border-radius: 0.75rem;
@@ -542,7 +574,6 @@
             border: 2px solid #3b82f6;
             background-color: #e0e7ff;
         }
-
         .status-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
@@ -554,7 +585,6 @@
             vertical-align: middle;
             white-space: nowrap;
         }
-
         .status-active { background-color: #d1fae5; color: #059669; } 
         .status-lapsed { background-color: #fee2e2; color: #ef4444; } 
         .status-pending { background-color: #fef3c7; color: #f59e0b; } 
@@ -572,28 +602,72 @@
 
         .tab-button-group {
             display: flex;
-            margin-bottom: 1.5rem;
+            background-color: white;
             border-bottom: 1px solid #e2e8f0;
+            padding: 0 2rem;
+            flex-shrink: 0;
         }
         .tab-button {
-            padding: 0.75rem 1.25rem;
+            padding: 1rem 0.5rem;
+            margin: 0 1rem;
             background-color: transparent;
             border: none;
             font-weight: 600;
+            font-size: 0.9rem;
             color: #64748b;
             cursor: pointer;
             transition: all 0.2s ease;
-            border-bottom: 3px solid transparent;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
         }
+         .tab-button:first-child { margin-left: 0; }
         .tab-button.active {
             color: #3b82f6;
             border-bottom-color: #3b82f6;
         }
         .tab-content-section {
             display: none;
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
         .tab-content-section.active {
-            display: block;
+            display: flex;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .form-label { font-weight: 500; color: #475569; }
+        .form-label.required::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 4px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+        .form-input[readonly] {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .form-input-file {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
         }
     </style>
 </head>
@@ -648,7 +722,6 @@
                     <i class="fas fa-phone-alt fa-lg"></i>
                     <span>Contact Us</span>
                 </a>
-                <!-- New Modules for Customer -->
                 <a href="#" class="sidebar-item" data-section="add-notes">
                     <i class="fas fa-note-sticky fa-lg"></i>
                     <span>Add Notes</span>
@@ -688,656 +761,716 @@
                     </div>
                 </div>
             </header>
-            <section id="dashboard-section" class="content-section fade-in">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Overview</h2>
-                <div id="dashboard-cards-container" class="dashboard-cards-grid">
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon"><i class="fas fa-user-circle fa-2x"></i></div>
-                            <div><h3 class="card-title">Your Details</h3></div>
-                        </div>
-                        <p class="card-description">View and manage your personal information.</p>
-                        <button class="btn-primary w-full" onclick="showSection('personal-details')">View Your Details</button>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-purple-100 text-purple-600"><i class="fas fa-file-contract fa-2x"></i></div>
-                            <div><h3 class="card-title">Your Policies</h3></div>
-                        </div>
-                        <p class="card-description">Access details of your active and past policies.</p>
-                        <button class="btn-primary w-full" onclick="showSection('policy-details')">View Policies</button>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-green-100 text-green-600"><i class="fas fa-university fa-2x"></i></div>
-                            <div><h3 class="card-title">Bank Acco	unts</h3></div>
-                        </div>
-                        <p class="card-description">Manage your linked bank accounts for payments and claims.</p>
-                        <button class="btn-primary w-full" onclick="showSection('bank-accounts')">Manage Accounts</button>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-yellow-100 text-yellow-600"><i class="fas fa-credit-card fa-2x"></i></div>
-                            <div><h3 class="card-title">Make Policy Payment</h3></div>
-                        </div>
-                        <p class="card-description">Make payments for your policy installments.</p>
-                        <button class="btn-primary w-full" onclick="navigateToPayments()">Make Payment</button>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-red-100 text-red-600"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
-                            <div><h3 class="card-title">File a Complaint</h3></div>
-                        </div>
-                        <p class="card-description">Submit a new complaint or track existing ones.</p>
-                        <button class="btn-primary w-full" onclick="navigateToComplaints()">File Complaint</button>
-                    </div>                   
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-blue-100 text-blue-600"><i class="fas fa-tasks fa-2x"></i></div>
-                            <div><h3 class="card-title">Manage Workitems</h3></div>
-                        </div>
-                        <p class="card-description">View and manage your current work items and tasks.</p>
-                        <button class="btn-primary w-full" onclick="showSection('manage-workitems')">View Workitems</button>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-pink-100 text-pink-600"><i class="fas fa-project-diagram fa-2x"></i></div>
-                            <div><h3 class="card-title">Track Workflow</h3></div>
-                        </div>
-                        <p class="card-description">Monitor the progress of your submitted workflows.</p>
-                        <button class="btn-primary w-full" onclick="showSection('track-workflow')">Track Progress</button>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-orange-100 text-orange-600"><i class="fas fa-file-invoice-dollar fa-2x"></i></div>
-                            <div><h3 class="card-title">Surrender & Claim Module</h3></div>
-                        </div>
-                        <p class="card-description">Request to surrender an existing policy or initiate a claim for your active policy.</p>
-                        <div class="flex flex-col space-y-2 mt-4">
-                            <button class="btn-primary w-full" onclick="navigateToSurrender()">Surrender Or Claim</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-indigo-100 text-indigo-600"><i class="fas fa-comment-dots fa-2x"></i></div>
-                            <div><h3 class="card-title">Provide Feedback</h3></div>
-                        </div>
-                        <p class="card-description">Share your experience and suggestions with us.</p>
-                        <button class="btn-primary w-full" onclick="navigateToFeedback()">Give Feedback</button>
-                    </div>
-                    <!-- New Service Cards for Customer Modules -->
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-blue-200 text-blue-700"><i class="fas fa-note-sticky fa-2x"></i></div>
-                            <div><h3 class="card-title">Add Notes</h3></div>
-                        </div>
-                        <p class="card-description">Quickly add and manage personal notes related to your services.</p>
-                        <button class="btn-primary w-full" onclick="navigateToAddNotes()">Add Notes</button>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-green-200 text-green-700"><i class="fas fa-file-circle-check fa-2x"></i></div>
-                            <div><h3 class="card-title">Document Verification</h3></div>
-                        </div>
-                        <p class="card-description">Submit and track the verification status of your important documents.</p>
-                        <button class="btn-primary w-full" onclick="navigateToDocumentVertification()">Verify Documents</button>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-purple-200 text-purple-700"><i class="fas fa-briefcase fa-2x"></i></div>
-                            <div><h3 class="card-title">Pension Services</h3></div>
-                        </div>
-                        <p class="card-description">Explore and apply for new pension-related services and policies.</p>
-                        <button class="btn-primary w-full" onclick="navigateTopensionManForCust()">Explore Services</button>
-                    </div>
-                    <div class="card">
-                        <div class="card-header-content">
-                            <div class="card-icon bg-red-200 text-red-700"><i class="fas fa-envelope-open-text fa-2x"></i></div>
-                            <div><h3 class="card-title">Mail Services</h3></div>
-                        </div>
-                        <p class="card-description">Manage your communications and view important mail from us.</p>
-                        <button class="btn-primary w-full" onclick="navigateToMailServices()">View Mail</button>
-                    </div>
-                </div>
-            </section>
-            <section id="personal-details-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Personal Details</h2>
-                <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Basic Information</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 mb-6">
-                        <div><p class="font-semibold text-gray-700">Customer Number:</p><p id="detail-customer-no" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Full Name:</p><p id="detail-customer-name" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Phone Number:</p><p id="detail-phone-number" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Email:</p><p id="detail-email" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Date of Birth:</p><p id="detail-dob" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Gender:</p><p id="detail-gender" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Smoker Status:</p><p id="detail-smoker-status" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">User Code:</p><p id="detail-user-code" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Admin Access:</p><p id="detail-admin-access" class="text-gray-900">N/A</p></div>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Address Details</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 mb-6">
-                        <div><p class="font-semibold text-gray-700">Street:</p><p id="detail-address-street" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">City:</p><p id="detail-address-city" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">State:</p><p id="detail-address-state" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Zip Code:</p><p id="detail-address-zipcode" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Country:</p><p id="detail-address-country" class="text-gray-900">N/A</p></div>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Contact Details</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 mb-6">
-                        <div><p class="font-semibold text-gray-700">Alternate Email:</p><p id="detail-contact-alternate-email" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Phone Country Code:</p><p id="detail-contact-phone-country-code" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Emergency Contact Name:</p><p id="detail-contact-emergency-name" class="text-gray-900">N/A</p></div>
-                        <div><p class="font-semibold text-gray-700">Emergency Contact Phone:</p><p id="detail-contact-emergency-phone" class="text-gray-900">N/A</p></div>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Roles</h3>
-                    <div class="mb-6">
-                        <p id="detail-roles" class="text-gray-900">N/A</p>
-                    </div>
-                    <div class="mt-6 flex justify-end">
-                        <button class="btn-primary" onclick="navigateToComplaintsForDetailsChange()">Apply for Name or Details Changes</button>
-                    </div>
-                </div>
-            </section>
-            <section id="policy-details-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Policies</h2>
-                <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <input type="text" id="policy-search" placeholder="Search policies by number or name..." class="w-full md:w-2/3 p-2 border border-gray-300 rounded-md shadow-sm">
-                    <div class="w-full md:w-auto flex justify-end">
-                        <button class="btn-primary" onclick="openModal('apply-policy-modal')">Apply for Policy</button>
-                    </div>
-                </div>
-                <div class="overflow-x-auto rounded-lg shadow-md">
-                    <table class="min-w-full bg-white">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                                <th class="py-3 px-6 text-left">Policy No.</th>
-                                <th class="py-3 px-6 text-left">Policy Name</th>
-                                <th class="py-3 px-6 text-left">Type</th>
-                                <th class="py-3 px-6 text-left">Company</th>
-                                <th class="py-3 px-6 text-left">Premium</th>
-                                <th class="py-3 px-6 text-left">Due Date</th>
-                                <th class="py-3 px-6 text-left">Status</th>                           
-                                <th class="py-3 px-6 text-left">Claimable Amt.</th>
-                                <th class="py-3 px-6 text-left">Outstanding Balance</th> 
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-600 text-sm font-light" id="policy-list-table-body">
-                            <tr><td colspan="11" class="py-4 text-center text-gray-500">Loading policies...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="policy-pagination" class="p-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6"></div>
-                
-                <div id="policy-detail-modal" class="modal-overlay">
-                    <div class="modal-content">
-                        <div class="modal-header" id="policy-detail-modal-header">
-                            <h3 class="modal-title">Policy Details - <span id="modal-policy-number"></span></h3>
-                            <button class="modal-close-btn" onclick="closeModal('policy-detail-modal')">&times;</button>
-                        </div>
-                        <div class="tab-button-group px-8">
-                            <button class="tab-button active" data-tab="policy-info-section">Policy Information</button>
-                            <button class="tab-button" data-tab="payment-info-section">Payment Installments</button>
-                        </div>
-                        <div class="modal-body px-8 py-4">
-                            <div id="policy-info-section" class="tab-content-section active">
-                                <h4 class="text-xl font-bold text-gray-800 mb-4">Policy Information</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
-									<p><span class="font-semibold text-gray-700">Policy Name:</span> <span id="policy-name-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Company Name:</span> <span id="pol-company-name-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Product Code:</span> <span id="product-code-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Policy Type:</span> <span id="policy-type-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Policy Status:</span> <span id="policy-status-detail" class="status-badge status-default"></span></p>
-									<p><span class="font-semibold text-gray-700">Policy Term:</span> <span id="policy-term-detail" class="text-gray-900"></span></p>
-									<p><span class="font-semibold text-gray-700">Smoker Status:</span> <span id="policy-smoker-status-detail" class="text-gray-900"></span></p>
-									<p><span class="font-semibold text-gray-700">FCU Status:</span> <span id="policy-fcu-status-detail" class="text-gray-900"></span></p>
-
-                                    <p><span class="font-semibold text-gray-700">Policy Start Date:</span> <span id="start-date-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Premium Due Date:</span> <span id="premium-due-date-detail" class="text-gray-900"></span></p>   
-									<p><span class="font-semibold text-gray-700">Policy End Date:</span> <span id="end-date-detail" class="text-gray-900"></span></p>                                   
-                                
-                                    <p><span class="font-semibold text-gray-700">Total Amount:</span> <span id="total-amount-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Monthly Installment:</span> <span id="monthly-installment-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Total Installments:</span> <span id="total-installments-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Total Installments Paid:</span> <span id="total-installments-paid-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Total Installments Unpaid:</span> <span id="total-installments-unpaid-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Total Amount Paid:</span> <span id="total-amt-paid-detail" class="text-gray-900"></span></p>
-                                    <p><span class="font-semibold text-gray-700">Total Amount Unpaid:</span> <span id="total-amt-unpaid-detail" class="text-red-600 font-bold"></span></p>
-
-									<p><span class="font-semibold text-gray-700">Beneficiary Name:</span> <span id="beneficiary-name-detail" class="text-gray-900"></span></p>
-									<p><span class="font-semibold text-gray-700">Beneficiary Relationship:</span> <span id="beneficiary-relationship-detail" class="text-gray-900"></span></p>
-									<p><span class="font-semibold text-gray-700">Beneficiary Identity Number:</span> <span id="beneficiary-identity-detail" class="text-gray-900"></span></p>
-									<p><span class="font-semibold text-gray-700">Beneficiary Status:</span> <span id="beneficiary-status-detail" class="text-gray-900"></span></p>
-									<p><span class="font-semibold text-gray-700">Beneficiary Contact Number:</span> <span id="beneficiary-contact-detail" class="text-gray-900"></span></p>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-3 mt-6">
-                                    <button class="btn-primary flex-1" id="make-payments-button"><i class="fas fa-money-bill-wave mr-2"></i> Make Payment for Outstanding</button>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-3 mt-4">
-                                    <button class="btn-primary flex-1" onclick="sendPolicyEmail(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-envelope mr-2"></i> Send Policy Email</button>
-                                    <button class="btn-primary flex-1" onclick="generatePolicyPdf(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-file-pdf mr-2"></i> Generate Policy PDF</button>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-3 mt-4">
-                                    <button class="btn-primary w-full" onclick="navigateToSurrender(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-hand-holding-usd mr-2"></i> Surrender Or Claim Policy</button>
-                                </div>
-                                <div class="flex flex-col gap-2 mt-4">
-                                    <button class="btn-secondary w-full" onclick="navigateToComplaintsForPolicyIssue(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-exclamation-circle mr-2"></i> Report Policy Name/Amount Issue</button>
-                                    <button class="btn-secondary w-full" onclick="navigateToComplaintsForPaymentIssue(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-receipt mr-2"></i> Report Payment Issue</button>
-                                </div>
+            <main class="flex-1 overflow-y-auto p-8">
+                <section id="dashboard-section" class="content-section fade-in">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Overview</h2>
+                    <div id="dashboard-cards-container" class="dashboard-cards-grid">
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon"><i class="fas fa-user-circle fa-2x"></i></div>
+                                <div><h3 class="card-title">Your Details</h3></div>
                             </div>
-
-                            <div id="payment-info-section" class="tab-content-section">
-                                <h4 class="text-xl font-bold text-gray-800 mb-4">Payment Installments</h4>
-                                <div id="payment-installments-list" class="overflow-x-auto rounded-lg border border-gray-200">
-                                    <table class="min-w-full divide-y divide-gray-200">
-                                        <thead class="bg-gray-100">
-                                            <tr>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Installment No.</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Amount</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Due Date</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Payment Date</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Status</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Method</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Transaction ID</th>
-                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="installments-table-body" class="bg-white divide-y divide-gray-200">
-                                            <tr>
-                                                <td colspan="8" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No payment installments found for this policy.</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <p class="card-description">View and manage your personal information.</p>
+                            <button class="btn-primary w-full" onclick="showSection('personal-details')">View Your Details</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-purple-100 text-purple-600"><i class="fas fa-file-contract fa-2x"></i></div>
+                                <div><h3 class="card-title">Your Policies</h3></div>
+                            </div>
+                            <p class="card-description">Access details of your active and past policies.</p>
+                            <button class="btn-primary w-full" onclick="showSection('policy-details')">View Policies</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-green-100 text-green-600"><i class="fas fa-university fa-2x"></i></div>
+                                <div><h3 class="card-title">Bank Accounts</h3></div>
+                            </div>
+                            <p class="card-description">Manage your linked bank accounts for payments and claims.</p>
+                            <button class="btn-primary w-full" onclick="showSection('bank-accounts')">Manage Accounts</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-yellow-100 text-yellow-600"><i class="fas fa-credit-card fa-2x"></i></div>
+                                <div><h3 class="card-title">Make Policy Payment</h3></div>
+                            </div>
+                            <p class="card-description">Make payments for your policy installments.</p>
+                            <button class="btn-primary w-full" onclick="navigateToPayments()">Make Payment</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-red-100 text-red-600"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+                                <div><h3 class="card-title">File a Complaint</h3></div>
+                            </div>
+                            <p class="card-description">Submit a new complaint or track existing ones.</p>
+                            <button class="btn-primary w-full" onclick="navigateToComplaints()">File Complaint</button>
+                        </div>                   
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-blue-100 text-blue-600"><i class="fas fa-tasks fa-2x"></i></div>
+                                <div><h3 class="card-title">Manage Workitems</h3></div>
+                            </div>
+                            <p class="card-description">View and manage your current work items and tasks.</p>
+                            <button class="btn-primary w-full" onclick="showSection('manage-workitems')">View Workitems</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-pink-100 text-pink-600"><i class="fas fa-project-diagram fa-2x"></i></div>
+                                <div><h3 class="card-title">Track Workflow</h3></div>
+                            </div>
+                            <p class="card-description">Monitor the progress of your submitted workflows.</p>
+                            <button class="btn-primary w-full" onclick="showSection('track-workflow')">Track Progress</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-orange-100 text-orange-600"><i class="fas fa-file-invoice-dollar fa-2x"></i></div>
+                                <div><h3 class="card-title">Surrender & Claim Module</h3></div>
+                            </div>
+                            <p class="card-description">Request to surrender an existing policy or initiate a claim for your active policy.</p>
+                            <div class="flex flex-col space-y-2 mt-4">
+                                <button class="btn-primary w-full" onclick="navigateToSurrender()">Surrender Or Claim</button>
                             </div>
                         </div>
-                        <div class="modal-footer px-8 pb-4">
-                            <button class="btn-secondary" onclick="closeModal('policy-detail-modal')">Close</button>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-indigo-100 text-indigo-600"><i class="fas fa-comment-dots fa-2x"></i></div>
+                                <div><h3 class="card-title">Provide Feedback</h3></div>
+                            </div>
+                            <p class="card-description">Share your experience and suggestions with us.</p>
+                            <button class="btn-primary w-full" onclick="navigateToFeedback()">Give Feedback</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-blue-200 text-blue-700"><i class="fas fa-note-sticky fa-2x"></i></div>
+                                <div><h3 class="card-title">Add Notes</h3></div>
+                            </div>
+                            <p class="card-description">Quickly add and manage personal notes related to your services.</p>
+                            <button class="btn-primary w-full" onclick="navigateToAddNotes()">Add Notes</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-green-200 text-green-700"><i class="fas fa-file-circle-check fa-2x"></i></div>
+                                <div><h3 class="card-title">Document Verification</h3></div>
+                            </div>
+                            <p class="card-description">Submit and track the verification status of your important documents.</p>
+                            <button class="btn-primary w-full" onclick="navigateToDocumentVertification()">Verify Documents</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-purple-200 text-purple-700"><i class="fas fa-briefcase fa-2x"></i></div>
+                                <div><h3 class="card-title">Pension Services</h3></div>
+                            </div>
+                            <p class="card-description">Explore and apply for new pension-related services and policies.</p>
+                            <button class="btn-primary w-full" onclick="navigateTopensionManForCust()">Explore Services</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header-content">
+                                <div class="card-icon bg-red-200 text-red-700"><i class="fas fa-envelope-open-text fa-2x"></i></div>
+                                <div><h3 class="card-title">Mail Services</h3></div>
+                            </div>
+                            <p class="card-description">Manage your communications and view important mail from us.</p>
+                            <button class="btn-primary w-full" onclick="navigateToMailServices()">View Mail</button>
                         </div>
                     </div>
-                </div>
-            </section>
-            <section id="bank-accounts-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Bank Accounts</h2>
-                <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <input type="text" id="bank-account-search" placeholder="Search bank accounts by number, name or IFSC..." class="w-full md:w-2/3 p-2 border border-gray-300 rounded-md shadow-sm">
-                    <div class="w-full md:w-auto flex justify-end">
-                        <button class="btn-primary" onclick="openModal('add-bank-account-modal')">Add New Bank Account</button>
+                </section>
+                <section id="personal-details-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Personal Details</h2>
+                    <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Basic Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 mb-6">
+                            <div><p class="font-semibold text-gray-700">Customer Number:</p><p id="detail-customer-no" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Full Name:</p><p id="detail-customer-name" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Phone Number:</p><p id="detail-phone-number" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Email:</p><p id="detail-email" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Date of Birth:</p><p id="detail-dob" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Gender:</p><p id="detail-gender" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Smoker Status:</p><p id="detail-smoker-status" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">User Code:</p><p id="detail-user-code" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Admin Access:</p><p id="detail-admin-access" class="text-gray-900">N/A</p></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Address Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 mb-6">
+                            <div><p class="font-semibold text-gray-700">Street:</p><p id="detail-address-street" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">City:</p><p id="detail-address-city" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">State:</p><p id="detail-address-state" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Zip Code:</p><p id="detail-address-zipcode" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Country:</p><p id="detail-address-country" class="text-gray-900">N/A</p></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Contact Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 mb-6">
+                            <div><p class="font-semibold text-gray-700">Alternate Email:</p><p id="detail-contact-alternate-email" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Phone Country Code:</p><p id="detail-contact-phone-country-code" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Emergency Contact Name:</p><p id="detail-contact-emergency-name" class="text-gray-900">N/A</p></div>
+                            <div><p class="font-semibold text-gray-700">Emergency Contact Phone:</p><p id="detail-contact-emergency-phone" class="text-gray-900">N/A</p></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Roles</h3>
+                        <div class="mb-6">
+                            <p id="detail-roles" class="text-gray-900">N/A</p>
+                        </div>
+                        <div class="mt-6 flex justify-end">
+                            <button class="btn-primary" onclick="navigateToComplaintsForDetailsChange()">Apply for Name or Details Changes</button>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white rounded-lg shadow-md">
+                </section>
+                <section id="policy-details-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Policies</h2>
+                    <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <input type="text" id="policy-search" placeholder="Search policies by number or name..." class="w-full md:w-2/3 p-2 border border-gray-300 rounded-md shadow-sm">
+                        <div class="w-full md:w-auto flex justify-end">
+                            <button class="btn-primary" onclick="openModal('apply-policy-modal')">Apply for Policy</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto rounded-lg shadow-md">
+                        <table class="min-w-full bg-white">
                             <thead>
                                 <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                                    <th class="py-3 px-6 text-left">Account No.</th>
-                                    <th class="py-3 px-6 text-left">IFSC Code</th>
-                                    <th class="py-3 px-6 text-left">Bank Name</th>
-                                    <th class="py-3 px-6 text-left">Account Type</th>
-                                    <th class="py-3 px-6 text-left">Status</th>
-                                    <th class="py-3 px-6 text-left">Customer Name</th>
-                                    <th class="py-3 px-6 text-left">Branch Code</th>                                   
-                                    <th class="py-3 px-6 text-left">Active Status</th>                                     
-                                    <th class="py-3 px-6 text-center">Actions</th>                      
+                                    <th class="py-3 px-6 text-left">Policy No.</th>
+                                    <th class="py-3 px-6 text-left">Policy Name</th>
+                                    <th class="py-3 px-6 text-left">Type</th>
+                                    <th class="py-3 px-6 text-left">Company</th>
+                                    <th class="py-3 px-6 text-left">Premium</th>
+                                    <th class="py-3 px-6 text-left">Due Date</th>
+                                    <th class="py-3 px-6 text-left">Status</th>                           
+                                    <th class="py-3 px-6 text-left">Claimable Amt.</th>
+                                    <th class="py-3 px-6 text-left">Outstanding Balance</th> 
                                 </tr>
                             </thead>
-                            <tbody class="text-gray-600 text-sm font-light" id="bank-accounts-table-body">
-                                <tr><td colspan="21" class="py-4 text-center text-gray-500">Loading bank accounts...</td></tr>
+                            <tbody class="text-gray-600 text-sm font-light" id="policy-list-table-body">
+                                <tr><td colspan="9" class="py-4 text-center text-gray-500">Loading policies...</td></tr>
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <div id="bank-account-pagination" class="p-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6"></div>
-            </section>
-            <div id="add-bank-account-modal" class="modal-overlay">
-                <div class="modal-content modal-content-fullscreen">
-                    <div class="modal-header">
-                        <h3 class="modal-title">Add Bank Account</h3>
-                        <button class="modal-close-btn" onclick="closeModal('add-bank-account-modal')">
-                            <i class="fas fa-times"></i>
-                        </button>
+                    <div id="policy-pagination" class="p-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6"></div>
+                </section>
+                <section id="bank-accounts-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Bank Accounts</h2>
+                    <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <input type="text" id="bank-account-search" placeholder="Search bank accounts by number, name or IFSC..." class="w-full md:w-2/3 p-2 border border-gray-300 rounded-md shadow-sm">
+                        <div class="w-full md:w-auto flex justify-end">
+                            <button class="btn-primary" onclick="openModal('add-bank-account-modal')">Add New Bank Account</button>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        <form id="add-bank-account-form" class="space-y-4">
-                            <h4 class="text-lg font-semibold">Policy Details</h4>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white rounded-lg shadow-md">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                        <th class="py-3 px-6 text-left">Account No.</th>
+                                        <th class="py-3 px-6 text-left">IFSC Code</th>
+                                        <th class="py-3 px-6 text-left">Bank Name</th>
+                                        <th class="py-3 px-6 text-left">Account Type</th>
+                                        <th class="py-3 px-6 text-left">Status</th>
+                                        <th class="py-3 px-6 text-left">Customer Name</th>
+                                        <th class="py-3 px-6 text-left">Branch Code</th>                                   
+                                        <th class="py-3 px-6 text-left">Active Status</th>                                     
+                                        <th class="py-3 px-6 text-center">Actions</th>                      
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-600 text-sm font-light" id="bank-accounts-table-body">
+                                    <tr><td colspan="21" class="py-4 text-center text-gray-500">Loading bank accounts...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="bank-account-pagination" class="p-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6"></div>
+                </section>
+                
+                <section id="policy-payment-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Policy Payment</h2>
+                    <p class="text-gray-600">Redirecting to the payment page...</p>
+                    <div class="mt-6 text-center">
+                        <button class="btn-primary" onclick="navigateToPayments()">Click here if you are not redirected</button>
+                    </div>
+                </section>
+                <section id="track-workflow-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Workflows</h2>
+                    <p class="text-gray-600">Redirecting to the workflow tracking page...</p>
+                    <div class="mt-6 text-center">
+                        <button class="btn-primary" onclick="window.location.href = 'activity';">Click here if you are not redirected</button>
+                    </div>
+                </section>
+                <section id="manage-workitems-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Manage Workitems</h2>
+                    <div id="workitem-status-cards" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4 relative">
+                            <div class="flex items-center space-x-4 mb-4 md:mb-0 relative">
+                                <button id="filter-workitems-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition flex items-center">
+                                    <i class="fas fa-filter mr-2"></i> Filter
+                                </button>
+                                <div class="text-gray-600 font-semibold">
+                                    Total: <span id="workitem-total-count" class="text-blue-600">0</span>
+                                </div>
+                                <div id="workitem-filter-popup" class="filter-popup">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label for="filter-workitem-refnum" class="block text-sm font-medium text-gray-700">Reference Number</label>
+                                            <input type="text" id="filter-workitem-refnum" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                                        </div>
+                                        <div>
+                                            <label for="filter-workitem-queue" class="block text-sm font-medium text-gray-700">Queue</label>
+                                            <select id="filter-workitem-queue" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                                                <option value="">All</option>
+                                                <option value="TEAM_MEMBER">TEAM_MEMBER</option>
+                                                <option value="ADMIN">ADMIN</option>
+                                                <option value="SUPPORT">SUPPORT</option>
+                                                <option value="FINANCE">FINANCE</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="filter-workitem-userCode" class="block text-sm font-medium text-gray-700">User Code</label>
+                                            <input type="text" id="filter-workitem-userCode" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                                        </div>
+                                        <div>
+                                            <label for="filter-workitem-createdby" class="block text-sm font-medium text-gray-700">Created By</label>
+                                            <input type="text" id="filter-workitem-createdby" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Status</label>
+                                            <div class="mt-2 space-y-2">
+                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="OPEN" class="mr-2 text-blue-600"> Open</label>
+                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="CLOSED" class="mr-2 text-blue-600"> Closed</label>
+                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="IN_PROGRESS" class="mr-2 text-blue-600"> In Progress</label>
+                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="COMPLETED" class="mr-2 text-blue-600"> Completed</label>
+                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="PEND_EXTERNAL" class="mr-2 text-blue-600"> Pend External</label>
+                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="PEND_INTERNAL" class="mr-2 text-blue-600"> Pend Internal</label>
+                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="REJECTED" class="mr-2 text-blue-600"> Rejected</label>
+                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="PASSED" class="mr-2 text-blue-600"> Passed</label>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label for="filter-workitem-date-from" class="block text-sm font-medium text-gray-700">Date From</label>
+                                            <input type="date" id="filter-workitem-date-from" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                                        </div>
+                                        <div>
+                                            <label for="filter-workitem-date-to" class="block text-sm font-medium text-gray-700">Date To</label>
+                                            <input type="date" id="filter-workitem-date-to" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                                        </div>
+                                        <div class="flex justify-end space-x-2 mt-4">
+                                            <button id="clear-workitem-filter" class="btn-secondary">Clear</button>
+                                            <button id="apply-workitem-filter" class="btn-primary">Apply</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-auto flex justify-end gap-2">
+                                <button class="btn-primary" onclick="openModal('create-workitem-modal')">Create Work Item</button>
+                                <button class="btn-secondary" onclick="navigateToWorkItemDetails()">Manage Work Item</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white rounded-lg shadow-md">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                        <th class="py-3 px-6 text-left">Reference #</th>
+                                        <th class="py-3 px-6 text-left">Work Item Name</th>
+                                        <th class="py-3 px-6 text-left">Work Type</th>
+                                        <th class="py-3 px-6 text-left">Status</th>
+                                        <th class="py-3 px-6 text-left">Created By</th>
+                                        <th class="py-3 px-6 text-left">Created Time</th>
+                                        <th class="py-3 px-6 text-left">Policy No.</th>
+                                        <th class="py-3 px-6 text-left">Customer No.</th>
+                                        <th class="py-3 px-6 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-600 text-sm font-light" id="workitem-list-table-body">
+                                    <tr><td colspan="9" class="py-4 text-center text-gray-500">Loading work items...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="workitem-pagination" class="p-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6"></div>
+                    </div>
+                </section>
+                <section id="complaints-nav-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Complaints</h2>
+                    <p class="text-gray-600">Redirecting to the complaints page...</p>
+                    <div class="mt-6 text-center">
+                        <button class="btn-primary" onclick="navigateToComplaints()">Click here if you are not redirected</button>
+                    </div>
+                </section>
+                <section id="feedback-nav-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Feedback</h2>
+                    <p class="text-gray-600">Redirecting to the feedback page...</p>
+                    <div class="mt-6 text-center">
+                        <button class="btn-primary" onclick="navigateToFeedback()">Click here if you are not redirected</button>
+                    </div>
+                </section>
+                <section id="contact-us-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Contact Us</h2>
+                    <div class="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
+                        <p class="text-lg text-gray-700 mb-6">We're here to help! Please reach out to us through the following channels:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-phone-alt fa-2x text-blue-600"></i>
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Phone Support</h3>
+                                    <p class="text-gray-600">Call us at: <a href="tel:+18001234567" class="text-blue-600 hover:underline">+1-800-123-4567</a></p>
+                                    <p class="text-sm text-gray-500">Available Monday - Friday, 9 AM - 5 PM (Your Local Time)</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-envelope fa-2x text-blue-600"></i>
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Email Support</h3>
+                                    <p class="text-gray-600">Email us at: <a href="mailto:support@secureaccess.com" class="text-blue-600 hover:underline">support@secureaccess.com</a></p>
+                                    <p class="text-sm text-gray-500">We aim to respond within 24-48 hours.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-comments fa-2x text-blue-600"></i>
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Live Chat</h3>
+                                    <p class="text-gray-600">Chat with a representative instantly.</p>
+                                    <button class="text-blue-600 hover:underline font-medium mt-1">Start Chat</button>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-map-marker-alt fa-2x text-blue-600"></i>
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Our Office</h3>
+                                    <p class="text-gray-600">123 Insurance Blvd, Suite 100, City, Country</p>
+                                    <p class="text-sm text-gray-500">Visits by appointment only.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-8 text-center">
+                            <h3 class="font-semibold text-gray-800 mb-3">Frequently Asked Questions</h3>
+                            <p class="text-gray-600">Before contacting us, you might find your answer in our comprehensive <a href="#" class="text-blue-600 hover:underline">FAQ section</a>.</p>
+                        </div>
+                    </div>
+                </section>
+                <section id="add-notes-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Add Notes</h2>
+                    <p class="text-gray-600">Redirecting to the Add Notes page...</p>
+                    <div class="mt-6 text-center">
+                        <button class="btn-primary" onclick="navigateTo('addNotes')">Click here if you are not redirected</button>
+                    </div>
+                </section>
+                <section id="document-verification-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Document Verification</h2>
+                    <p class="text-gray-600">Redirecting to the Document Verification page...</p>
+                    <div class="mt-6 text-center">
+                        <button class="btn-primary" onclick="navigateTo('documentVerification')">Click here if you are not redirected</button>
+                    </div>
+                </section>
+                <section id="new-business-services-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Pension Services</h2>
+                    <p class="text-600">Redirecting to the Pension Services page...</p>
+                    <div class="mt-6 text-center">
+                        <button class="btn-primary" onclick="navigateTo('pensionManForCust')">Click here if you are not redirected</button>
+                    </div>
+                </section>
+                <section id="mail-services-section" class="content-section hidden">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Mail Services</h2>
+                    <p class="text-gray-600">Redirecting to the Mail Services page...</p>
+                    <div class="mt-6 text-center">
+                        <button class="btn-primary" onclick="navigateTo('mailServices')">Click here if you are not redirected</button>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    <div id="add-bank-account-modal" class="modal-overlay">
+        <div class="modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Bank Account Management</h3>
+                <button class="modal-close-btn" onclick="closeModal('add-bank-account-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tab-button-group">
+                <button class="tab-button active">Add New Bank Account</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-bank-account-form" class="space-y-6">
+                    <div class="section-container">
+                        <h4 class="section-title">Your Details</h4>
+                        <div class="form-grid">
                             <div>
-                                <label for="add-policy-number" class="form-label block text-sm required">Policy Number</label>
-                                <select id="add-policy-number" class="form-input mt-1" required aria-required="true">
-                                    <option value="" disabled selected>Select policy number</option>
+                                <label for="add-customer-number" class="form-label">Customer Number</label>
+                                <input type="text" id="add-customer-number" class="form-input" readonly>
+                            </div>
+                            <div>
+                                <label for="add-cust-name" class="form-label">Customer Name</label>
+                                <input type="text" id="add-cust-name" class="form-input" readonly>
+                            </div>
+                            <div>
+                                <label for="add-policy-number" class="form-label required">Associated Policy Number</label>
+                                <select id="add-policy-number" class="form-input" required>
+                                    <option value="" disabled selected>Select a policy</option>
                                 </select>
                             </div>
+                        </div>
+                    </div>
+                    <div class="section-container">
+                        <h4 class="section-title">New Bank Account Details</h4>
+                        <div class="form-grid">
                             <div>
-                                <label for="add-customer-number" class="form-label block text-sm required">Customer Number</label>
-                                <input type="text" id="add-customer-number" class="form-input mt-1" placeholder="Customer number (auto-filled)" readonly aria-required="true">
+                                <label for="add-account-number" class="form-label required">Account Number (12 digits)</label>
+                                <input type="text" id="add-account-number" class="form-input" placeholder="Enter 12-digit account number" required maxlength="12" pattern="\d{12}">
+                                <p id="add-account-number-error" class="text-red-500 text-xs mt-1 hidden">Must be exactly 12 digits.</p>
                             </div>
                             <div>
-                                <label for="add-cust-name" class="form-label block text-sm required">Customer Name</label>
-                                <input type="text" id="add-cust-name" class="form-input mt-1" placeholder="Customer name (auto-filled)" readonly aria-required="true">
-                            </div>
-                            <div>
-                                <label for="add-email" class="form-label block text-sm required">Email</label>
-                                <input type="email" id="add-email" class="form-input mt-1" placeholder="Email (auto-filled)" readonly aria-required="true">
-                            </div>
-                            <div>
-                                <label for="add-date-of-birth" class="form-label block text-sm required">Date of Birth</label>
-                                <input type="date" id="add-date-of-birth" class="form-input mt-1" readonly aria-required="true">
-                            </div>
-                            <div>
-                                <label for="add-user-code" class="form-label block text-sm required">User Code</label>
-                                <input type="text" id="add-user-code" class="form-input mt-1" placeholder="User code (auto-filled)" readonly aria-required="true">
-                            </div>
-                            <h4 class="text-lg font-semibold mt-6">Bank Account Details</h4>
-                            <div>
-                                <label for="add-account-number" class="form-label block text-sm required">Bank Account Number</label>
-                                <input type="text" id="add-account-number" class="form-input mt-1" placeholder="Enter account number" required aria-required="true">
-                            </div>
-                            <div>
-                                <label for="add-bank-name" class="form-label block text-sm required">Bank Name</label>
-                                <select id="add-bank-name" class="form-input mt-1" required aria-required="true">
+                                <label for="add-bank-name" class="form-label required">Bank Name</label>
+                                <select id="add-bank-name" class="form-input" required>
                                     <option value="" disabled selected>Select bank name</option>
                                 </select>
                             </div>
                             <div>
-                                <label for="add-ifsc-code" class="form-label block text-sm required">IFSC Code</label>
-                                <select id="add-ifsc-code" class="form-input mt-1" required aria-required="true">
+                                <label for="add-ifsc-code" class="form-label required">IFSC Code</label>
+                                <select id="add-ifsc-code" class="form-input" required>
                                     <option value="" disabled selected>Select IFSC code</option>
                                 </select>
                             </div>
                             <div>
-                                <label for="add-branch-code" class="form-label block text-sm">Branch Code</label>
-                                <input type="text" id="add-branch-code" class="form-input mt-1" placeholder="Branch code (auto-filled)" readonly>
+                                <label for="add-branch-code" class="form-label">Branch Code</label>
+                                <input type="text" id="add-branch-code" class="form-input" readonly>
                             </div>
                             <div>
-                                <label for="add-account-type" class="form-label block text-sm required">Account Type</label>
-                                <select id="add-account-type" class="form-input mt-1" required aria-required="true">
+                                <label for="add-account-type" class="form-label required">Account Type</label>
+                                <select id="add-account-type" class="form-input" required>
                                     <option value="" disabled selected>Select account type</option>
-                                    <option value="Savings">Savings</option>
-                                    <option value="Current">Current</option>
-                                    <option value="Checking">Checking</option>
+                                    <option value="SAVINGS">Savings</option>
+                                    <option value="REGULAR">Regular</option>
+                                    <option value="CURRENT">Current</option>
                                 </select>
                             </div>
                             <div>
-                                <label for="add-account-holder-type" class="form-label block text-sm required">Account Holder Type</label>
-                                <select id="add-account-holder-type" class="form-input mt-1" required aria-required="true">
-                                    <option value="" disabled selected>Select holder type</option>
-                                    <option value="Single">Single</option>
-                                    <option value="Joint">Joint</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="add-swift-code" class="form-label block text-sm">Swift Code</label>
-                                <input type="text" id="add-swift-code" class="form-input mt-1" placeholder="Enter swift code">
-                            </div>
-                            <div>
-                                <label for="add-payment-method-status" class="form-label block text-sm required">Payment Method</label>
-                                <select id="add-payment-method-status" class="form-input mt-1" required aria-required="true">
-                                    <option value="" disabled selected>Select payment method</option>
-                                    <option value="CHEQUE">Cheque</option>
-                                    <option value="ONLINE">Online</option>
-                                    <option value="WIRE">Wire Transfer</option>
-                                </select>
-                            </div>
-                            <div id="add-bank-account-error" class="error-text hidden text-red-600" aria-live="polite"></div>
-                            <div id="add-bank-account-result" class="text-sm text-gray-600 flex items-center mt-2" aria-live="polite"></div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="add-bank-account-submit" class="btn-primary">Add Account</button>
-                        <button class="btn-secondary" onclick="closeModal('add-bank-account-modal')">Close</button>
-                    </div>
-                </div>
-            </div>
-            <div id="apply-policy-modal" class="modal-overlay">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">Apply for New Policy</h3>
-                        <button class="modal-close-btn" onclick="closeModal('apply-policy-modal')">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="apply-policy-form" class="space-y-4">
-                            <div>
-                                <label for="apply-policy-name" class="form-label block text-sm required">Policy Name</label>
-                                <select id="apply-policy-name" class="form-input mt-1" required>
-                                    <option value="" disabled selected>Select Policy Name</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="apply-policy-type" class="form-label block text-sm required">Policy Type</label>
-                                <input type="text" id="apply-policy-type" class="form-input mt-1" readonly>
+                                <label for="add-account-balance" class="form-label">Account Balance</label>
+                                <input type="number" id="add-account-balance" class="form-input" step="0.01" placeholder="Enter current balance">
                             </div>
                              <div>
-                                <label for="apply-product-code" class="form-label block text-sm">Product Code</label>
-                                <input type="text" id="apply-product-code" class="form-input mt-1" readonly>
+                                <label for="add-account-opening-date" class="form-label required">Account Opening Date</label>
+                                <input type="date" id="add-account-opening-date" class="form-input" required>
                             </div>
-                            <div>
-                                <label for="apply-coverage-amount" class="form-label block text-sm">Coverage Amount</label>
-                                <input type="text" id="apply-coverage-amount" class="form-input mt-1" readonly>
+                             <div class="flex items-center pt-6">
+                                <input type="checkbox" id="add-is-default-account" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <label for="add-is-default-account" class="ml-2 block text-sm font-medium text-gray-700">Set as Default Account?</label>
                             </div>
-                            <div>
-                                <label for="apply-min-total-amount" class="form-label block text-sm">Minimum Total Amount</label>
-                                <input type="text" id="apply-min-total-amount" class="form-input mt-1" readonly>
-                            </div>
-                            <div>
-                                <label for="apply-max-total-amount" class="form-label block text-sm">Maximum Total Amount</label>
-                                <input type="text" id="apply-max-total-amount" class="form-input mt-1" readonly>
-                            </div>
-                            <div>
-                                <label for="apply-customer-number" class="form-label block text-sm">Customer Number</label>
-                                <input type="text" id="apply-customer-number" class="form-input mt-1" readonly>
-                            </div>
-                            <div>
-                                <label for="apply-user-code" class="form-label block text-sm">User Code</label>
-                                <input type="text" id="apply-user-code" class="form-input mt-1" readonly>
-                            </div>
-                            <div id="apply-policy-error" class="error-text hidden text-red-600" aria-live="polite"></div>
-                        </form>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button id="apply-policy-submit" class="btn-primary">Apply Policy</button>
-                        <button class="btn-secondary" onclick="closeModal('apply-policy-modal')">Cancel</button>
+                     <div class="section-container">
+                        <h4 class="section-title">Additional Information</h4>
+                        <div class="form-grid">
+                            <div class="md:col-span-2">
+                                <label for="add-customer-comment" class="form-label">Comment</label>
+                                <textarea id="add-customer-comment" class="form-input mt-1" rows="3" placeholder="e.g., This is my primary salary account."></textarea>
+                            </div>
+                            <div>
+                                <label for="add-kyc-document" class="form-label">Upload KYC Document (PDF, JPG, PNG | Max 300KB)</label>
+                                <input type="file" id="add-kyc-document" accept=".jpg,.jpeg,.png,.pdf" class="form-input-file mt-1">
+                                <p id="add-kyc-file-info" class="text-sm text-gray-500 mt-1"></p>
+                                <p id="add-kyc-file-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                    <div id="add-bank-account-error" class="text-red-600 hidden" aria-live="polite"></div>
+                </form>
             </div>
-            <section id="policy-payment-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Policy Payment</h2>
-                <p class="text-gray-600">Redirecting to the payment page...</p>
-                <div class="mt-6 text-center">
-                    <button class="btn-primary" onclick="navigateToPayments()">Click here if you are not redirected</button>
-                </div>
-            </section>
-            <section id="track-workflow-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Workflows</h2>
-                <p class="text-gray-600">Redirecting to the workflow tracking page...</p>
-                <div class="mt-6 text-center">
-                    <button class="btn-primary" onclick="window.location.href = 'activity';">Click here if you are not redirected</button>
-                </div>
-            </section>
-            <section id="manage-workitems-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Manage Workitems</h2>
-                <div id="workitem-status-cards" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg">
-                    <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4 relative">
-                        <div class="flex items-center space-x-4 mb-4 md:mb-0 relative">
-                            <button id="filter-workitems-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition flex items-center">
-                                <i class="fas fa-filter mr-2"></i> Filter
-                            </button>
-                            <div class="text-gray-600 font-semibold">
-                                Total: <span id="workitem-total-count" class="text-blue-600">0</span>
-                            </div>
-                            <div id="workitem-filter-popup" class="filter-popup">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label for="filter-workitem-refnum" class="block text-sm font-medium text-gray-700">Reference Number</label>
-                                        <input type="text" id="filter-workitem-refnum" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
-                                    </div>
-                                    <div>
-                                        <label for="filter-workitem-queue" class="block text-sm font-medium text-gray-700">Queue</label>
-                                        <select id="filter-workitem-queue" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
-                                            <option value="">All</option>
-                                            <option value="TEAM_MEMBER">TEAM_MEMBER</option>
-                                            <option value="ADMIN">ADMIN</option>
-                                            <option value="SUPPORT">SUPPORT</option>
-                                            <option value="FINANCE">FINANCE</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="filter-workitem-userCode" class="block text-sm font-medium text-gray-700">User Code</label>
-                                        <input type="text" id="filter-workitem-userCode" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
-                                    </div>
-                                    <div>
-                                        <label for="filter-workitem-createdby" class="block text-sm font-medium text-gray-700">Created By</label>
-                                        <input type="text" id="filter-workitem-createdby" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Status</label>
-                                        <div class="mt-2 space-y-2">
-                                            <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="OPEN" class="mr-2 text-blue-600"> Open</label>
-                                            <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="CLOSED" class="mr-2 text-blue-600"> Closed</label>
-                                            <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="IN_PROGRESS" class="mr-2 text-blue-600"> In Progress</label>
-                                            <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="COMPLETED" class="mr-2 text-blue-600"> Completed</label>
-                                            <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="PEND_EXTERNAL" class="mr-2 text-blue-600"> Pend External</label>
-                                            <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="PEND_INTERNAL" class="mr-2 text-blue-600"> Pend Internal</label>
-                                            <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="REJECTED" class="mr-2 text-blue-600"> Rejected</label>
-                                            <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="PASSED" class="mr-2 text-blue-600"> Passed</label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label for="filter-workitem-date-from" class="block text-sm font-medium text-gray-700">Date From</label>
-                                        <input type="date" id="filter-workitem-date-from" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
-                                    </div>
-                                    <div>
-                                        <label for="filter-workitem-date-to" class="block text-sm font-medium text-gray-700">Date To</label>
-                                        <input type="date" id="filter-workitem-date-to" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
-                                    </div>
-                                    <div class="flex justify-end space-x-2 mt-4">
-                                        <button id="clear-workitem-filter" class="btn-secondary">Clear</button>
-                                        <button id="apply-workitem-filter" class="btn-primary">Apply</button>
-                                    </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('add-bank-account-modal')">Close</button>
+                <button type="button" id="add-bank-account-submit" class="btn-primary">Add Account</button>
+            </div>
+        </div>
+    </div>
+    <div id="apply-policy-modal" class="modal-overlay">
+        <div class="modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Policy Application</h3>
+                <button class="modal-close-btn" onclick="closeModal('apply-policy-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="tab-button-group">
+                <button class="tab-button active" data-tab="apply-policy-tab">Apply for Policy</button>
+                <button class="tab-button" data-tab="show-requests-tab">Show Policy Requests</button>
+            </div>
+            <div id="apply-policy-tab" class="tab-content-section active">
+                <div class="modal-body">
+                    <form id="apply-policy-form" class="space-y-6">
+                        <div class="section-container">
+                             <h4 class="section-title">Select a Policy</h4>
+                             <div class="form-grid">
+                                <div>
+                                    <label for="apply-policy-name" class="form-label block text-sm required">Policy Name</label>
+                                    <select id="apply-policy-name" class="form-input mt-1" required>
+                                        <option value="" disabled selected>Select Policy Name</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="apply-policy-type" class="form-label block text-sm required">Policy Type</label>
+                                    <input type="text" id="apply-policy-type" class="form-input mt-1" readonly>
+                                </div>
+                                 <div>
+                                    <label for="apply-product-code" class="form-label block text-sm">Product Code</label>
+                                    <input type="text" id="apply-product-code" class="form-input mt-1" readonly>
+                                </div>
+                                <div>
+                                    <label for="apply-pol-company-name" class="form-label block text-sm">Company Name</label>
+                                    <input type="text" id="apply-pol-company-name" class="form-input mt-1" readonly>
+                                </div>
+                             </div>
+                        </div>
+
+                        <div class="section-container">
+                            <h4 class="section-title">Enter Financial Details</h4>
+                            <div class="form-grid">
+                                <div>
+                                    <label for="apply-total-amount" class="form-label block text-sm required">Total Amount</label>
+                                    <input type="number" id="apply-total-amount" class="form-input mt-1" placeholder="Enter total amount" required>
+                                    <p class="text-xs text-gray-500 mt-1">Min: <span id="min-total-amount-hint"></span>, Max: <span id="max-total-amount-hint"></span></p>
+                                </div>
+                                <div>
+                                    <label for="apply-monthly-installment" class="form-label block text-sm required">Monthly Installment</label>
+                                    <input type="number" id="apply-monthly-installment" class="form-input mt-1" placeholder="Enter monthly installment" required>
+                                </div>
+                                <div>
+                                    <label for="apply-total-installments" class="form-label block text-sm required">Total Installments</label>
+                                    <input type="number" id="apply-total-installments" class="form-input mt-1" placeholder="Enter number of installments" required>
                                 </div>
                             </div>
                         </div>
-                        <div class="w-full md:w-auto flex justify-end gap-2">
-                            <button class="btn-primary" onclick="openModal('create-workitem-modal')">Create Work Item</button>
-                            <button class="btn-secondary" onclick="navigateToWorkItemDetails()">Manage Work Item</button>
+
+                         <div class="section-container">
+                            <h4 class="section-title">Additional Information</h4>
+                             <div>
+                                <label for="apply-reason" class="form-label block text-sm">Reason / Comment</label>
+                                <textarea id="apply-reason" class="form-input mt-1" rows="3" placeholder="Enter any comments for your application"></textarea>
+                            </div>
+                             <input type="hidden" id="apply-customer-number">
                         </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white rounded-lg shadow-md">
+
+                        <div id="apply-policy-error" class="text-red-600 hidden mt-4" aria-live="polite"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('apply-policy-modal')">Cancel</button>
+                    <button type="button" id="apply-policy-submit" class="btn-primary">Submit Application</button>
+                </div>
+            </div>
+            <div id="show-requests-tab" class="tab-content-section">
+                <div class="modal-body">
+                    <div class="overflow-x-auto rounded-lg shadow-md bg-white">
+                        <table class="min-w-full">
                             <thead>
                                 <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                                    <th class="py-3 px-6 text-left">Reference #</th>
-                                    <th class="py-3 px-6 text-left">Work Item Name</th>
-                                    <th class="py-3 px-6 text-left">Work Type</th>
+                                    <th class="py-3 px-6 text-left">Request No.</th>
+                                    <th class="py-3 px-6 text-left">Policy Name</th>
                                     <th class="py-3 px-6 text-left">Status</th>
-                                    <th class="py-3 px-6 text-left">Created By</th>
-                                    <th class="py-3 px-6 text-left">Created Time</th>
-                                    <th class="py-3 px-6 text-left">Policy No.</th>
-                                    <th class="py-3 px-6 text-left">Customer No.</th>
-                                    <th class="py-3 px-6 text-center">Actions</th>
+                                    <th class="py-3 px-6 text-left">Request Date</th>
+                                    <th class="py-3 px-6 text-left">Verifier Reason</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-gray-600 text-sm font-light" id="workitem-list-table-body">
-                                <tr><td colspan="9" class="py-4 text-center text-gray-500">Loading work items...</td></tr>
+                            <tbody class="text-gray-600 text-sm font-light" id="policy-requests-table-body">
                             </tbody>
                         </table>
                     </div>
-                    <div id="workitem-pagination" class="p-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 bg-gray-50 rounded-xl shadow-sm mt-6"></div>
                 </div>
-            </section>
-            <section id="complaints-nav-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Complaints</h2>
-                <p class="text-gray-600">Redirecting to the complaints page...</p>
-                <div class="mt-6 text-center">
-                    <button class="btn-primary" onclick="navigateToComplaints()">Click here if you are not redirected</button>
-                </div>
-            </section>
-            <section id="feedback-nav-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Feedback</h2>
-                <p class="text-gray-600">Redirecting to the feedback page...</p>
-                <div class="mt-6 text-center">
-                    <button class="btn-primary" onclick="navigateToFeedback()">Click here if you are not redirected</button>
-                </div>
-            </section>
-            <section id="contact-us-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Contact Us</h2>
-                <div class="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
-                    <p class="text-lg text-gray-700 mb-6">We're here to help! Please reach out to us through the following channels:</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-                            <i class="fas fa-phone-alt fa-2x text-blue-600"></i>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Phone Support</h3>
-                                <p class="text-gray-600">Call us at: <a href="tel:+18001234567" class="text-blue-600 hover:underline">+1-800-123-4567</a></p>
-                                <p class="text-sm text-gray-500">Available Monday - Friday, 9 AM - 5 PM (Your Local Time)</p>
+            </div>
+        </div>
+    </div>
+    <div id="policy-detail-modal" class="modal-overlay">
+        <div class="modal-content-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Policy Details - <span id="modal-policy-number"></span></h3>
+                <button class="modal-close-btn" onclick="closeModal('policy-detail-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="tab-button-group">
+                <button class="tab-button active" data-tab="policy-info-tab">Policy Information</button>
+                <button class="tab-button" data-tab="payment-info-tab">Payment Installments</button>
+                <button class="tab-button" data-tab="surrender-claim-tab">Surrender & Claim</button>
+            </div>
+            <div id="policy-info-tab" class="tab-content-section active">
+                <div class="modal-body">
+                    <div class="space-y-6">
+                        <div class="section-container">
+                            <h4 class="section-title">Policy Details</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item"><p><span class="font-semibold">Policy Name:</span> <span id="policy-name-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Company Name:</span> <span id="pol-company-name-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Product Code:</span> <span id="product-code-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Policy Type:</span> <span id="policy-type-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Policy Status:</span> <span id="policy-status-detail" class="status-badge status-default"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Policy Term:</span> <span id="policy-term-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Smoker Status:</span> <span id="policy-smoker-status-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">FCU Status:</span> <span id="policy-fcu-status-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Policy Start Date:</span> <span id="start-date-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Premium Due Date:</span> <span id="premium-due-date-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Policy End Date:</span> <span id="end-date-detail" class="text-gray-900"></span></p></div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-                            <i class="fas fa-envelope fa-2x text-blue-600"></i>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Email Support</h3>
-                                <p class="text-gray-600">Email us at: <a href="mailto:support@secureaccess.com" class="text-blue-600 hover:underline">support@secureaccess.com</a></p>
-                                <p class="text-sm text-gray-500">We aim to respond within 24-48 hours.</p>
+                        <div class="section-container">
+                            <h4 class="section-title">Financial Summary</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item"><p><span class="font-semibold">Total Amount:</span> <span id="total-amount-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Monthly Installment:</span> <span id="monthly-installment-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Total Installments:</span> <span id="total-installments-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Installments Paid:</span> <span id="total-installments-paid-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Installments Unpaid:</span> <span id="total-installments-unpaid-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Total Amount Paid:</span> <span id="total-amt-paid-detail" class="text-green-600 font-bold"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Total Amount Unpaid:</span> <span id="total-amt-unpaid-detail" class="text-red-600 font-bold"></span></p></div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-                            <i class="fas fa-comments fa-2x text-blue-600"></i>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Live Chat</h3>
-                                <p class="text-gray-600">Chat with a representative instantly.</p>
-                                <button class="text-blue-600 hover:underline font-medium mt-1">Start Chat</button>
+                        <div class="section-container">
+                            <h4 class="section-title">Beneficiary Details</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item"><p><span class="font-semibold">Beneficiary Name:</span> <span id="beneficiary-name-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Relationship:</span> <span id="beneficiary-relationship-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Identity Number:</span> <span id="beneficiary-identity-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Status:</span> <span id="beneficiary-status-detail" class="text-gray-900"></span></p></div>
+                                <div class="detail-item"><p><span class="font-semibold">Contact Number:</span> <span id="beneficiary-contact-detail" class="text-gray-900"></span></p></div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-                            <i class="fas fa-map-marker-alt fa-2x text-blue-600"></i>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Our Office</h3>
-                                <p class="text-gray-600">123 Insurance Blvd, Suite 100, City, Country</p>
-                                <p class="text-sm text-gray-500">Visits by appointment only.</p>
+                         <div class="section-container">
+                            <h4 class="section-title">Actions</h4>
+                            <div class="flex flex-wrap gap-3">
+                                <button class="btn-modal-action btn-modal-primary" id="make-payments-button"><i class="fas fa-money-bill-wave"></i> Make Payment</button>
+                                <button class="btn-modal-action btn-modal-secondary" onclick="sendPolicyEmail(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-envelope"></i> Send Email</button>
+                                <button class="btn-modal-action btn-modal-secondary" onclick="generatePolicyPdf(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-file-pdf"></i> Generate PDF</button>
+                                <button class="btn-modal-action btn-modal-secondary" onclick="navigateToSurrender(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-hand-holding-usd"></i> Surrender/Claim</button>
+                                <button class="btn-modal-action btn-modal-secondary" onclick="navigateToComplaintsForPolicyIssue(document.getElementById('modal-policy-number').textContent)"><i class="fas fa-exclamation-circle"></i> Report Issue</button>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-8 text-center">
-                        <h3 class="font-semibold text-gray-800 mb-3">Frequently Asked Questions</h3>
-                        <p class="text-gray-600">Before contacting us, you might find your answer in our comprehensive <a href="#" class="text-blue-600 hover:underline">FAQ section</a>.</p>
+                </div>
+            </div>
+            <div id="payment-info-tab" class="tab-content-section">
+                 <div class="modal-body">
+                     <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Installment No.</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Amount</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Due Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Payment Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Method</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Transaction ID</th>
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="installments-table-body" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </section>
-            <!-- New Sections for Customer Modules -->
-            <section id="add-notes-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Add Notes</h2>
-                <p class="text-gray-600">Redirecting to the Add Notes page...</p>
-                <div class="mt-6 text-center">
-                    <button class="btn-primary" onclick="navigateTo('addNotes')">Click here if you are not redirected</button>
+            </div>
+            <div id="surrender-claim-tab" class="tab-content-section">
+                <div class="modal-body">
+                    <div class="section-container mb-6">
+                        <h4 class="section-title">Surrender History</h4>
+                        <div id="surrender-history-list" class="overflow-x-auto"></div>
+                    </div>
+                     <div class="section-container">
+                        <h4 class="section-title">Claim History</h4>
+                        <div id="claim-history-list" class="overflow-x-auto"></div>
+                    </div>
                 </div>
-            </section>
-            <section id="document-verification-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Document Verification</h2>
-                <p class="text-gray-600">Redirecting to the Document Verification page...</p>
-                <div class="mt-6 text-center">
-                    <button class="btn-primary" onclick="navigateTo('documentVerification')">Click here if you are not redirected</button>
-                </div>
-            </section>
-            <section id="new-business-services-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Pension Services</h2>
-                <p class="text-600">Redirecting to the Pension Services page...</p>
-                <div class="mt-6 text-center">
-                    <button class="btn-primary" onclick="navigateTo('pensionManForCust')">Click here if you are not redirected</button>
-                </div>
-            </section>
-            <section id="mail-services-section" class="content-section hidden">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Mail Services</h2>
-                <p class="text-gray-600">Redirecting to the Mail Services page...</p>
-                <div class="mt-6 text-center">
-                    <button class="btn-primary" onclick="navigateTo('mailServices')">Click here if you are not redirected</button>
-                </div>
-            </section>
+            </div>
         </div>
     </div>
     <div id="create-workitem-modal" class="modal-overlay">
-        <div class="modal-content modal-content-fullscreen">
+        <div class="modal-content-fullscreen">
             <div class="modal-header">
                 <h3 class="modal-title">Create New Work Item</h3>
                 <button class="modal-close-btn" onclick="closeModal('create-workitem-modal')">
@@ -1434,11 +1567,12 @@
         let currentWorkItemFilters = {};
         let currentSection = 'dashboard'; 
         let bankDetailsLookup = {}; 
+        let kycBase64String = '';
 
 
         const sidebar = document.getElementById('sidebar');
-        const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn'); /* Renamed toggle btn */
-        const sidebarToggleMobileBtn = document.getElementById('sidebar-toggle'); /* New for mobile toggle */
+        const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn');
+        const sidebarToggleMobileBtn = document.getElementById('sidebar-toggle');
         const logoutBtnSidebar = document.getElementById('logout-btn-sidebar');
         const customerNameDisplay = document.getElementById('customer-name');
         const userIdDisplay = document.getElementById('user-id-display');
@@ -1473,14 +1607,12 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Sidebar collapse/expand for desktop
         if (sidebarCollapseBtn) {
             sidebarCollapseBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('expanded'); /* Changed from 'collapsed' to 'expanded' */
+                sidebar.classList.toggle('expanded');
             });
         }
 
-        // Sidebar toggle for mobile
         if (sidebarToggleMobileBtn) {
             sidebarToggleMobileBtn.addEventListener('click', () => {
                 sidebar.classList.toggle('active');
@@ -1548,7 +1680,7 @@
             	navigateToMailServices();
                 return; 
             }
-            if (window.innerWidth <= 1024) { /* Adjusted breakpoint for mobile sidebar */
+            if (window.innerWidth <= 1024) {
                 sidebar.classList.remove('active');
             }
         }
@@ -1568,7 +1700,7 @@
                 else {
                     showSection(targetSection);
                 }
-                if (window.innerWidth <= 1024) { /* Adjusted breakpoint for mobile sidebar */
+                if (window.innerWidth <= 1024) {
                     sidebar.classList.remove('active');
                 }
             });
@@ -1576,9 +1708,8 @@
         async function openModal(modalId) {
             if (currentOpenModalId && document.getElementById(currentOpenModalId)) {
                 document.getElementById(currentOpenModalId).classList.remove('open');
-                // If closing policy-detail-modal specifically, show sidebar
                 if (currentOpenModalId === 'policy-detail-modal' && sidebar) {
-                    sidebar.style.display = 'flex'; // Restore sidebar display
+                    sidebar.style.display = 'flex';
                 }
             }
             const modal = document.getElementById(modalId);
@@ -1594,12 +1725,10 @@
                     await initializeCreateWorkItemModal();
                 }
                 if (modalId === 'policy-detail-modal') {
-                    // When policy detail modal opens, hide sidebar
                     if (sidebar) {
                         sidebar.style.display = 'none';
                     }
-                    // Initialize tabs
-                    showPolicySubSection('policy-info-section');
+                    showPolicyDetailTab('policy-info-tab');
                 }
             }
         }
@@ -1609,49 +1738,32 @@
                 modal.classList.remove('open');
                 document.body.classList.remove('no-scroll'); 
                 currentOpenModalId = null;
-                // If closing policy-detail-modal specifically, show sidebar
                 if (modalId === 'policy-detail-modal' && sidebar) {
-                    sidebar.style.display = 'flex'; // Restore sidebar display
+                    sidebar.style.display = 'flex';
                 }
             }
         }
         
-        /* New: Function to handle tab switching in Policy Details Modal */
-        function showPolicySubSection(sectionId) {
-            document.querySelectorAll('#policy-detail-modal .tab-content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(sectionId).classList.add('active');
-
-            document.querySelectorAll('#policy-detail-modal .tab-button').forEach(button => {
-                button.classList.remove('active');
-            });
-            document.querySelector(`#policy-detail-modal .tab-button[data-tab="${sectionId}"]`).classList.add('active');
+        function showPolicyDetailTab(tabId) {
+            const modal = document.getElementById('policy-detail-modal');
+            modal.querySelectorAll('.tab-content-section').forEach(section => section.classList.remove('active'));
+            modal.querySelector(`#${tabId}`)?.classList.add('active');
+            modal.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            modal.querySelector(`.tab-button[data-tab="${tabId}"]`)?.classList.add('active');
         }
+
+        function showApplyPolicyModalTab(tabId) {
+            const modal = document.getElementById('apply-policy-modal');
+            modal.querySelectorAll('.tab-content-section').forEach(section => section.classList.remove('active'));
+            modal.querySelector(`#${tabId}`)?.classList.add('active');
+            modal.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            modal.querySelector(`.tab-button[data-tab="${tabId}"]`)?.classList.add('active');
+        }
+
 
         async function fetchCustomerDetails() {
             const userCode = config.userCode;
             if (!userCode) {
-                console.error("UserCode not found in session storage. Cannot fetch customer details.");
-                document.getElementById('detail-customer-no').textContent = 'N/A';
-                document.getElementById('detail-customer-name').textContent = 'N/A';
-                document.getElementById('detail-phone-number').textContent = 'N/A';
-                document.getElementById('detail-email').textContent = 'N/A';
-                document.getElementById('detail-dob').textContent = 'N/A';
-                document.getElementById('detail-gender').textContent = 'N/A';
-                document.getElementById('detail-smoker-status').textContent = 'N/A';
-                document.getElementById('detail-user-code').textContent = 'N/A';
-                document.getElementById('detail-admin-access').textContent = 'N/A';
-                document.getElementById('detail-address-street').textContent = 'N/A';
-                document.getElementById('detail-address-city').textContent = 'N/A';
-                document.getElementById('detail-address-state').textContent = 'N/A';
-                document.getElementById('detail-address-zipcode').textContent = 'N/A';
-                document.getElementById('detail-address-country').textContent = 'N/A';
-                document.getElementById('detail-contact-alternate-email').textContent = 'N/A';
-                document.getElementById('detail-contact-phone-country-code').textContent = 'N/A';
-                document.getElementById('detail-contact-emergency-name').textContent = 'N/A';
-                document.getElementById('detail-contact-emergency-phone').textContent = 'N/A';
-                document.getElementById('detail-roles').textContent = 'N/A';
                 return;
             }
             showLoader();
@@ -1697,31 +1809,18 @@
                         document.getElementById('detail-address-state').textContent = customerData.address.state || 'N/A';
                         document.getElementById('detail-address-zipcode').textContent = customerData.address.zipCode || 'N/A';
                         document.getElementById('detail-address-country').textContent = customerData.address.country || 'N/A';
-                    } else {
-                        document.getElementById('detail-address-street').textContent = 'N/A';
-                        document.getElementById('detail-address-city').textContent = 'N/A';
-                        document.getElementById('detail-address-state').textContent = 'N/A';
-                        document.getElementById('detail-address-zipcode').textContent = 'N/A';
-                        document.getElementById('detail-address-country').textContent = 'N/A';
                     }
                     if (customerData.contactDetails) {
                         document.getElementById('detail-contact-alternate-email').textContent = customerData.contactDetails.alternateEmail || 'N/A';
                         document.getElementById('detail-contact-phone-country-code').textContent = customerData.contactDetails.phoneCountryCode || 'N/A';
                         document.getElementById('detail-contact-emergency-name').textContent = customerData.contactDetails.emergencyContactName || 'N/A';
                         document.getElementById('detail-contact-emergency-phone').textContent = customerData.contactDetails.emergencyContactPhone || 'N/A';
-                    } else {
-                        document.getElementById('detail-contact-alternate-email').textContent = 'N/A';
-                        document.getElementById('detail-contact-phone-country-code').textContent = 'N/A';
-                        document.getElementById('detail-contact-emergency-name').textContent = 'N/A';
-                        document.getElementById('detail-contact-emergency-phone').textContent = 'N/A';
                     }
                     document.getElementById('detail-roles').textContent = (customerData.roles && customerData.roles.length > 0) ? customerData.roles.join(', ') : 'N/A';
                 } else {
-                    console.error('API response data is missing.');
                     showToast('Failed to fetch customer details: Data missing', 'error');
                 }
             } catch (error) {
-                console.error('Error fetching customer details:', error);
                 showToast('An error occurred while fetching customer details. Please try again.', 'error');
             } finally {
                 hideLoader();
@@ -1730,12 +1829,11 @@
 
         async function fetchAndPopulatePolicies(page = 1) {
             const tableBody = document.getElementById('policy-list-table-body');
-            tableBody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-blue-500">Loading policies...</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="9" class="py-4 text-center text-blue-500">Loading policies...</td></tr>`;
             const userCode = config.userCode;
             const customerNo = config.customerNo;
             if (!userCode || !customerNo) {
-                console.error("UserCode or CustomerNo not found in session storage. Cannot fetch policies.");
-                tableBody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-red-500">User or customer information missing. Please ensure you have logged in and your details are loaded.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="9" class="py-4 text-center text-red-500">User or customer information missing. Please ensure you have logged in and your details are loaded.</td></tr>`;
                 return;
             }
             currentPolicyPage = page;
@@ -1771,15 +1869,14 @@
                     populatePolicyTable();
                     renderPagination('policy-pagination', currentPolicyPage, totalPolicyPages, fetchAndPopulatePolicies);
                 } else {
-                    tableBody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-gray-500">No policies found for this customer.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="9" class="py-4 text-center text-gray-500">No policies found for this customer.</td></tr>`;
                     allPolicies = [];
                     totalPolicyPages = 0;
                     sessionStorage.removeItem('allPolicyNumbers'); 
                     renderPagination('policy-pagination', currentPolicyPage, totalPolicyPages, fetchAndPopulatePolicies);
                 }
             } catch (error) {
-                console.error('Error fetching policy details:', error);
-                tableBody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-red-500">An error occurred while loading policies.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="9" class="py-4 text-center text-red-500">An error occurred while loading policies.</td></tr>`;
                 showToast('Error fetching policy details: ' + error.message, 'error');
             } finally {
                 hideLoader();
@@ -1787,47 +1884,30 @@
         }
         function populatePolicyTable(searchQuery = '') {
             const tableBody = document.getElementById('policy-list-table-body');
-            tableBody.innerHTML = '';
             const lowerCaseQuery = searchQuery.toLowerCase();
-            const filteredPolicies = allPolicies.filter(policy => {
-                return (policy.policyNumber && policy.policyNumber.toLowerCase().includes(lowerCaseQuery)) ||
-                       (policy.policyName && policy.policyName.toLowerCase().includes(lowerCaseQuery)) ||
-                       (policy.polCompanyName && policy.polCompanyName.toLowerCase().includes(lowerCaseQuery));
-            });
+            const filteredPolicies = allPolicies.filter(p => 
+                (p.policyNumber?.toLowerCase().includes(lowerCaseQuery)) ||
+                (p.policyName?.toLowerCase().includes(lowerCaseQuery))
+            );
+            
             if (filteredPolicies.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-gray-500">No matching policies found.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="9" class="py-4 text-center text-gray-500">No matching policies found.</td></tr>`;
                 return;
             }
-            filteredPolicies.forEach(policy => {
-                let outstandingBalance = 0;
-                if (policy.paymentListDTO && policy.paymentListDTO.length > 0) {
-                    outstandingBalance = policy.paymentListDTO.reduce((sum, payment) => {
-                        return sum + (payment.status === 'DUE' || payment.status === 'OVERDUE' ? (payment.installmentAmount || 0) : 0);
-                    }, 0);
-                }
 
-                const row = document.createElement('tr');
-                row.className = 'border-b border-gray-200 hover:bg-gray-100 cursor-pointer'; 
-                row.onclick = () => viewPolicyDetailsModal(policy.policyNumber); /* Entire row clickable */
-                row.innerHTML = `
+            tableBody.innerHTML = filteredPolicies.map(policy => `
+                <tr class="border-b border-gray-200 hover:bg-gray-50 cursor-pointer" onclick='viewPolicyDetailsModal(${JSON.stringify(policy)})'>
                     <td class="py-3 px-6 text-left whitespace-nowrap">${policy.policyNumber || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${policy.policyName || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${policy.policyType || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${policy.polCompanyName || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">$${(policy.monthlyInstallment || 0).toFixed(2)}</td>
                     <td class="py-3 px-6 text-left">${policy.premiumDueDate ? new Date(policy.premiumDueDate).toLocaleDateString() : 'N/A'}</td>
-                    <td class="py-3 px-6 text-left">
-                        <span class="status-badge ${
-                            policy.policyStatus === 'ACTIVE' ? 'status-active' :
-                            policy.policyStatus === 'LAPSED' ? 'status-lapsed' :
-                            'status-default'
-                        }">${policy.policyStatus || 'N/A'}</span>
-                    </td>                
+                    <td class="py-3 px-6 text-left"><span class="status-badge status-${policy.policyStatus?.toLowerCase() || 'default'}">${policy.policyStatus || 'N/A'}</span></td>
                     <td class="py-3 px-6 text-left">$${(policy.totalAmount || 0).toFixed(2)}</td>
                     <td class="py-3 px-6 text-left text-red-600 font-bold">$${(policy.totalAmtUnPaidByInstallemt || 0).toFixed(2)}</td> 
-                `;
-                tableBody.appendChild(row);
-            });
+                </tr>
+            `).join('');
         }
 
         function renderPagination(paginationElementId, currentPage, totalPages, fetchFunction, filters = {}) {
@@ -1881,103 +1961,62 @@
             pagination.appendChild(goToContainer);
         }
 
-        function viewPolicyDetailsModal(policyNumber) {
-            const policy = allPolicies.find(p => p.policyNumber === policyNumber);
-            if (policy) {
-                 // Basic Policy Info
-                document.getElementById('modal-policy-number').textContent = policy.policyNumber || 'N/A';
-                document.getElementById('policy-name-detail').textContent = policy.policyName || 'N/A';
-                document.getElementById('pol-company-name-detail').textContent = policy.polCompanyName || 'N/A';
-                document.getElementById('product-code-detail').textContent = policy.productCode || 'N/A';
-                document.getElementById('policy-type-detail').textContent = policy.policyType || 'N/A';
-
-                // Status Badge
-                const policyStatusElement = document.getElementById('policy-status-detail');
-                const statusText = policy.policyStatus || 'N/A';
-                policyStatusElement.textContent = statusText;
-                policyStatusElement.className = `status-badge ${
-                    statusText.toLowerCase() === 'active' ? 'status-active' :
-                    statusText.toLowerCase() === 'lapsed' ? 'status-lapsed' :
-                    'status-default'
-                }`;
-                
-                // Policy Details
-                document.getElementById('policy-term-detail').textContent = policy.policyTerm || 'N/A';
-                document.getElementById('policy-smoker-status-detail').textContent = policy.smokerStatus || 'N/A';
-                document.getElementById('policy-fcu-status-detail').textContent = policy.fcuStatus || 'N/A';
-                
-                // Dates
-                document.getElementById('start-date-detail').textContent = policy.policyStartDate ? new Date(policy.policyStartDate).toLocaleDateString() : 'N/A';
-                document.getElementById('premium-due-date-detail').textContent = policy.premiumDueDate ? new Date(policy.premiumDueDate).toLocaleDateString() : 'N/A';
-                document.getElementById('end-date-detail').textContent = policy.policyEndDate ? new Date(policy.policyEndDate).toLocaleDateString() : 'N/A';
-
-                // Financials & Installments
-                document.getElementById('total-amount-detail').textContent = policy.totalAmount ? `$${policy.totalAmount.toFixed(2)}` : 'N/A';
-                document.getElementById('monthly-installment-detail').textContent = policy.monthlyInstallment ? `$${policy.monthlyInstallment.toFixed(2)}` : 'N/A';
-                document.getElementById('total-installments-detail').textContent = policy.totalInstallments || 'N/A';
-                document.getElementById('total-installments-paid-detail').textContent = policy.totalInstallmentsPaid || '0';
-                document.getElementById('total-installments-unpaid-detail').textContent = policy.totalInstallmentsUnPaid || 'N/A';
-                document.getElementById('total-amt-paid-detail').textContent = policy.totalAmtPaidByInstallemt ? `$${policy.totalAmtPaidByInstallemt.toFixed(2)}` : '$0.00';
-                document.getElementById('total-amt-unpaid-detail').textContent = policy.totalAmtUnPaidByInstallemt ? `$${policy.totalAmtUnPaidByInstallemt.toFixed(2)}` : '$0.00';
-
-                // Beneficiary Details
-                document.getElementById('beneficiary-name-detail').textContent = policy.beneficiaryName || 'N/A';
-                document.getElementById('beneficiary-relationship-detail').textContent = policy.beneficiaryRelationship || 'N/A';
-                document.getElementById('beneficiary-identity-detail').textContent = policy.beneficiaryIdentityNumber || 'N/A';
-                document.getElementById('beneficiary-status-detail').textContent = policy.beneficiaryStatus || 'N/A';
-                document.getElementById('beneficiary-contact-detail').textContent = policy.beneficiaryContactNumber || 'N/A';
-
-
-                const installmentsTableBody = document.getElementById('installments-table-body');
-                installmentsTableBody.innerHTML = '';
-                if (policy.paymentListDTO && policy.paymentListDTO.length > 0) { /* Corrected: Used paymentListDTO */
-                    policy.paymentListDTO.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)).forEach((payment, index) => {
-                        // Determine button color based on payment status
-                        const buttonColorClass = (payment.status === 'PAID') ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700';
-
-                        const paymentRow = document.createElement('tr');
-                        paymentRow.className = 'border-b border-gray-100 hover:bg-gray-50'; 
-                        paymentRow.innerHTML = `
-                            <td class="py-3 px-6 text-left whitespace-nowrap">${payment.installmentCount || (index + 1)}</td>
-                            <td class="py-3 px-6 text-left">$${(payment.installmentAmount || 0).toFixed(2)}</td>
-                            <td class="py-3 px-6 text-left">${payment.dueDate ? new Date(payment.dueDate).toLocaleDateString() : 'N/A'}</td>
-                            <td class="py-3 px-6 text-left">${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}</td>
-                            <td class="py-3 px-6 text-left">
-                                <span class="status-badge status-${payment.status?.toLowerCase().replace(/ /g, '_') || 'default'}">
-                                    ${payment.status || 'N/A'}</span>
-                            </td>
-                            <td class="py-3 px-6 text-left">${payment.paymentMethod || 'N/A'}</td>
-                            <td class="py-3 px-6 text-left text-xs">${payment.transactionId || 'N/A'}</td>
-                            <td class="py-3 px-6 text-center">
-                                ${payment.status === 'DUE' || payment.status === 'OVERDUE' || payment.status === 'Unpaid' ? 
-                                `<button class="btn-primary py-1 px-3 text-xs" onclick="navigateToPayments('${policy.policyNumber}', '${payment.paymentId}')">Pay Now</button>` :
-                                `<button class="btn-secondary py-1 px-3 text-xs opacity-50 cursor-not-allowed" disabled>Paid</button>`
-                                }
-                                <!-- Container for compact payment installment buttons with dynamic color -->
-                                <div class="flex items-center space-x-1 mt-2 justify-center">
-                                    <button class="${buttonColorClass} text-white font-semibold py-1 px-2 rounded-lg shadow-sm transition-colors text-xs" onclick="sendInstallmentEmail('${policy.policyNumber}', '${payment.paymentId}')">
-                                        <i class="fas fa-envelope mr-1"></i>Email
-                                    </button>
-                                    <button class="${buttonColorClass} text-white font-semibold py-1 px-2 rounded-lg shadow-sm transition-colors text-xs" onclick="generateInstallmentPdf('${policy.policyNumber}', '${payment.paymentId}')">
-                                        <i class="fas fa-file-pdf mr-1"></i>PDF
-                                    </button>
-                                    <button class="${buttonColorClass} text-white font-semibold py-1 px-2 rounded-lg shadow-sm transition-colors text-xs" onclick="reportPaymentIssue('${policy.policyNumber}', '${payment.paymentId}')">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Report
-                                    </button>
-                                </div>
-                                </td>
-                        `;
-                        installmentsTableBody.appendChild(paymentRow);
-                    });
-                } else {
-                    installmentsTableBody.innerHTML = `<tr><td colspan="8" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No payment installments found for this policy.</td></tr>`;
-                }
-                const makePaymentsButton = document.getElementById('make-payments-button');
-                makePaymentsButton.onclick = () => navigateToPayments(policy.policyNumber);
-                openModal('policy-detail-modal');
-            } else {
+        function viewPolicyDetailsModal(policy) {
+            if (!policy) {
                 showToast('Policy details not found.', 'error');
+                return;
             }
+
+            document.getElementById('modal-policy-number').textContent = policy.policyNumber || 'N/A';
+            
+            const fields = {
+                'policy-name-detail': policy.policyName, 'pol-company-name-detail': policy.polCompanyName,
+                'product-code-detail': policy.productCode, 'policy-type-detail': policy.policyType,
+                'policy-term-detail': policy.policyTerm, 'policy-smoker-status-detail': policy.smokerStatus,
+                'policy-fcu-status-detail': policy.fcuStatus,
+                'start-date-detail': policy.policyStartDate ? new Date(policy.policyStartDate).toLocaleDateString() : 'N/A',
+                'premium-due-date-detail': policy.premiumDueDate ? new Date(policy.premiumDueDate).toLocaleDateString() : 'N/A',
+                'end-date-detail': policy.policyEndDate ? new Date(policy.policyEndDate).toLocaleDateString() : 'N/A',
+                'total-amount-detail': policy.totalAmount ? `$${policy.totalAmount.toFixed(2)}` : 'N/A',
+                'monthly-installment-detail': policy.monthlyInstallment ? `$${policy.monthlyInstallment.toFixed(2)}` : 'N/A',
+                'total-installments-detail': policy.totalInstallments, 'total-installments-paid-detail': policy.totalInstallmentsPaid,
+                'total-installments-unpaid-detail': policy.totalInstallmentsUnPaid,
+                'total-amt-paid-detail': policy.totalAmtPaidByInstallemt ? `$${policy.totalAmtPaidByInstallemt.toFixed(2)}` : '$0.00',
+                'total-amt-unpaid-detail': policy.totalAmtUnPaidByInstallemt ? `$${policy.totalAmtUnPaidByInstallemt.toFixed(2)}` : '$0.00',
+                'beneficiary-name-detail': policy.beneficiaryName, 'beneficiary-relationship-detail': policy.beneficiaryRelationship,
+                'beneficiary-identity-detail': policy.beneficiaryIdentityNumber, 'beneficiary-status-detail': policy.beneficiaryStatus,
+                'beneficiary-contact-detail': policy.beneficiaryContactNumber
+            };
+            for (const [id, value] of Object.entries(fields)) {
+                if(document.getElementById(id)) {
+                    document.getElementById(id).textContent = value || 'N/A';
+                }
+            }
+            const statusEl = document.getElementById('policy-status-detail');
+            statusEl.textContent = policy.policyStatus || 'N/A';
+            statusEl.className = `status-badge status-${policy.policyStatus?.toLowerCase() || 'default'}`;
+
+            const instBody = document.getElementById('installments-table-body');
+            instBody.innerHTML = !policy.paymentListDTO?.length ? `<tr><td colspan="8" class="px-6 py-4 text-center">No payment installments found.</td></tr>`
+                : policy.paymentListDTO.map((p, i) => `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-3 px-6">${p.installmentCount || i + 1}</td>
+                        <td class="py-3 px-6">$${(p.installmentAmount || 0).toFixed(2)}</td>
+                        <td class="py-3 px-6">${p.dueDate ? new Date(p.dueDate).toLocaleDateString() : 'N/A'}</td>
+                        <td class="py-3 px-6">${p.paymentDate ? new Date(p.paymentDate).toLocaleDateString() : 'N/A'}</td>
+                        <td class="py-3 px-6"><span class="status-badge status-${p.status?.toLowerCase().replace(/ /g, '_') || 'default'}">${p.status || 'N/A'}</span></td>
+                        <td class="py-3 px-6">${p.paymentMethod || 'N/A'}</td>
+                        <td class="py-3 px-6 text-xs">${p.transactionId || 'N/A'}</td>
+                        <td class="py-3 px-6 text-center">${(p.status === 'DUE' || p.status === 'OVERDUE' || p.status === 'Unpaid') ? `<button class="btn-modal-action btn-modal-primary py-1 px-2" onclick="navigateToPayments('${policy.policyNumber}', '${p.paymentId}')">Pay</button>` : 'Paid'}</td>
+                    </tr>
+                `).join('');
+            
+            document.getElementById('surrender-history-list').innerHTML = !policy.surrenderDTO?.length ? '<p class="text-gray-500 p-4">No surrender history.</p>' : `<ul>${policy.surrenderDTO.map(s => `<li>${s}</li>`).join('')}</ul>`;
+            document.getElementById('claim-history-list').innerHTML = !policy.claimDTO?.length ? '<p class="text-gray-500 p-4">No claim history.</p>' : `<ul>${policy.claimDTO.map(c => `<li>${c}</li>`).join('')}</ul>`;
+
+            document.getElementById('make-payments-button').onclick = () => navigateToPayments(policy.policyNumber);
+            
+            openModal('policy-detail-modal');
         }
 
         async function fetchAndPopulateBankAccounts(page = 1) {
@@ -1985,7 +2024,6 @@
             tableBody.innerHTML = `<tr><td colspan="21" class="py-4 text-center text-blue-500">Loading bank accounts...</td></tr>`;
             const customerNo = config.customerNo;
             if (!customerNo) {
-                console.error("CustomerNo not found in session storage. Cannot fetch bank accounts.");
                 tableBody.innerHTML = `<tr><td colspan="21" class="py-4 text-center text-red-500">Customer information missing. Please ensure you have logged in and your details are loaded.</td></tr>`;
                 return;
             }
@@ -2015,7 +2053,6 @@
                     renderPagination('bank-account-pagination', currentBankAccountPage, totalBankAccountPages, fetchAndPopulateBankAccounts);
                 }
             } catch (error) {
-                console.error('Error fetching bank account details:', error);
                 tableBody.innerHTML = `<tr><td colspan="21" class="py-4 text-center text-red-500">An error occurred while loading bank accounts.</td></tr>`;
                 showToast('Error fetching bank accounts: ' + error.message, 'error');
             } finally {
@@ -2090,7 +2127,6 @@
                 await fetchAndPopulateBankAccounts(currentBankAccountPage);
 
             } catch (error) {
-                console.error('Error removing bank account:', error);
                 showToast(`Error removing bank account: ${error.message}`, 'error');
             } finally {
                 hideLoader();
@@ -2101,20 +2137,15 @@
             const form = document.getElementById('add-bank-account-form');
             if (form) form.reset();
             const errorDiv = document.getElementById('add-bank-account-error');
-            const resultDiv = document.getElementById('add-bank-account-result');
             if (errorDiv) errorDiv.classList.add('hidden');
-            if (resultDiv) {
-                resultDiv.classList.add('hidden');
-                resultDiv.innerHTML = '';
-            }
+            
             document.getElementById('add-customer-number').value = config.customerNo || '';
             document.getElementById('add-cust-name').value = config.customerName || '';
-            document.getElementById('add-email').value = config.customerEmail || ''; 
-            document.getElementById('add-date-of-birth').value = config.customerDob || ''; 
-            document.getElementById('add-user-code').value = config.userCode || '';
+            const today = new Date().toISOString().slice(0, 10);
+            document.getElementById('add-account-opening-date').value = today;
 
             const policyNumberSelect = document.getElementById('add-policy-number');
-            policyNumberSelect.innerHTML = '<option value="" disabled selected>Select policy number</option>';
+            policyNumberSelect.innerHTML = '<option value="" disabled selected>Select a policy</option>';
             const storedPolicyNumbers = sessionStorage.getItem('allPolicyNumbers');
             if (storedPolicyNumbers) {
                 const policyNumbers = JSON.parse(storedPolicyNumbers);
@@ -2125,7 +2156,7 @@
                     policyNumberSelect.appendChild(option);
                 });
             } else {
-                policyNumberSelect.innerHTML += '<option value="" disabled>No policies found. Please view Policy Details first.</option>';
+                policyNumberSelect.innerHTML += '<option value="" disabled>No policies found</option>';
             }
 
             showLoader();
@@ -2174,8 +2205,7 @@
                 }
                 return result;
             } catch (error) {
-                    console.error('Error fetching bank names:', error);
-                    showToast('Error fetching bank names: ' + error.message, 'error');
+                showToast('Error fetching bank names: ' + error.message, 'error');
                 throw error;
             } finally {
                 hideLoader();
@@ -2243,13 +2273,13 @@
                 }
                 return result.data && result.data.length > 0 ? result.data[0] : null;
             } catch (error) {
-                console.error('Error fetching policy search details:', error);
                 showToast('Error fetching policy search details: ' + error.message, 'error');
                 throw error;
             } finally {
                 hideLoader();
             }
         }
+
         async function addBankAccount(data) {
             showLoader();
             try {
@@ -2259,15 +2289,7 @@
                         'Content-Type': 'application/json',
                         'userCode': config.userCode
                     },
-                    body: JSON.stringify({
-                        ...data,
-                        createdBy: config.userCode,
-                        createdDate: new Date().toISOString(),
-                        lastVerificationDate: new Date().toISOString(),
-                        lastPaymentDate: new Date().toISOString(),
-                        status: 'PENDING',
-                        amlStatus: 'PENDING'
-                    })
+                    body: JSON.stringify(data)
                 });
                 const result = await response.json();
                 if (!response.ok || result.status !== 'Success') {
@@ -2275,7 +2297,6 @@
                 }
                 return result;
             } catch (error) {
-                console.error('Error adding bank account:', error);
                 showToast('Error adding bank account: ' + error.message, 'error');
                 throw error;
             } finally {
@@ -2286,46 +2307,56 @@
         async function handleAddBankAccountSubmit() {
             const form = document.getElementById('add-bank-account-form');
             const errorDiv = document.getElementById('add-bank-account-error');
-            const resultDiv = document.getElementById('add-bank-account-result');
             if (errorDiv) errorDiv.classList.add('hidden');
-            if (resultDiv) {
-                resultDiv.classList.add('hidden');
-                resultDiv.innerHTML = '';
-            }
-            const requiredSelects = form.querySelectorAll('select[required]');
-            let allSelectsValid = true;
-            requiredSelects.forEach(select => {
-                if (!select.value) {
-                    allSelectsValid = false;
-                    select.classList.add('border-red-500');
+            
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            requiredFields.forEach(field => {
+                if (!field.value) {
+                    isValid = false;
+                    field.classList.add('border-red-500');
                 } else {
-                    select.classList.remove('border-red-500');
+                    field.classList.remove('border-red-500');
                 }
             });
-            if (!form.checkValidity() || !allSelectsValid) {
+            const accountNumberInput = document.getElementById('add-account-number');
+            if (accountNumberInput.value.length !== 12) {
+                isValid = false;
+                accountNumberInput.classList.add('border-red-500');
+                document.getElementById('add-account-number-error').classList.remove('hidden');
+            } else {
+                 document.getElementById('add-account-number-error').classList.add('hidden');
+            }
+
+
+            if (!isValid) {
                 if (errorDiv) {
-                    errorDiv.textContent = 'Please fill all required fields.';
+                    errorDiv.textContent = 'Please fill all required fields correctly.';
                     errorDiv.classList.remove('hidden');
                 }
-                showToast('Please fill all required fields.', 'error');
+                showToast('Please fill all required fields correctly.', 'error');
                 return;
             }
+
             const accountData = {
-                policyNumber: document.getElementById('add-policy-number').value,
                 customerNumber: document.getElementById('add-customer-number').value,
-                customerName: document.getElementById('add-cust-name').value,
-                email: document.getElementById('add-email').value,
-                dateOfBirth: document.getElementById('add-date-of-birth').value,
-                userCode: document.getElementById('add-user-code').value,
-                accountNumber: document.getElementById('add-account-number').value,
-                ifscCode: document.getElementById('add-ifsc-code').value,
+                policyNumber: document.getElementById('add-policy-number').value,
+                accountHolderName: document.getElementById('add-cust-name').value,
+                accountNumber: accountNumberInput.value,
                 bankName: document.getElementById('add-bank-name').value,
+                ifscCode: document.getElementById('add-ifsc-code').value,
+                branchCode: document.getElementById('add-branch-code').value,
                 accountType: document.getElementById('add-account-type').value,
-                accountHolderType: document.getElementById('add-account-holder-type').value,
-                swiftCode: document.getElementById('add-swift-code').value,
-                paymentMethodStatus: document.getElementById('add-payment-method-status').value,
-                branchCode: document.getElementById('add-branch-code').value
+                accountBalance: parseFloat(document.getElementById('add-account-balance').value) || 0,
+                accountOpeningDate: document.getElementById('add-account-opening-date').value + 'T00:00:00',
+                isDefaultAccount: document.getElementById('add-is-default-account').checked,
+                customerComment: document.getElementById('add-customer-comment').value,
+                kycDocument: kycBase64String,
+                kycStatus: 'IN_PROGRESS',
+                kycDocumentStatus: kycBase64String ? 'IN_PROGRESS' : 'REJECTED',
+                createdBy: config.userCode
             };
+
             try {
                 await addBankAccount(accountData);
                 closeModal('add-bank-account-modal');
@@ -2347,14 +2378,50 @@
             const errorDiv = document.getElementById('apply-policy-error');
             if (errorDiv) errorDiv.classList.add('hidden');
             document.getElementById('apply-customer-number').value = config.customerNo || '';
-            document.getElementById('apply-user-code').value = config.userCode || '';
             await fetchPolicyDomains();
             populatePolicyNameDropdown(policyDomainData);
             const applyPolicyNameSelect = document.getElementById('apply-policy-name');
             applyPolicyNameSelect.removeEventListener('change', populatePolicyDetailsOnSelect);
             applyPolicyNameSelect.addEventListener('change', populatePolicyDetailsOnSelect);
             populatePolicyDetailsOnSelect();
+            
+            showApplyPolicyModalTab('apply-policy-tab');
+            fetchAndDisplayPolicyRequests();
         }
+
+        async function fetchAndDisplayPolicyRequests() {
+            const tableBody = document.getElementById('policy-requests-table-body');
+            tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center">Loading requests...</td></tr>`;
+            if (!config.customerNo) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-red-500">Customer Number not found.</td></tr>`;
+                return;
+            }
+            try {
+                const response = await fetch(`${config.policyUrl}/apply-policy/request?customerNo=${config.customerNo}`, {
+                     headers: { 'userCode': config.userCode }
+                });
+                const result = await response.json();
+                if (!response.ok || result.status !== 'Success') {
+                    throw new Error(result.errorMessage || 'Failed to fetch policy requests');
+                }
+                if (result.data && result.data.length > 0) {
+                     tableBody.innerHTML = result.data.map(req => `
+                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                            <td class="py-3 px-6">${req.requestNumber || 'N/A'}</td>
+                            <td class="py-3 px-6">${req.policyName || 'N/A'}</td>
+                            <td class="py-3 px-6"><span class="status-badge status-${req.requestStatus?.toLowerCase() || 'default'}">${req.requestStatus || 'N/A'}</span></td>
+                            <td class="py-3 px-6">${req.createdDate ? new Date(req.createdDate).toLocaleDateString() : 'N/A'}</td>
+                            <td class="py-3 px-6">${req.verifierReason || 'N/A'}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center">No policy requests found.</td></tr>`;
+                }
+            } catch (error) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-red-500">Error: ${error.message}</td></tr>`;
+            }
+        }
+
         async function fetchPolicyDomains() {
             showLoader();
             try {
@@ -2377,7 +2444,6 @@
                 }
                 return policyDomainData;
             } catch (error) {
-                console.error('Error fetching policy domains:', error);
                 showToast('Error fetching policy domains: ' + error.message, 'error');
                 policyDomainData = [];
                 return [];
@@ -2401,23 +2467,25 @@
             const selectedPolicyName = document.getElementById('apply-policy-name').value;
             const policyTypeInput = document.getElementById('apply-policy-type');
             const productCodeInput = document.getElementById('apply-product-code');
-            const coverageAmountInput = document.getElementById('apply-coverage-amount');
-            const minTotalAmountInput = document.getElementById('apply-min-total-amount');
-            const maxTotalAmountInput = document.getElementById('apply-max-total-amount');
+            const companyNameInput = document.getElementById('apply-pol-company-name');
+            const minHint = document.getElementById('min-total-amount-hint');
+            const maxHint = document.getElementById('max-total-amount-hint');
+
             policyTypeInput.value = '';
             productCodeInput.value = '';
-            coverageAmountInput.value = '';
-            minTotalAmountInput.value = '';
-            maxTotalAmountInput.value = '';
+            companyNameInput.value = '';
+            minHint.textContent = 'N/A';
+            maxHint.textContent = 'N/A';
+            
             if (selectedPolicyName) {
                 const selectedDomain = policyDomainData.find(domain => domain.policyName === selectedPolicyName);
                 if (selectedDomain && selectedDomain.policies && selectedDomain.policies.length > 0) {
                     const policyDetails = selectedDomain.policies[0];
                     policyTypeInput.value = selectedDomain.policyType || 'N/A';
                     productCodeInput.value = selectedDomain.productCode || 'N/A';
-                    coverageAmountInput.value = policyDetails.coverageAmount ? `$${policyDetails.coverageAmount.toFixed(2)}` : 'N/A';
-                    minTotalAmountInput.value = policyDetails.minTotalAmount ? `$${policyDetails.minTotalAmount.toFixed(2)}` : 'N/A';
-                    maxTotalAmountInput.value = policyDetails.maxTotalAmount ? `$${policyDetails.maxTotalAmount.toFixed(2)}` : 'N/A';
+                    companyNameInput.value = policyDetails.polCompanyName || 'N/A';
+                    minHint.textContent = policyDetails.minTotalAmount ? `$${policyDetails.minTotalAmount.toFixed(2)}` : 'N/A';
+                    maxHint.textContent = policyDetails.maxTotalAmount ? `$${policyDetails.maxTotalAmount.toFixed(2)}` : 'N/A';
                 } else {
                     showToast('No detailed policy information found for this selection.', 'info');
                 }
@@ -2427,7 +2495,19 @@
             const form = document.getElementById('apply-policy-form');
             const errorDiv = document.getElementById('apply-policy-error');
             if (errorDiv) errorDiv.classList.add('hidden');
-            if (!form.checkValidity()) {
+            
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            requiredFields.forEach(field => {
+                if (!field.value) {
+                    isValid = false;
+                    field.classList.add('border-red-500');
+                } else {
+                    field.classList.remove('border-red-500');
+                }
+            });
+
+            if (!isValid) {
                 if (errorDiv) {
                     errorDiv.textContent = 'Please fill all required fields.';
                     errorDiv.classList.remove('hidden');
@@ -2435,15 +2515,34 @@
                 showToast('Please fill all required fields.', 'error');
                 return;
             }
+
+            const now = new Date().toISOString();
             const policyData = {
                 policyName: document.getElementById('apply-policy-name').value,
+                productCode: document.getElementById('apply-product-code').value,
+                polCompanyName: document.getElementById('apply-pol-company-name').value,
+                createdBy: config.userCode,
+                updatedBy: config.userCode,
                 policyType: document.getElementById('apply-policy-type').value,
-                customerNo: document.getElementById('apply-customer-number').value,
-                userCode: document.getElementById('apply-user-code').value
+                policyStatus: "PENDING",
+                createdDate: now,
+                updatedDate: now,
+                premiumDueDate: now,
+                policyStartDate: now,
+                policyEndDate: now,
+                reason: document.getElementById('apply-reason').value,
+                totalAmount: parseFloat(document.getElementById('apply-total-amount').value) || 0,
+                monthlyInstallment: parseFloat(document.getElementById('apply-monthly-installment').value) || 0,
+                totalInstallments: parseInt(document.getElementById('apply-total-installments').value) || 0,
+                customerNo: config.customerNo,
+                requestNumber: null,
+                requestStatus: "PENDING",
+                verifierReason: ""
             };
+
             showLoader();
             try {
-                const response = await fetch(`${config.policyUrl}/apply-policy`, {
+                const response = await fetch(`${config.policyUrl}/apply-policy?action=APPLY`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2455,12 +2554,10 @@
                 if (!response.ok || result.status !== 'Success') {
                     throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
                 }
-                closeModal('apply-policy-modal');
                 showToast('Applied successfully! Our agent will review and connect.', 'success');
                 form.reset();
-                if (!document.getElementById('policy-details-section').classList.contains('hidden')) {
-                    fetchAndPopulatePolicies();
-                }
+                fetchAndDisplayPolicyRequests(); 
+                showApplyPolicyModalTab('show-requests-tab');
             } catch (error) {
                 if (errorDiv) {
                     errorDiv.textContent = error.message;
@@ -2477,7 +2574,6 @@
             const userCode = config.userCode;
             const customerNo = config.customerNo;
             if (!userCode || !customerNo) {
-                console.error("UserCode or CustomerNo not found. Cannot fetch work items.");
                 tableBody.innerHTML = `<tr><td colspan="9" class="py-4 text-center text-red-500">User or customer information missing.</td></tr>`;
                 return;
             }
@@ -2515,7 +2611,6 @@
                     renderPagination('workitem-pagination', currentWorkItemPage, totalWorkItemPages, fetchAndPopulateWorkItems, currentWorkItemFilters);
                 }
             } catch (error) {
-                console.error('Error fetching work items:', error);
                 tableBody.innerHTML = `<tr><td colspan="9" class="py-4 text-center text-red-500">An error occurred while loading work items.</td></tr>`;
                 showToast('Error fetching work items: ' + error.message, 'error');
             } finally {
@@ -2567,7 +2662,6 @@
             const userCode = config.userCode;
             const customerNo = config.customerNo;
             if (!userCode || !customerNo) {
-                console.error("UserCode or CustomerNo not found. Cannot fetch work item status counts.");
                 return;
             }
             showLoader();
@@ -2585,11 +2679,8 @@
                 }
                 if (result.data) {
                     updateWorkItemStatusCards(result.data);
-                } else {
-                    console.warn('No work item status count data received.');
                 }
             } catch (error) {
-                console.error('Error fetching work item status counts:', error);
                 showToast('Error fetching work item status counts: ' + error.message, 'error');
             } finally {
                 hideLoader();
@@ -2697,7 +2788,6 @@
                         showToast('No work types available.', 'info');
                     }
                 } catch (error) {
-                    console.error('Failed to fetch work types:', error);
                     showToast('Failed to load work types.', 'error');
                 }
             }
@@ -2739,7 +2829,6 @@
                     fetchWorkItemStatusCounts();
                 }
             } catch (error) {
-                console.error('Error creating work item:', error);
                 showToast('Failed to create work item: ' + error.message, 'error');
             } finally {
                 hideLoader();
@@ -2809,25 +2898,20 @@
             navigateToComplaints(message);
         }
 
-        // New functions for policy and installment actions
         function sendPolicyEmail(policyNumber) {
             showToast(`Sending email for policy ${policyNumber}... (Functionality to be implemented)`, 'info');
-            // Implement actual email sending logic here
         }
 
         function generatePolicyPdf(policyNumber) {
             showToast(`Generating PDF for policy ${policyNumber}... (Functionality to be implemented)`, 'info');
-            // Implement actual PDF generation logic here
         }
 
         function sendInstallmentEmail(policyNumber, paymentId) {
             showToast(`Sending email for installment ${paymentId} of policy ${policyNumber}... (Functionality to be implemented)`, 'info');
-            // Implement actual email sending logic here
         }
 
         function generateInstallmentPdf(policyNumber, paymentId) {
             showToast(`Generating PDF for installment ${paymentId} of policy ${policyNumber}... (Functionality to be implemented)`, 'info');
-            // Implement actual PDF generation logic here
         }
 
         function reportPaymentIssue(policyNumber, paymentId) {
@@ -2868,53 +2952,40 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             if (!config.userCode) {
-                console.warn("User code not found in session storage. Redirecting to login page.");
                 window.location.href = config.loginUrl;
                 return; 
             }
 
             await fetchCustomerDetails(); 
-
             showSection('dashboard'); 
 
-            const addPolicyNumberSelect = document.getElementById('add-policy-number');
-            if (addPolicyNumberSelect) {
-                addPolicyNumberSelect.addEventListener('change', async () => {
-                    const policyNo = addPolicyNumberSelect.value;
-                    if (policyNo) {
-                        try {
-                            const policyData = await fetchPolicySearchDetails(policyNo);
-                            if (policyData) {
-                                document.getElementById('add-customer-number').value = policyData.customerNo || '';
-                                document.getElementById('add-cust-name').value = policyData.customerName || '';
-                                document.getElementById('add-email').value = policyData.email || '';
-                                document.getElementById('add-date-of-birth').value = policyData.dateOfBirth || '';
-                                document.getElementById('add-user-code').value = policyData.userCode || config.userCode;
-                                showToast('Policy details loaded', 'success');
-                            } else {
-                                showToast('No policy details found for the selected policy number.', 'info');
-                                document.getElementById('add-customer-number').value = '';
-                                document.getElementById('add-cust-name').value = '';
-                                document.getElementById('add-email').value = '';
-                                document.getElementById('add-date-of-birth').value = '';
-                                document.getElementById('add-user-code').value = config.userCode || '';
-                            }
-                        } catch (error) {
-                            document.getElementById('add-customer-number').value = '';
-                            document.getElementById('add-cust-name').value = '';
-                            document.getElementById('add-email').value = '';
-                            document.getElementById('add-date-of-birth').value = '';
-                            document.getElementById('add-user-code').value = config.userCode || '';
-                        }
-                    } else {
-                        document.getElementById('add-customer-number').value = '';
-                        document.getElementById('add-cust-name').value = '';
-                        document.getElementById('add-email').value = '';
-                        document.getElementById('add-date-of-birth').value = '';
-                        document.getElementById('add-user-code').value = config.userCode || '';
+            document.getElementById('add-account-number').addEventListener('input', (e) => {
+                const errorElement = document.getElementById('add-account-number-error');
+                if (e.target.value.length !== 12) { errorElement.classList.remove('hidden'); } else { errorElement.classList.add('hidden'); }
+            });
+
+            document.getElementById('add-kyc-document').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                const fileInfo = document.getElementById('add-kyc-file-info');
+                const fileError = document.getElementById('add-kyc-file-error');
+                kycBase64String = '';
+                fileError.classList.add('hidden');
+                fileInfo.textContent = '';
+                if (file) {
+                    const maxSize = 300 * 1024;
+                    if (file.size > maxSize) {
+                        fileError.textContent = 'File size exceeds 300KB limit.';
+                        fileError.classList.remove('hidden');
+                        e.target.value = '';
+                        return;
                     }
-                });
-            }
+                    fileInfo.textContent = `File selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                    const reader = new FileReader();
+                    reader.onload = () => { kycBase64String = reader.result.split(',')[1]; };
+                    reader.onerror = () => { fileError.textContent = 'Failed to read file.'; fileError.classList.remove('hidden'); };
+                    reader.readAsDataURL(file);
+                }
+            });
 
             const addBankNameSelect = document.getElementById('add-bank-name');
             if (addBankNameSelect) {
@@ -2932,7 +3003,7 @@
                     autoPopulateBranchCode(selectedBankName, selectedIfscCode);
                 });
             }
-            
+			
             const addBankAccountSubmitBtn = document.getElementById('add-bank-account-submit');
             if (addBankAccountSubmitBtn) {
                 addBankAccountSubmitBtn.addEventListener('click', handleAddBankAccountSubmit);
@@ -2960,28 +3031,15 @@
                                     document.getElementById('policy-company-workitem').textContent = firstPolicy.polCompanyName || 'N/A';
                                     document.getElementById('product-code-workitem').textContent = firstPolicy.productCode || 'N/A';
                                 } else {
-                                    document.getElementById('policy-company-workitem').textContent = 'N/A';
-                                    document.getElementById('product-code-workitem').textContent = 'N/A';
                                     showToast('No policy details found for this policy number.', 'info');
                                 }
                                 showToast('Policy details loaded for work item.', 'success');
                             } else {
-                                document.getElementById('customer-number-workitem').textContent = '';
-                                document.getElementById('policy-company-workitem').textContent = '';
-                                document.getElementById('product-code-workitem').textContent = '';
                                 showToast('Policy details not found for the entered policy number.', 'info');
                             }
                         } catch (error) {
-                            console.error('Error fetching policy details for work item:', error);
-                            document.getElementById('customer-number-workitem').textContent = '';
-                            document.getElementById('policy-company-workitem').textContent = '';
-                            document.getElementById('product-code-workitem').textContent = '';
                             showToast('Failed to load policy details for work item.', 'error');
                         }
-                    } else {
-                        document.getElementById('customer-number-workitem').textContent = '';
-                        document.getElementById('policy-company-workitem').textContent = '';
-                        document.getElementById('product-code-workitem').textContent = '';
                     }
                 });
             }
@@ -3014,14 +3072,13 @@
                     populateBankAccountsTable(e.target.value.trim());
                 });
             }
-
-            /* New: Event listeners for Policy Details Modal tabs */
-            document.querySelectorAll('#policy-detail-modal .tab-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const targetTab = e.target.dataset.tab;
-                    showPolicySubSection(targetTab);
-                });
-            });
+			document.querySelectorAll('#policy-detail-modal .tab-button').forEach(button => {
+			    button.addEventListener('click', () => showPolicyDetailTab(button.dataset.tab));
+			});
+            document.querySelectorAll('#apply-policy-modal .tab-button').forEach(button => {
+			    button.addEventListener('click', () => showApplyPolicyModalTab(button.dataset.tab));
+			});
+          
         });
     </script>
 </body>
