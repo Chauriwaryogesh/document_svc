@@ -47,4 +47,8 @@ public interface IPolicyRepo extends JpaRepository<Policy, String> {
 
 	@Query("SELECT p FROM Policy p WHERE p.customer.customerNo IN :customerNos AND p.deletedFlag=:deletedFlag")
 	List<Policy> findByCustomerCustomerNoIn(List<String> customerNos, String deletedFlag);
+
+	Page<Policy> findAll(Specification<Policy> spec, Pageable pageable);
+
+	//Page<Policy> findAllPolicyForCustomer(Specification<Policy> spec, Pageable pageable);
 }

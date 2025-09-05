@@ -1440,6 +1440,8 @@
                 <button class="tab-button active" data-tab="policy-info-tab">Policy Information</button>
                 <button class="tab-button" data-tab="payment-info-tab">Payment Installments</button>
                 <button class="tab-button" data-tab="surrender-claim-tab">Surrender & Claim</button>
+				<button class="tab-button" data-tab="bank-details-tab">Linked Bank Details</button>
+				<button class="tab-button" data-tab="workitem-tab">Linked Workitem Details</button>
             </div>
             <div id="policy-info-tab" class="tab-content-section active">
                 <div class="modal-body">
@@ -1480,6 +1482,7 @@
                                 <div class="detail-item"><p><span class="font-semibold">Identity Number:</span> <span id="beneficiary-identity-detail" class="text-gray-900"></span></p></div>
                                 <div class="detail-item"><p><span class="font-semibold">Status:</span> <span id="beneficiary-status-detail" class="text-gray-900"></span></p></div>
                                 <div class="detail-item"><p><span class="font-semibold">Contact Number:</span> <span id="beneficiary-contact-detail" class="text-gray-900"></span></p></div>
+								<div class="detail-item"><p><span class="font-semibold">Reason:</span> <span id="reason" class="text-gray-900"></span></p></div>
                             </div>
                         </div>
                          <div class="section-container">
@@ -2079,7 +2082,7 @@
                 'total-amt-unpaid-detail': policy.totalAmtUnPaidByInstallemt ? `$${policy.totalAmtUnPaidByInstallemt.toFixed(2)}` : '$0.00',
                 'beneficiary-name-detail': policy.beneficiaryName, 'beneficiary-relationship-detail': policy.beneficiaryRelationship,
                 'beneficiary-identity-detail': policy.beneficiaryIdentityNumber, 'beneficiary-status-detail': policy.beneficiaryStatus,
-                'beneficiary-contact-detail': policy.beneficiaryContactNumber
+                'beneficiary-contact-detail': policy.beneficiaryContactNumber,'reason':policy.reason
             };
             for (const [id, value] of Object.entries(fields)) {
                 if(document.getElementById(id)) {
@@ -2118,9 +2121,7 @@
                 showToast('Bank account details not found.', 'error');
                 return;
             }
-
             document.getElementById('modal-account-number').textContent = account.accountNumber || 'N/A';
-            
             const fields = {
                 'bank-account-number-detail': account.accountNumber,
                 'bank-name-detail': account.bankName,
@@ -2128,7 +2129,7 @@
                 'branch-code-detail': account.branchCode,
                 'account-type-detail': account.accountType,
                 'bank-customer-name-detail': account.customerName,
-                'bank-customer-no-detail': account.customerNo,
+                'bank-customer-no-detail': account.customerNumber,
             };
             for (const [id, value] of Object.entries(fields)) {
                 if(document.getElementById(id)) {
@@ -2652,7 +2653,7 @@
                 createdBy: config.userCode,
                 updatedBy: config.userCode,
                 policyType: document.getElementById('apply-policy-type').value,
-                policyStatus: "PENDING",
+                policyStatus: "IN_PROGRESS",
                 createdDate: now,
                 updatedDate: now,
                 premiumDueDate: now,
