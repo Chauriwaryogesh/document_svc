@@ -1,9 +1,12 @@
 package com.SecureAccessPortal.Transformer;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -15,13 +18,17 @@ import org.springframework.stereotype.Component;
 import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Entity.Bank;
 import com.SecureAccessPortal.Entity.ClaimEntity;
+import com.SecureAccessPortal.Entity.Customer;
+import com.SecureAccessPortal.Entity.Policy;
 import com.SecureAccessPortal.Entity.PolicyRequestEntity;
 import com.SecureAccessPortal.Entity.SurrenderEntity;
 import com.SecureAccessPortal.Modal.BankDetailsDTO;
+import com.SecureAccessPortal.Modal.PolicyDTO;
 import com.SecureAccessPortal.Modal.PolicyList;
 import com.SecureAccessPortal.Modal.SurrenderClaimDTO;
 import com.SecureAccessPortal.Repo.BankAccountRepo;
 import com.SecureAccessPortal.Service.BankService;
+import com.SecureAccessPortal.Service.PolicyService;
 
 @Component
 public class PolicyMapper {
@@ -33,6 +40,9 @@ public class PolicyMapper {
 
 	@Autowired
 	private BankService bankDetailsService;
+	
+	@Autowired
+	private PolicyService policyService;
 
 	private BankDetailsDTO mapToBankAccountDTO(Bank bankAccount) {
 		if (bankAccount == null) {
@@ -251,6 +261,29 @@ public class PolicyMapper {
 			return policyRequest;
 
 		}).collect(Collectors.toList());
+	}
+
+	public Page<PolicyDTO> mapPolicyForCustomer(Page<Policy> allPolicies) {
+		return allPolicies.map(policy -> {
+			PolicyDTO policyDTO = new PolicyDTO();
+			Customer customer = policy.getCustomer();
+			policyDTO.setAssociatedPolicyCount(String.valueOf(allPolicies.stream().count()));
+			policyDTO.setCustomerNo(customer.getCustomerNo());
+			policyDTO.setUserCode(customer.getUserCode() != null ? customer.getUserCode() : null);
+			policyDTO.setPhoneNumber(customer.getPhoneNumber() != null ? customer.getPhoneNumber() : "");
+			policyDTO.setCustomerName(customer.getName() != null ? customer.getName() : "");
+			policyDTO.setSmokerStatus(customer.getSmokerStatus() != null ? customer.getSmokerStatus() : "");
+			policyDTO.setSurname(customer.getSurname() != null ? customer.getSurname() : "");
+			policyDTO.setGender(customer.getGender() != null ? customer.getGender() : "");
+			policyDTO.setMiddleName(customer.getMiddleName() != null ? customer.getMiddleName() : "");
+			policyDTO.setDateOfBirth(customer.getDateOfBirth() != null ? customer.getDateOfBirth().toString() : "");
+			policyDTO.setEmail(customer.getEmail() != null ? customer.getEmail() : "");
+
+			PolicyList mapPolicyToPolicyList = policyService.mapPolicyToPolicyList(policy);
+			policyDTO.setPolicyList(Arrays.asList(mapPolicyToPolicyList));
+			return policyDTO;
+		});
+
 	}
 
 }

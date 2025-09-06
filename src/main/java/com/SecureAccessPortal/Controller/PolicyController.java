@@ -53,19 +53,22 @@ public class PolicyController {
 		return response;
 	}
 
-	@GetMapping("/policy-details")
-	public com.SecureAccessPortal.Service.ResponseEntity<List<PolicyDTO>> getCustomerlDetails(
+	@GetMapping("/policy-details/forCustomer")
+	public com.SecureAccessPortal.Service.ResponseEntity<Page<PolicyDTO>> getPolicyDetailsForCustomer(
 			@RequestParam(value = "policyNo", required = false) String policyNo,
 			@RequestParam(value = "allpolSearch", required = false) String allPol,
 			@RequestParam(value = "customerNo", required = false) String customerNo,
 			@RequestParam(value = "workItemRefNo", required = false) String workItemRefNo,
-			@RequestHeader(required = false) String userCode) {
-		if (allPol == null) {
-			allPol = "N";
-		}
-		com.SecureAccessPortal.Service.ResponseEntity<List<PolicyDTO>> emailResp = policyService
-				.getPolicyDetails(policyNo, customerNo, allPol, workItemRefNo, userCode);
-
+			@RequestParam(value = "status", required = false) String status,
+			@RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "startDate", required = false) String startDate,
+			@RequestParam(value = "endDate", required = false) String endDate,
+			@RequestParam(value = "bankAccountNo", required = false) String bankAccountNo,
+			@RequestHeader(required = false) String userCode,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size) {		
+		com.SecureAccessPortal.Service.ResponseEntity<Page<PolicyDTO>> emailResp = policyService
+				.getPolicyDetailsForCustomer(policyNo, customerNo, allPol, workItemRefNo,status,type,startDate,endDate,bankAccountNo, userCode, page,size);
 		return emailResp;
 	}
 

@@ -359,14 +359,38 @@
             flex-direction: column;
             overflow: hidden; 
         }
-        .modal-overlay.open .modal-content-standard {
-            transform: translateY(0);
-            opacity: 1;
-        }
+		.modal-overlay.open .modal-content-standard {
+		            transform: translateY(0);
+		            opacity: 1;
+		        }
 
-        .modal-content-fullscreen {
-            width: 100vw;
-            height: 100vh;
+		        .modal-content-large {
+		            background-color: #f8fafc;
+		            border-radius: 16px;
+		            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+		            width: 90%;
+		            max-width: 900px; /* larger than standard */
+		            max-height: 90vh;
+		            transform: translateY(-20px);
+		            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+		            opacity: 0;
+		            display: flex;
+		            flex-direction: column; /* For mobile */
+		            overflow: hidden;
+		        }
+		        @media (min-width: 768px) {
+		            .modal-content-large {
+		                flex-direction: row;
+		            }
+		        }
+		        .modal-overlay.open .modal-content-large {
+		            transform: translateY(0);
+		            opacity: 1;
+		        }
+
+		        .modal-content-fullscreen {
+		            width: 100vw;
+		            height: 100vh;
             max-width: 100vw;
             max-height: 100vh;
             border-radius: 0;
@@ -483,6 +507,25 @@
             background-color: #f8fafc;
             border-color: #94a3b8;
         }
+		.personal-details-tab-btn {
+		           font-weight: 600;
+		           color: #475569;
+		       }
+		       .personal-details-tab-btn:hover {
+		           background-color: #f1f5f9;
+		           color: #1e293b;
+		       }
+		       .personal-details-tab-btn.active {
+		           background-color: #e0e7ff;
+		           color: #3b82f6;
+		       }
+		       .personal-details-tab-content {
+		           display: none;
+		       }
+		       .personal-details-tab-content.active {
+		           display: block;
+		           animation: fadeIn 0.4s ease-in-out;
+		       }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -585,19 +628,19 @@
             vertical-align: middle;
             white-space: nowrap;
         }
-        .status-active { background-color: #d1fae5; color: #059669; } 
+        .status-active, .status-yes { background-color: #d1fae5; color: #059669; } 
         .status-lapsed { background-color: #fee2e2; color: #ef4444; } 
         .status-pending { background-color: #fef3c7; color: #f59e0b; } 
         .status-paid { background-color: #dbeafe; color: #2563eb; } 
         .status-due { background-color: #fce7f3; color: #db2777; } 
         .status-overdue { background-color: #ffe4e6; color: #dc2626; } 
-        .status-inprogress { background-color: #e0e7ff; color: #4f46e5; } 
+        .status-in-progress, .status-inprogress { background-color: #e0e7ff; color: #4f46e5; } 
         .status-completed { background-color: #d1fae5; color: #065f46; } 
         .status-open { background-color: #e0f2fe; color: #0c4a6e; } 
-        .status-rejected { background-color: #fee2e2; color: #991b1b; } 
+        .status-rejected, .status-no { background-color: #fee2e2; color: #991b1b; } 
         .status-passed { background-color: #dcfce7; color: #166534; } 
-        .status-pend_external { background-color: #eef2ff; color: #4338ca; } 
-        .status-pend_internal { background-color: #f0f9ff; color: #075985; } 
+        .status-pend-external { background-color: #eef2ff; color: #4338ca; } 
+        .status-pend-internal { background-color: #f0f9ff; color: #075985; } 
         .status-default { background-color: #e2e8f0; color: #475569; } 
         
         .tab-button-group {
@@ -766,21 +809,20 @@
                 </button>
             </div>
         </aside>
-        <div class="main-content flex-1 flex flex-col h-screen">
-            <header class="header bg-white p-4 flex-shrink-0 flex justify-between items-center border-b h-20">
-                <button id="sidebar-toggle" class="lg:hidden text-gray-600"><i class="fa-solid fa-bars text-xl"></i></button>
-                <h1 class="header-greeting">Welcome, <span id="customer-name" class="font-semibold text-blue-600">Customer</span>.</h1>
-                <div class="flex items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
-                    <div class="relative flex-grow">
-                        <input type="text" id="universal-search-input" placeholder="Search..." class="universal-search-input w-full p-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                    <div class="header-info flex-shrink-0">
-                        <span id="user-id-display">User ID: N/A</span> | <span id="customer-no-display">Cust No: N/A</span>
-                        <span id="email-display">Email: N/A</span>
-                    </div>
-                </div>
-            </header>
+		<div class="main-content flex-1 flex flex-col h-screen">
+		           <header class="header bg-white p-4 flex-shrink-0 flex justify-between items-center border-b h-20">
+		               <button id="sidebar-toggle" class="lg:hidden text-gray-600"><i class="fa-solid fa-bars text-xl"></i></button>
+		               <h1 class="header-greeting">Welcome, <span id="customer-name" class="font-semibold text-blue-600">Customer</span>.</h1>
+		               <div class="flex items-center gap-4">
+		                   <div class="relative">
+		                       <input type="text" id="universal-search-input" placeholder="Search..." class="universal-search-input w-full p-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+		                       <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+		                   </div>
+		                   <button id="profile-icon-btn" class="relative p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+		                       <i class="fas fa-user-circle text-3xl text-gray-500"></i>
+		                   </button>
+		               </div>
+		           </header>
             <main class="flex-1 overflow-y-auto p-8">
                 <section id="dashboard-section" class="content-section fade-in">
                     <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Overview</h2>
@@ -791,7 +833,7 @@
                                 <div><h3 class="card-title">Your Details</h3></div>
                             </div>
                             <p class="card-description">View and manage your personal information.</p>
-                            <button class="btn-primary w-full" onclick="showSection('personal-details')">View Your Details</button>
+                            <button class="btn-primary w-full" onclick="openPersonalDetailsModal()">View Your Details</button>
                         </div>
                         <div class="card">
                             <div class="card-header-content">
@@ -893,6 +935,7 @@
                         </div>
                     </div>
                 </section>
+                <!-- NOTE: Old personal details section is kept for data population but is now replaced by the modal -->
                 <section id="personal-details-section" class="content-section hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-3xl font-extrabold text-gray-900">Personal Details</h2>
@@ -1230,6 +1273,119 @@
             </main>
         </div>
     </div>
+    <!-- MODALS START HERE -->
+	<!-- Profile Modal -->
+	   <div id="profile-modal" class="modal-overlay">
+	       <div class="modal-content-standard max-w-xs rounded-lg">
+	           <div class="p-6">
+	               <div class="flex items-center space-x-4">
+	                   <div>
+	                       <i class="fas fa-user-circle text-5xl text-blue-500"></i>
+	                   </div>
+	                   <div>
+	                       <h3 id="profile-modal-name" class="text-lg font-bold text-gray-800">N/A</h3>
+	                       <p id="profile-modal-email" class="text-sm text-gray-500">N/A</p>
+	                   </div>
+	               </div>
+	               <hr class="my-4">
+	               <div class="space-y-2 text-sm">
+	                   <p class="text-gray-600"><strong>User Code:</strong> <span id="profile-modal-usercode" class="font-mono">N/A</span></p>
+	                   <p class="text-gray-600"><strong>Customer No:</strong> <span id="profile-modal-custno" class="font-mono">N/A</span></p>
+	               </div>
+	               <div class="mt-6 flex justify-end">
+	                   <button class="btn-secondary py-2 px-4 text-sm" onclick="closeModal('profile-modal')">Close</button>
+	               </div>
+	           </div>
+	       </div>
+	   </div>
+	   <!-- Personal Details Modal -->
+	      <div id="personal-details-modal" class="modal-overlay">
+	          <div class="modal-content-large flex flex-col md:flex-row">
+	              <!-- Left Panel -->
+	              <div class="w-full md:w-1/3 bg-white p-8 border-r border-gray-200 flex flex-col items-center justify-start rounded-l-lg">
+	                  <div class="relative mb-6">
+	                      <i class="fas fa-user-circle text-8xl text-blue-500"></i>
+	                  </div>
+	                  <h3 id="modal-profile-name" class="text-xl font-bold text-gray-800">N/A</h3>
+	                  <p id="modal-profile-cust-no" class="text-sm text-gray-500 mb-6">Customer No: N/A</p>
+	                  
+	                  <div class="w-full space-y-2">
+	                      <button class="w-full text-left p-3 rounded-lg transition duration-200 personal-details-tab-btn active" data-tab="basic-info-tab">
+	                          <i class="fas fa-info-circle w-6 mr-2"></i> Basic Information
+	                      </button>
+	                      <button class="w-full text-left p-3 rounded-lg transition duration-200 personal-details-tab-btn" data-tab="address-info-tab">
+	                          <i class="fas fa-map-marker-alt w-6 mr-2"></i> Address Details
+	                      </button>
+	                      <button class="w-full text-left p-3 rounded-lg transition duration-200 personal-details-tab-btn" data-tab="contact-info-tab">
+	                          <i class="fas fa-phone w-6 mr-2"></i> Contact Details
+	                      </button>
+	                      <button class="w-full text-left p-3 rounded-lg transition duration-200 personal-details-tab-btn" data-tab="roles-info-tab">
+	                          <i class="fas fa-user-tag w-6 mr-2"></i> Roles
+	                      </button>
+	                  </div>
+
+	                  <div class="mt-auto w-full pt-6 border-t border-gray-200">
+	                       <button class="btn-secondary w-full mb-2" onclick="navigateToComplaintsForDetailsChange()">Request Changes</button>
+	                       <button class="btn-danger w-full" onclick="closeModal('personal-details-modal')">Close</button>
+	                  </div>
+	              </div>
+
+	              <!-- Right Panel (Tab Content) -->
+	              <div class="w-full md:w-2/3 p-8 overflow-y-auto">
+	                  <!-- Basic Info Tab -->
+	                  <div id="basic-info-tab" class="personal-details-tab-content active">
+	                       <h4 class="text-2xl font-bold text-gray-800 mb-6">Basic Information</h4>
+	                       <div class="detail-grid">
+	                          <div class="detail-item"><p><span class="font-semibold">Customer Number:</span> <span id="modal-detail-customer-no" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Full Name:</span> <span id="modal-detail-customer-name" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Phone Number:</span> <span id="modal-detail-phone-number" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Email:</span> <span id="modal-detail-email" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Date of Birth:</span> <span id="modal-detail-dob" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Gender:</span> <span id="modal-detail-gender" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Smoker Status:</span> <span id="modal-detail-smoker-status" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">User Code:</span> <span id="modal-detail-user-code" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Admin Access:</span> <span id="modal-detail-admin-access" class="text-gray-900">N/A</span></p></div>
+	                       </div>
+	                  </div>
+	                  <!-- Address Info Tab -->
+	                  <div id="address-info-tab" class="personal-details-tab-content">
+	                      <h4 class="text-2xl font-bold text-gray-800 mb-6">Address Details</h4>
+	                      <div class="detail-grid">
+	                          <div class="detail-item"><p><span class="font-semibold">Street:</span> <span id="modal-detail-address-street" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">City:</span> <span id="modal-detail-address-city" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">State:</span> <span id="modal-detail-address-state" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Zip Code:</span> <span id="modal-detail-address-zipcode" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Country:</span> <span id="modal-detail-address-country" class="text-gray-900">N/A</span></p></div>
+	                      </div>
+	                  </div>
+	                  <!-- Contact Info Tab -->
+	                  <div id="contact-info-tab" class="personal-details-tab-content">
+	                      <h4 class="text-2xl font-bold text-gray-800 mb-6">Contact Details</h4>
+	                       <div class="detail-grid">
+	                          <div class="detail-item"><p><span class="font-semibold">Alternate Email:</span> <span id="modal-detail-contact-alternate-email" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Phone Country Code:</span> <span id="modal-detail-contact-phone-country-code" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Emergency Contact Name:</span> <span id="modal-detail-contact-emergency-name" class="text-gray-900">N/A</span></p></div>
+	                          <div class="detail-item"><p><span class="font-semibold">Emergency Contact Phone:</span> <span id="modal-detail-contact-emergency-phone" class="text-gray-900">N/A</span></p></div>
+	                      </div>
+	                  </div>
+	                  <!-- Roles Info Tab -->
+	                  <div id="roles-info-tab" class="personal-details-tab-content">
+	                      <h4 class="text-2xl font-bold text-gray-800 mb-6">Roles</h4>
+	                      <div class="detail-grid">
+	                          <div class="detail-item col-span-full"><p id="modal-detail-roles" class="text-gray-900 bg-gray-100 p-4 rounded-md">N/A</p></div>
+	                      </div>
+	                  </div>
+	              </div>
+	          </div>
+	      </div>
+    
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="navigateToComplaintsForDetailsChange()">Apply for Name or Details Changes</button>
+                <button class="btn-primary" onclick="closeModal('personal-details-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Add Bank Account Modal -->
     <div id="add-bank-account-modal" class="modal-overlay">
         <div class="modal-content-fullscreen">
@@ -1524,11 +1680,35 @@
                 <div class="modal-body">
                     <div class="section-container mb-6">
                         <h4 class="section-title">Surrender History</h4>
-                        <div id="surrender-history-list" class="overflow-x-auto"></div>
+                        <div id="surrender-history-list" class="overflow-x-auto">
+                            <!-- Populated by JS -->
+                        </div>
                     </div>
                      <div class="section-container">
                         <h4 class="section-title">Claim History</h4>
-                        <div id="claim-history-list" class="overflow-x-auto"></div>
+                        <div id="claim-history-list" class="overflow-x-auto">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="bank-details-tab" class="tab-content-section">
+                <div class="modal-body">
+                    <div class="section-container">
+                        <h4 class="section-title">Linked Bank Accounts</h4>
+                        <div id="linked-bank-accounts-list" class="overflow-x-auto">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="workitem-tab" class="tab-content-section">
+                 <div class="modal-body">
+                    <div class="section-container">
+                        <h4 class="section-title">Linked Work Items</h4>
+                        <div id="linked-workitems-list" class="overflow-x-auto">
+                            <!-- Populated by JS -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1546,20 +1726,69 @@
                     <div class="section-container">
                         <h4 class="section-title">Account Information</h4>
                         <div class="detail-grid">
+                            <div class="detail-item"><p><span class="font-semibold">Bank ID:</span> <span id="bank-id-detail" class="text-gray-900"></span></p></div>
                             <div class="detail-item"><p><span class="font-semibold">Account Number:</span> <span id="bank-account-number-detail" class="text-gray-900"></span></p></div>
                             <div class="detail-item"><p><span class="font-semibold">Bank Name:</span> <span id="bank-name-detail" class="text-gray-900"></span></p></div>
                             <div class="detail-item"><p><span class="font-semibold">IFSC Code:</span> <span id="ifsc-code-detail" class="text-gray-900"></span></p></div>
                             <div class="detail-item"><p><span class="font-semibold">Branch Code:</span> <span id="branch-code-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">SWIFT Code:</span> <span id="swift-code-detail" class="text-gray-900"></span></p></div>
                             <div class="detail-item"><p><span class="font-semibold">Account Type:</span> <span id="account-type-detail" class="text-gray-900"></span></p></div>
-                            <div class="detail-item"><p><span class="font-semibold">Status:</span> <span id="bank-status-detail" class="status-badge status-default"></span></p></div>
-                            <div class="detail-item"><p><span class="font-semibold">AML Status:</span> <span id="aml-status-detail" class="status-badge status-default"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Currency:</span> <span id="currency-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Account Balance:</span> <span id="account-balance-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Default Account:</span> <span id="is-default-account-detail" class="text-gray-900"></span></p></div>
                         </div>
                     </div>
                     <div class="section-container">
                         <h4 class="section-title">Holder Information</h4>
                         <div class="detail-grid">
                             <div class="detail-item"><p><span class="font-semibold">Customer Name:</span> <span id="bank-customer-name-detail" class="text-gray-900"></span></p></div>
-                             <div class="detail-item"><p><span class="font-semibold">Customer Number:</span> <span id="bank-customer-no-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Customer Number:</span> <span id="bank-customer-no-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Account Holder Name:</span> <span id="account-holder-name-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Account Holder Type:</span> <span id="account-holder-type-detail" class="text-gray-900"></span></p></div>
+                        </div>
+                    </div>
+                     <div class="section-container">
+                        <h4 class="section-title">Related Policy</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item"><p><span class="font-semibold">Policy Number:</span> <span id="bank-policy-number-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Policy Status:</span> <span id="bank-policy-status-detail" class="status-badge"></span></p></div>
+                        </div>
+                    </div>
+                    <div class="section-container">
+                        <h4 class="section-title">Status & Dates</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item"><p><span class="font-semibold">Account Status:</span> <span id="bank-status-detail" class="status-badge status-default"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">AML Status:</span> <span id="aml-status-detail" class="status-badge status-default"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Account Opening Date:</span> <span id="account-opening-date-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Account Closing Date:</span> <span id="account-closing-date-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Last Payment Date:</span> <span id="last-payment-date-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Last Verification Date:</span> <span id="last-verification-date-detail" class="text-gray-900"></span></p></div>
+                        </div>
+                    </div>
+                    <div class="section-container">
+                        <h4 class="section-title">KYC & Verification</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item"><p><span class="font-semibold">KYC Status:</span> <span id="kyc-status-detail" class="status-badge status-default"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">KYC Document Status:</span> <span id="kyc-document-status-detail" class="status-badge status-default"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Verification Attempts:</span> <span id="verification-attempts-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item col-span-full"><p><span class="font-semibold">Verifier Comment:</span> <span id="verifier-comment-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item col-span-full"><p><span class="font-semibold">Customer Comment:</span> <span id="customer-comment-detail" class="text-gray-900"></span></p></div>
+                        </div>
+                    </div>
+                    <div class="section-container">
+                        <h4 class="section-title">Payment Details</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item"><p><span class="font-semibold">Payment Method Status:</span> <span id="payment-method-status-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Linked Payment Method:</span> <span id="linked-payment-method-detail" class="text-gray-900"></span></p></div>
+                        </div>
+                    </div>
+                    <div class="section-container">
+                        <h4 class="section-title">Metadata</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item"><p><span class="font-semibold">Created By:</span> <span id="created-by-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Created Date:</span> <span id="created-date-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Updated By:</span> <span id="updated-by-detail" class="text-gray-900"></span></p></div>
+                            <div class="detail-item"><p><span class="font-semibold">Updated Date:</span> <span id="updated-date-detail" class="text-gray-900"></span></p></div>
                         </div>
                     </div>
                 </div>
@@ -1648,7 +1877,7 @@
             policyUrl: 'http://localhost:8081/policy',
             workitemApiUrl: 'http://localhost:8081/workItem_Service',
             workTypeApiUrl: 'http://localhost:8081/workItem_Service/workType',
-            itemsPerPage: 8
+            itemsPerPage: 2
         };
         let currentOpenModalId = null;
         let allPolicies = [];
@@ -1672,9 +1901,6 @@
         const sidebarToggleMobileBtn = document.getElementById('sidebar-toggle');
         const logoutBtnSidebar = document.getElementById('logout-btn-sidebar');
         const customerNameDisplay = document.getElementById('customer-name');
-        const userIdDisplay = document.getElementById('user-id-display');
-        const emailDisplay = document.getElementById('email-display');
-        const customerNoDisplay = document.getElementById('customer-no-display');
         const sidebarItems = document.querySelectorAll('.sidebar-item');
         const contentSections = document.querySelectorAll('.content-section');
         const universalSearchInput = document.getElementById('universal-search-input');
@@ -1684,9 +1910,6 @@
 
 
         customerNameDisplay.textContent = config.customerName;
-        emailDisplay.textContent = `Email: ${config.customerEmail}`;
-        userIdDisplay.textContent = `User ID: ${config.userCode}`; 
-        customerNoDisplay.textContent = `Cust No: ${config.customerNo || 'N/A'}`; 
 
         function showLoader() {
             document.getElementById('loader').classList.add('active');
@@ -1747,6 +1970,7 @@
             bankAccountSearchInput.value = ''; 
 
             if (sectionName === 'personal-details') {
+                // This section is now handled by a modal, but we'll keep the data fetch call here as a fallback
                 if (document.getElementById('detail-customer-no').textContent === 'N/A' || !config.customerNo) {
                     await fetchCustomerDetails();
                 }
@@ -1785,7 +2009,9 @@
             item.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetSection = item.dataset.section;
-                if (targetSection === 'policy-payment') {
+                if (targetSection === 'personal-details') {
+                    openPersonalDetailsModal();
+                } else if (targetSection === 'policy-payment') {
                     navigateToPayments();
                 } else if (targetSection === 'complaints-nav') {
                     navigateToComplaints();
@@ -1840,13 +2066,28 @@
                 }
             }
         }
-        
+		async function openPersonalDetailsModal() {
+		           if (document.getElementById('modal-detail-customer-no').textContent === 'N/A' || !config.customerNo) {
+		               await fetchCustomerDetails();
+		           }
+		           openModal('personal-details-modal');
+		           showPersonalDetailTab('basic-info-tab'); // Show first tab by default
+		       }
+		       function showPersonalDetailTab(tabId) {
+		           const modal = document.getElementById('personal-details-modal');
+		           modal.querySelectorAll('.personal-details-tab-content').forEach(section => section.classList.remove('active'));
+		           modal.querySelector(`#${tabId}`)?.classList.add('active');
+		           modal.querySelectorAll('.personal-details-tab-btn').forEach(button => button.classList.remove('active'));
+		           modal.querySelector(`.personal-details-tab-btn[data-tab="${tabId}"]`)?.classList.add('active');
+		       }
+
         function showPolicyDetailTab(tabId) {
             const modal = document.getElementById('policy-detail-modal');
             modal.querySelectorAll('.tab-content-section').forEach(section => section.classList.remove('active'));
             modal.querySelector(`#${tabId}`)?.classList.add('active');
             modal.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
             modal.querySelector(`.tab-button[data-tab="${tabId}"]`)?.classList.add('active');
+			
         }
 
         function showApplyPolicyModalTab(tabId) {
@@ -1887,10 +2128,8 @@
                     config.customerDob = customerData.dateOfBirth || ''; 
 
                     customerNameDisplay.textContent = config.customerName;
-                    userIdDisplay.textContent = `User ID: ${config.userCode}`;
-                    emailDisplay.textContent=`Email: ${config.customerEmail}`;
-                    customerNoDisplay.textContent = `Cust No: ${config.customerNo || 'N/A'}`; 
 
+                    // Populate old section (kept for data integrity, but hidden)
                     document.getElementById('detail-customer-no').textContent = customerData.customerNo || 'N/A';
                     document.getElementById('detail-customer-name').textContent = fullName || 'N/A';
                     document.getElementById('detail-phone-number').textContent = customerData.phoneNumber || 'N/A';
@@ -1914,9 +2153,40 @@
                         document.getElementById('detail-contact-emergency-phone').textContent = customerData.contactDetails.emergencyContactPhone || 'N/A';
                     }
                     document.getElementById('detail-roles').textContent = (customerData.roles && customerData.roles.length > 0) ? customerData.roles.join(', ') : 'N/A';
-                } else {
-                    showToast('Failed to fetch customer details: Data missing', 'error');
-                }
+
+                    // Populate new modal
+                    document.getElementById('modal-detail-customer-no').textContent = customerData.customerNo || 'N/A';
+                    document.getElementById('modal-detail-customer-name').textContent = fullName || 'N/A';
+                    document.getElementById('modal-detail-phone-number').textContent = customerData.phoneNumber || 'N/A';
+                    document.getElementById('modal-detail-email').textContent = customerData.email || 'N/A';
+                    document.getElementById('modal-detail-dob').textContent = customerData.dateOfBirth || 'N/A';
+                    document.getElementById('modal-detail-gender').textContent = customerData.gender || 'N/A';
+                    document.getElementById('modal-detail-smoker-status').textContent = customerData.smokerStatus === 'Y' ? 'Yes' : 'No';
+                    document.getElementById('modal-detail-user-code').textContent = customerData.userCode || 'N/A';
+                    document.getElementById('modal-detail-admin-access').textContent = customerData.adminAccess === 'Y' ? 'Yes' : 'No';
+                     if (customerData.address) {
+                        document.getElementById('modal-detail-address-street').textContent = customerData.address.street || 'N/A';
+                        document.getElementById('modal-detail-address-city').textContent = customerData.address.city || 'N/A';
+                        document.getElementById('modal-detail-address-state').textContent = customerData.address.state || 'N/A';
+                        document.getElementById('modal-detail-address-zipcode').textContent = customerData.address.zipCode || 'N/A';
+                        document.getElementById('modal-detail-address-country').textContent = customerData.address.country || 'N/A';
+                    }
+                    if (customerData.contactDetails) {
+                        document.getElementById('modal-detail-contact-alternate-email').textContent = customerData.contactDetails.alternateEmail || 'N/A';
+                        document.getElementById('modal-detail-contact-phone-country-code').textContent = customerData.contactDetails.phoneCountryCode || 'N/A';
+                        document.getElementById('modal-detail-contact-emergency-name').textContent = customerData.contactDetails.emergencyContactName || 'N/A';
+                        document.getElementById('modal-detail-contact-emergency-phone').textContent = customerData.contactDetails.emergencyContactPhone || 'N/A';
+                    }
+					document.getElementById('modal-detail-roles').textContent = (customerData.roles && customerData.roles.length > 0) ? customerData.roles.join(', ') : 'N/A';
+					                   document.getElementById('profile-modal-name').textContent = fullName;
+					                   document.getElementById('profile-modal-email').textContent = customerData.email || 'N/A';
+					                   document.getElementById('profile-modal-usercode').textContent = customerData.userCode || 'N/A';
+					                   document.getElementById('profile-modal-custno').textContent = customerData.customerNo || 'N/A';
+					                   document.getElementById('modal-profile-name').textContent = fullName;
+					                   document.getElementById('modal-profile-cust-no').textContent = `Customer No: ${customerData.customerNo || 'N/A'}`;
+					               } else {
+					                   showToast('Failed to fetch customer details: Data missing', 'error');
+					               }
             } catch (error) {
                 showToast('An error occurred while fetching customer details. Please try again.', 'error');
             } finally {
@@ -1936,7 +2206,7 @@
             currentPolicyPage = page;
             showLoader();
             try {
-                const response = await fetch(`${config.policyUrl}/policy-detailsNew?allpolSearch=Y&customerNo=${customerNo}&page=${page - 1}&size=${config.itemsPerPage}`, {
+                const response = await fetch(`${config.policyUrl}/policy-details/forCustomer?allpolSearch=Y&customerNo=${customerNo}&page=${page - 1}&size=${config.itemsPerPage}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2108,8 +2378,125 @@
                     </tr>
                 `).join('');
             
-            document.getElementById('surrender-history-list').innerHTML = !policy.surrenderDTO?.length ? '<p class="text-gray-500 p-4">No surrender history.</p>' : `<ul>${policy.surrenderDTO.map(s => `<li>${s}</li>`).join('')}</ul>`;
-            document.getElementById('claim-history-list').innerHTML = !policy.claimDTO?.length ? '<p class="text-gray-500 p-4">No claim history.</p>' : `<ul>${policy.claimDTO.map(c => `<li>${c}</li>`).join('')}</ul>`;
+            // Populate Surrender History
+            const surrenderList = document.getElementById('surrender-history-list');
+            if (policy.surrenderDTO && policy.surrenderDTO.length > 0) {
+                surrenderList.innerHTML = `
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Ref No.</th>
+                                <th class="py-3 px-6 text-left">Amount</th>
+                                <th class="py-3 px-6 text-left">Date</th>
+                                <th class="py-3 px-6 text-left">Status</th>
+                                <th class="py-3 px-6 text-left">Reason</th>
+                                <th class="py-3 px-6 text-left">By</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light">
+                            ${policy.surrenderDTO.map(s => `
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="py-3 px-6 text-left">${s.surrenderRefNo || 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left">$${(s.surrAmount || 0).toFixed(2)}</td>
+                                    <td class="py-3 px-6 text-left">${s.surrDate ? new Date(s.surrDate).toLocaleDateString() : 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left"><span class="status-badge status-${s.surrenderStatus?.toLowerCase() || 'default'}">${s.surrenderStatus || 'N/A'}</span></td>
+                                    <td class="py-3 px-6 text-left">${s.surrReason || 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left">${s.surrenderBy || 'N/A'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                surrenderList.innerHTML = '<p class="text-gray-500 p-4 text-center">No surrender history found.</p>';
+            }
+
+            // Populate Claim History
+            const claimList = document.getElementById('claim-history-list');
+            if (policy.claimDTO && policy.claimDTO.length > 0) {
+                 claimList.innerHTML = `
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Ref No.</th>
+                                <th class="py-3 px-6 text-left">Date</th>
+                                <th class="py-3 px-6 text-left">Status</th>
+                                <th class="py-3 px-6 text-left">Reason</th>
+                                <th class="py-3 px-6 text-left">By</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light">
+                             ${policy.claimDTO.map(c => `
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="py-3 px-6 text-left">${c.claimRefNo || 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left">${c.claimDate ? new Date(c.claimDate).toLocaleDateString() : 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left"><span class="status-badge status-${c.claimStatus?.toLowerCase() || 'default'}">${c.claimStatus || 'N/A'}</span></td>
+                                    <td class="py-3 px-6 text-left">${c.claimReason || 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left">${c.claimBy || 'N/A'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                claimList.innerHTML = '<p class="text-gray-500 p-4 text-center">No claim history found.</p>';
+            }
+            
+            // Populate Linked Bank Accounts
+            const bankList = document.getElementById('linked-bank-accounts-list');
+            if (policy.bankAccounts && policy.bankAccounts.length > 0) {
+                bankList.innerHTML = `
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Account No.</th>
+                                <th class="py-3 px-6 text-left">Holder Name</th>
+                                <th class="py-3 px-6 text-left">Bank Name</th>
+                                <th class="py-3 px-6 text-left">IFSC</th>
+                                <th class="py-3 px-6 text-left">Type</th>
+                                <th class="py-3 px-6 text-left">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light">
+                            ${policy.bankAccounts.map(b => `
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="py-3 px-6 text-left">${b.accountNumber || 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left">${b.accountHolderName || 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left">${b.bankName || 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left">${b.ifscCode || 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left">${b.accountType || 'N/A'}</td>
+                                    <td class="py-3 px-6 text-left"><span class="status-badge status-${b.status?.toLowerCase() || 'default'}">${b.status || 'N/A'}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                bankList.innerHTML = '<p class="text-gray-500 p-4 text-center">No linked bank accounts found.</p>';
+            }
+
+            // Populate Linked Work Items
+            const workItemList = document.getElementById('linked-workitems-list');
+            if (policy.workItemRefNo && policy.workItemRefNo.length > 0) {
+                workItemList.innerHTML = `
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Work Item Reference No.</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light">
+                            ${policy.workItemRefNo.map(wi => `
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="py-3 px-6 text-left">${wi || 'N/A'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                workItemList.innerHTML = '<p class="text-gray-500 p-4 text-center">No linked work items found.</p>';
+            }
 
             document.getElementById('make-payments-button').onclick = () => navigateToPayments(policy.policyNumber);
             
@@ -2121,29 +2508,63 @@
                 showToast('Bank account details not found.', 'error');
                 return;
             }
+
+            const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleString() : 'N/A';
+
             document.getElementById('modal-account-number').textContent = account.accountNumber || 'N/A';
+            
             const fields = {
+                'bank-id-detail': account.bankId,
                 'bank-account-number-detail': account.accountNumber,
                 'bank-name-detail': account.bankName,
                 'ifsc-code-detail': account.ifscCode,
                 'branch-code-detail': account.branchCode,
+                'swift-code-detail': account.swiftCode,
                 'account-type-detail': account.accountType,
+                'currency-detail': account.currency,
+                'account-balance-detail': account.accountBalance ? `$${account.accountBalance.toFixed(2)}` : 'N/A',
+                'is-default-account-detail': account.isDefaultAccount ? 'Yes' : 'No',
                 'bank-customer-name-detail': account.customerName,
                 'bank-customer-no-detail': account.customerNumber,
+                'account-holder-name-detail': account.accountHolderName,
+                'account-holder-type-detail': account.accountHolderType,
+                'bank-policy-number-detail': account.policyNumber,
+                'account-opening-date-detail': formatDate(account.accountOpeningDate),
+                'account-closing-date-detail': formatDate(account.accountClosingDate),
+                'last-payment-date-detail': formatDate(account.lastPaymentDate),
+                'last-verification-date-detail': formatDate(account.lastVerificationDate),
+                'verification-attempts-detail': account.verificationAttempts,
+                'verifier-comment-detail': account.verifierComment,
+                'customer-comment-detail': account.customerComment,
+                'payment-method-status-detail': account.paymentMethodStatus,
+                'linked-payment-method-detail': account.linkedPaymentMethod,
+                'created-by-detail': account.createdBy,
+                'created-date-detail': formatDate(account.createdDate),
+                'updated-by-detail': account.updatedBy,
+                'updated-date-detail': formatDate(account.updatedDate),
             };
+
             for (const [id, value] of Object.entries(fields)) {
-                if(document.getElementById(id)) {
-                    document.getElementById(id).textContent = value || 'N/A';
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = value ?? 'N/A';
                 }
             }
-            const statusEl = document.getElementById('bank-status-detail');
-            statusEl.textContent = account.status || 'N/A';
-            statusEl.className = `status-badge status-${account.status?.toLowerCase().replace(/ /g, '_') || 'default'}`;
-            
-            const amlStatusEl = document.getElementById('aml-status-detail');
-            amlStatusEl.textContent = account.amlStatus || 'N/A';
-            amlStatusEl.className = `status-badge status-${account.amlStatus?.toLowerCase().replace(/ /g, '_') || 'default'}`;
 
+            const setStatusBadge = (elementId, status) => {
+                const el = document.getElementById(elementId);
+                if (el) {
+                    el.textContent = status || 'N/A';
+                    el.className = `status-badge status-${status?.toLowerCase().replace(/_/g, '-') || 'default'}`;
+                }
+            };
+
+            setStatusBadge('bank-policy-status-detail', account.policyStatus);
+            setStatusBadge('bank-status-detail', account.status);
+            setStatusBadge('aml-status-detail', account.amlStatus === 'Y' ? 'YES' : 'NO');
+            setStatusBadge('kyc-status-detail', account.kycStatus);
+            setStatusBadge('kyc-document-status-detail', account.kycDocumentStatus);
+            
             openModal('bank-account-detail-modal');
         }
 
@@ -2212,10 +2633,10 @@
                     <td class="py-3 px-6 text-left">${account.ifscCode || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${account.bankName || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${account.accountType || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left"><span class="status-badge status-${account.status?.toLowerCase().replace(/ /g, '_')}">${account.status || 'N/A'}</span></td>
+                    <td class="py-3 px-6 text-left"><span class="status-badge status-${account.status?.toLowerCase().replace(/_/g, '-')}">${account.status || 'N/A'}</span></td>
                     <td class="py-3 px-6 text-left">${account.customerName || 'N/A'}</td>
                     <td class="py-3 px-6 text-left">${account.branchCode || 'N/A'}</td>
-                    <td class="py-3 px-6 text-left"><span class="status-badge status-${account.amlStatus?.toLowerCase().replace(/ /g, '_')}">${account.amlStatus || 'N/A'}</span></td>
+                    <td class="py-3 px-6 text-left"><span class="status-badge status-${(account.amlStatus === 'Y' ? 'yes' : 'no')}">${account.amlStatus || 'N/A'}</span></td>
                     <td class="py-3 px-6 text-center">
                         <button class="btn-danger py-1 px-2 text-xs" onclick="event.stopPropagation(); removeBankAccount('${account.accountNumber}')">Remove</button>
                     </td>
@@ -3084,10 +3505,12 @@
                 window.location.href = config.loginUrl;
                 return; 
             }
-
             await fetchCustomerDetails(); 
             showSection('dashboard'); 
-
+			const profileIconBtn = document.getElementById('profile-icon-btn');
+			           if(profileIconBtn) {
+			               profileIconBtn.addEventListener('click', () => openModal('profile-modal'));
+			           }
             document.getElementById('add-account-number').addEventListener('input', (e) => {
                 const errorElement = document.getElementById('add-account-number-error');
                 if (e.target.value.length !== 12) { errorElement.classList.remove('hidden'); } else { errorElement.classList.add('hidden'); }
@@ -3195,16 +3618,20 @@
                     filterPopup.classList.remove('active');
                 }
             });
-
-            if (bankAccountSearchInput) {
-                bankAccountSearchInput.addEventListener('input', (e) => {
-                    populateBankAccountsTable(e.target.value.trim());
-                });
-            }
-			document.querySelectorAll('#policy-detail-modal .tab-button').forEach(button => {
-			    button.addEventListener('click', () => showPolicyDetailTab(button.dataset.tab));
-			});
-            document.querySelectorAll('#apply-policy-modal .tab-button').forEach(button => {
+			if (bankAccountSearchInput) {
+			                bankAccountSearchInput.addEventListener('input', (e) => {
+			                    populateBankAccountsTable(e.target.value.trim());
+			                });
+			            }
+			            document.querySelectorAll('.personal-details-tab-btn').forEach(button => {
+			                button.addEventListener('click', () => {
+			                    showPersonalDetailTab(button.dataset.tab);
+			                });
+			            });
+						document.querySelectorAll('#policy-detail-modal .tab-button').forEach(button => {
+						    button.addEventListener('click', () => showPolicyDetailTab(button.dataset.tab));
+						});
+			            document.querySelectorAll('#apply-policy-modal .tab-button').forEach(button => {
 			    button.addEventListener('click', () => showApplyPolicyModalTab(button.dataset.tab));
 			});
         });
