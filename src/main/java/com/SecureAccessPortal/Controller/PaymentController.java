@@ -52,7 +52,7 @@ public class PaymentController {
 			response.setDueDate(payment.getDueDate());
 			response.setInstallmentAmount(payment.getInstallmentAmount());
 			response.setInstallmentCount(payment.getInstallmentCount());
-			response.setTotalAmount(String.valueOf(payment.getTotalAmountPaid()));
+			response.setTotalAmount(payment.getTotalAmountPaid());
 			response.setPaymentMethod(payment.getPaymentMethod());
 			response.setPaymentId(payment.getPaymentId());
 			response.setTransactionId(payment.getTransactionId());
@@ -99,87 +99,91 @@ public class PaymentController {
 
 	@GetMapping(value = "/history", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<PaymentResponse>> getPayment(
-			@RequestParam(value = "paymentId", required = false) String paymentId,
-			@RequestParam(value = "transactionId", required = false) String transactionId,
-			@RequestParam(value = "status", required = false) String status,
-			@RequestParam(value = "policyNumber", required = false) String policyNumber,
-			@RequestParam(value = "customerNumber", required = false) String customerNumber,
-			@RequestParam(value = "page", defaultValue = "0") int page,
-			@RequestParam(value = "size", defaultValue = "100") int size,
-			@RequestHeader(value = "userCode", required = false) String userCode) {
+	        @RequestParam(value = "paymentId", required = false) String paymentId,
+	        @RequestParam(value = "transactionId", required = false) String transactionId,
+	        @RequestParam(value = "status", required = false) String status,
+	        @RequestParam(value = "policyNumber", required = false) String policyNumber,
+	        @RequestParam(value = "customerNumber", required = false) String customerNumber,
+	        @RequestParam(value = "page", defaultValue = "0") int page,
+	        @RequestParam(value = "size", defaultValue = "100") int size,
+	        @RequestHeader(value = "userCode", required = false) String userCode) {
+		ResponseEntity<Page<PaymentResponse>> response= new ResponseEntity<Page<PaymentResponse>>();
+	    List<Payments> paymentsList = paymentService.findHistoryOfPaymentsWithoutPagination(
+	            policyNumber, customerNumber, paymentId, transactionId, status, userCode);
 
-		ResponseEntity<Page<PaymentResponse>> responseList = new ResponseEntity<>();
-		Page<Payments> paymentsPage = paymentService.findHistoryOfPayments(policyNumber, customerNumber, paymentId,
-				transactionId, page, size, status, userCode);
+	    List<PaymentResponse> fullResponse;
 
-		List<PaymentResponse> response;
+	    if (paymentId != null || transactionId != null) {
+	        fullResponse = paymentsList.stream().map(payment -> {
+	            PaymentResponse pr = new PaymentResponse();
+	            pr.setResponseStatus(CommonConstant.SUCCESS);
+	            pr.setPolicyNumber(payment.getPolicy().getPolicyNumber());
+	            pr.setCustomerNumber(payment.getCustomer().getCustomerNo());
+	            pr.setEmail(payment.getCustomer().getEmail());
+	            pr.setPolicyName(payment.getPolicyName());
+	            pr.setPolicyType(payment.getPolicy().getPolicyType());
+	            PaymentList pl = mapPaymentToPaymentList(payment);
+	            pr.setPaymentList(Arrays.asList(pl));
+	            return pr;
+	        }).collect(Collectors.toList());
 
-		if (paymentId != null || transactionId != null) {
-			// Return individual records as separate PaymentResponse
-			response = paymentsPage.getContent().stream().map(payment -> {
-				PaymentResponse pr = new PaymentResponse();
-				pr.setResponseStatus(CommonConstant.SUCCESS);
-				pr.setPolicyNumber(payment.getPolicy().getPolicyNumber());
-				pr.setCustomerNumber(payment.getCustomer().getCustomerNo());
-				pr.setEmail(payment.getCustomer().getEmail());
-				pr.setPolicyName(payment.getPolicyName());
-				pr.setPolicyType(payment.getPolicy().getPolicyType());
+	    } else if (customerNumber != null) {
+	        Map<String, List<Payments>> groupedByCustomerPolicy = paymentsList.stream()
+	                .collect(Collectors.groupingBy(p -> p.getCustomer().getCustomerNo() + "_" + p.getPolicy().getPolicyNumber()));
 
-				PaymentList pl = mapPaymentToPaymentList(payment);
-				pr.setPaymentList(Arrays.asList(pl));
-				return pr;
-			}).collect(Collectors.toList());
+	        fullResponse = groupedByCustomerPolicy.entrySet().stream().map(entry -> {
+	            PaymentResponse pr = new PaymentResponse();
+	            pr.setResponseStatus(CommonConstant.SUCCESS);
 
-		} else if (customerNumber != null) {
-			// Group by customer number
-			Map<String, List<Payments>> groupedByCustomer = paymentsPage.getContent().stream()
-					.collect(Collectors.groupingBy(p -> p.getCustomer().getCustomerNo()));
-			response = groupedByCustomer.entrySet().stream().map(entry -> {
-				PaymentResponse pr = new PaymentResponse();
-				pr.setResponseStatus(CommonConstant.SUCCESS);
-				Payments firstPayment = entry.getValue().get(0);
-				pr.setPolicyNumber(firstPayment.getPolicy().getPolicyNumber());
-				pr.setCustomerNumber(entry.getKey());
-				pr.setEmail(firstPayment.getCustomer().getEmail());
-				pr.setPolicyName(firstPayment.getPolicyName());
-				pr.setPolicyType(firstPayment.getPolicy().getPolicyType());
+	            Payments firstPayment = entry.getValue().get(0);
+	            pr.setPolicyNumber(firstPayment.getPolicy().getPolicyNumber());
+	            pr.setCustomerNumber(firstPayment.getCustomer().getCustomerNo());
+	            pr.setEmail(firstPayment.getCustomer().getEmail());
+	            pr.setPolicyName(firstPayment.getPolicyName());
+	            pr.setPolicyType(firstPayment.getPolicy().getPolicyType());
 
-				List<PaymentList> paymentList = entry.getValue().stream().map(this::mapPaymentToPaymentList)
-						.collect(Collectors.toList());
+	            List<PaymentList> paymentList = entry.getValue().stream()
+	                    .map(this::mapPaymentToPaymentList)
+	                    .collect(Collectors.toList());
 
-				pr.setPaymentList(paymentList);
-				return pr;
-			}).collect(Collectors.toList());
+	            pr.setPaymentList(paymentList);
+	            return pr;
+	        }).collect(Collectors.toList());
+	    }
+ else {
+	        Map<String, List<Payments>> groupedByPolicy = paymentsList.stream()
+	                .collect(Collectors.groupingBy(p -> p.getPolicy().getPolicyNumber()));
 
-		} else {
-			// Default: Group by policy number
-			Map<String, List<Payments>> groupedByPolicy = paymentsPage.getContent().stream()
-					.collect(Collectors.groupingBy(p -> p.getPolicy().getPolicyNumber()));
+	        fullResponse = groupedByPolicy.entrySet().stream().map(entry -> {
+	            PaymentResponse pr = new PaymentResponse();
+	            pr.setResponseStatus(CommonConstant.SUCCESS);
+	            Payments firstPayment = entry.getValue().get(0);
+	            pr.setPolicyNumber(entry.getKey());
+	            pr.setCustomerNumber(firstPayment.getCustomer().getCustomerNo());
+	            pr.setEmail(firstPayment.getCustomer().getEmail());
+	            pr.setPolicyName(firstPayment.getPolicyName());
+	            pr.setPolicyType(firstPayment.getPolicy().getPolicyType());
 
-			response = groupedByPolicy.entrySet().stream().map(entry -> {
-				PaymentResponse pr = new PaymentResponse();
-				pr.setResponseStatus(CommonConstant.SUCCESS);
-				Payments firstPayment = entry.getValue().get(0);
-				pr.setPolicyNumber(entry.getKey());
-				pr.setCustomerNumber(firstPayment.getCustomer().getCustomerNo());
-				pr.setEmail(firstPayment.getCustomer().getEmail());
-				pr.setPolicyName(firstPayment.getPolicyName());
-				pr.setPolicyType(firstPayment.getPolicy().getPolicyType());
+	            List<PaymentList> paymentList = entry.getValue().stream()
+	                    .map(this::mapPaymentToPaymentList)
+	                    .collect(Collectors.toList());
 
-				List<PaymentList> paymentList = entry.getValue().stream().map(this::mapPaymentToPaymentList)
-						.collect(Collectors.toList());
+	            pr.setPaymentList(paymentList);
+	            return pr;
+	        }).collect(Collectors.toList());
+	    }
 
-				pr.setPaymentList(paymentList);
-				return pr;
-			}).collect(Collectors.toList());
-		}
+	    // Apply manual pagination
+	    int start = Math.min(page * size, fullResponse.size());
+	    int end = Math.min(start + size, fullResponse.size());
+	    List<PaymentResponse> pagedContent = fullResponse.subList(start, end);
 
-		Page<PaymentResponse> responsePage = new PageImpl<>(response,
-				PageRequest.of(paymentsPage.getNumber(), paymentsPage.getSize(), paymentsPage.getSort()),
-				paymentsPage.getTotalElements());
-
-		responseList.setData(responsePage);
-		return responseList;
+	    Page<PaymentResponse> responsePage = new PageImpl<>(pagedContent,
+	            PageRequest.of(page, size),
+	            fullResponse.size());
+	    response.setData(responsePage);
+	    response.setStatus(CommonConstant.SUCCESS);
+	    return response;
 	}
 
 	private PaymentList mapPaymentToPaymentList(Payments payment) {
@@ -188,7 +192,7 @@ public class PaymentController {
 		pl.setDueDate(payment.getDueDate());
 		pl.setInstallmentAmount(payment.getInstallmentAmount());
 		pl.setInstallmentCount(payment.getInstallmentCount());
-		pl.setTotalAmount(String.valueOf(payment.getTotalAmountPaid()));
+		pl.setTotalAmount(payment.getTotalAmountPaid());
 		pl.setPaymentMethod(payment.getPaymentMethod());
 		pl.setPaymentId(payment.getPaymentId());
 		pl.setTransactionId(payment.getTransactionId());

@@ -259,41 +259,40 @@ payment.setPaymentAmount(request.getPaymentAmount());
 				+ payment.getTransactionId() + ", Status: " + payment.getStatus());
 	}
 
-	public Page<Payments> findHistoryOfPayments(String policyNumber, String customerNumber, String paymentId,
-	        String transactionId, int page, int size, String status, String userCode) {
+	public List<Payments> findHistoryOfPaymentsWithoutPagination(String policyNumber, String customerNumber,
+	        String paymentId, String transactionId, String status, String userCode) {
 
-	    Pageable pageable = PageRequest.of(page, size, Sort.by("createdTime").descending());
+	    Specification<Payments> spec = Specification.where(null);
+
 	    if (paymentId != null && !paymentId.isEmpty()) {
 	        Optional<Payments> payment = paymentsRepository.findById(paymentId);
-	        return payment.map(p -> new PageImpl<>(List.of(p), pageable, 1))
-	                .orElseGet(() -> new PageImpl<>(List.of(), pageable, 0));
-
-	    } else if (transactionId != null && !transactionId.isEmpty()) {
-	        Optional<Payments> payment = paymentsRepository.findByTransactionId(transactionId);
-	        return payment.map(p -> new PageImpl<>(List.of(p), pageable, 1))
-	                .orElseGet(() -> new PageImpl<>(List.of(), pageable, 0));
-	    } else {
-	        // Fallback to dynamic Specification for other filters
-	        Specification<Payments> spec = Specification.where(null);
-
-	        if (policyNumber != null && !policyNumber.isEmpty()) {
-	            spec = spec.and((root, query, cb) ->
-	                    cb.equal(root.get("policy").get("policyNumber"), policyNumber));
-	        }
-
-	        if (customerNumber != null && !customerNumber.isEmpty()) {
-	            spec = spec.and((root, query, cb) ->
-	                    cb.equal(root.get("customer").get("customerNo"), customerNumber));
-	        }
-
-	        if (status != null && !status.isEmpty()) {
-	            spec = spec.and((root, query, cb) ->
-	                    cb.equal(root.get("status"), status));
-	        }
-
-	        return paymentsRepository.findAll(spec, pageable);
+	        return payment.map(List::of).orElse(List.of());
 	    }
+
+	    if (transactionId != null && !transactionId.isEmpty()) {
+	        Optional<Payments> payment = paymentsRepository.findByTransactionId(transactionId);
+	        return payment.map(List::of).orElse(List.of());
+	    }
+
+	    if (policyNumber != null && !policyNumber.isEmpty()) {
+	        spec = spec.and((root, query, cb) ->
+	                cb.equal(root.get("policy").get("policyNumber"), policyNumber));
+	    }
+
+	    if (customerNumber != null && !customerNumber.isEmpty()) {
+	        spec = spec.and((root, query, cb) ->
+	                cb.equal(root.get("customer").get("customerNo"), customerNumber));
+	    }
+
+	    if (status != null && !status.isEmpty()) {
+	        spec = spec.and((root, query, cb) ->
+	                cb.equal(root.get("status"), status));
+	    }
+
+	    return paymentsRepository.findAll(spec, Sort.by("createdTime").descending());
 	}
+
+
 
 	public ResponseEntity<DashboardStats> fetchAllcounts(String userCode) {
 		ResponseEntity<DashboardStats> response = new ResponseEntity<>();

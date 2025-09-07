@@ -16,7 +16,7 @@ public class PaymentList {
 	private String responseStatus;
 	private String message;
 	private String paymentMethod;
-	private String totalAmount;
+	private BigDecimal totalAmount;
 	private BigDecimal paymentAmount;
 	private String paymentType;
 	private PaymentDetails paymentDetails;
@@ -45,11 +45,11 @@ public class PaymentList {
 		this.paymentType = paymentType;
 	}
 
-	public String getTotalAmount() {
+	public BigDecimal getTotalAmount() {
 		return totalAmount;
 	}
 
-	public void setTotalAmount(String totalAmount) {
+	public void setTotalAmount(BigDecimal totalAmount) {
 		this.totalAmount = totalAmount;
 	}
 

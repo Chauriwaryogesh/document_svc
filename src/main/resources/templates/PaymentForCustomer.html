@@ -1280,7 +1280,11 @@
         async function fetchBankAccountDetails(accountNo) {
             return fetchApi(`${config.apiBaseUrl}/bankService/bank-details?bankAccNo=${encodeURIComponent(accountNo)}`);
         }
-
+		function formatDate(isoDate) {
+		    if (!isoDate) return 'N/A';
+		    const date = new Date(isoDate);
+		    return date.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+		}
         function viewPaymentDetails(payment) {
             config.currentPayment = payment;
 
@@ -1288,19 +1292,20 @@
             closeModal('unpaid-payments-selection-modal');
             closeModal('customer-details-modal');
 
-            document.getElementById('modal-payment-id').textContent = payment.paymentId || 'N/A';
-            document.getElementById('modal-policy-number').textContent = payment.policyNumber || 'N/A';
-            document.getElementById('modal-customer-number').textContent = payment.customerNumber || 'N/A';
-            document.getElementById('modal-customer-email').textContent = payment.customerEmail || 'N/A';
-            document.getElementById('modal-policy-name').textContent = payment.policyName || 'N/A';
-            document.getElementById('modal-installment-amount').textContent = payment.installmentAmount || 'N/A';
-            document.getElementById('modal-installment-count').textContent = payment.installmentCount || '0';
-            document.getElementById('modal-due-date').textContent = payment.dueDate || 'N/A';
-            document.getElementById('modal-payment-date').textContent = payment.paymentDate || 'N/A';
-            document.getElementById('modal-status').textContent = payment.status || 'N/A';
-            document.getElementById('modal-transaction-id').textContent = payment.transactionId || 'N/A';
-            document.getElementById('modal-email-status').textContent = payment.emailStatus || 'N/A';
-            document.getElementById('modal-response-status').textContent = payment.responseStatus || 'N/A';
+			    document.getElementById('modal-payment-id').textContent = payment.paymentId || 'N/A';
+			    document.getElementById('modal-policy-number').textContent = payment.policyNumber || 'N/A';
+			    document.getElementById('modal-customer-number').textContent = payment.customerNumber || 'N/A';
+			    document.getElementById('modal-customer-email').textContent = payment.customerEmail || 'N/A';
+			    document.getElementById('modal-policy-name').textContent = payment.policyName || 'N/A';
+			    document.getElementById('modal-installment-amount').textContent = payment.totalAmount;
+			    document.getElementById('modal-installment-count').textContent = payment.installmentCount || '0';
+			    document.getElementById('modal-due-date').textContent = formatDate(payment.dueDate) || 'N/A';
+			    document.getElementById('modal-payment-date').textContent = formatDate(payment.paymentDate) || 'N/A';
+			    document.getElementById('modal-status').textContent = payment.status || 'N/A';
+			    document.getElementById('modal-transaction-id').textContent = payment.transactionId || 'N/A';
+			    document.getElementById('modal-email-status').textContent = payment.emailStatus || 'N/A';
+			    document.getElementById('modal-response-status').textContent = payment.responseStatus || 'N/A';
+			    document.getElementById('modal-message').textContent = payment.message || 'N/A';
 
             const makePaymentModalBtn = document.getElementById('make-payment-from-modal-btn');
             if (makePaymentModalBtn) {
@@ -2755,8 +2760,6 @@
                 }
             });
         }
-        // Add a specific initializer for the unpaid payments modal
-        // This ensures the close button listener is always active when the modal is opened
         modalInitializers['unpaid-payments-selection-modal'] = (data, modalElement) => {
             const closeUnpaidBtn = modalElement.querySelector('#close-unpaid-payments-modal');
             if (closeUnpaidBtn) {
@@ -2838,19 +2841,21 @@
             doc.setFontSize(12);
 			const today = new Date().toISOString().slice(0, 10);
             const details = [
-                { label: 'Payment ID', value: payment.paymentId },
-                { label: 'Policy Number', value: payment.policyNumber },
-                { label: 'Customer Number', value: payment.customerNumber },
-                { label: 'Customer Email', value: payment.customerEmail },
-                { label: 'Policy Name', value: payment.policyName },
-                { label: 'Amount', value: payment.installmentAmount },
-                { label: 'Installment Count', value: payment.installmentCount },
-                { label: 'Due Date', value: payment.dueDate },
-                { label: 'Payment Date', value: today },
-                { label: 'Status', value: payment.status },
-                { label: 'Transaction ID', value: payment.transactionId },
-                { label: 'Email Status', value: payment.emailStatus },
-                { label: 'Response Status', value: payment.responseStatus }
+			{ label: 'Payment ID', value: payment.paymentId || 'N/A' },
+			        { label: 'Policy Number', value: payment.policyNumber || 'N/A' },
+			        { label: 'Customer Number', value: payment.customerNumber || 'N/A' },
+			        { label: 'Customer Email', value: payment.customerEmail || 'N/A' },
+			        { label: 'Policy Name', value: payment.policyName || 'N/A' },
+			        { label: 'Policy Type', value: payment.policyType || 'N/A' },
+			        { label: 'Amount', value: payment.totalAmount || payment.paymentAmount || payment.installmentAmount || 'N/A' },
+			        { label: 'Installment Count', value: payment.installmentCount || '0' },
+			        { label: 'Due Date', value: formatDate(payment.dueDate) || 'N/A' },
+			        { label: 'Payment Date', value: formatDate(payment.paymentDate) || 'N/A' },
+			        { label: 'Status', value: payment.status || 'N/A' },
+			        { label: 'Transaction ID', value: payment.transactionId || 'N/A' },
+			        { label: 'Email Status', value: payment.emailStatus || 'N/A' },
+			        { label: 'Response Status', value: payment.responseStatus || 'N/A' },
+			        { label: 'Message', value: payment.message || 'N/A' }
             ];
 
             let y = 60;
