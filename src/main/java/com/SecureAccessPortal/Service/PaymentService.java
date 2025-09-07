@@ -1,9 +1,10 @@
 package com.SecureAccessPortal.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -35,13 +37,12 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class PaymentService {
-	
-	private static final Logger logger = LoggerFactory.getLogger(PolicyService.class);
 
+	private static final Logger logger = LoggerFactory.getLogger(PolicyService.class);
 
 	@Autowired
 	private PaymentsRepo paymentsRepository;
-	
+
 	@Autowired
 	private IPolicyRepo policyRepository;
 
@@ -50,136 +51,194 @@ public class PaymentService {
 
 	@Autowired
 	private ObjectMapper objectMapper;
-	
+
 	@Autowired
 	private IWorkItemService workItemService;
-	
+
 	@Autowired
 	private BankAccountRepo bankAccountRepository;
 
 	@Transactional
 	public Payments processPayment(PaymentRequest request, String paymentId, String paymentMethod, String userCode) {
-		Payments payment = new Payments();
-		if (paymentId.contains("SURR") || paymentId.contains("CLAIM") ) {
-//		 Optional<Payments> byPaymentIs = paymentsRepository.findByPaymentIs(paymentId);
-//			if (byPaymentIs == null) {
-//				logger.error("payment not found");
-////						.orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
-////						if ("Paid".equals(payment.getStatus())) {
-////							throw new IllegalStateException("Payment is already done: " + paymentId);
-////						}	
-//			}
-			
-			payment = createPaymentEntries(request);
-		} else {
-			payment = paymentsRepository.findById(paymentId)
-					.orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
-			if ("Paid".equals(payment.getStatus())) {
-				throw new IllegalStateException("Payment is already done: " + paymentId);
-			}
-			String mockResponse = simulatePaymentGateway();
-			boolean paymentSuccess;
-			try {
-				// Parse JSON response
-				Map<String, String> responseMap = objectMapper.readValue(mockResponse, Map.class);
-				paymentSuccess = "success".equalsIgnoreCase(responseMap.get("status"));
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to parse payment gateway response: " + mockResponse, e);
-			}
+	    Payments payment= new Payments();
 
-			if (paymentSuccess) {
-				payment.setStatus("Paid");
-				payment.setTransactionId(generateTransactionId());
-				payment.setPaymentDate(LocalDateTime.now());
-				payment.setPaymentMethod(paymentMethod);
-				payment.setPaymentType(CommonConstant.POL_INSTLMNT);
-				payment.setEmailStatus("Service Not Available Now");
-				sendPaymentConfirmationEmail(payment);
-			} else {
-				payment.setStatus("Failed");
-				payment.setPaymentDate(LocalDateTime.now());
-				payment.setEmailStatus("NotSent");
-			}
+	    boolean isSurrenderOrClaim = paymentId.contains("SURR") || paymentId.contains("CLAIM");
+   try {
+	    if (isSurrenderOrClaim) {
+	        // Create new payment entries for Surrender or Claim
+	        payment = createPaymentEntries(request);
+	    } else {
+	        // Fetch existing installment payment
+	        payment = paymentsRepository.findById(paymentId)
+	                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
 
-			payment.setUpdatedBy(userCode);
-			payment.setUpdatedTime(LocalDateTime.now());
-			 payment = paymentsRepository.save(payment);
-		}
+	        // Prevent double payment
+	        if ("Paid".equals(payment.getStatus())) {
+	            throw new IllegalStateException("Payment is already done: " + paymentId);
+	        }
 
-		return payment;
+	        // Simulate payment gateway
+	        String mockResponse = simulatePaymentGateway();
+	        boolean paymentSuccess;
+	        try {
+	            Map<String, String> responseMap = objectMapper.readValue(mockResponse, Map.class);
+	            paymentSuccess = "success".equalsIgnoreCase(responseMap.get("status"));
+	        } catch (Exception e) {
+	            throw new RuntimeException("Failed to parse payment gateway response: " + mockResponse, e);
+	        }
+
+	        // Map common PaymentDetails fields from request
+	        payment = mapCommonPaymentDetails(request, payment);
+
+	        // Update payment status and transaction info
+	        if (paymentSuccess) {
+	            payment.setStatus(CommonConstant.PAID);
+	            payment.setTransactionId(generateTransactionId());
+	            payment.setPaymentDate(LocalDateTime.now());
+	            payment.setPaymentMethod(paymentMethod);
+	            payment.setPaymentType(CommonConstant.POL_INSTLMNT); // Installment
+	            payment.setEmailStatus("Service Not Available Now");
+	            sendPaymentConfirmationEmail(payment);
+	        } else {
+	            payment.setStatus(CommonConstant.FAILED);
+	            payment.setPaymentDate(LocalDateTime.now());
+	            payment.setEmailStatus("NotSent");
+	        }
+
+	        // Update audit fields
+	        payment.setUpdatedBy(userCode);
+	        payment.setUpdatedTime(LocalDateTime.now());
+
+	        // Update total amount if provided
+	        if (request.getPaymentAmount() != null) {
+	            payment.setTotalAmountPaid(request.getPaymentAmount());
+	        }
+
+	        // Save updated payment
+	        payment = paymentsRepository.save(payment);
+	    }
+}catch(Exception e) {
+	e.printStackTrace();
+}
+	    return payment;
 	}
 
 	private Payments createPaymentEntries(PaymentRequest request) {
-		Payments payment = new Payments();
-		Policy byPolicyNum = new Policy();
-		payment.setPaymentId(request.getPaymentId());
-		if (request.getPolicyNumber() != null) {
-			byPolicyNum = policyRepository.findByPolicyNum(request.getPolicyNumber(), CommonConstant.N);
-			if(byPolicyNum != null) {
-				byPolicyNum.setUpdatedBy(request.getUserCode());
-				byPolicyNum.setUpdatedDate(LocalDateTime.now());
-				if (request.getPaymentId().contains("SURR")) {
-					byPolicyNum.setPolicyStatus(CommonConstant.SURRENDERED);
-				}
-				if(	request.getPaymentId().contains("CLAIM")) {
-					byPolicyNum.setPolicyStatus(CommonConstant.CLAIMED);
-				}
-				byPolicyNum=policyRepository.save(byPolicyNum);
-			}
-			payment.setPolicy(byPolicyNum);
-			payment.setCustomer(byPolicyNum.getCustomer());
-			payment.setProductCode(byPolicyNum.getProductCode());
-			payment.setPolicyName(byPolicyNum.getPolicyName());
-			payment.setInstallmentAmount(byPolicyNum.getMonthlyInstallment());
-			payment.setDueDate(LocalDateTime.now());
-		}
+	    Payments payment = new Payments();
+	    payment.setPaymentId(request.getPaymentId());
+	    payment.setPaymentType(request.getPaymentType());
 
-		if (request.getPaymentDetails().getBankaccount() != null) {
-			Bank bankAccounts = bankAccountRepository
-					.findByAccountNo(request.getPaymentDetails().getBankaccount(), CommonConstant.N);
-			payment.setBank(bankAccounts);
-		}
-        payment.setPaymentType(request.getPaymentType());
-		payment.setInstallmentCount(0);
-		payment.setTotalInstallments(0);
-		String mockResponse = simulatePaymentGateway();
-		boolean paymentSuccess;
-		try {
-			// Parse JSON response
-			Map<String, String> responseMap = objectMapper.readValue(mockResponse, Map.class);
-			paymentSuccess = "success".equalsIgnoreCase(responseMap.get("status"));
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to parse payment gateway response: " + mockResponse, e);
-		}
-		if (paymentSuccess) {
-			payment.setStatus(CommonConstant.PAID);
-			payment.setTransactionId(generateTransactionId());
-			payment.setPaymentDate(LocalDateTime.now());
-			payment.setPaymentMethod(request.getPaymentMethod());
-			payment.setEmailStatus("Service Not Available Now");
-			sendPaymentConfirmationEmail(payment);
-		} else {
-			payment.setStatus(CommonConstant.FAILED);
-			payment.setPaymentDate(LocalDateTime.now());
-			payment.setEmailStatus("NotSent");
-		}
-		payment.setCreatedBy(request.getUserCode());
-		payment.setUpdatedBy(request.getUserCode());
-		payment.setCreatedTime(LocalDateTime.now());
-		payment.setUpdatedTime(LocalDateTime.now());
-		payment.setTotalAmountPaid(new BigDecimal(request.getPaymentAmount()));
-		Payments paymentList = paymentsRepository.save(payment);
-		// Create work item
-		String workType = CommonConstant.PAYMENT;
-		String workItemName = CommonConstant.POLICY_SURENDERRED;
-		String status = CommonConstant.APPROVED;
-		String comment = "Policy has been Surrrendred on " + LocalDateTime.now() + "and amount disbursed "
-				+ request.getPaymentAmount();
-		workItemService.mapRequetforWorkItem(request.getUserCode(), byPolicyNum, byPolicyNum.getCustomer(), workType,
-				workItemName, comment, null, null, paymentList, status);
+	    // Map common details
+	    payment = mapCommonPaymentDetails(request, payment);
 
-		return paymentList;
+	    // Simulate payment gateway
+	    String mockResponse = simulatePaymentGateway();
+	    boolean paymentSuccess;
+	    try {
+	        Map<String, String> responseMap = objectMapper.readValue(mockResponse, Map.class);
+	        paymentSuccess = "success".equalsIgnoreCase(responseMap.get("status"));
+	    } catch (Exception e) {
+	        throw new RuntimeException("Failed to parse payment gateway response: " + mockResponse, e);
+	    }
+
+	    // Set payment status and transaction info
+	    if (paymentSuccess) {
+	        payment.setStatus(CommonConstant.PAID);
+	        payment.setTransactionId(generateTransactionId());
+	        payment.setPaymentDate(LocalDateTime.now());
+	        payment.setPaymentMethod(request.getPaymentMethod());
+	        payment.setEmailStatus("Service Not Available Now");
+	        sendPaymentConfirmationEmail(payment);
+	    } else {
+	        payment.setStatus(CommonConstant.FAILED);
+	        payment.setPaymentDate(LocalDateTime.now());
+	        payment.setEmailStatus("NotSent");
+	    }
+
+	    // Audit fields
+	    payment.setCreatedBy(request.getUserCode());
+	    payment.setUpdatedBy(request.getUserCode());
+	    payment.setCreatedTime(LocalDateTime.now());
+	    payment.setUpdatedTime(LocalDateTime.now());
+	    if (request.getPaymentAmount() != null) {
+	        payment.setTotalAmountPaid(request.getPaymentAmount());
+	    }
+
+	    // Save payment
+	    Payments paymentSaved = paymentsRepository.save(payment);
+
+	    // Map work item for tracking
+	    workItemService.mapRequetforWorkItem(request.getUserCode(), payment.getPolicy(), payment.getCustomer(),
+	            CommonConstant.PAYMENT, CommonConstant.POLICY_SURENDERRED,
+	            "Policy has been Surrendered on " + LocalDateTime.now() + " and amount disbursed "
+	                    + request.getPaymentAmount(),
+	            null, null, paymentSaved, CommonConstant.APPROVED);
+
+	    return paymentSaved;
 	}
+
+	private Payments mapCommonPaymentDetails(PaymentRequest request, Payments payment) {
+	    // Map policy info
+	    if (request.getPolicyNumber() != null) {
+	        Policy byPolicyNum = policyRepository.findByPolicyNum(request.getPolicyNumber(), CommonConstant.N);
+	        if (byPolicyNum != null) {
+	            byPolicyNum.setUpdatedBy(request.getUserCode());
+	            byPolicyNum.setUpdatedDate(LocalDateTime.now());
+                payment.setPolicyAmount(byPolicyNum.getTotalAmount());
+	            payment.setPolicy(byPolicyNum);
+	            payment.setCustomer(byPolicyNum.getCustomer());
+	            payment.setProductCode(byPolicyNum.getProductCode());
+	            payment.setPolicyName(byPolicyNum.getPolicyName());
+	            payment.setInstallmentAmount(byPolicyNum.getMonthlyInstallment());
+payment.setPaymentAmount(request.getPaymentAmount());
+	            // Do not override dueDate for existing installments
+	            if (request.getPaymentType() != null &&
+	                    (request.getPaymentType().equals(CommonConstant.SURRENDERED) ||
+	                            request.getPaymentType().equals(CommonConstant.CLAIMED))) {
+	                payment.setDueDate(LocalDateTime.now());
+	            }
+	        }
+	    }
+
+	    // Map bank info
+	    if (request.getPaymentDetails() != null && request.getPaymentDetails().getBankaccount() != null) {
+	        Bank bankAccounts = bankAccountRepository.findByAccountNo(
+	                request.getPaymentDetails().getBankaccount(), CommonConstant.N);
+	        payment.setBank(bankAccounts);
+	    }
+
+	    // Map payment details
+	    if (request.getPaymentDetails() != null) {
+	        payment.setCardType(request.getPaymentDetails().getCardType());
+	        payment.setUpiId(request.getPaymentDetails().getUpiId());
+	        payment.setCardNumber(request.getPaymentDetails().getCardNumber());
+	        payment.setCvv(request.getPaymentDetails().getCvv());
+	        if (request.getPaymentDetails().getExpiryDate() != null) {
+	            String expiryDateStr = request.getPaymentDetails().getExpiryDate();
+	            DateTimeFormatter formatter;
+	            try {
+	                payment.setExpiryDate(LocalDateTime.parse(expiryDateStr));
+	            } catch (DateTimeParseException e1) {
+	                try {
+	                    LocalDate date = LocalDate.parse(expiryDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	                    payment.setExpiryDate(date.atStartOfDay());
+	                } catch (DateTimeParseException e2) {
+	                    try {
+	                        LocalDate date = LocalDate.parse(expiryDateStr, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+	                        payment.setExpiryDate(date.atStartOfDay());
+	                    } catch (DateTimeParseException e3) {
+	                        throw new RuntimeException("Invalid expiry date format: " + expiryDateStr);
+	                    }
+	                }
+	            }
+	        }
+	        payment.setOtp(request.getPaymentDetails().getOtp()); // Should be Integer in entity
+	        payment.setChequeNumber(request.getPaymentDetails().getChequeNumber());
+	    }
+
+	    return payment;
+	}
+
 
 	private String simulatePaymentGateway() {
 		boolean mockSuccess = Boolean.parseBoolean(env.getProperty("payment.gateway.mock.success", "true"));
@@ -201,27 +260,39 @@ public class PaymentService {
 	}
 
 	public Page<Payments> findHistoryOfPayments(String policyNumber, String customerNumber, String paymentId,
-			String transactionId, int page, int size, String status, String userCode) {
-		Pageable pageable = PageRequest.of(page, size,Sort.by("createdTime").descending());
-		if (policyNumber != null && !policyNumber.isEmpty()) {
-			return paymentsRepository.findByPolicyPolicyNumber(policyNumber, pageable);
-		} else if (customerNumber != null && !customerNumber.isEmpty()) {
-			return paymentsRepository.findByCustomerCustomerNo(customerNumber, pageable);
-		} else if (paymentId != null && !paymentId.isEmpty()) {
-			Optional<Payments> payment = paymentsRepository.findById(paymentId);
-			return payment.map(p -> new PageImpl<>(List.of(p), pageable, 1))
-					.orElseGet(() -> new PageImpl<>(List.of(), pageable, 0));
-		} else if (transactionId != null && !transactionId.isEmpty()) {
-			Optional<Payments> payment = paymentsRepository.findByTransactionId(transactionId);
-			return payment.map(p -> new PageImpl<>(List.of(p), pageable, 1))
-					.orElseGet(() -> new PageImpl<>(List.of(), pageable, 0));
-		} else if (status != null && !status.isEmpty()) {
-			List<Payments> payments = paymentsRepository.findByStatus(status);
-			System.out.println("Found " + payments.size() + " payments with status: " + status);
-			return new PageImpl<>(payments, pageable, payments.size());
-		} else {
-			return paymentsRepository.findAll(pageable);
-		}
+	        String transactionId, int page, int size, String status, String userCode) {
+
+	    Pageable pageable = PageRequest.of(page, size, Sort.by("createdTime").descending());
+	    if (paymentId != null && !paymentId.isEmpty()) {
+	        Optional<Payments> payment = paymentsRepository.findById(paymentId);
+	        return payment.map(p -> new PageImpl<>(List.of(p), pageable, 1))
+	                .orElseGet(() -> new PageImpl<>(List.of(), pageable, 0));
+
+	    } else if (transactionId != null && !transactionId.isEmpty()) {
+	        Optional<Payments> payment = paymentsRepository.findByTransactionId(transactionId);
+	        return payment.map(p -> new PageImpl<>(List.of(p), pageable, 1))
+	                .orElseGet(() -> new PageImpl<>(List.of(), pageable, 0));
+	    } else {
+	        // Fallback to dynamic Specification for other filters
+	        Specification<Payments> spec = Specification.where(null);
+
+	        if (policyNumber != null && !policyNumber.isEmpty()) {
+	            spec = spec.and((root, query, cb) ->
+	                    cb.equal(root.get("policy").get("policyNumber"), policyNumber));
+	        }
+
+	        if (customerNumber != null && !customerNumber.isEmpty()) {
+	            spec = spec.and((root, query, cb) ->
+	                    cb.equal(root.get("customer").get("customerNo"), customerNumber));
+	        }
+
+	        if (status != null && !status.isEmpty()) {
+	            spec = spec.and((root, query, cb) ->
+	                    cb.equal(root.get("status"), status));
+	        }
+
+	        return paymentsRepository.findAll(spec, pageable);
+	    }
 	}
 
 	public ResponseEntity<DashboardStats> fetchAllcounts(String userCode) {

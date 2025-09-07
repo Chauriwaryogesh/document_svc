@@ -1,14 +1,26 @@
 package com.SecureAccessPortal.Modal;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 public class PaymentRequest {
-	public String paymentId;
-	public String policyNumber;
-	public String customerNumber;
-	public String paymentMethod;
-	public PaymentDetails paymentDetails;
-	public String userCode;
-	private String paymentAmount;
+	private String paymentId;
+	private String policyNumber;
+	private String customerNumber;
+	private String paymentMethod;
+	private LocalDateTime paymentDate;
+	private PaymentDetails paymentDetails;
+	private String userCode;
+	private BigDecimal paymentAmount;
 	private String paymentType;
+
+	public LocalDateTime getPaymentDate() {
+		return paymentDate;
+	}
+
+	public void setPaymentDate(LocalDateTime paymentDate) {
+		this.paymentDate = paymentDate;
+	}
 
 	public String getPaymentType() {
 		return paymentType;
@@ -18,11 +30,11 @@ public class PaymentRequest {
 		this.paymentType = paymentType;
 	}
 
-	public String getPaymentAmount() {
+	public BigDecimal getPaymentAmount() {
 		return paymentAmount;
 	}
 
-	public void setPaymentAmount(String paymentAmount) {
+	public void setPaymentAmount(BigDecimal paymentAmount) {
 		this.paymentAmount = paymentAmount;
 	}
 

@@ -117,8 +117,8 @@ public class BankController {
 			response.setData(bankDetails);
 			response.setStatus(CommonConstant.SUCCESS);
 		} else {
-			response.setStatus(CommonConstant.FAILURE);
-			response.setErrorMessage("No Bank Account for found");
+			response.setStatus(CommonConstant.SUCCESS);
+			response.setErrorMessage("not bank account found");
 		}
 		return response;
 	}

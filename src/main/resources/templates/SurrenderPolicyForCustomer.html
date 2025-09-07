@@ -538,14 +538,13 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
             <i class="fas fa-bars"></i>
         </button>
     </div>
-    <nav class="mt-4 flex-1">
-        <a href="#" class="sidebar-link" onclick="window.handleNavigation('CustomerService.html')"><i class="fas fa-headset"></i><span class="sidebar-link-text">Customer Services</span></a>
-        <a href="#" class="sidebar-link" onclick="window.handleNavigation('BankAccount.html')"><i class="fas fa-university"></i><span class="sidebar-link-text">Bank Account</span></a>
-        <a href="#" class="sidebar-link" onclick="window.handleNavigation('PaymentForCustomer.html')"><i class="fas fa-credit-card"></i><span class="sidebar-link-text">Payments</span></a>
-        <a href="#" class="sidebar-link active"><i class="fas fa-file-invoice-dollar"></i><span class="sidebar-link-text">Policy Management</span></a>
-        <a href="#" class="sidebar-link" onclick="window.handleNavigation('ComplaintsForCustomer.html')"><i class="fas fa-exclamation-circle"></i><span class="sidebar-link-text">Complaints</span></a>
-        <a href="#" class="sidebar-link" onclick="window.handleNavigation('ManageWorkitemsForCustomer.html')"><i class="fas fa-tasks"></i><span class="sidebar-link-text">Manage Workitems</span></a>
-    </nav>
+	<nav class="mt-4 flex-1">
+	    <a href="#" class="sidebar-link" onclick="window.location.href = 'CustomerService?customerNo=' + encodeURIComponent(sessionStorage.getItem('customerNo') || '')"><i class="fas fa-headset"></i><span class="sidebar-link-text">Customer Services</span></a>
+	    <a href="#" class="sidebar-link" onclick="window.location.href = 'BankAccount?customerNo=' + encodeURIComponent(sessionStorage.getItem('customerNo') || '')"><i class="fas fa-university"></i><span class="sidebar-link-text">Bank Account</span></a>
+	    <a href="#" class="sidebar-link" onclick="window.location.href = 'PaymentForCustomer?customerNo=' + encodeURIComponent(sessionStorage.getItem('customerNo') || '')"><i class="fas fa-credit-card"></i><span class="sidebar-link-text">Payments</span></a>
+	    <a href="#" class="sidebar-link active"><i class="fas fa-file-invoice-dollar"></i><span class="sidebar-link-text">Policy Management</span></a>
+	    <a href="#" class="sidebar-link" onclick="window.location.href = 'ComplaintsForCustomer?customerNo=' + encodeURIComponent(sessionStorage.getItem('customerNo') || '')"><i class="fas fa-exclamation-circle"></i><span class="sidebar-link-text">Complaints</span></a>
+	</nav>
     <div class="mt-auto p-4 border-t border-gray-200">
         <button id="btn-logout-sidebar" class="sidebar-link text-red-600 hover:bg-red-50 hover:text-red-700">
             <i class="fas fa-sign-out-alt"></i><span class="sidebar-link-text">Logout</span>
@@ -674,15 +673,16 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
             <button id="payments-tab-btn" onclick="window.showDetailsTab('payments')" class="tab-button px-4 py-2 text-sm font-medium">
                 Payments
             </button>
+            <button id="workitems-tab-btn" onclick="window.showDetailsTab('workitems')" class="tab-button px-4 py-2 text-sm font-medium">
+                Linked Workitems 
+            </button>
         </div>
 
         <div id="policy-details-tab-content" class="flex-1 overflow-y-auto custom-scrollbar">
-            <div id="policy-details-tab" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 p-2" style="display: block;">
-            </div>
-            <div id="bank-details-tab" class="space-y-4 text-gray-700 p-2" style="display: none;">
-            </div>
-            <div id="payments-tab" class="space-y-4 text-gray-700 p-2" style="display: none;">
-            </div>
+            <div id="policy-details-tab" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 p-2" style="display: block;"></div>
+            <div id="bank-details-tab" class="space-y-4 text-gray-700 p-2" style="display: none;"></div>
+            <div id="payments-tab" class="space-y-4 text-gray-700 p-2" style="display: none;"></div>
+            <div id="workitems-tab" class="space-y-4 text-gray-700 p-2" style="display: none;"></div>
         </div>
 
         <div class="flex justify-end space-x-4 mt-6">
@@ -1072,7 +1072,6 @@ let currentCancellationClaimId = null;
 let currentCancellationPolicyNo = null; // Added to store policy number for cancellation
 let activePrimaryTab = 'policies';
 let activeWorkflowSecondaryTab = 'surrender';
-// These filters are now hardcoded to 'ALL' as per requirement
 let activeSurrenderFilter = 'ALL';
 let activeClaimFilter = 'ALL';
 
@@ -1112,9 +1111,7 @@ let surrenderBankAccountDropdown;
 let claimPolicyCoverageAmountEl, claimTotalClaimableAmountEl, claimTotalAmountEl, claimMonthlyInstallmentEl;
 let claimBankAccountDropdown;
 
-let workflowPaymentInfoContainerEl; // New element for workflow payment info
-
-// --- UTILITY FUNCTIONS ---
+let workflowPaymentInfoContainerEl;
 const show = el => el && (el.style.display = 'flex');
 const hide = el => el && (el.style.display = 'none');
 
@@ -1314,8 +1311,6 @@ window.closeViewDocumentModal = function() {
         viewDocumentModal.style.display = 'none';
     }
 };
-
-
 // --- API FETCH FUNCTIONS ---
 async function fetchAllPoliciesAndRender(customerNo, policyNoSearch = null, page = 0, size = itemsPerPage, filterStatus = 'all', filterType = 'all', sortDateType = 'none') {
     showLoader();
@@ -1374,9 +1369,7 @@ async function fetchAllPoliciesAndRender(customerNo, policyNoSearch = null, page
             // Flatten the structure if content contains policyList
             currentPoliciesData = result.data.content.flatMap(item => item.policyList || (item.policyNumber ? [item] : []));
             currentTotalPolicyElements = result.data.totalElements || currentPoliciesData.length;
-            
             renderPolicies();
-            
             return currentPoliciesData;
         } else {
             currentPoliciesData = [];
@@ -2016,7 +2009,7 @@ window.openPolicyDetailsModal = async function(policyNumber) {
     try {
         let selectedPolicy = JSON.parse(sessionStorage.getItem('selectedPolicyForAction'));
         
-        // Fetch policy details only if not already loaded or if a different policy is requested
+        // Fetch policy details if not already loaded or if a different policy is requested
         if (!selectedPolicy || selectedPolicy.policyNumber !== policyNumber) {
             selectedPolicy = await fetchSinglePolicyDetails(config.customerNo, policyNumber);
             if (!selectedPolicy) {
@@ -2026,78 +2019,91 @@ window.openPolicyDetailsModal = async function(policyNumber) {
             sessionStorage.setItem('selectedPolicyForAction', JSON.stringify(selectedPolicy));
         }
 
+        // Get DOM elements and check if they exist
         const policyDetailsTabEl = document.getElementById('policy-details-tab');
+        const bankDetailsTabEl = document.getElementById('bank-details-tab');
+        const paymentsTabEl = document.getElementById('payments-tab');
+        const workitemsTabEl = document.getElementById('workitems-tab');
+
+        // Check if elements exist to prevent null errors
+        if (!policyDetailsTabEl || !bankDetailsTabEl || !paymentsTabEl || !workitemsTabEl) {
+            window.showCustomError('Error', 'One or more tab elements not found in the DOM.');
+            return;
+        }
+
+        // Populate Policy Details Tab
         policyDetailsTabEl.innerHTML = `
-            <div class="policy-detail-field">
-                <strong>Policy Name:</strong> <span>${selectedPolicy.policyName || 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Policy Number:</strong> <span>${selectedPolicy.policyNumber || 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Policy Type:</strong> <span>${selectedPolicy.policyType || 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Status:</strong> <span>${getStatusInfo(selectedPolicy.policyStatus).text}</span>
-            </div>
-            <div class="policy-detail-field money-field">
-                <strong>Coverage Amount:</strong> <span>$${selectedPolicy.coverageAmount ? parseFloat(selectedPolicy.coverageAmount).toLocaleString('en-US') : 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field money-field">
-                <strong>Premium Amount:</strong> <span>$${selectedPolicy.premium ? parseFloat(selectedPolicy.premium).toLocaleString('en-US') : selectedPolicy.premium}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Issue Date:</strong> <span>${selectedPolicy.createdDate || 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Maturity Date:</strong> <span>${selectedPolicy.endDate || 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Renewal Date:</strong> <span>${selectedPolicy.renewalDate || 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Beneficiary Name:</strong> <span>${selectedPolicy.beneficiaryName || 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Beneficiary Relationship:</strong> <span>${selectedPolicy.beneficiaryRelationship || 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Policy Term:</strong> <span>${selectedPolicy.policyTerm || 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Payment Frequency:</strong> <span>${selectedPolicy.paymentFrequency || 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field money-field">
-                <strong>Total Policy Value:</strong> <span>$${selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US') :0}</span>
-            </div>
-            <div class="policy-detail-field money-field">
-                <strong>Total Claimable Amount:</strong> <span>$${selectedPolicy.totalClaimableAmount ? parseFloat(selectedPolicy.totalClaimableAmount).toLocaleString('en-US') : 'N/A'}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Total Installments Paid:</strong> <span>${selectedPolicy.totalInstallmentsPaid || 0}</span>
-            </div>
-            <div class="policy-detail-field">
-                <strong>Total Installments Unpaid:</strong> <span>${selectedPolicy.totalInstallmentsUnPaid || 0}</span>
-            </div>
+            <div class="policy-detail-field"><strong>Policy Name:</strong> <span>${selectedPolicy.policyName || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Policy Number:</strong> <span>${selectedPolicy.policyNumber || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Product Code:</strong> <span>${selectedPolicy.productCode || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Company Name:</strong> <span>${selectedPolicy.polCompanyName || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Policy Type:</strong> <span>${selectedPolicy.policyType || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Policy Status:</strong> <span>${getStatusInfo(selectedPolicy.policyStatus).text}</span></div>
+            <div class="policy-detail-field"><strong>Created Date:</strong> <span>${selectedPolicy.createdDate ? new Date(selectedPolicy.createdDate).toLocaleDateString() : 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Updated Date:</strong> <span>${selectedPolicy.updatedDate ? new Date(selectedPolicy.updatedDate).toLocaleDateString() : 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Premium Due Date:</strong> <span>${selectedPolicy.premiumDueDate ? new Date(selectedPolicy.premiumDueDate).toLocaleDateString() : 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Beneficiary Name:</strong> <span>${selectedPolicy.beneficiaryName || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Beneficiary Relationship:</strong> <span>${selectedPolicy.beneficiaryRelationship || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Beneficiary Identity Number:</strong> <span>${selectedPolicy.beneficiaryIdentityNumber || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Beneficiary Status:</strong> <span>${selectedPolicy.beneficiaryStatus || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Beneficiary Contact Number:</strong> <span>${selectedPolicy.beneficiaryContactNumber || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Policy Term:</strong> <span>${selectedPolicy.policyTerm || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Smoker Status:</strong> <span>${selectedPolicy.smokerStatus || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Policy Start Date:</strong> <span>${selectedPolicy.policyStartDate ? new Date(selectedPolicy.policyStartDate).toLocaleDateString() : 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Policy End Date:</strong> <span>${selectedPolicy.policyEndDate ? new Date(selectedPolicy.policyEndDate).toLocaleDateString() : 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Reason:</strong> <span>${selectedPolicy.reason || 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>FCU Status:</strong> <span>${selectedPolicy.fcuStatus || 'N/A'}</span></div>
+            <div class="policy-detail-field money-field"><strong>Total Amount:</strong> <span>${selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A'}</span></div>
+            <div class="policy-detail-field money-field"><strong>Monthly Installment:</strong> <span>${selectedPolicy.monthlyInstallment ? parseFloat(selectedPolicy.monthlyInstallment).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Total Installments:</strong> <span>${selectedPolicy.totalInstallments || '0'}</span></div>
+            <div class="policy-detail-field"><strong>Total Installments Paid:</strong> <span>${selectedPolicy.totalInstallmentsPaid || '0'}</span></div>
+            <div class="policy-detail-field"><strong>Total Installments Unpaid:</strong> <span>${selectedPolicy.totalInstallmentsUnPaid || '0'}</span></div>
+            <div class="policy-detail-field money-field"><strong>Total Amount Paid by Installment:</strong> <span>${selectedPolicy.totalAmtPaidByInstallemt ? parseFloat(selectedPolicy.totalAmtPaidByInstallemt).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A'}</span></div>
+            <div class="policy-detail-field money-field"><strong>Total Amount Unpaid by Installment:</strong> <span>${selectedPolicy.totalAmtUnPaidByInstallemt ? parseFloat(selectedPolicy.totalAmtUnPaidByInstallemt).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A'}</span></div>
+            <div class="policy-detail-field"><strong>Customer No:</strong> <span>${selectedPolicy.customerNo || 'N/A'}</span></div>
         `;
 
-        const bankDetailsTabEl = document.getElementById('bank-details-tab');
+        // Populate Bank Details Tab
         bankDetailsTabEl.innerHTML = '';
         if (selectedPolicy.bankAccounts && selectedPolicy.bankAccounts.length > 0) {
             selectedPolicy.bankAccounts.forEach(bank => {
-                const accountStatus = bank.accountStatus || (Math.random() < 0.7 ? 'Approved' : (Math.random() < 0.5 ? 'Pending' : 'Rejected')).toLowerCase(); 
+                const accountStatus = bank.status || (Math.random() < 0.7 ? 'Approved' : (Math.random() < 0.5 ? 'Pending' : 'Rejected')).toLowerCase();
                 const statusInfo = getAccountStatusInfo(accountStatus);
                 bankDetailsTabEl.innerHTML += `
                     <div class="p-4 rounded-lg shadow-sm border border-gray-200">
-                        <p><strong>Bank Name:</strong> ${bank.bankName || 'N/A'}</p>
+                        <p><strong>Bank ID:</strong> ${bank.bankId || 'N/A'}</p>
+                        <p><strong>Customer Number:</strong> ${bank.customerNumber || 'N/A'}</p>
+                        <p><strong>Customer Name:</strong> ${bank.customerName || 'N/A'}</p>
+                        <p><strong>Policy Number:</strong> ${bank.policyNumber || 'N/A'}</p>
+                        <p><strong>Policy Status:</strong> ${bank.policyStatus || 'N/A'}</p>
                         <p><strong>Account Number:</strong> ${bank.accountNumber || 'N/A'}</p>
+                        <p><strong>Account Holder Name:</strong> ${bank.accountHolderName || 'N/A'}</p>
+                        <p><strong>Account Holder Type:</strong> ${bank.accountHolderType || 'N/A'}</p>
+                        <p><strong>Bank Name:</strong> ${bank.bankName || 'N/A'}</p>
+                        <p><strong>Branch Code:</strong> ${bank.branchCode || 'N/A'}</p>
                         <p><strong>IFSC Code:</strong> ${bank.ifscCode || 'N/A'}</p>
+                        <p><strong>Swift Code:</strong> ${bank.swiftCode || 'N/A'}</p>
                         <p><strong>Account Type:</strong> ${bank.accountType || 'N/A'}</p>
-                        <p class="mt-2"><strong>Status:</strong> 
-                            <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full ${statusInfo.bgClass} ${statusInfo.textClass}">
-                                ${statusInfo.text}
-                            </span>
-                        </p>
+                        <p><strong>Currency:</strong> ${bank.currency || 'N/A'}</p>
+                        <p><strong>Account Balance:</strong> ${bank.accountBalance ? parseFloat(bank.accountBalance).toLocaleString('en-US', { style: 'currency', currency: bank.currency || 'USD' }) : 'N/A'}</p>
+                        <p><strong>Is Default Account:</strong> ${bank.isDefaultAccount ? 'Yes' : 'No'}</p>
+                        <p><strong>Account Opening Date:</strong> ${bank.accountOpeningDate ? new Date(bank.accountOpeningDate).toLocaleDateString() : 'N/A'}</p>
+                        <p><strong>KYC Document Status:</strong> ${bank.kycDocumentStatus || 'N/A'}</p>
+                        <p><strong>KYC Status:</strong> ${bank.kycStatus || 'N/A'}</p>
+                        <p><strong>KYC Document:</strong> ${bank.kycDocument || 'N/A'}</p>
+                        <p><strong>AML Status:</strong> ${bank.amlStatus || 'N/A'}</p>
+                        <p><strong>Payment Method Status:</strong> ${bank.paymentMethodStatus || 'N/A'}</p>
+                        <p><strong>Linked Payment Method:</strong> ${bank.linkedPaymentMethod || 'N/A'}</p>
+                        <p><strong>Last Verification Date:</strong> ${bank.lastVerificationDate ? new Date(bank.lastVerificationDate).toLocaleDateString() : 'N/A'}</p>
+                        <p><strong>Verification Attempts:</strong> ${bank.verificationAttempts || '0'}</p>
+                        <p><strong>Verifier Comment:</strong> ${bank.verifierComment || 'N/A'}</p>
+                        <p><strong>Customer Comment:</strong> ${bank.customerComment || 'N/A'}</p>
+                        <p><strong>Status:</strong> <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full ${statusInfo.bgClass} ${statusInfo.textClass}">${statusInfo.text}</span></p>
+                        <p><strong>Deleted Flag:</strong> ${bank.deletedFlag || 'N/A'}</p>
+                        <p><strong>Created By:</strong> ${bank.createdBy || 'N/A'}</p>
+                        <p><strong>Created Date:</strong> ${bank.createdDate ? new Date(bank.createdDate).toLocaleDateString() : 'N/A'}</p>
+                        <p><strong>Updated By:</strong> ${bank.updatedBy || 'N/A'}</p>
+                        <p><strong>Updated Date:</strong> ${bank.updatedDate ? new Date(bank.updatedDate).toLocaleDateString() : 'N/A'}</p>
                     </div>
                 `;
             });
@@ -2105,25 +2111,27 @@ window.openPolicyDetailsModal = async function(policyNumber) {
             bankDetailsTabEl.innerHTML = `<p class="text-gray-500">No bank account details available for this policy.</p>`;
         }
 
-        const paymentsTabEl = document.getElementById('payments-tab');
+        // Populate Payments Tab
         paymentsTabEl.innerHTML = '';
-        console.log(selectedPolicy.paymentListDTO);
         if (selectedPolicy.paymentListDTO && selectedPolicy.paymentListDTO.length > 0) {
             selectedPolicy.paymentListDTO.forEach(payment => {
-                const paymentStatusInfo = getStatusInfo(payment.status); // Use getStatusInfo for payment status
-                const displayAmount = payment.totalAmount ? parseFloat(payment.totalAmount).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) :
-                                      (payment.installmentAmount ? parseFloat(payment.installmentAmount).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A');
-
+                const paymentStatusInfo = getStatusInfo(payment.status);
+                const displayAmount = payment.installmentAmount ? parseFloat(payment.installmentAmount).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A';
                 paymentsTabEl.innerHTML += `
                     <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-2">
                         <p><strong>Payment ID:</strong> ${payment.paymentId || 'N/A'}</p>
-                        <p><strong>Amount:</strong> ${displayAmount}</p>
-                        <p><strong>Date:</strong> ${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}</p>
+                        <p><strong>Installment Amount:</strong> ${displayAmount}</p>
+                        <p><strong>Installment Count:</strong> ${payment.installmentCount || 'N/A'}</p>
+                        <p><strong>Due Date:</strong> ${payment.dueDate ? new Date(payment.dueDate).toLocaleDateString() : 'N/A'}</p>
+                        <p><strong>Payment Date:</strong> ${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}</p>
                         <p><strong>Status:</strong> <span class="payment-status-badge ${paymentStatusInfo.text.toLowerCase()}">${paymentStatusInfo.text}</span></p>
                         <p><strong>Transaction ID:</strong> ${payment.transactionId || 'N/A'}</p>
-                        <p><strong>Method:</strong> ${payment.paymentMethod || 'N/A'}</p>
+                        <p><strong>Email Status:</strong> ${payment.emailStatus || 'N/A'}</p>
+                        <p><strong>Response Status:</strong> ${payment.responseStatus || 'N/A'}</p>
                         <p><strong>Message:</strong> ${payment.message || 'N/A'}</p>
-                        <p><strong>Bank Account:</strong> ${payment.bankAccNo || 'N/A'}</p>
+                        <p><strong>Payment Method:</strong> ${payment.paymentMethod || 'N/A'}</p>
+                        <p><strong>Total Amount:</strong> ${payment.totalAmount ? parseFloat(payment.totalAmount).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A'}</p>
+                        <p><strong>Bank Account Number:</strong> ${payment.bankAccNo || 'N/A'}</p>
                     </div>
                 `;
             });
@@ -2131,16 +2139,34 @@ window.openPolicyDetailsModal = async function(policyNumber) {
             paymentsTabEl.innerHTML = `<p class="text-gray-500">No payment history available for this policy.</p>`;
         }
 
+        // Populate Work Items Tab
+        workitemsTabEl.innerHTML = '';
+        if (selectedPolicy.workItemRefNo && selectedPolicy.workItemRefNo.length > 0) {
+            workitemsTabEl.innerHTML = `<h4 class="text-lg font-semibold mb-2">Linked Work Items</h4><ul class="space-y-2">`;
+            selectedPolicy.workItemRefNo.forEach(refNo => {
+                workitemsTabEl.innerHTML += `<li class="policy-detail-field">${refNo || 'N/A'}</li>`;
+            });
+            workitemsTabEl.innerHTML += `</ul>`;
+        } else {
+            workitemsTabEl.innerHTML = `<p class="text-gray-500">No work items linked to this policy.</p>`;
+        }
+
+        // Update button dataset attributes
         const detailsSurrenderBtn = document.getElementById('details-surrender-btn');
         const detailsClaimBtn = document.getElementById('details-claim-btn');
 
         if (detailsSurrenderBtn) {
             detailsSurrenderBtn.dataset.policyNumber = selectedPolicy.policyNumber;
+        } else {
+            console.warn('Surrender button not found in the DOM.');
         }
         if (detailsClaimBtn) {
             detailsClaimBtn.dataset.policyNumber = selectedPolicy.policyNumber;
+        } else {
+            console.warn('Claim button not found in the DOM.');
         }
-     // ✅ Enable/disable Surrender & Claim buttons based on policy status
+
+        // Enable/disable Surrender & Claim buttons based on policy status
         if ((selectedPolicy.policyStatus || '').toUpperCase() === 'ACTIVE') {
             if (detailsSurrenderBtn) {
                 detailsSurrenderBtn.disabled = false;
@@ -2160,10 +2186,16 @@ window.openPolicyDetailsModal = async function(policyNumber) {
                 detailsClaimBtn.classList.add('opacity-50', 'cursor-not-allowed');
             }
         }
+
         sessionStorage.setItem('selectedPolicyForAction', JSON.stringify(selectedPolicy)); 
 
         window.showDetailsTab('policy');
-        show(policyDetailsModal);
+        const policyDetailsModal = document.getElementById('policy-details-modal');
+        if (policyDetailsModal) {
+            show(policyDetailsModal);
+        } else {
+            window.showCustomError('Error', 'Policy details modal not found in the DOM.');
+        }
     } catch (error) {
         window.showCustomError('Error', `Failed to load policy details: ${error.message}`);
     } finally {
@@ -2209,7 +2241,7 @@ window.openSurrenderModal = async function(policyNumber) {
 
         document.getElementById('surrender-policy-id').textContent = selectedPolicy.policyNumber || 'N/A';
         document.getElementById('surrender-policy-name').textContent = selectedPolicy.policyName || 'N/A';
-        document.getElementById('surrender-policy-coverage-amount').textContent = selectedPolicy.coverageAmount ? parseFloat(selectedPolicy.coverageAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('surrender-policy-coverage-amount').textContent = selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US') : 'N/A';
         document.getElementById('surrender-total-claimable-amount').textContent = selectedPolicy.totalAmtPaidByInstallemt ? parseFloat(selectedPolicy.totalAmtPaidByInstallemt).toLocaleString('en-US') : 'N/A';
         document.getElementById('surrender-total-amount').textContent = selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US') : 'N/A';
         document.getElementById('surrender-monthly-installment').textContent = selectedPolicy.monthlyInstallment ? parseFloat(selectedPolicy.monthlyInstallment).toLocaleString('en-US') : 'N/A';
@@ -2437,7 +2469,7 @@ window.openSubmitClaimModal = async function(policyNumber) {
 
         document.getElementById('claim-policy-id').textContent = selectedPolicy.policyNumber;
         document.getElementById('claim-policy-name').textContent = selectedPolicy.policyName;
-        document.getElementById('claim-policy-coverage-amount').textContent = selectedPolicy.coverageAmount ? parseFloat(selectedPolicy.coverageAmount).toLocaleString('en-US') : 'N/A';
+        document.getElementById('claim-policy-coverage-amount').textContent = selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US') : 'N/A';
         document.getElementById('claim-total-claimable-amount').textContent = selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US') : 'N/A';
         document.getElementById('claim-total-amount').textContent = selectedPolicy.totalAmount ? parseFloat(selectedPolicy.totalAmount).toLocaleString('en-US') : 'N/A';
         document.getElementById('claim-monthly-installment').textContent = selectedPolicy.monthlyInstallment ? parseFloat(selectedPolicy.monthlyInstallment).toLocaleString('en-US') : 'N/A';

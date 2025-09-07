@@ -1026,7 +1026,7 @@
                                         <th class="py-3 px-6 text-left">IFSC Code</th>
                                         <th class="py-3 px-6 text-left">Bank Name</th>
                                         <th class="py-3 px-6 text-left">Account Type</th>
-                                        <th class="py-3 px-6 text-left">Status</th>
+                                        <th class="py-3 px-6 text-left"> Approval Status</th>
                                         <th class="py-3 px-6 text-left">Customer Name</th>
                                         <th class="py-3 px-6 text-left">Branch Code</th>                                   
                                         <th class="py-3 px-6 text-left">Active Status</th>                                     
@@ -2681,7 +2681,8 @@
             document.getElementById('add-cust-name').value = config.customerName || '';
             const today = new Date().toISOString().slice(0, 10);
             document.getElementById('add-account-opening-date').value = today;
-
+			resetAccountValidation(); // Reset validation state
+			
             const policyNumberSelect = document.getElementById('add-policy-number');
             policyNumberSelect.innerHTML = '<option value="" disabled selected>Select a policy</option>';
             const storedPolicyNumbers = sessionStorage.getItem('allPolicyNumbers');
@@ -2889,7 +2890,81 @@
                     errorDiv.classList.remove('hidden');
                 }
             }
-        }
+        }		
+		function resetAccountValidation() {
+		            const statusDiv = document.getElementById('account-validation-status');
+		            const apiErrorP = document.getElementById('add-account-api-error');
+		            const accountNumberInput = document.getElementById('add-account-number');
+		            const submitBtn = document.getElementById('add-bank-account-submit');
+
+		            if (statusDiv) statusDiv.innerHTML = '';
+		            if (apiErrorP) {
+		                apiErrorP.textContent = '';
+		                apiErrorP.classList.add('hidden');
+		            }
+		            if (accountNumberInput) accountNumberInput.classList.remove('border-red-500', 'border-green-500');
+		            if (submitBtn) submitBtn.disabled = false;
+		        }
+
+		        function setAccountValidationState(state, message = '') {
+		            const statusDiv = document.getElementById('account-validation-status');
+		            const apiErrorP = document.getElementById('add-account-api-error');
+		            const accountNumberInput = document.getElementById('add-account-number');
+		            const submitBtn = document.getElementById('add-bank-account-submit');
+
+		            resetAccountValidation(); 
+
+		            if (state === 'valid') {
+		                if (statusDiv) statusDiv.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+		                if (accountNumberInput) {
+		                    accountNumberInput.classList.remove('border-red-500');
+		                    accountNumberInput.classList.add('border-green-500');
+		                }
+		                if (submitBtn) submitBtn.disabled = false;
+		            } else if (state === 'invalid') {
+		                 if (statusDiv) statusDiv.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>';
+		                if (apiErrorP) {
+		                    apiErrorP.textContent = message;
+		                    apiErrorP.classList.remove('hidden');
+		                }
+		                if (accountNumberInput) {
+		                    accountNumberInput.classList.remove('border-green-500');
+		                    accountNumberInput.classList.add('border-red-500');
+		                }
+		                 if (submitBtn) submitBtn.disabled = true;
+		            } else if (state === 'loading') {
+		                 if (statusDiv) statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin text-gray-500"></i>';
+		            }
+		        }
+
+		        async function validateBankAccount(accountNumber) {
+		            if (!accountNumber || accountNumber.length !== 12) {
+		                resetAccountValidation();
+		                return;
+		            }
+		            setAccountValidationState('loading');
+		            try {
+		                const response = await fetch(`${config.apiBaseUrl}/validate/bank-details?bankAccountNumber=${accountNumber}`, {
+		                    method: 'GET',
+		                    headers: {
+		                        'Content-Type': 'application/json',
+		                        'userCode': config.userCode
+		                    }
+		                });
+		                const result = await response.json();
+		                
+		                if (result.status === 'Success' && result.errorMessage === 'not bank account found') {
+		                     setAccountValidationState('valid');
+		                } else if (result.status === 'Success' && result.errorMessage === 'bank Account found') {
+		                    setAccountValidationState('invalid', 'bank account already exist');
+		                }
+		                else {
+		                    setAccountValidationState('invalid', result.errorMessage || 'An unknown validation error occurred.');
+		                }
+		            } catch (error) {
+		                setAccountValidationState('invalid', 'Could not validate account number. Please try again.');
+		            }
+		        }
         async function initializeApplyPolicyModal() {
             const form = document.getElementById('apply-policy-form');
             if (form) form.reset();
@@ -3478,7 +3553,9 @@
                 const errorElement = document.getElementById('add-account-number-error');
                 if (e.target.value.length !== 12) { errorElement.classList.remove('hidden'); } else { errorElement.classList.add('hidden'); }
             });
-
+			document.getElementById('add-account-number').addEventListener('blur', (e) => {
+			                validateBankAccount(e.target.value);
+			           });
             document.getElementById('add-kyc-document').addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 const fileInfo = document.getElementById('add-kyc-file-info');

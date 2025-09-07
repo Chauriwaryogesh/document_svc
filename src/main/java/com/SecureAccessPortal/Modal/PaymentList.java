@@ -17,7 +17,33 @@ public class PaymentList {
 	private String message;
 	private String paymentMethod;
 	private String totalAmount;
-	private String bankAccNo;
+	private BigDecimal paymentAmount;
+	private String paymentType;
+	private PaymentDetails paymentDetails;
+
+	public PaymentDetails getPaymentDetails() {
+		return paymentDetails;
+	}
+
+	public void setPaymentDetails(PaymentDetails paymentDetails) {
+		this.paymentDetails = paymentDetails;
+	}
+
+	public BigDecimal getPaymentAmount() {
+		return paymentAmount;
+	}
+
+	public void setPaymentAmount(BigDecimal paymentAmount) {
+		this.paymentAmount = paymentAmount;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 
 	public String getTotalAmount() {
 		return totalAmount;
@@ -25,14 +51,6 @@ public class PaymentList {
 
 	public void setTotalAmount(String totalAmount) {
 		this.totalAmount = totalAmount;
-	}
-
-	public String getBankAccNo() {
-		return bankAccNo;
-	}
-
-	public void setBankAccNo(String bankAccNo) {
-		this.bankAccNo = bankAccNo;
 	}
 
 	public String getPaymentMethod() {
@@ -66,8 +84,6 @@ public class PaymentList {
 	public void setInstallmentCount(int installmentCount) {
 		this.installmentCount = installmentCount;
 	}
-
-	
 
 	public LocalDateTime getDueDate() {
 		return dueDate;
