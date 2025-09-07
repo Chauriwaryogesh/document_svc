@@ -924,6 +924,7 @@ section h2 { color: #1f2937; margin-bottom: 1.5rem; }
                     <option value="active">Active</option>
                     <option value="lapsed">Lapsed</option>
                     <option value="surrendered">Surrendered</option>
+					<option value="surrendered">Claimed</option>
                 </select>
             </div>
             <div>
@@ -1585,7 +1586,8 @@ async function fetchAndRenderWorkflowPaymentHistory(paymentId, policyNo, custome
 
                 paymentItem.innerHTML = `
                     <div class="flex-1 min-w-[48%]"><strong>Payment ID:</strong> ${payment.paymentId || 'N/A'}</div>
-                    <div class="flex-1 min-w-[48%]"><strong>Bank Acc No:</strong> ${payment.bankAccNo || 'N/A'}</div>
+                    <div class="flex-1 min-w-[48%]"><strong>Bank Account No:</strong> ${payment.paymentDetails.bankaccount || 'N/A'}</div>
+					<div class="flex-1 min-w-[48%]"><strong>Ifsc Code:</strong> ${payment.paymentDetails.ifscCode || 'N/A'}</div>
                     <div class="flex-1 min-w-[48%]"><strong>Transaction ID:</strong> ${payment.transactionId || 'N/A'}</div>
                     <div class="flex-1 min-w-[48%]"><strong>Amount:</strong> ${displayAmount}</div>
                     <div class="flex-1 min-w-[48%]"><strong>Payment Date:</strong> ${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}</div>
@@ -2329,7 +2331,7 @@ window.submitSurrenderRequest = async function() {
 
     const payload = {
         action: "SURRENDER",
-        surrAmount:policyToSurrender.totalAmount, 
+        surrAmount:policyToSurrender.totalAmtPaidByInstallemt, 
         policyNo: policyToSurrender.policyNumber, 
         customerNo: config.customerNo,
         surrReason: reason,

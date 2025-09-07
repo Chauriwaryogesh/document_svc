@@ -1806,7 +1806,8 @@
                         paymentItem.innerHTML = `
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <p><strong>Payment ID:</strong> ${payment.paymentId || 'N/A'}</p>
-                                <p><strong>BankAccount No:</strong> ${payment.bankAccNo || 'N/A'}</p>
+								<p><strong>BankAccount No:</strong> ${payment.paymentDetails.bankaccount || 'N/A'}</p>
+						        <p><strong>Ifsc Code:</strong> ${payment.paymentDetails.ifscCode || 'N/A'}</p>
                                 <p><strong>Transaction ID:</strong> ${payment.transactionId || 'N/A'}</p>
                                 <p><strong>Amount:</strong> $${displayAmount}</p>
                                 <p><strong>Payment Date:</strong> ${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}</p>

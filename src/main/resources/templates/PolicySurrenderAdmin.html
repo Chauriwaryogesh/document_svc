@@ -252,8 +252,6 @@
         .status-badge.in_progress { background-color: #fef3c7; color: #d97706; }
         .status-badge.approved { background-color: #d1fae5; color: #065f46; }
         .status-badge.rejected { background-color: #fee2e2; color: #991b1b; }
-        .status-badge.completed { background-color: #dbeafe; color: #1e40af; }
-
 
         .document-item.approved .fa-check-circle { color: #22c55e; }
         .document-item.in_progress .fa-hourglass-half { color: #f59e0b; }
@@ -683,7 +681,6 @@
                             <option value="IN_PROGRESS">In Progress</option>
                             <option value="APPROVED">Approved</option>
                             <option value="REJECTED">Rejected</option>
-                            <option value="COMPLETED">Completed</option> <!-- Added Completed status -->
                         </select>
                     </div>
                 </div>
@@ -894,8 +891,6 @@
                     return { text: 'Approved', className: 'status-badge approved' };
                 case 'REJECTED':
                     return { text: 'Rejected', className: 'status-badge rejected' };
-                case 'COMPLETED': 
-                    return { text: 'Completed', className: 'status-badge completed' };
                 case 'PAID': // New for payment status
                     return { text: 'Paid', className: 'status-badge approved' }; // Green
                 case 'UNPAID': // New for payment status
@@ -1153,7 +1148,7 @@
             const rejectBtn = document.getElementById('modal-reject-request-btn');
             
             // Enable/disable approve/reject buttons based on current surrender status
-            if (currentStatus === 'APPROVED' || currentStatus === 'REJECTED' || currentStatus === 'COMPLETED') {
+            if (currentStatus === 'APPROVED' || currentStatus === 'REJECTED') {
                 approveBtn.disabled = true;
                 rejectBtn.disabled = true;
                 approveBtn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -1566,8 +1561,7 @@
                 const result = await response.json();
                 if (response.ok && result.status === 'Success') {
                     showMessage('Payment Processed', `Payment of $${amount.toLocaleString('en-US')} processed for surrender request ${refNo}.`);
-                    // Update overall request status to 'COMPLETED' after successful payment
-                    await updateOverallRequestStatus('COMPLETED'); // Pass only the new status
+                    await updateOverallRequestStatus('APPROVED'); // Pass only the new status
                     // Update payment info display
                     fetchAndDisplayPaymentStatus(currentSelectedRequest.surrenderRefNo, currentSelectedRequest.customerNo, currentSelectedRequest.policyNo);
                     return true;
@@ -1635,7 +1629,8 @@
                         paymentItem.innerHTML = `
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <p><strong>Payment ID:</strong> ${payment.paymentId || 'N/A'}</p>
-                                <p><strong>BankAccount No:</strong> ${payment.bankAccNo || 'N/A'}</p>
+                                <p><strong>BankAccount No:</strong> ${payment.paymentDetails.bankaccount || 'N/A'}</p>
+								<p><strong>Ifsc Code:</strong> ${payment.paymentDetails.ifscCode || 'N/A'}</p>
                                 <p><strong>Transaction ID:</strong> ${payment.transactionId || 'N/A'}</p>
                                 <p><strong>Amount:</strong> $${displayAmount}</p>
                                 <p><strong>Payment Date:</strong> ${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}</p>
