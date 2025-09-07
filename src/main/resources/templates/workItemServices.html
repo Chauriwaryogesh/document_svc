@@ -654,7 +654,7 @@
 
     async function fetchPolicyDetails(policyNo) {
         if (!policyNo) return null;
-        return apiFetch(`/policy-details?policyNo=${encodeURIComponent(policyNo)}`, {}, config.policyApiBaseUrl);
+        return apiFetch(`/policy-details/forCustomer?policyNo=${encodeURIComponent(policyNo)}`, {}, config.policyApiBaseUrl);
     }
 
     async function fetchWorkTypes() {

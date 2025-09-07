@@ -1092,7 +1092,7 @@
       throw new Error('User ID is missing. Please log in again.');
     }
     const params = new URLSearchParams({ workItemRefNo });
-    const response = await fetch(`http://localhost:8081/policy/policy-details?${params.toString()}`, {
+    const response = await fetch(`http://localhost:8081/policy/policy-details/forCustomer?${params.toString()}`, {
       method: 'GET',
       headers: { 'userCode': config.userCode }
     });

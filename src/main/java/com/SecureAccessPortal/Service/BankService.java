@@ -757,4 +757,17 @@ public class BankService {
 
 	    return newPolicyNumber;
 	}
+
+	public BankDetailsDTO validateBankDetails(String bankAccountNumber, String userCode) {
+		BankDetailsDTO bankDetailsDTO = new BankDetailsDTO();
+		Bank bank = bankAccountRepository.findByAccountNo(bankAccountNumber, CommonConstant.N);
+		if (bank == null) {
+			return null;
+		} else {
+			bankDetailsDTO.setAccountNumber(bank.getAccountNumber());
+			bankDetailsDTO.setAccountHolderName(bank.getAccountHolderName());
+		}
+
+		return bankDetailsDTO;
+	}
 }

@@ -3,9 +3,11 @@ package com.SecureAccessPortal.Modal;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BankDetailsDTO {
 
 	private String bankId;

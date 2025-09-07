@@ -37,5 +37,5 @@ public interface BankAccountRepo extends JpaRepository<Bank, String> {
 	@Query(value = "SELECT p.bankId " + "FROM Bank p " + "WHERE RIGHT(p.bankId, 4) = :currentYear "
 			+ "ORDER BY CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(p.bankId, '/', 2), '/', -1) AS UNSIGNED) DESC "
 			+ "LIMIT 1", nativeQuery = true)
-	String findTopBankForCurrentYear(String currentYear);
+	String findTopBankForCurrentYear(String currentYear);	
 }

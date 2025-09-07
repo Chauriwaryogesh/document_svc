@@ -106,6 +106,22 @@ public class BankController {
 		}
 		return response;
 	}
+	
+	@GetMapping(value = "validate/bank-details")
+	public ResponseEntity<BankDetailsDTO> valiDateBankDetails(
+			@RequestParam(value="bankAccountNumber", required =true) String bankAccountNumber,
+			@RequestHeader(value = "userCode", required = true) String userCode) {
+		com.SecureAccessPortal.Service.ResponseEntity<BankDetailsDTO> response = new com.SecureAccessPortal.Service.ResponseEntity<>();
+		BankDetailsDTO bankDetails = bankDetailsService.validateBankDetails(bankAccountNumber,userCode);
+		if (bankDetails != null) {
+			response.setData(bankDetails);
+			response.setStatus(CommonConstant.SUCCESS);
+		} else {
+			response.setStatus(CommonConstant.FAILURE);
+			response.setErrorMessage("No Bank Account for found");
+		}
+		return response;
+	}
 
 	@GetMapping(value = "/bank-details/branchCodes")
 	public ResponseEntity<List<String>> getBranchCodes(

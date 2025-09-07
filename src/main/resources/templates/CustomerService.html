@@ -630,17 +630,12 @@
         }
         .status-active, .status-yes { background-color: #d1fae5; color: #059669; } 
         .status-lapsed { background-color: #fee2e2; color: #ef4444; } 
-        .status-pending { background-color: #fef3c7; color: #f59e0b; } 
         .status-paid { background-color: #dbeafe; color: #2563eb; } 
         .status-due { background-color: #fce7f3; color: #db2777; } 
         .status-overdue { background-color: #ffe4e6; color: #dc2626; } 
         .status-in-progress, .status-inprogress { background-color: #e0e7ff; color: #4f46e5; } 
-        .status-completed { background-color: #d1fae5; color: #065f46; } 
-        .status-open { background-color: #e0f2fe; color: #0c4a6e; } 
+        .status-approved { background-color: #d1fae5; color: #065f46; } 
         .status-rejected, .status-no { background-color: #fee2e2; color: #991b1b; } 
-        .status-passed { background-color: #dcfce7; color: #166534; } 
-        .status-pend-external { background-color: #eef2ff; color: #4338ca; } 
-        .status-pend-internal { background-color: #f0f9ff; color: #075985; } 
         .status-default { background-color: #e2e8f0; color: #475569; } 
         
         .tab-button-group {
@@ -1000,7 +995,7 @@
                                     <th class="py-3 px-6 text-left">Premium</th>
                                     <th class="py-3 px-6 text-left">Due Date</th>
                                     <th class="py-3 px-6 text-left">Status</th>                           
-                                    <th class="py-3 px-6 text-left">Claimable Amt.</th>
+                                    <th class="py-3 px-6 text-left">Total Policy Value.</th>
                                     <th class="py-3 px-6 text-left">Outstanding Balance</th> 
                                 </tr>
                             </thead>
@@ -1093,10 +1088,12 @@
                                             <label for="filter-workitem-queue" class="block text-sm font-medium text-gray-700">Queue</label>
                                             <select id="filter-workitem-queue" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
                                                 <option value="">All</option>
-                                                <option value="TEAM_MEMBER">TEAM_MEMBER</option>
+                                                <option value="BANK">BANK</option>
+                                                <option value="POLICY">POLICY</option>
                                                 <option value="ADMIN">ADMIN</option>
-                                                <option value="SUPPORT">SUPPORT</option>
-                                                <option value="FINANCE">FINANCE</option>
+                                                <option value="SURRENDER">SURRENDER</option>
+												<option value="CLAIM">CLAIM</option>
+												<option value="WORKITEM">WORKITEM</option>
                                             </select>
                                         </div>
                                         <div>
@@ -1110,14 +1107,9 @@
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700">Status</label>
                                             <div class="mt-2 space-y-2">
-                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="OPEN" class="mr-2 text-blue-600"> Open</label>
-                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="CLOSED" class="mr-2 text-blue-600"> Closed</label>
+                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="APPROVED" class="mr-2 text-blue-600"> Open</label>
                                                 <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="IN_PROGRESS" class="mr-2 text-blue-600"> In Progress</label>
-                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="COMPLETED" class="mr-2 text-blue-600"> Completed</label>
-                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="PEND_EXTERNAL" class="mr-2 text-blue-600"> Pend External</label>
-                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="PEND_INTERNAL" class="mr-2 text-blue-600"> Pend Internal</label>
                                                 <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="REJECTED" class="mr-2 text-blue-600"> Rejected</label>
-                                                <label class="flex items-center"><input type="checkbox" name="filter-workitem-status" value="PASSED" class="mr-2 text-blue-600"> Passed</label>
                                             </div>
                                         </div>
                                         <div>
@@ -1378,11 +1370,6 @@
 	              </div>
 	          </div>
 	      </div>
-    
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="navigateToComplaintsForDetailsChange()">Apply for Name or Details Changes</button>
-                <button class="btn-primary" onclick="closeModal('personal-details-modal')">Close</button>
-            </div>
         </div>
     </div>
     
@@ -1585,7 +1572,6 @@
             </div>
         </div>
     </div>
-    <!-- Policy Details Modal -->
     <div id="policy-detail-modal" class="modal-overlay">
         <div class="modal-content-fullscreen">
             <div class="modal-header">
@@ -1687,7 +1673,6 @@
                      <div class="section-container">
                         <h4 class="section-title">Claim History</h4>
                         <div id="claim-history-list" class="overflow-x-auto">
-                            <!-- Populated by JS -->
                         </div>
                     </div>
                 </div>
@@ -1697,7 +1682,6 @@
                     <div class="section-container">
                         <h4 class="section-title">Linked Bank Accounts</h4>
                         <div id="linked-bank-accounts-list" class="overflow-x-auto">
-                            <!-- Populated by JS -->
                         </div>
                     </div>
                 </div>
@@ -1707,14 +1691,12 @@
                     <div class="section-container">
                         <h4 class="section-title">Linked Work Items</h4>
                         <div id="linked-workitems-list" class="overflow-x-auto">
-                            <!-- Populated by JS -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-     <!-- Bank Account Details Modal -->
     <div id="bank-account-detail-modal" class="modal-overlay">
         <div class="modal-content-fullscreen">
             <div class="modal-header">
@@ -1844,10 +1826,8 @@
                     <div>
                             <label class="block text-sm font-medium text-gray-700">Status (Optional)</label>
                             <div class="mt-2 flex flex-wrap gap-4">
-                                <label class="flex items-center"><input type="radio" name="workitem-status" value="PEND_EXTERNAL" class="mr-2 text-blue-600 focus:ring-blue-500"> Pend External</label>
-                                <label class="flex items-center"><input type="radio" name="workitem-status" value="PEND_INTERNAL" class="mr-2 text-blue-600 focus:ring-blue-500"> Pend Internal</label>
-                                <label class="flex items-center"><input type="radio" name="workitem-status" value="CLOSED" class="mr-2 text-blue-600 focus:ring-blue-500"> Closed</label>
-                                <label class="flex items-center"><input type="radio" name="workitem-status" value="PASSED" class="mr-2 text-blue-600 focus:ring-blue-500"> Passed</label>
+                                <label class="flex items-center"><input type="radio" name="workitem-status" value="IN_PROGRESS" class="mr-2 text-blue-600 focus:ring-blue-500"> In Progress</label>
+                                <label class="flex items-center"><input type="radio" name="workitem-status" value="APPROVED" class="mr-2 text-blue-600 focus:ring-blue-500"> Approved</label>
                                 <label class="flex items-center"><input type="radio" name="workitem-status" value="REJECTED" class="mr-2 text-blue-600 focus:ring-blue-500"> Rejected</label>
                             </div>
                         </div>
@@ -1877,7 +1857,7 @@
             policyUrl: 'http://localhost:8081/policy',
             workitemApiUrl: 'http://localhost:8081/workItem_Service',
             workTypeApiUrl: 'http://localhost:8081/workItem_Service/workType',
-            itemsPerPage: 2
+            itemsPerPage: 20
         };
         let currentOpenModalId = null;
         let allPolicies = [];
@@ -2475,28 +2455,36 @@
                 bankList.innerHTML = '<p class="text-gray-500 p-4 text-center">No linked bank accounts found.</p>';
             }
 
-            // Populate Linked Work Items
-            const workItemList = document.getElementById('linked-workitems-list');
-            if (policy.workItemRefNo && policy.workItemRefNo.length > 0) {
-                workItemList.innerHTML = `
-                    <table class="min-w-full bg-white">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                                <th class="py-3 px-6 text-left">Work Item Reference No.</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-600 text-sm font-light">
-                            ${policy.workItemRefNo.map(wi => `
-                                <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                    <td class="py-3 px-6 text-left">${wi || 'N/A'}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            } else {
-                workItemList.innerHTML = '<p class="text-gray-500 p-4 text-center">No linked work items found.</p>';
-            }
+			// Populate Linked Work Items
+			const workItemList = document.getElementById('linked-workitems-list');
+			if (policy.workItemRefNo && policy.workItemRefNo.length > 0) {
+			    workItemList.innerHTML = `
+			        <table class="min-w-full bg-white">
+			            <thead>
+			                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+			                    <th class="py-3 px-6 text-left">Work Item Reference No.</th>
+			                    <th class="py-3 px-6 text-center">Actions</th>
+			                </tr>
+			            </thead>
+			            <tbody class="text-gray-600 text-sm font-light">
+			                ${policy.workItemRefNo.map(wi => `
+			                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+			                        <td class="py-3 px-6 text-left whitespace-nowrap">
+			                            <a href="#" onclick="navigateToWorkItemDetails('${wi}')" class="text-blue-600 font-semibold hover:underline">
+			                                ${wi || 'N/A'}
+			                            </a>
+			                        </td>
+			                        <td class="py-3 px-6 text-center">
+			                            <button class="text-blue-500 hover:text-blue-700 font-semibold" onclick="navigateToWorkItemDetails('${wi}')">View</button>
+			                        </td>
+			                    </tr>
+			                `).join('')}
+			            </tbody>
+			        </table>
+			    `;
+			} else {
+			    workItemList.innerHTML = '<p class="text-gray-500 p-4 text-center">No linked work items found.</p>';
+			}
 
             document.getElementById('make-payments-button').onclick = () => navigateToPayments(policy.policyNumber);
             
@@ -2809,27 +2797,7 @@
                 }
             }
         }
-
-        async function fetchPolicySearchDetails(policyNo) {
-            showLoader();
-            try {
-                const response = await fetch(`${config.policyUrl}/policy-details?policyNo=${encodeURIComponent(policyNo)}`, {
-                    method: 'GET',
-                    headers: { 'userCode': config.userCode }
-                });
-                const result = await response.json();
-                if (!response.ok || result.status !== 'Success') {
-                    throw new Error(result.errorMessage || `HTTP error! status: ${response.status}`);
-                }
-                return result.data && result.data.length > 0 ? result.data[0] : null;
-            } catch (error) {
-                showToast('Error fetching policy search details: ' + error.message, 'error');
-                throw error;
-            } finally {
-                hideLoader();
-            }
-        }
-
+  
         async function addBankAccount(data) {
             showLoader();
             try {
@@ -3086,7 +3054,7 @@
                 totalInstallments: parseInt(document.getElementById('apply-total-installments').value) || 0,
                 customerNo: config.customerNo,
                 requestNumber: null,
-                requestStatus: "PENDING",
+                requestStatus: "IN_PROGRESS",
                 verifierReason: ""
             };
 
@@ -3240,14 +3208,9 @@
             const container = document.getElementById('workitem-status-cards');
             container.innerHTML = '';
             const statuses = [
-                { id: 'open', label: 'Open', color: 'blue', icon: 'fa-folder-open' },
-                { id: 'closed', label: 'Closed', color: 'gray', icon: 'fa-folder' },
-                { id: 'in_progress', label: 'In Progress', color: 'yellow', icon: 'fa-tasks' },
-                { id: 'completed', label: 'Completed', color: 'green', icon: 'fa-check-circle' },
-                { id: 'pend_external', label: 'Pend External', color: 'purple', icon: 'fa-user-clock' },
-                { id: 'pend_internal', label: 'Pend Internal', color: 'teal', icon: 'fa-users-cog' },
-                { id: 'rejected', label: 'Rejected', color: 'red', icon: 'fa-times-circle' },
-                { id: 'passed', label: 'Passed', color: 'indigo', icon: 'fa-award' },
+                { id: 'APPROVED', label: 'Approved', color: 'green', icon: 'fa-check-circle' },
+                { id: 'REJECTED', label: 'Rejected', color: 'red', icon: 'fa-times-circle' },
+                { id: 'IN_PROGRESS', label: 'In Progress', color: 'yellow', icon: 'fa-award' },
             ];
             statuses.forEach(status => {
                 const count = counts[status.id.toLowerCase()] || 0;
