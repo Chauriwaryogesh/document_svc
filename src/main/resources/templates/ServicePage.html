@@ -981,21 +981,6 @@ body.dark-mode #welcome-message {
         border-bottom: 1px solid #d1d5db;
         border-radius: 0 0 0.5rem 0.5rem;
     }
-
-    .tab-item {
-      padding: 0.75rem 1.25rem;
-      font-weight: 500;
-      cursor: pointer;
-      border-radius: 8px 8px 0 0;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s ease-in-out;
-    }
-    .tab-item.active {
-      background-color: #fff;
-      border-bottom: 2px solid #3b82f6;
-      color: #3b82f6;
-      box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
-    }
     
     .result-card {
       transition: all 0.2s ease-in-out;
@@ -1067,41 +1052,29 @@ body.dark-mode #welcome-message {
     .main-content-area {
         padding-bottom: 6rem;
     }
-
-    #search-module-modal .modal-content {
-        background-color: #f8f9fa;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
+    
+    /* New Universal Search Modal Styles */
     #search-module-modal .tab-button {
-        padding: 0.75rem 1.25rem;
+        padding: 0.75rem 1.5rem;
         font-weight: 600;
-        color: #4b5563;
-        border-bottom: 3px solid transparent;
+        color: #475569; /* slate-600 */
+        border-radius: 8px;
         transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        background-color: transparent;
+        border: 2px solid transparent;
+        cursor: pointer;
+    }
+    #search-module-modal .tab-button:hover {
+        background-color: #e2e8f0; /* slate-200 */
+        color: #1e293b; /* slate-800 */
     }
     #search-module-modal .tab-button.active {
-        color: #3b82f6;
-        border-bottom-color: #3b82f6;
+        color: #3b82f6; /* blue-500 */
+        background-color: #eff6ff; /* blue-50 */
+        border-color: #3b82f6; /* blue-500 */
     }
-    #search-module-modal #module-search-input {
-        transition: all 0.3s ease;
-        border-radius: 0.5rem;
-        padding: 0.75rem 2.5rem;
-    }
-    #search-module-modal #module-search-input:focus {
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
-    }
-    #search-module-modal #module-search-results {
-        background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-    }
-    #search-module-modal #module-search-results p {
-        padding: 0.75rem 1rem;
-        transition: background-color 0.2s ease;
-    }
-     #search-module-modal #module-search-results p:hover {
-        background-color: #eff6ff;
-     }
 
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1190,56 +1163,77 @@ body.dark-mode #welcome-message {
     </div>
 </header>
   <div id="search-module-modal" class="modal-overlay hidden">
-    <div class="modal-box w-11/12 max-w-7xl text-left p-8 rounded-xl relative">
-      <button class="modal-close-btn absolute" onclick="closeModal('search-module-modal')">
-        <i class="fas fa-times text-2xl"></i>
-      </button>
-      <h3 class="text-3xl font-bold mb-4 text-blue-600">Universal Search</h3>
-
-      <div id="search-tabs" class="flex flex-wrap border-b border-gray-200 mb-4">
-        <button data-type="CUSTOMER" class="tab-item active text-gray-700">Customer</button>
-        <button data-type="POLICY" class="tab-item text-gray-700">Policy</button>
-        <button data-type="COMPLAINT" class="tab-item text-gray-700">Complaint</button>
-        <button data-type="WORKITEM" class="tab-item text-gray-700">Work Item</button>
-        <button data-type="BANK" class="tab-item text-gray-700">Bank</button>
-        <button data-type="PAYMENT" class="tab-item text-gray-700">Payment</button>
-      </div>
-
-      <div class="flex flex-col md:flex-row items-center gap-4 my-4">
-        <div class="relative flex-grow w-full">
-          <input type="text" id="search-input" placeholder="Enter a search number..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Search">
-          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-            <i class="fas fa-search"></i>
-          </div>
-        </div>
+    <div class="modal-box w-11/12 max-w-screen-2xl h-5/6 flex flex-col bg-slate-50 text-left p-0 rounded-2xl relative overflow-hidden shadow-2xl">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-6 border-b border-slate-200 bg-white">
         <div class="flex items-center">
-          <input type="checkbox" id="all-search-checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-          <label for="all-search-checkbox" class="ml-2 block text-sm font-medium text-gray-700">Search All</label>
+          <i class="fa-solid fa-search text-2xl text-blue-500 mr-4"></i>
+          <h3 class="text-2xl font-bold text-slate-800">Universal Search</h3>
         </div>
-        <button id="search-button" class="modern-button primary">
-            <span id="search-button-text">Search</span>
-            <div id="search-spinner" class="spinner hidden ml-2"></div>
+        <button class="modal-close-btn" onclick="closeModal('search-module-modal')">
+          <i class="fas fa-times text-2xl text-slate-400 hover:text-slate-600 transition-colors"></i>
         </button>
       </div>
 
-      <div id="results-controls" class="flex justify-end items-center gap-2 mb-2 hidden">
-          <span class="text-sm text-gray-600">View as:</span>
-          <button id="view-card" class="view-toggle-btn active" title="Card View">
-              <i class="fas fa-grip-horizontal"></i>
-          </button>
-          <button id="view-list" class="view-toggle-btn" title="List View">
-              <i class="fas fa-list"></i>
-          </button>
-          <button id="view-table" class="view-toggle-btn" title="Table View">
-              <i class="fas fa-table"></i>
-          </button>
+      <!-- Search Controls and Tabs -->
+      <div class="p-6 border-b border-slate-200 bg-white">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div id="search-tabs" class="flex items-center gap-2">
+            <button data-type="CUSTOMER" class="tab-button active">
+              <i class="fa-solid fa-user mr-2"></i> Customer
+            </button>
+            <button data-type="POLICY" class="tab-button">
+              <i class="fa-solid fa-file-lines mr-2"></i> Policy
+            </button>
+			<button data-type="BANK" class="tab-button">
+		 <i class="fa-solid fa-briefcase mr-2"></i> Bank
+			</button>
+            <button data-type="WORKITEM" class="tab-button">
+              <i class="fa-solid fa-briefcase mr-2"></i> Workitem
+            </button>
+			</button>
+						<button data-type="PAYMENT" class="tab-button">
+					 <i class="fa-solid fa-briefcase mr-2"></i> Payments
+						</button>
+          </div>
+          <div class="flex flex-col sm:flex-row items-center gap-4 flex-grow max-w-2xl">
+            <div class="relative flex-grow w-full">
+              <input type="text" id="search-input" placeholder="Enter search number..." class="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-shadow text-base" aria-label="Search">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                <i class="fas fa-search"></i>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="all-search-checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-md">
+              <label for="all-search-checkbox" class="ml-2 block text-sm font-medium text-slate-700">Search All</label>
+            </div>
+            <button id="search-button" class="modern-button primary w-full sm:w-auto justify-center">
+              <span id="search-button-text">Search</span>
+              <div id="search-spinner" class="spinner hidden ml-2"></div>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div id="search-results-container" class="bg-gray-100 p-4 rounded-lg overflow-y-auto max-h-[60vh] custom-scrollbar mt-4">
-        <p class="text-gray-500">Results will appear here.</p>
+      <!-- Results Area -->
+      <div class="flex-grow p-6 overflow-y-auto custom-scrollbar">
+        <div id="results-controls" class="flex justify-end items-center gap-2 mb-4 hidden">
+            <span class="text-sm text-slate-600">View as:</span>
+            <button id="view-card" class="view-toggle-btn active" title="Card View"><i class="fas fa-grip-horizontal"></i></button>
+            <button id="view-list" class="view-toggle-btn" title="List View"><i class="fas fa-list"></i></button>
+            <button id="view-table" class="view-toggle-btn" title="Table View"><i class="fas fa-table"></i></button>
+        </div>
+        <div id="search-results-container" class="bg-white p-6 rounded-lg min-h-[200px]">
+          <div class="text-center py-10">
+            <i class="fa-solid fa-binoculars text-5xl text-slate-300 mb-4"></i>
+            <p class="text-slate-500 font-medium">Results will appear here.</p>
+            <p class="text-sm text-slate-400">Perform a search to get started.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
 
   <div id="details-modal" class="modal-overlay hidden">
       <div class="modal-box w-11/12 max-w-4xl text-left p-6 rounded-lg relative">
@@ -1709,7 +1703,7 @@ body.dark-mode #welcome-message {
         }
 
         window.location.href = url;
-        logActivity(`Navigated to ${targetFileName} page`);
+        logActivity(`Mapsd to ${targetFileName} page`);
     };
 
     function logout() { navigateTo('logout'); }
@@ -1990,16 +1984,23 @@ body.dark-mode #welcome-message {
         let currentSearchType = 'CUSTOMER';
         
         searchTabs.addEventListener('click', (e) => {
-            const newTab = e.target;
-            if (newTab.tagName === 'BUTTON') {             
-              document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
-              newTab.classList.add('active');
-              currentSearchType = newTab.dataset.type;
-              resultsContainer.innerHTML = '<p class="text-gray-500">Results will appear here.</p>';
-              lastFetchedData = null;
-              resultsControls.classList.add('hidden');
+            const newTab = e.target.closest('.tab-button');
+            if (newTab) {
+                document.querySelectorAll('#search-tabs .tab-button').forEach(tab => tab.classList.remove('active'));
+                newTab.classList.add('active');
+                currentSearchType = newTab.dataset.type;
+                resultsContainer.innerHTML = `
+                  <div class="text-center py-10">
+                    <i class="fa-solid fa-binoculars text-5xl text-slate-300 mb-4"></i>
+                    <p class="text-slate-500 font-medium">Results for ${currentSearchType.toLowerCase()} will appear here.</p>
+                    <p class="text-sm text-slate-400">Perform a search to get started.</p>
+                  </div>
+                `;
+                lastFetchedData = null;
+                resultsControls.classList.add('hidden');
             }
-          });
+        });
+
         viewToggleButtons.forEach(button => {
           button.addEventListener('click', () => {
               viewToggleButtons.forEach(btn => btn.classList.remove('active'));
