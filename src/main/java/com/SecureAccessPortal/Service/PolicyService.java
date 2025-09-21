@@ -114,7 +114,6 @@ public class PolicyService {
 	public ResponseDTO createPolicy(PolicyRequest policyDTO, String userCode) {
 		ResponseDTO response = new ResponseDTO();
 		Customer customer = null;
-		// 🔹 Decide installment amount & total installments
 		BigDecimal installmentAmount = BigDecimal.ZERO;
 		int totalInstallments = 0;
 

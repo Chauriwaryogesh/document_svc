@@ -994,8 +994,11 @@
       document.getElementById('update-comment').value = currentWorkItemData?.comment || '';
     }
     if (modalId === 'policy') {
-        if (globalPoliciesData && globalPoliciesData.length > 0 && globalPoliciesData[0].policyList && globalPoliciesData[0].policyList.length > 0) {
-            populateSinglePolicyModal(globalPoliciesData[0], globalPoliciesData[0].policyList[0]);
+		console.log("Policies data",globalPoliciesData);
+        if (globalPoliciesData !=null) {
+			console.log("Policies data",globalPoliciesData.content);
+			console.log("Policies data",globalPoliciesData.content[0].policyList[0]);
+            populateSinglePolicyModal(globalPoliciesData.content[0], globalPoliciesData.content[0].policyList[0]);
         } else {
             document.getElementById('policy-details-content').innerHTML = '<p class="text-gray-500 italic">No policy details available.</p>';
         }
@@ -1408,17 +1411,22 @@
   }
 
   function populatePolicyTable(policiesData, tableId) {
+	console.log("Policies data",policiesData);
+	
+	console.log("Policies",policiesData.content);
+	
     const tbody = document.getElementById(tableId);
     tbody.innerHTML = '';
     let hasPolicies = false;
-
-    if (!Array.isArray(policiesData) || policiesData.length === 0) {
+	console.log("Policies data", policiesData.content.length);
+    if (policiesData.content.length === 0) {
       tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-3 text-center text-gray-500">No policies found.</td></tr>';
       return;
     }
 
-    policiesData.forEach((dataItem, dataIndex) => {
+    policiesData.content.forEach((dataItem, dataIndex) => {
       const policyList = Array.isArray(dataItem.policyList) ? dataItem.policyList : [];
+	  console.log("dataItem.policyList data",dataItem.policyList);
       if (policyList.length === 0) return;
 
       hasPolicies = true;

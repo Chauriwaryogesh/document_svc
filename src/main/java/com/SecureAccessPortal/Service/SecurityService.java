@@ -36,7 +36,6 @@ import com.SecureAccessPortal.Entity.Employees;
 import com.SecureAccessPortal.Entity.LoginHistory;
 import com.SecureAccessPortal.Entity.OtpStore;
 import com.SecureAccessPortal.Entity.PasswordHistory;
-import com.SecureAccessPortal.Entity.PersonSequence;
 import com.SecureAccessPortal.Entity.Security;
 import com.SecureAccessPortal.Exception.BadRequestException;
 import com.SecureAccessPortal.Modal.EmpRequestforUpdate;
@@ -78,9 +77,6 @@ public class SecurityService implements ISecrityService {
 
 	@Autowired
 	private IWorkItemService workItemService;
-
-	@Autowired
-	private PersonSequenceRepository personSequenceRepository;
 
 	@Autowired
 	private EmailService otpService;
