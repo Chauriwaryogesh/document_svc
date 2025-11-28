@@ -3,6 +3,7 @@ package com.SecureAccessPortal.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +39,7 @@ public class CustomerController {
 		return response;
 	}
 
+	@Cacheable(value ="customerDTO", key="'userCode'")
 	@RequestMapping(value = "/getCustomerDetails", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CustomerDTO> getCustmerDetails(@RequestHeader String userCode) {
 		ResponseEntity<CustomerDTO> response = customerService.getCustomerDetails(userCode);

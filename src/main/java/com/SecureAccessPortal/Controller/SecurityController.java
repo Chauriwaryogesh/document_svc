@@ -13,6 +13,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.SecureAccessPortal.CommonConstants.CommonConstant;
 import com.SecureAccessPortal.Configuration.QrCodeWebSocketHandlerConfig;
 import com.SecureAccessPortal.Modal.CustomerDTO;
 import com.SecureAccessPortal.Modal.EmailDTO;
@@ -223,6 +225,7 @@ public class SecurityController {
 
 	}
 
+	@Cacheable(value="emailDTO", key= "'fetchEmail'")
 	@GetMapping("/fetchEmailids")
 	public com.SecureAccessPortal.Service.ResponseEntity<List<EmailDTO>> fetchEmailDetails(
 			@RequestParam(value = "Email id", required = false) String id,
@@ -316,7 +319,9 @@ public class SecurityController {
 
 		if (customerDTO != null && !customerDTO.isEmpty()) {
 			emailResp.setData(customerDTO);
+			emailResp.setStatus(CommonConstant.SUCCESS);
 		} else {
+			emailResp.setStatus(CommonConstant.FAILURE);
 			emailResp.setErrorMessage("Customer Details Not available ");
 		}
 		return emailResp;
